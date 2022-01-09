@@ -1,0 +1,113 @@
+[[redirects]]
+  from = "/posts/using-automapper-with-dotnetcore-3"
+  to = "/posts/using-auto-mapper-with-asp-net-core-3/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/posts/2019-year-in-review"
+  to = "/posts/cheers-to-2019-bring-on-2020/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/posts/adding-hateoas-to-an-aspnetcore-rest-api"
+  to = "/posts/adding-hateoas-to-an-asp-net-core-api/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/posts/release-notes-with-github-appveyor-octopus-deploy"
+  to = "/posts/automating-release-notes-with-git-hub-app-veyor-and-octopus-deploy/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/posts/using-azure-key-vault-with-azure-functions"
+  to = "/posts/environment-variables-in-azure-functions-with-key-vault/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/posts/sql-server-in-a-linux-container-to-do-quick-tasks"
+  to = "/posts/using-sql-server-in-docker-containers-for-basic-tasks/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/posts/code-of-conduct-and-contributions-in-public-repositories"
+  to = "/posts/using-a-contributing-and-code-of-conduct-to-assist-others-in-contributing-to-public-repositories/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/posts/setup-command-aliases-in-powershell-to-make-life-easier"
+  to = "/posts/adding-command-aliases-to-power-shell/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/posts/stream-setup"
+  to = "/posts/current-twitch-live-coding-stream-setup/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/posts/docker-communication-between-containers"
+  to = "/posts/communication-between-containers-using-docker-compose-in-windows/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/posts/setting-up-raspberry-pi-for-kiosk-mode"
+  to = "/posts/setting-up-raspberry-pi-for-use-in-kiosk-mode-with-chromium/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/talks/devfest-auburn"
+  to = "/talks/vscode-remote/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/talks/dotnetconf2019/"
+  to = "/talks/sql-docker/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/talks/bsides-bhm-2019/"
+  to = "/talks/vscode-remote/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/talks/devopsdays2019/"
+  to = "/talks/vscode-remote/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/talks/bhmnet/"
+  to = "/talks/vscode-remote/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/talks/dnnsummit/"
+  to = "/talks/vscode-remote/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://bbb.dev/*"
+  to = "/.netlify/functions/smolify?path=:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/posts/*"
+  to = "/blog/:splat"
+  status = 301
+  force = true

@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#__nuxt,
+#__layout,
+.wrapper {
+  @apply h-full;
+}
+
+body {
+  @apply bg-white;
+
+  .wrapper {
+    @apply mx-auto;
+    @apply flex flex-col;
+
+    @apply bg-no-repeat;
+    background-position: center 2rem;
+    background-image: url('/images/bg-light.svg');
+
+    main {
+      @apply mb-auto;
+      @apply flex flex-col gap-4;
+    }
+
+    .stripe {
+      background-color: rgba(3, 40, 249, 0.07);
+    }
+  }
+
+  &.dark {
+    @apply bg-darkPurple;
+
+    .wrapper {
+      background-image: url('/images/bg-dark.svg');
+
+      .stripe {
+        background-color: rgba(255, 255, 255, 0.09);
+      }
+    }
+  }
+}
