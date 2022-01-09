@@ -18,6 +18,7 @@ body {
     @apply flex flex-col;
 
     @apply bg-no-repeat;
+    @apply bg-cover;
     background-position: center 2rem;
     background-image: url('/images/bg-light.svg');
 

@@ -30,8 +30,7 @@
 </template>
 <style lang="scss" scoped>
 ul {
-  @apply hidden sm:flex;
-
+  @apply hidden md:flex;
   @apply list-none;
   @apply justify-evenly gap-6 md:gap-10;
 

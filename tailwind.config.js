@@ -26,6 +26,7 @@ module.exports = {
           github: '#181717',
           instagram: '#bc2a8d',
           linkedin: '#0077B5',
+          patreon: '#FF424D',
           reddit: '#ff4500',
           rss: '#FFA500',
           twitch: '#6441A4',

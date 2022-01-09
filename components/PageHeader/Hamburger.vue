@@ -33,7 +33,7 @@ button {
 
   &:before,
   &:after {
-    @apply bg-gray-900 dark:bg-gray-100;
+    @apply bg-darkPurple dark:bg-gray-100;
     @apply block;
     @apply h-1;
     content: '';
@@ -42,10 +42,10 @@ button {
   &:before {
     @apply mb-4;
 
-    box-shadow: 0 10px 0 rgb(17, 24, 39);
+    box-shadow: 0 10px 0 rgb(20, 5, 28);
   }
   &.open:before {
-    box-shadow: 0 0 0 rgb(17, 24, 39);
+    box-shadow: 0 0 0 rgb(20, 5, 28);
     transform: translateY(10px) rotate(45deg);
   }
   &.open:after {
