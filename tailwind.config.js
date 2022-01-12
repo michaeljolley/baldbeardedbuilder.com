@@ -20,6 +20,8 @@ module.exports = {
         darkPurple: '#14051C',
         bbbblue: '#00FFFF',
         bbbpink: '#FF00FF',
+        stripeLight: 'rgba(3, 40, 249, 0.07)',
+        stripeDark: 'rgba(255, 255, 255, 0.09)',
         brand: {
           discord: '#7289da',
           facebook: '#3B5998',
@@ -33,13 +35,12 @@ module.exports = {
           twitter: '#1da1f2',
           youtube: '#e52d27',
         },
-      }
+      },
     },
   },
   variants: {
-    extend: {},
+    extend: { typography: ["dark"] }
   },
   plugins: [
-    require('@tailwindcss/typography')
   ],
 }

@@ -14,17 +14,12 @@ export default {
   gzip: true,
   trailingSlash: true,
   routes: async () => {
-    // const { $content } = require('@nuxt/content')
+    const { $content } = require('@nuxt/content')
 
-    // const posts = (await $content('blog').fetch()).map((p) =>
-    //   generateSitemapRoute(p)
-    // )
+    const posts = (await $content('blog').fetch()).map((p) =>
+      generateSitemapRoute(p)
+    )
 
-    // const talks = (await $content('talks').fetch()).map((t) =>
-    //   generateSitemapRoute(t)
-    // )
-
-    // return [].concat(...posts).concat(...talks)
-    return []
+    return [].concat(...posts)
   },
 }

@@ -21,14 +21,16 @@ const config = {
   postsPerPage: 12,
   repoUrl:
     process.env.REPOSITORY_URL ||
-    'https://github.com/michaeljolley/michaeljolley.github.io',
+    'https://github.com/michaeljolley/baldbeardedbuilder.com',
   repoBranch: process.env.HEAD || process.env.GIT_BRANCH || 'main',
   nodeEnv: process.env.NODE_ENV || 'development',
   netlifyContext: process.env.CONTEXT || null,
   googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || null,
+  cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME || null,
+  cloudinaryAPIKey: process.env.CLOUDINARY_API_KEY || null,
+  cloudinaryAPISecret: process.env.CLOUDINARY_API_SECRET || null,
   youtubeChannelId: process.env.YOUTUBE_CHANNEL_ID || null,
   functionsUrl: process.env.FUNCTION_URL || null,
-  sanityProjectId: process.env.SANTIY_PROJECT_ID || null,
   get headMeta() {
     return [
       { charset: 'utf-8' },

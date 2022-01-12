@@ -1,9 +1,14 @@
+import readingTime from 'reading-time'
+import { $cloudinary, $youtube } from './middleware'
 import {
+  cloudinary,
   config,
   feed,
   googleAnalytics,
+  sanity,
   sitemap,
 } from './modules'
+
 
 const isProduction = () => {
   return process.env.CONTEXT && process.env.CONTEXT === 'production'
@@ -52,18 +57,31 @@ export default {
     '@nuxtjs/eslint-module',
     '@nuxtjs/google-analytics',
     '@nuxtjs/tailwindcss',
-    '@nuxtjs/sanity/module'
+    $youtube,
   ],
 
   modules: [
+    '@nuxtjs/cloudinary',
+    '@nuxt/content',
     '@nuxtjs/feed',
     '@nuxtjs/sitemap',
     'vue-social-sharing/nuxt',
     '@nuxtjs/proxy',
   ],
 
+  content: {
+    liveEdit: false,
+    markdown: {
+      prism: {
+        theme: 'prism-themes/themes/prism-material-dark.css',
+      },
+    },
+  },
+
+  cloudinary,
   feed,
   googleAnalytics,
+  sanity,
   sitemap,
 
   tailwindcss: {
@@ -79,6 +97,80 @@ export default {
 
   plugins: ['~/plugins/scroll.client.js', '~/plugins/formatDate.js'],
 
-  build: {
-  }
+  build: {},
+
+  generate: {
+    crawler: isProduction(),
+    fallback: true,
+    async routes() {
+      const { $content } = require('@nuxt/content')
+      const posts = await $content('blog').fetch()
+      const videos = await $content('videos').fetch()
+      // const talks = await $content('talks').fetch()
+      // const events = await $content('events').fetch()
+
+      return [
+        {
+          route: '/',
+          payload: {
+            posts: posts.slice(0, 6),
+            videos: videos.slice(0, 3),
+          }
+        },
+        {
+          route: '/blog/',
+          payload: {
+            posts: posts.slice(0, 12),
+          }
+        },
+        ...posts.map((post) => {
+          return {
+            route: `/blog/${post.slug}/`,
+            payload: post,
+          }
+        }),
+      ]
+    },
+  },
+
+  hooks: {
+    'content:file:beforeInsert': async (document, database) => {
+      const directories = document.dir.split('/').filter((f) => f.length > 0)
+      const slug = directories[directories.length - 1]
+
+      if (directories.includes('comments')) {
+        // process comments
+        document.dir = '/comments'
+        document.postslug = slug
+      } else if (
+        directories.includes('blog') ||
+        directories.includes('talks') ||
+        directories.includes('events')
+      ) {
+        let type
+        if (directories.includes('blog')) {
+          type = 'blog'
+        } else if (directories.includes('talks')) {
+          type = 'talks'
+        } else {
+          type = 'events'
+        }
+
+        // Copy images to assets directory for optimization
+        // and update the img tags with the new paths
+        await $cloudinary.copyAssets(document, slug, __dirname)
+
+        // for blog posts, update the slug to be based off the
+        // last directory in the path
+        document.slug = slug
+        document.path = `/${type}/${slug}`
+        document.dir = `/${type}`
+
+        // calculate and add reading time to document
+        if (document.text) {
+          document.readingTime = readingTime(document.text)
+        }
+      }
+    },
+  },
 }

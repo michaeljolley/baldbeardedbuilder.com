@@ -5,6 +5,7 @@
       <Nuxt />
     </main>
     <PageFooter />
+    <BackToTop />
   </div>
 </template>
 <script>

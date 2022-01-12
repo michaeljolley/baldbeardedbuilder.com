@@ -6,7 +6,7 @@
         aria-label="Aggregated content Michael has generated"
         ><span>Blog</span></NuxtLink
       >
-      <NuxtLink
+      <!-- <NuxtLink
         to="/podcasts/"
         aria-label="Aggregated content Michael has generated"
         ><span>Podcasts</span></NuxtLink
@@ -15,9 +15,11 @@
         to="/videos/"
         aria-label="Aggregated content Michael has generated"
         ><span>Videos</span></NuxtLink
-      >
-      <NuxtLink to="/swag/" aria-label="T-shirts, stickers, and other swag"
-        ><span>Swag</span></NuxtLink
+      > -->
+      <a
+        href="https://bbb.dev/shop"
+        aria-label="T-shirts, stickers, and other swag"
+        ><span>Swag</span></a
       >
     </div>
   </transition-expand>
@@ -54,11 +56,9 @@ div {
     }
 
     &:hover {
-      background: linear-gradient(to right, #c04b9b, #21c0db);
+      background: linear-gradient(to right, #ff00ff, #00ffff);
       @apply text-gray-100;
 
-      // border-image-slice: 1;
-      // border-image-source: linear-gradient(to right, #c04b9b, #21c0db);
       span {
         opacity: 0.8;
         transform: translate(0, 10%) scale(4.5) rotate(-10deg);

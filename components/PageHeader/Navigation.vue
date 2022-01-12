@@ -7,7 +7,7 @@
         >Blog</NuxtLink
       >
     </li>
-    <li>
+    <!-- <li>
       <NuxtLink
         to="/podcasts/"
         aria-label="Aggregated content Michael has generated"
@@ -20,10 +20,12 @@
         aria-label="Aggregated content Michael has generated"
         >Videos</NuxtLink
       >
-    </li>
+    </li> -->
     <li>
-      <NuxtLink to="/swag/" aria-label="T-shirts, stickers, and other swag"
-        >Swag</NuxtLink
+      <a
+        href="https://bbb.dev/shop"
+        aria-label="T-shirts, stickers, and other swag"
+        >Swag</a
       >
     </li>
   </ul>
@@ -43,7 +45,7 @@ ul {
 
     &:hover {
       border-image-slice: 1;
-      border-image-source: linear-gradient(to right, #c04b9b, #21c0db);
+      border-image-source: linear-gradient(to right, #ff00ff, #00ffff);
     }
   }
 }

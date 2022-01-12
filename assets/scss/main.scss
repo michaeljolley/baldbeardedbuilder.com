@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+}
 html,
 body,
 #__nuxt,
@@ -13,14 +16,13 @@ body,
 body {
   @apply bg-white;
 
-  .wrapper {
-    @apply mx-auto;
-    @apply flex flex-col;
+  @apply bg-no-repeat;
+  @apply bg-cover;
+  background-position: center 3rem;
+  background-image: url('/images/bg-light.svg');
 
-    @apply bg-no-repeat;
-    @apply bg-cover;
-    background-position: center 2rem;
-    background-image: url('/images/bg-light.svg');
+  .wrapper {
+    @apply flex flex-col;
 
     main {
       @apply mb-auto;
@@ -28,18 +30,162 @@ body {
     }
 
     .stripe {
-      background-color: rgba(3, 40, 249, 0.07);
+      @apply bg-stripeLight;
+    }
+    article header {
+      .cld-image {
+        @apply rounded-md;
+      }
+    }
+  }
+
+  .content {
+    @apply max-w-xl;
+
+    @apply text-darkPurple dark:text-gray-100;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      @apply inline-block;
+      @apply font-raleway font-bold;
+      @apply py-1 px-3;
+      @apply text-white dark:text-darkPurple;
+      @apply bg-blue-500 dark:bg-bbbblue;
+      @apply my-8;
+    }
+
+    h1 {
+      @apply mt-0;
+    }
+    h2 {
+      @apply text-3xl;
+    }
+    h3 {
+      @apply text-2xl;
+    }
+    h4,
+    h5,
+    h6 {
+      @apply text-xl;
+    }
+
+    p {
+      @apply text-lg;
+      @apply py-3;
+    }
+
+    blockquote {
+      @apply bg-stripeLight dark:bg-stripeDark;
+      @apply text-darkPurple dark:text-gray-200;
+      @apply py-6 px-10 italic;
+      @apply font-raleway;
+      @apply text-sm;
+      @apply rounded-sm;
+    }
+
+    img {
+      @apply py-3;
+    }
+
+    a {
+      @apply text-blue-500 dark:text-bbbpink;
+    }
+
+    .nuxt-content-highlight {
+      @apply py-3;
+    }
+
+    ul {
+      @apply bg-stripeLight;
+      @apply my-3;
+
+      li {
+        @apply p-3;
+
+        &:not(:last-child) {
+          @apply border-b border-blue-100;
+        }
+
+        &:before {
+          content: '';
+          @apply inline-block;
+          @apply h-full w-5;
+          @apply p-2;
+          @apply mr-4;
+          @apply text-darkPurple;
+
+          background-position: center;
+          background-image: url('/images/check.svg');
+          @apply bg-no-repeat;
+        }
+      }
+    }
+
+    code {
+      @apply text-base italic;
+      @apply bg-stripeLight font-fira px-1 mx-1;
+    }
+
+    pre {
+      @apply rounded-md;
+      code {
+        @apply text-base not-italic;
+        @apply bg-transparent px-0 mx-0;
+      }
     }
   }
 
   &.dark {
     @apply bg-darkPurple;
+    background-image: url('/images/bg-dark.svg');
 
     .wrapper {
-      background-image: url('/images/bg-dark.svg');
-
       .stripe {
-        background-color: rgba(255, 255, 255, 0.09);
+        @apply bg-stripeDark;
+      }
+    }
+
+    .content {
+      @apply text-gray-100;
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        @apply text-darkPurple;
+        @apply bg-bbbblue;
+      }
+
+      blockquote {
+        @apply bg-stripeDark;
+        @apply text-gray-200;
+      }
+
+      a {
+        @apply text-bbbpink;
+      }
+
+      ul {
+        @apply bg-stripeDark;
+
+        li {
+          &:not(:last-child) {
+            @apply border-stripeDark;
+          }
+          &:before {
+            @apply text-gray-100;
+          }
+        }
+      }
+
+      code {
+        @apply bg-stripeDark;
       }
     }
   }
