@@ -17,8 +17,8 @@ const isProduction = () => {
 }
 
 function defaultDarkMode() {
-  if (localStorage.getItem('darkMode')) {
-    return localStorage.getItem('darkMode') === 'true'
+  if (window.localStorage.getItem('darkMode')) {
+    return window.localStorage.getItem('darkMode') === 'true'
   }
 
   if (
