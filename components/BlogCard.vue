@@ -7,12 +7,7 @@
     />
     <main>
       <h3>{{ post.title }}</h3>
-      <p>
-        This past year I've been examining the communities I'm a part of. It
-        didn't take long to notice that I was living in a bubble of people who
-        look, act, and think like me. It was one of those unconscious things,
-        that when recognized, seems obvious and repulsive.
-      </p>
+      <p>{{ post.summary }}</p>
     </main>
     <footer>READ MORE <IconArrow /></footer>
   </NuxtLink>

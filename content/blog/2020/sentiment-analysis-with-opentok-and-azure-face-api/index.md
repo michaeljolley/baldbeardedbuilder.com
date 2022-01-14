@@ -5,7 +5,8 @@ cover: ./cover-image.jpg
 banner_image_alt: Sentiment Analysis With OpenTok and Azure Face API
 description: In this tutorial, we will build a multi-party video conference that allows us to analyze the sentiment of each participant based on their facial expression. Then we'll display that sentiment as an emoji over their video.
 tags: [csharp, automapper, dotnet, aspnetcore]
-canonical_url: "https://www.nexmo.com/blog/2020/01/27/sentiment-analysis-with-opentok-and-azure-face-api-dr"
+canonical_url: 'https://www.nexmo.com/blog/2020/01/27/sentiment-analysis-with-opentok-and-azure-face-api-dr'
+summary: You know that person. It could be your significant other, a child, a co-worker, or a friend. That person that says one thing, but you can tell by their face, they mean something completely different.
 ---
 
 You know that person. It could be your significant other, a child, a co-worker, or a friend. That person that says one thing, but you can tell by their face, they mean something completely different. You probably just pictured them in your head. Maybe you remember the exact conversation. Perhaps it went like this:
@@ -49,17 +50,26 @@ In the root of the video-sentiment folder, create an `index.html` file and copy 
   <head>
     <title>OpenTok Sentiment Analysis</title>
 
-    <link href="https://emoji-css.afeld.me/emoji.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://emoji-css.afeld.me/emoji.css"
+      rel="stylesheet"
+      type="text/css"
+    />
     <link href="css/app.css" rel="stylesheet" type="text/css" />
 
     <script src="https://static.opentok.com/v2/js/opentok.min.js"></script>
 
     <!-- Polyfill for fetch API so that we can fetch the sessionId and token in IE11 -->
-    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js" charset="utf-8"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js" charset="utf-8"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"
+      charset="utf-8"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"
+      charset="utf-8"
+    ></script>
   </head>
   <body>
-
     <div id="videos">
       <div id="subscriber"></div>
       <div id="publisher"></div>
@@ -108,7 +118,7 @@ html {
 }
 .OT_widget-container {
   padding: 6px 0 0 6px !important;
-  background-color: #70B7FD !important;
+  background-color: #70b7fd !important;
 }
 #publisher .OT_widget-container {
   padding: 6px 0 0 6px !important;
@@ -161,11 +171,11 @@ The `config.js` file contains configuration parameters that we'll get from our T
 
 ```js
 // Replace these values with those generated in your TokBox and Azure Accounts
-const OPENTOK_API_KEY = '';
-const OPENTOK_SESSION_ID = '';
-const OPENTOK_TOKEN = '';
-const AZURE_FACE_API_SUBSCRIPTION_KEY = '';
-const AZURE_FACE_API_ENDPOINT = '';
+const OPENTOK_API_KEY = ''
+const OPENTOK_SESSION_ID = ''
+const OPENTOK_TOKEN = ''
+const AZURE_FACE_API_SUBSCRIPTION_KEY = ''
+const AZURE_FACE_API_ENDPOINT = ''
 ```
 
 ### OpenTok Settings
@@ -200,52 +210,53 @@ Log into your Azure account and create a new Face API Cognitive Service. Once cr
 With our configuration ready, let's add some JavaScript to connect to an OpenTok session. Add an `app.js` file to the js folder and copy the following to it.
 
 ```js
-var opentok_api_key;
-var opentok_session_id;
-var opentok_token;
-var azure_face_api_subscription_key;
-var azure_face_api_endpoint;
+var opentok_api_key
+var opentok_session_id
+var opentok_token
+var azure_face_api_subscription_key
+var azure_face_api_endpoint
 // See the config.js file.
-if (OPENTOK_API_KEY &&
+if (
+  OPENTOK_API_KEY &&
   OPENTOK_SESSION_ID &&
   OPENTOK_TOKEN &&
   AZURE_FACE_API_SUBSCRIPTION_KEY &&
-  AZURE_FACE_API_ENDPOINT) {
-  opentok_api_key = OPENTOK_API_KEY;
-  opentok_session_id = OPENTOK_SESSION_ID;
-  opentok_token = OPENTOK_TOKEN;
-  azure_face_api_subscription_key = AZURE_FACE_API_SUBSCRIPTION_KEY;
-  azure_face_api_endpoint = AZURE_FACE_API_ENDPOINT;
-  initializeSession();
+  AZURE_FACE_API_ENDPOINT
+) {
+  opentok_api_key = OPENTOK_API_KEY
+  opentok_session_id = OPENTOK_SESSION_ID
+  opentok_token = OPENTOK_TOKEN
+  azure_face_api_subscription_key = AZURE_FACE_API_SUBSCRIPTION_KEY
+  azure_face_api_endpoint = AZURE_FACE_API_ENDPOINT
+  initializeSession()
 } else {
-  alert('Failed to get configuration variables. Make sure you have updated the config.js file.');
+  alert(
+    'Failed to get configuration variables. Make sure you have updated the config.js file.'
+  )
 }
 // Handling all of our errors here by logging them to the console
 function handleError(error) {
   if (error) {
-    console.log(error.message);
+    console.log(error.message)
   }
 }
 function dataURItoBlob(dataURI) {
   // convert base64/URLEncoded data component to raw binary data held in a string
-  var byteString;
-  if (dataURI.split(",")[0].indexOf("base64") >= 0)
-    byteString = atob(dataURI.split(",")[1]);
-  else byteString = unescape(dataURI.split(",")[1]);
+  var byteString
+  if (dataURI.split(',')[0].indexOf('base64') >= 0)
+    byteString = atob(dataURI.split(',')[1])
+  else byteString = unescape(dataURI.split(',')[1])
   // separate out the mime component
-  var mimeString = dataURI
-    .split(",")[0]
-    .split(":")[1]
-    .split(";")[0];
+  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
   // write the bytes of the string to a typed array
-  var ia = new Uint8Array(byteString.length);
+  var ia = new Uint8Array(byteString.length)
   for (var i = 0; i < byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i);
+    ia[i] = byteString.charCodeAt(i)
   }
-  return new Blob([ia], { type: mimeString });
+  return new Blob([ia], { type: mimeString })
 }
-var streams = [];
-var emotions = [];
+var streams = []
+var emotions = []
 ```
 
 Four things are going on here:
@@ -265,41 +276,41 @@ Add the `initializeSession` method below to the bottom of the `app.js` file.
 
 ```js
 function initializeSession() {
-  var session = OT.initSession(opentok_api_key, opentok_session_id);
+  var session = OT.initSession(opentok_api_key, opentok_session_id)
   // Subscribe to a newly created streams and add
   // them to our collection of active streams.
-  session.on("streamCreated", function (event) {
-    streams.push(event.stream);
+  session.on('streamCreated', function (event) {
+    streams.push(event.stream)
     session.subscribe(
       event.stream,
-      "subscriber",
+      'subscriber',
       {
-        insertMode: "append"
+        insertMode: 'append',
       },
       handleError
-    );
-  });
+    )
+  })
   // Remove streams from our array when they are destroyed.
-  session.on("streamDestroyed", function (event) {
-    streams = streams.filter(f => f.id !== event.stream.id);
-  });
+  session.on('streamDestroyed', function (event) {
+    streams = streams.filter((f) => f.id !== event.stream.id)
+  })
   // Create a publisher
   var publisher = OT.initPublisher(
-    "publisher",
+    'publisher',
     {
-      insertMode: "append"
+      insertMode: 'append',
     },
     handleError
-  );
+  )
   // Connect to the session
   session.connect(opentok_token, function (error) {
     // If the connection is successful, initialize a publisher and publish to the session
     if (error) {
-      handleError(error);
+      handleError(error)
     } else {
-      session.publish(publisher, handleError);
+      session.publish(publisher, handleError)
     }
-  });
+  })
 }
 ```
 
@@ -319,18 +330,18 @@ In the `index.html` file, replace the comment that says `<!-- Footer will go her
 
 ```html
 <footer>
-    <button id="analyze" type="button" onclick="processImages();">Analyze</button>
+  <button id="analyze" type="button" onclick="processImages();">Analyze</button>
 
-    <ul>
-        <li name="em-angry"><i class="em em-angry"></i> Angry</li>
-        <li name="em-frowning"><i class="em em-frowning"></i> Contempt</li>
-        <li name="em-face_vomiting"><i class="em em-face_vomiting"></i> Disgust</li>
-        <li name="em-fearful"><i class="em em-fearful"></i> Fear</li>
-        <li name="em-grin"><i class="em em-grin"></i> Happiness</li>
-        <li name="em-neutral_face"><i class="em em-neutral_face"></i> Neutral</li>
-        <li name="em-cry"><i class="em em-cry"></i> Sadness</li>
-        <li name="em-astonished"><i class="em em-astonished"></i> Surprise</li>
-    </ul>
+  <ul>
+    <li name="em-angry"><i class="em em-angry"></i> Angry</li>
+    <li name="em-frowning"><i class="em em-frowning"></i> Contempt</li>
+    <li name="em-face_vomiting"><i class="em em-face_vomiting"></i> Disgust</li>
+    <li name="em-fearful"><i class="em em-fearful"></i> Fear</li>
+    <li name="em-grin"><i class="em em-grin"></i> Happiness</li>
+    <li name="em-neutral_face"><i class="em em-neutral_face"></i> Neutral</li>
+    <li name="em-cry"><i class="em em-cry"></i> Sadness</li>
+    <li name="em-astonished"><i class="em em-astonished"></i> Surprise</li>
+  </ul>
 </footer>
 ```
 
@@ -340,51 +351,49 @@ Now let's add the JavaScript to handle our sentiment analysis. Add the following
 
 ```js
 function assignEmoji(emojiClass, index) {
-  var widgets = document.getElementsByClassName('OT_widget-container');
-  emotions.push(emojiClass);
-  var sentimentDiv = document.createElement("div");
-  sentimentDiv.classList.add("sentiment");
-  sentimentDiv.classList.add("em");
-  sentimentDiv.classList.add(emojiClass);
-  widgets[index].appendChild(sentimentDiv);
-  const legendEl = document.getElementsByName(emojiClass);
-  legendEl[0].classList.add('used');
+  var widgets = document.getElementsByClassName('OT_widget-container')
+  emotions.push(emojiClass)
+  var sentimentDiv = document.createElement('div')
+  sentimentDiv.classList.add('sentiment')
+  sentimentDiv.classList.add('em')
+  sentimentDiv.classList.add(emojiClass)
+  widgets[index].appendChild(sentimentDiv)
+  const legendEl = document.getElementsByName(emojiClass)
+  legendEl[0].classList.add('used')
 }
 function processEmotion(faces, index) {
   // for each face identified in the result
   for (i = 0; i < faces.length; i++) {
-    const maxEmotion = Object.entries(
-      faces[i].faceAttributes.emotion
-    ).reduce((memo, [key, value]) =>
-      memo[1] > value ? memo : [key, value]
-    );
-    let emojiClass = 'em-neutral_face';
+    const maxEmotion = Object.entries(faces[i].faceAttributes.emotion).reduce(
+      (memo, [key, value]) => (memo[1] > value ? memo : [key, value])
+    )
+    let emojiClass = 'em-neutral_face'
     switch (maxEmotion[0]) {
       case 'angry':
-        emojiClass = 'em-angry';
-        break;
+        emojiClass = 'em-angry'
+        break
       case 'contempt':
-        emojiClass = 'em-frowning';
-        break;
+        emojiClass = 'em-frowning'
+        break
       case 'disgust':
-        emojiClass = 'em-face_vomiting';
-        break;
+        emojiClass = 'em-face_vomiting'
+        break
       case 'fear':
-        emojiClass = 'em-fearful';
-        break;
+        emojiClass = 'em-fearful'
+        break
       case 'happiness':
-        emojiClass = 'em-grin';
-        break;
+        emojiClass = 'em-grin'
+        break
       case 'sadness':
-        emojiClass = 'em-cry';
-        break;
+        emojiClass = 'em-cry'
+        break
       case 'surprise':
-        emojiClass = 'em-astonished';
-        break;
+        emojiClass = 'em-astonished'
+        break
       default:
-        break;
+        break
     }
-    assignEmoji(emojiClass, index);
+    assignEmoji(emojiClass, index)
   }
 }
 // Gets a <video> element and draws it to a new
@@ -394,55 +403,59 @@ function processEmotion(faces, index) {
 function sendToAzure(video, index) {
   // Get the stream object associated with this
   // <video> element.
-  var stream = streams[index];
-  var canvas = document.createElement("canvas");
-  canvas.height = stream.videoDimensions.height;
-  canvas.width = stream.videoDimensions.width;
-  var ctx = canvas.getContext("2d");
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  var dataURL = canvas.toDataURL("image/jpeg", 0.8);
-  var blob = dataURItoBlob(dataURL);
-  var fd = new FormData(document.forms[0]);
-  fd.append("canvasImage", blob);
+  var stream = streams[index]
+  var canvas = document.createElement('canvas')
+  canvas.height = stream.videoDimensions.height
+  canvas.width = stream.videoDimensions.width
+  var ctx = canvas.getContext('2d')
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+  var dataURL = canvas.toDataURL('image/jpeg', 0.8)
+  var blob = dataURItoBlob(dataURL)
+  var fd = new FormData(document.forms[0])
+  fd.append('canvasImage', blob)
   // Perform the REST API call.
-  var uriBase = `${azure_face_api_endpoint}/face/v1.0/detect`;
+  var uriBase = `${azure_face_api_endpoint}/face/v1.0/detect`
   // Request parameters.
-  var params = 'returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=emotion';
-  const xhr = new XMLHttpRequest();
-  xhr.open('POST', `${uriBase}?${params}`);
-  xhr.responseType = 'json';
-  xhr.setRequestHeader('Content-Type', 'application/octet-stream');
-  xhr.setRequestHeader("Ocp-Apim-Subscription-Key", azure_face_api_subscription_key);
-  xhr.send(blob);
+  var params =
+    'returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=emotion'
+  const xhr = new XMLHttpRequest()
+  xhr.open('POST', `${uriBase}?${params}`)
+  xhr.responseType = 'json'
+  xhr.setRequestHeader('Content-Type', 'application/octet-stream')
+  xhr.setRequestHeader(
+    'Ocp-Apim-Subscription-Key',
+    azure_face_api_subscription_key
+  )
+  xhr.send(blob)
   xhr.onload = () => {
     if (xhr.status == 200) {
-      processEmotion(xhr.response, index);
+      processEmotion(xhr.response, index)
     } else {
-      var errorString = `(${xhr.status}) ${xhr.statusText}`;
-      alert(errorString);
+      var errorString = `(${xhr.status}) ${xhr.statusText}`
+      alert(errorString)
     }
   }
 }
 // Reset emojis and loop through all <video> elements and call
 // sendToAzure
 function processImages() {
-  emotions = [];
-  var sentiments = document.getElementsByClassName('sentiment');
-  var usedListItems = document.getElementsByClassName('used');
-  var videos = document.getElementsByTagName('video');
+  emotions = []
+  var sentiments = document.getElementsByClassName('sentiment')
+  var usedListItems = document.getElementsByClassName('used')
+  var videos = document.getElementsByTagName('video')
   // Remove any existing sentiment & emotion objects
   if (sentiments.length > 0) {
     for (s = 0; s < sentiments.length; s++) {
-      sentiments[s].remove();
+      sentiments[s].remove()
     }
   }
   if (usedListItems.length > 0) {
     for (l = 0; l < usedListItems.length; l++) {
-      usedListItems[l].classList.remove('used');
+      usedListItems[l].classList.remove('used')
     }
   }
-  for (v = 0; v < (videos.length - 1); v++) {
-    sendToAzure(videos[v], v);
+  for (v = 0; v < videos.length - 1; v++) {
+    sendToAzure(videos[v], v)
   }
 }
 ```

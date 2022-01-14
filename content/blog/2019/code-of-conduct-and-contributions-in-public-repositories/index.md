@@ -1,16 +1,17 @@
 ---
-date: 2019-05-20 
-title: "Using a CONTRIBUTING & CODE_OF_CONDUCT to assist others in contributing to public repositories"
+date: 2019-05-20
+title: 'Using a CONTRIBUTING & CODE_OF_CONDUCT to assist others in contributing to public repositories'
 cover: ./58047500-f400df80-7b0d-11e9-917c-b4b1cd4a8d2b_b3iim4.jpg
 banner_image_alt: Woman working on laptop leaned against a brick wall.
 description: Helping other contribute to public repositories on GitHub by providing contributing and code of conduct guidelines.
 tags: [github, contributions, code-of-conduct]
+summary: Want people to contribute to your repositories? Then you need to make sure they know they're welcome and provide them with a clear path to get started.
 ---
 
 It seems that lately I've been creating a new public repo every other day. A few
 have even received pull requests from other contributors. As that list of contributors
 began to grow I realized there were a few things that I, and probably other repository
-maintainers, want to provide.  So, as always, when I learn something new, I write a
+maintainers, want to provide. So, as always, when I learn something new, I write a
 blog post.
 
 My goal is to explain the benefits of acknowledging contributors and providing them
@@ -21,27 +22,27 @@ with contributing and code of conduct guidelines.
 ## Contributing Guidelines
 
 For the most part, contributors have seen my repositories on our [Twitch][twitch] stream
-and wanted to help.  The benefit to the stream is that viewers can see the process we use
+and wanted to help. The benefit to the stream is that viewers can see the process we use
 to submit pull requests, our branching strategies, etc. However, for those that want to
 join in on the fun later, it's likely that their pull requests will be directed to the
 wrong branch or perhaps for an issue that is already in progress by another contributor.
 
-To help, I went on a search for example `CONTRIBUTING.md` files across GitHub.  There
+To help, I went on a search for example `CONTRIBUTING.md` files across GitHub. There
 were several great examples. A few are:
 
-* [PurpleBooth](https://gist.github.com/PurpleBooth/b24679402957c63ec426)
-* [Puppet](https://github.com/puppetlabs/puppet/blob/master/CONTRIBUTING.md)
-* [Factory Bot Rails](https://github.com/thoughtbot/factory_bot_rails/blob/master/CONTRIBUTING.md)
+- [PurpleBooth](https://gist.github.com/PurpleBooth/b24679402957c63ec426)
+- [Puppet](https://github.com/puppetlabs/puppet/blob/master/CONTRIBUTING.md)
+- [Factory Bot Rails](https://github.com/thoughtbot/factory_bot_rails/blob/master/CONTRIBUTING.md)
 
 I modified thoughtbot's Factory Bot Rails version to meet my needs and added it to all my
-active public repositories.  You can see an example in our
+active public repositories. You can see an example in our
 [Aviary](https://github.com/MichaelJolley/aviary/blob/master/CONTRIBUTING.md) repo.
 
 At a minimum, your CONTRIBUTING.md should include details about:
 
-* What type of contributions are permitted? (documentation/code/ideas/tests/examples/etc.)
-* Instructions for adding issues
-* Instructions for forking & submitting pull requests
+- What type of contributions are permitted? (documentation/code/ideas/tests/examples/etc.)
+- Instructions for adding issues
+- Instructions for forking & submitting pull requests
 
 This basic information gives potential contributors a little more confidence about
 submitting that pull request by alleviating the fear they'll be blasted for using the
@@ -78,12 +79,12 @@ An example from our VS Code extension is:
   alt="Example of the bottom of our README's with contributors."
  src="./58047645-3cb89880-7b0e-11e9-8270-7fd116460102_ve78fr.jpg"></v-image>
 
-Not all contributions are code.  Using All Contributors, I can recognize contributors for everything from ideas, questions, documentation, tests, examples and more.  A full listing of options is available on their [emoji key](https://allcontributors.org/docs/en/emoji-key).
+Not all contributions are code. Using All Contributors, I can recognize contributors for everything from ideas, questions, documentation, tests, examples and more. A full listing of options is available on their [emoji key](https://allcontributors.org/docs/en/emoji-key).
 
 It's a fun way to give credit where it's due and encourage others to participate.
 
 ## Wrap it up Mike
 
-That's my TED Talk for today.  Do you have ideas on how to help new contributors join in? Let me hear them!
+That's my TED Talk for today. Do you have ideas on how to help new contributors join in? Let me hear them!
 
 [twitch]: https://twitch.tv/BaldBeardedBuilder

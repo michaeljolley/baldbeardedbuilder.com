@@ -21,6 +21,7 @@ export default {
           'date',
           'banner_image_alt',
           'readingTime',
+          'summary',
           'slug',
           'dir',
         ])

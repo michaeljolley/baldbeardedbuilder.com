@@ -1,10 +1,11 @@
 ---
-date: 2019-12-02 
-title: "Using Azure File Storage as Container Volume Mounts in App Services"
+date: 2019-12-02
+title: 'Using Azure File Storage as Container Volume Mounts in App Services'
 cover: ./69994336-4be3be80-1513-11ea-92a1-381658ceef5f_grxpqn.jpg
 banner_image_alt: Azure App Service, Docker and Azure Storage logos on an Azure portal background
 description: How to mount Azure File Storage as a persistent volume in your multi-container App Services.
 tags: [azure, app-service, docker, volume, storage, container]
+summary: Need to scale your app? Put it in a container. Need more resiliency? Put it in a container. Code starting to smell? Put it in a container. Want some lunch? Put it in a container.
 ---
 
 Need to scale your app? Put it in a container. Need more resiliency? Put it in a container. Code starting to smell? Put it in a container. Want some lunch? Put it in a container.
@@ -70,9 +71,9 @@ services:
         container_name: web-wordpress
         init: true
         restart: always
-        ports: 
+        ports:
             - "80:80"
-        volumes: 
+        volumes:
             - data:/var/www/html
 
 ```
@@ -81,4 +82,4 @@ services:
 
 Azure has made this a fairly straight-forward process, but finding this information was extremely painful. No Google-Fu produced the answers so I knew I needed to write this down to remember it next time.
 
-Have some feedback or questions? Leave a comment or find me on Twitch several days a week at https://twitch.tv/BaldBeardedBuilder.
+Have some feedback or questions? Leave a comment or find me on Twitch several days a week at <https://twitch.tv/BaldBeardedBuilder>.

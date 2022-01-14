@@ -1,10 +1,11 @@
 ---
-date: 2019-12-29 
-title: "Cheers to 2019! Bring on 2020!"
+date: 2019-12-29
+title: 'Cheers to 2019! Bring on 2020!'
 cover: ./Artboard_2_k3mgba.png
 banner_image_alt: Fireworks with Michael's avatar wearing a new years hat.
 description: Reviewing the goals I had for 2019 and how many I accomplished. Then start setting goals for 2020.
 tags: [review]
+summary: Thanks for the memories 2019. You were a good one. 2019 wasn't without some struggles, but there were several huge wins that I'll never forget.
 ---
 
 Thanks for the memories 2019. You were a good one.
@@ -104,7 +105,7 @@ there and hit the subscribe button so you know when the floodgates open.
 
 **Goal:** Generate at least 2 original videos for [YouTube] each month, but the stretch goal will be to have something up weekly.
 
-#### Bloggers?! We don't need no stinking bloggers!
+#### Bloggers?! We don't need no stinking bloggers
 
 I hit my goal of one post a month in 2019, but I'm finally ready to step it up. As part of my job, I'll be generating one or two posts a month, but for the purposes of these goals, I only want to include posts hosted here.
 

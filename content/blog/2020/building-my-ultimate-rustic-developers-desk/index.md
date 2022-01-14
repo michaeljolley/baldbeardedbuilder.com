@@ -1,11 +1,12 @@
 ---
 date: 2020-08-03
-title: "Building my Ultimate Rustic Developers Desk"
+title: 'Building my Ultimate Rustic Developers Desk'
 cover: ./cover-image.png
 slug: building-my-ultimate-rustic-developers-desk
 banner_image_alt: Partially visible view of the newly built desk
 description: Since I started woodworking, I've had the goal of building my own desk, complete with a wireless charger and built-in USB hub.
 tags: [diy, desk, setup, woodworking]
+summary: Since I've started doing woodworking, I've always wanted to build a desk that fits me. So welcome to my journey to build my ultimate developer desk.
 ---
 
 In 20 years of being a developer, I've used lots of various desk types: sitting; stand only; sit/stand; metal; wood. Each had its' pros & cons. But since I've started doing woodworking, I've always wanted to build a desk that fits me. So welcome to my journey to build my ultimate developer desk. This is the first time I've written a post over a period of days & weeks so hopefully it's all coherent at the end.

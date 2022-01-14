@@ -1,11 +1,12 @@
 ---
 date: 2020-03-12
-title: "Using Apollo to Query GraphQL from Node.js"
+title: 'Using Apollo to Query GraphQL from Node.js'
 cover: ./cover-image.png
 banner_image_alt: Using Apollo to Query GraphQL from Node.js
 description: In this tutorial, we will use the apollo-client NPM package within Node.js to query and mutate third-party GraphQL endpoints.
 tags: [apollo, nodejs, graphql, opentok, vonage-video-api]
-canonical_url: "https://www.nexmo.com/blog/2020/03/12/using-apollo-to-query-graphql-from-node-js-dr"
+canonical_url: 'https://www.nexmo.com/blog/2020/03/12/using-apollo-to-query-graphql-from-node-js-dr'
+summary: It's a common scenario—you built a quick prototype, it worked great, and now management wants it live yesterday. GraphQL can help get it out the door.
 ---
 
 It's a common scenario—you built a quick prototype, it worked great, and now management wants it live yesterday. Maybe you were accessing a third-party GraphQL endpoint and now you're in a rush to get something out the door. One of your roadblocks? That endpoint doesn't provide CORS headers. No more calling it directly from your frontend JavaScript app.
@@ -35,22 +36,22 @@ Create a new file named `apollo.js`. This file contains the real "meat" of our s
 Let's start by copying the following snippet into that file.
 
 ```js
-const gql = require("graphql-tag");
-const ApolloClient = require("apollo-client").ApolloClient;
-const fetch = require("node-fetch");
-const createHttpLink = require("apollo-link-http").createHttpLink;
-const setContext = require("apollo-link-context").setContext;
-const InMemoryCache = require("apollo-cache-inmemory").InMemoryCache;
+const gql = require('graphql-tag')
+const ApolloClient = require('apollo-client').ApolloClient
+const fetch = require('node-fetch')
+const createHttpLink = require('apollo-link-http').createHttpLink
+const setContext = require('apollo-link-context').setContext
+const InMemoryCache = require('apollo-cache-inmemory').InMemoryCache
 
 const httpLink = createHttpLink({
-  uri: "https://insights.opentok.com/graphql",
-  fetch: fetch
-});
+  uri: 'https://insights.opentok.com/graphql',
+  fetch: fetch,
+})
 
 const client = new ApolloClient({
   link: httpLink,
-  cache: new InMemoryCache()
-});
+  cache: new InMemoryCache(),
+})
 ```
 
 The `client` object is an Apollo client. Because we're running this code on the server-side, `fetch` isn't available to us. So we'll start by creating an `HttpLink` manually so we can inject `node-fetch` in place of the built-in browser fetch.
@@ -60,54 +61,53 @@ For our purposes, we'll use the `InMemoryCache` object to handle caching data, b
 Next, copy the snippet below into the `apollo.js` file.
 
 ```js
-
 const query = async (req, res) => {
   if (!req.body || !req.body.query) {
-    res.sendStatus(500);
-    return;
+    res.sendStatus(500)
+    return
   }
 
-  const query = gql(req.body.query);
-  let variables = undefined;
+  const query = gql(req.body.query)
+  let variables = undefined
   if (req.body.variables) {
-    variables = JSON.parse(decodeURIComponent(req.body.variables));
+    variables = JSON.parse(decodeURIComponent(req.body.variables))
   }
 
   try {
     const result = await client.query({
       query,
-      variables
-    });
-    res.json(result);
+      variables,
+    })
+    res.json(result)
   } catch (err) {
-    console.log(err);
-    res.sendStatus(500).send(JSON.stringify(err));
+    console.log(err)
+    res.sendStatus(500).send(JSON.stringify(err))
   }
-};
+}
 
 const mutate = async (req, res) => {
   if (!req.body || !req.body.query) {
-    res.sendStatus(500);
-    return;
+    res.sendStatus(500)
+    return
   }
 
-  const query = gql(req.body.query);
-  let variables = undefined;
+  const query = gql(req.body.query)
+  let variables = undefined
   if (req.body.variables) {
-    variables = JSON.parse(decodeURIComponent(req.body.variables));
+    variables = JSON.parse(decodeURIComponent(req.body.variables))
   }
 
   try {
     const result = await client.mutate({
       query,
-      variables
-    });
-    res.json(result);
+      variables,
+    })
+    res.json(result)
   } catch (err) {
-    console.log(err);
-    res.sendStatus(500).send(JSON.stringify(err));
+    console.log(err)
+    res.sendStatus(500).send(JSON.stringify(err))
   }
-};
+}
 ```
 
 These functions (query and mutate) take a request, pull query/mutate and variable information from the body, and then forward those parameters using the `client` object.
@@ -115,23 +115,22 @@ These functions (query and mutate) take a request, pull query/mutate and variabl
 Finally, we create an `apollo` method and export it so we can use it in the Express workflow later. This function inspects the incoming request and forwards it to the appropriate (mutate or query) function.
 
 ```js
-
 const apollo = async (req, res, next) => {
   switch (req.method) {
-    case "POST":
-    case "PUT":
-      await mutate(req, res);
-      break;
+    case 'POST':
+    case 'PUT':
+      await mutate(req, res)
+      break
 
-    case "GET":
+    case 'GET':
     default:
-      await query(req, res);
+      await query(req, res)
   }
 
-  next();
-};
+  next()
+}
 
-module.exports = apollo;
+module.exports = apollo
 ```
 
 ## Take the Express Lane
@@ -179,10 +178,10 @@ Create a new file called `config.js` and paste the code below in it. Be sure to 
 
 ```js
 // Replace these values with those generated in your TokBox Account
-const OPENTOK_API_KEY = "";
-const OPENTOK_API_SECRET = "";
+const OPENTOK_API_KEY = ''
+const OPENTOK_API_SECRET = ''
 
-module.exports = { OPENTOK_API_KEY, OPENTOK_API_SECRET };
+module.exports = { OPENTOK_API_KEY, OPENTOK_API_SECRET }
 ```
 
 ## Generating Custom Headers
@@ -196,27 +195,27 @@ npm install --save jsonwebtoken
 Next, create a new file called `auth.js` and paste the following:
 
 ```js
-const JWT = require("jsonwebtoken");
-const SECRETS = require("./config");
+const JWT = require('jsonwebtoken')
+const SECRETS = require('./config')
 
-var now = Math.round(new Date().getTime() / 1000);
-var later = now + 120;
+var now = Math.round(new Date().getTime() / 1000)
+var later = now + 120
 const payload = {
   iss: SECRETS.OPENTOK_API_KEY,
-  ist: "project",
+  ist: 'project',
   iat: now,
-  exp: later
-};
+  exp: later,
+}
 
 const getHeaders = () => {
-  const token = JWT.sign(payload, SECRETS.OPENTOK_API_SECRET);
+  const token = JWT.sign(payload, SECRETS.OPENTOK_API_SECRET)
   const headers = {
-    "X-OPENTOK-AUTH": token
-  };
-  return headers;
-};
+    'X-OPENTOK-AUTH': token,
+  }
+  return headers
+}
 
-module.exports = getHeaders;
+module.exports = getHeaders
 ```
 
 This code exports a method that will create our custom headers object with the necessary `X-OPENTOK-AUTH` parameter and attached JWT token.
@@ -226,15 +225,15 @@ This code exports a method that will create our custom headers object with the n
 Now that we can generate headers appropriately, we'll need to update our `apollo.js` code to use them. Open the `apollo.js` file and add the following snippet:
 
 ```js
-const getHeaders = require("./auth");
+const getHeaders = require('./auth')
 
 const authLink = setContext((_, { headers }) => {
-  const authHeaders = getHeaders();
+  const authHeaders = getHeaders()
   // return the headers to the context so httpLink can read them
   return {
-    headers: authHeaders
-  };
-});
+    headers: authHeaders,
+  }
+})
 ```
 
 Next, replace the constructor for the `client` constant with the following:
@@ -242,8 +241,8 @@ Next, replace the constructor for the `client` constant with the following:
 ```js
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache()
-});
+  cache: new InMemoryCache(),
+})
 ```
 
 ## Let's Run a Query

@@ -27,7 +27,7 @@
           <li>
             <a
               class="github"
-              href="https://github.com/michaeljolley/michaeljolley.com"
+              href="https://github.com/michaeljolley/baldbeardedbuilder.com"
               title="Crafted with love on GitHub"
               >Crafted with <IconHeart
             /></a>

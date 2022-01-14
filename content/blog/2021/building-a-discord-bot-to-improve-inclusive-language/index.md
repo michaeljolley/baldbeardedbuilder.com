@@ -7,6 +7,7 @@ slug: building-a-discord-bot-to-improve-inclusive-language
 banner_image_alt: Discord channel where the GuyBot has responded to a non-inclusive message.
 description: Helping Discord members use more inclusive language by building a bot using JavaScript & Fauna and hosted by Azure in a Docker container.
 tags: [discord, inclusion, fauna, azure]
+summary: Building a Discord bot sounds like a fun and I couldn't think of a better first project than trying to make it a safer space for everyone.
 ---
 
 Growing up in the Southeast US, the word "guys" was used to denote everyone.
@@ -271,42 +272,42 @@ notified the user of an opportunity to use more inclusive language.
 
 ```typescript
 async function handleViolation(message: Message): Promise<void> {
-	const discordServer = message.guild
-		? `the ${message.guild.name} Discord server`
-		: 'this Discord'
-	const messageBody = `Please bear in mind that the makeup of ${discordServer} is very diverse, and some people feel excluded by the use of the term “guys”. Maybe you could try using _people_, _team_, _all_, _folks_, _everyone_, or _yall_? Thanks for helping us make sure everyone feels welcome here.`
+  const discordServer = message.guild
+    ? `the ${message.guild.name} Discord server`
+    : 'this Discord'
+  const messageBody = `Please bear in mind that the makeup of ${discordServer} is very diverse, and some people feel excluded by the use of the term “guys”. Maybe you could try using _people_, _team_, _all_, _folks_, _everyone_, or _yall_? Thanks for helping us make sure everyone feels welcome here.`
 
-	let previousNotices = await FaunaClient.getNoticesByUser(
-		message.author.id,
-		message.guild?.id || ''
-	)
+  let previousNotices = await FaunaClient.getNoticesByUser(
+    message.author.id,
+    message.guild?.id || ''
+  )
 
-	await message.react('guybot:879023217149358121')
+  await message.react('guybot:879023217149358121')
 
-	// Show a little grace. If the person hasn't said guy in
-	// over a month, give them a little slack.
-	if (previousNotices) {
-		const lastMonth = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 1)
-		previousNotices = previousNotices.filter(
-			(f) => f.createdAt >= lastMonth.getDate()
-		)
-	}
+  // Show a little grace. If the person hasn't said guy in
+  // over a month, give them a little slack.
+  if (previousNotices) {
+    const lastMonth = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30 * 1)
+    previousNotices = previousNotices.filter(
+      (f) => f.createdAt >= lastMonth.getDate()
+    )
+  }
 
-	// If a repeat offender, put them on blast in the channel
-	if (previousNotices && previousNotices.length > 0) {
-		await message.reply(messageBody)
-	}
-	// Send a DM to discreetly let them know about the servers expectations
-	else {
-		const dmChannel = await message.author.createDM()
-		dmChannel.send(messageBody)
-	}
+  // If a repeat offender, put them on blast in the channel
+  if (previousNotices && previousNotices.length > 0) {
+    await message.reply(messageBody)
+  }
+  // Send a DM to discreetly let them know about the servers expectations
+  else {
+    const dmChannel = await message.author.createDM()
+    dmChannel.send(messageBody)
+  }
 
-	await FaunaClient.saveNotice({
-		user: message.author.id,
-		createdAt: Date.now(),
-		guild: message.guild?.id || '',
-	})
+  await FaunaClient.saveNotice({
+    user: message.author.id,
+    createdAt: Date.now(),
+    guild: message.guild?.id || '',
+  })
 }
 ```
 
@@ -319,31 +320,31 @@ whether to call the `handleViolation` function.
 
 ```typescript
 export async function run(): Promise<void> {
-	try {
-		const client = new Client({ partials: ['USER', 'REACTION', 'MESSAGE'] })
-		FaunaClient.init()
+  try {
+    const client = new Client({ partials: ['USER', 'REACTION', 'MESSAGE'] })
+    FaunaClient.init()
 
-		client.once('ready', () => {
-			if (client.user) {
-				console.log(`Logged in as ${client.user.tag}!`)
-			}
-		})
+    client.once('ready', () => {
+      if (client.user) {
+        console.log(`Logged in as ${client.user.tag}!`)
+      }
+    })
 
-		client.on('message', async (message: Message) => {
-			const firstWords = message.cleanContent
-				.toLocaleLowerCase()
-				.split(' ')
-				.slice(0, 9)
+    client.on('message', async (message: Message) => {
+      const firstWords = message.cleanContent
+        .toLocaleLowerCase()
+        .split(' ')
+        .slice(0, 9)
 
-			if (firstWords.find((f) => f.includes('guys'))) {
-				await handleViolation(message)
-			}
-		})
+      if (firstWords.find((f) => f.includes('guys'))) {
+        await handleViolation(message)
+      }
+    })
 
-		await client.login(process.env.DISCORD_TOKEN)
-	} catch (error) {
-		console.log(error)
-	}
+    await client.login(process.env.DISCORD_TOKEN)
+  } catch (error) {
+    console.log(error)
+  }
 }
 ```
 
@@ -372,7 +373,7 @@ run()
 app.use(Express.static('public'))
 
 app.listen(port, () => {
-	console.log(`Example app listening on port: ${port}`)
+  console.log(`Example app listening on port: ${port}`)
 })
 ```
 
