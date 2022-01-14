@@ -41,8 +41,8 @@ Even though it's been around for over a year, Remote - Containers is another
 extension that seems stuck in that "Preview" state. It allows you to use a
 Docker container as a full-featured development environment. Once your repository
 has it configured, developers won't need to install 3rd-party SDKs or CLIs
-locally to work with your codebase. I've given talks about
-[developing inside containers](/talks/vscode-remote/) and recently released an
+locally to work with your codebase. I've given talks about developing inside
+containers and recently released an
 [Extension Highlight](https://youtu.be/Yo4wKXlnLMc) video on YouTube you can
 check out to learn more.
 

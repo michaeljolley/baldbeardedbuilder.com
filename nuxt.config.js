@@ -109,23 +109,7 @@ export default {
       const directories = document.dir.split('/').filter((f) => f.length > 0)
       const slug = directories[directories.length - 1]
 
-      if (directories.includes('comments')) {
-        // process comments
-        document.dir = '/comments'
-        document.postslug = slug
-      } else if (
-        directories.includes('blog') ||
-        directories.includes('talks') ||
-        directories.includes('events')
-      ) {
-        let type
-        if (directories.includes('blog')) {
-          type = 'blog'
-        } else if (directories.includes('talks')) {
-          type = 'talks'
-        } else {
-          type = 'events'
-        }
+      if (directories.includes('blog')) {
 
         // Copy images to assets directory for optimization
         // and update the img tags with the new paths
@@ -134,8 +118,8 @@ export default {
         // for blog posts, update the slug to be based off the
         // last directory in the path
         document.slug = slug
-        document.path = `/${type}/${slug}`
-        document.dir = `/${type}`
+        document.path = `/blog/${slug}`
+        document.dir = `/blog`
 
         // calculate and add reading time to document
         if (document.text) {
@@ -143,5 +127,5 @@ export default {
         }
       }
     },
-  },
+  }
 }

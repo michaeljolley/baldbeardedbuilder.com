@@ -14,14 +14,6 @@
 <script>
 import Vue from 'vue'
 export default {
-  asyncData({ $content, params, error, payload }) {
-    if (payload) {
-      return {
-        posts: payload.posts,
-        page: 1,
-      }
-    }
-  },
   data() {
     return {
       posts: [],

@@ -17,15 +17,17 @@ const isProduction = () => {
 }
 
 function defaultDarkMode() {
-  if (window.localStorage.getItem('darkMode')) {
-    return window.localStorage.getItem('darkMode') === 'true'
-  }
+  if (process.client) {
+    if (window.localStorage.getItem('darkMode')) {
+      return window.localStorage.getItem('darkMode') === 'true'
+    }
 
-  if (
-    window.matchMedia &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-  ) {
-    return true
+    if (
+      window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+    ) {
+      return true
+    }
   }
   return false
 }

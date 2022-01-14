@@ -15,7 +15,7 @@
     <main>
       <aside>
         <TableOfContents
-          v-if="post.toc.length > 0"
+          v-if="post.toc && post.toc.length > 0"
           :toc="post.toc"
           :levels="post.toc.length > 10 ? [2] : [2, 3]"
         />
@@ -34,12 +34,8 @@
 import config from '@/modules/config'
 export default {
   async asyncData({ $content, params, error, payload }) {
-    if (payload) {
-      return { post: payload }
-    } else {
-      const post = await $content('blog', params.slug).fetch()
-      return { post }
-    }
+    const post = await $content('blog', params.slug).fetch()
+    return { post }
   },
   head() {
     const link = this.post.canonical_url

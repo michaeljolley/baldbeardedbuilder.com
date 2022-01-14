@@ -21,6 +21,7 @@
     "core-js": "^3.15.1",
     "lokka": "^1.7.0",
     "lokka-transport-http": "^1.6.1",
+    "netlify-cli": "^8.8.1",
     "nuxt": "^2.15.7",
     "prism-themes": "^1.9.0",
     "vue-social-sharing": "^3.0.8"
