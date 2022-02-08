@@ -166,15 +166,21 @@ article {
     @apply items-start;
 
     aside {
-      @apply flex-col;
-      @apply w-1/12;
+      @apply hidden lg:flex flex-col;
       @apply z-0;
       @apply sticky;
       top: 105px;
-      @apply flex;
       @apply lg:w-1/5;
 
       @apply text-darkPurple dark:text-gray-100;
+    }
+
+    .content {
+      @apply mx-auto;
+      @screen lg {
+        margin-left: unset;
+        margin-right: unset;
+      }
     }
   }
 }

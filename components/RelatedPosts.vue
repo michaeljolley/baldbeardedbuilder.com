@@ -39,6 +39,7 @@ export default {
           'readingTime',
           'slug',
           'dir',
+          'summary',
         ])
         .where({
           $and: [
@@ -61,6 +62,7 @@ export default {
             'readingTime',
             'slug',
             'dir',
+            'summary',
           ])
           .where({
             $and: [
@@ -69,7 +71,7 @@ export default {
                   $nin: [this.slug, ...this.relatedPosts.map((t) => t.slug)],
                 },
               },
-              { category: { $in: this.tags.flat() } },
+              { tags: { $containsAny: this.tags } },
               { date: { $lt: Date.now() } },
             ],
           })

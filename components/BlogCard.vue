@@ -41,6 +41,7 @@ a {
 
     h3 {
       @apply text-xl font-bold;
+      @apply text-darkPurple dark:text-white;
     }
 
     p {

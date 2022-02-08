@@ -1,8 +1,34 @@
 <template>
   <section>
-    <div class="intro"></div>
+    <div class="intro" :class="{ twitch: isOnline }">
+      <iframe
+        v-if="isOnline"
+        :src="video"
+        scrolling="no"
+        allow="autoplay"
+        allowfullscreen="false"
+      >
+      </iframe>
+    </div>
   </section>
 </template>
+<script>
+export default {
+  data() {
+    return {
+      isOnline: false,
+      video: `https://player.twitch.tv/?channel=baldbeardedbuilder&parent=localhost&autoplay=true`,
+    }
+  },
+  async created() {
+    const response = await fetch(
+      `http://localhost:8888/.netlify/functions/twitch`
+    )
+    const { isOnline } = await response.json()
+    this.isOnline = isOnline
+  },
+}
+</script>
 <style lang="scss" scoped>
 section {
   @apply flex justify-center;
@@ -17,14 +43,34 @@ section {
     @apply w-5/6;
     @apply bg-contain bg-no-repeat;
     @apply bg-center;
+    @apply flex justify-center items-center;
 
     background-image: url('/images/intro-light.svg');
+
+    &.twitch {
+      @apply w-full;
+      background-image: unset;
+
+      iframe {
+        @apply w-full;
+        @apply h-3/4;
+
+        @screen md {
+          width: unset;
+          aspect-ratio: 16/9;
+        }
+      }
+    }
   }
 }
 .dark {
   section {
     .intro {
       background-image: url('/images/intro-dark.svg');
+
+      &.twitch {
+        background-image: unset;
+      }
     }
   }
 }
