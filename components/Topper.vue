@@ -17,12 +17,12 @@ export default {
   data() {
     return {
       isOnline: false,
-      video: `https://player.twitch.tv/?channel=baldbeardedbuilder&parent=localhost&autoplay=true`,
+      video: `https://player.twitch.tv/?channel=baldbeardedbuilder&parent=baldbeardedbuilder.com&autoplay=true`,
     }
   },
   async created() {
     const response = await fetch(
-      `http://localhost:8888/.netlify/functions/twitch`
+      `http://baldbeardedbuilder.com/.netlify/functions/twitch`
     )
     const { isOnline } = await response.json()
     this.isOnline = isOnline
