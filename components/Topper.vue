@@ -22,7 +22,7 @@ export default {
   },
   async created() {
     const response = await fetch(
-      `http://baldbeardedbuilder.com/.netlify/functions/twitch`
+      `https://baldbeardedbuilder.com/.netlify/functions/twitch`
     )
     const { isOnline } = await response.json()
     this.isOnline = isOnline

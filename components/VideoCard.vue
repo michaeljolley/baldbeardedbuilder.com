@@ -6,7 +6,6 @@
       :title="video.title"
       fetch-format="auto"
       quality="auto"
-      loading="lazy"
       responsive
       type="youtube"
     >
