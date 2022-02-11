@@ -446,7 +446,7 @@
   </article>
 </template>
 <script>
-import config from '@/modules/config'
+import generateOgraph from '@/middleware/generateOgraph'
 export default {
   data() {
     return {
@@ -521,98 +521,61 @@ export default {
     }
   },
   head() {
+    const metaTitle = `Hardware & Software I Use`
+    const metaDescription =
+      'What gear & software am I currently use to work and generate content?'
+    const metaOgraph = generateOgraph(
+      'Current Hardware & Software\nMichael is Using',
+      ['gear', 'what-i-use']
+    )
+    const metaUrl = 'https://baldbeardedbuilder.com/uses/'
+    const meta = [
+      { hid: 'og:url', property: 'og:url', content: metaUrl },
+      { hid: 'twitter:url', name: 'twitter:url', content: metaUrl },
+      {
+        hid: 'twitter:title',
+        name: 'twitter:title',
+        content: metaTitle,
+      },
+      {
+        hid: 'twitter:description',
+        name: 'twitter:description',
+        content: metaDescription,
+      },
+      {
+        hid: 'twitter:image',
+        name: 'twitter:image',
+        content: metaOgraph,
+      },
+      {
+        hid: 'twitter:image:alt',
+        name: 'twitter:image:alt',
+        content: metaTitle,
+      },
+      {
+        hid: 'og:title',
+        property: 'og:title',
+        content: metaTitle,
+      },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: metaDescription,
+      },
+      {
+        hid: 'og:image',
+        property: 'og:image',
+        content: metaOgraph,
+      },
+      {
+        hid: 'og:image:alt',
+        name: 'og:image:alt',
+        content: metaTitle,
+      },
+    ]
     return {
-      title: `Current Setup & Gear`,
-      meta: [
-        {
-          hid: 'description',
-          name: 'description',
-          content: 'My current setup & gear used everyday.',
-        },
-        {
-          hid: 'twitter:url',
-          name: 'twitter:url',
-          content: `${config.baseUrl}/uses/`,
-        },
-        {
-          hid: 'twitter:title',
-          name: 'twitter:title',
-          content: 'Current Setup & Gear',
-        },
-        {
-          hid: 'twitter:description',
-          name: 'twitter:description',
-          content: 'My current setup & gear used everyday.',
-        },
-        {
-          hid: 'twitter:image',
-          name: 'twitter:image',
-          content:
-            'https://res.cloudinary.com/dk3rdh3yo/image/upload/w_1200,f_auto,c_scale,dpr_1.0/v1608433938/ograph-gear_dyocrb.png',
-        },
-        {
-          hid: 'twitter:image:width',
-          name: 'twitter:image:width',
-          content: '1200',
-        },
-        {
-          hid: 'twitter:image:height',
-          name: 'twitter:image:height',
-          content: '600',
-        },
-        {
-          hid: 'twitter:image:alt',
-          name: 'twitter:image:alt',
-          content: 'Current Setup & Gear',
-        },
-        {
-          hid: 'og:url',
-          property: 'og:url',
-          content: `${config.baseUrl}/uses/`,
-        },
-        {
-          hid: 'og:title',
-          property: 'og:title',
-          content: 'Current Setup & Gear',
-        },
-        {
-          hid: 'og:description',
-          property: 'og:description',
-          content: 'My current setup & gear used everyday.',
-        },
-        {
-          hid: 'og:image',
-          property: 'og:image',
-          content:
-            'https://res.cloudinary.com/dk3rdh3yo/image/upload/w_1200,f_auto,c_scale,dpr_1.0/v1608433938/ograph-gear_dyocrb.png',
-        },
-        {
-          hid: 'og:image:width',
-          name: 'og:image:width',
-          content: '1200',
-        },
-        {
-          hid: 'og:image:height',
-          name: 'og:image:height',
-          content: '600',
-        },
-        {
-          hid: 'og:image:alt',
-          name: 'og:image:alt',
-          content: `Current Setup & Gear`,
-        },
-        {
-          hid: 'og:updated_time',
-          property: 'og:updated_time',
-          content: '2020/12/20',
-        },
-        {
-          hid: 'og:site_name',
-          property: 'og:site_name',
-          content: 'Current Setup & Gear',
-        },
-        { hid: 'og:type', property: 'og:type', content: 'website' },
-      ],
+      title: metaTitle,
+      meta,
     }
   },
 }

@@ -29,7 +29,63 @@
   </article>
 </template>
 <script>
-export default {}
+import generateOgraph from '@/middleware/generateOgraph'
+export default {
+  head() {
+    const metaTitle = `Thanks for Your Report`
+    const metaDescription = 'Thanks for submitting a Code of Conduct violation.'
+    const metaOgraph = generateOgraph('Code of Conduct Violation Submission')
+    const metaUrl = 'https://baldbeardedbuilder.com/thanks/'
+    const meta = [
+      { hid: 'og:url', property: 'og:url', content: metaUrl },
+      { hid: 'twitter:url', name: 'twitter:url', content: metaUrl },
+      {
+        hid: 'twitter:title',
+        name: 'twitter:title',
+        content: metaTitle,
+      },
+      {
+        hid: 'twitter:description',
+        name: 'twitter:description',
+        content: metaDescription,
+      },
+      {
+        hid: 'twitter:image',
+        name: 'twitter:image',
+        content: metaOgraph,
+      },
+      {
+        hid: 'twitter:image:alt',
+        name: 'twitter:image:alt',
+        content: metaTitle,
+      },
+      {
+        hid: 'og:title',
+        property: 'og:title',
+        content: metaTitle,
+      },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: metaDescription,
+      },
+      {
+        hid: 'og:image',
+        property: 'og:image',
+        content: metaOgraph,
+      },
+      {
+        hid: 'og:image:alt',
+        name: 'og:image:alt',
+        content: metaTitle,
+      },
+    ]
+    return {
+      title: metaTitle,
+      meta,
+    }
+  },
+}
 </script>
 <style lang="scss" scoped>
 article {

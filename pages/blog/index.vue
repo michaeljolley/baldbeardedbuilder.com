@@ -13,6 +13,7 @@
 </template>
 <script>
 import Vue from 'vue'
+import generateOgraph from '@/middleware/generateOgraph'
 export default {
   data() {
     return {
@@ -21,6 +22,61 @@ export default {
       page: 0,
       pageSize: 12,
       isLoading: false,
+    }
+  },
+  head() {
+    const metaTitle = `All Bald Bearded Builder Blog Posts`
+    const metaDescription =
+      'All blog posts written by Michael Jolley, the bald, bearded, builder.'
+    const metaOgraph = generateOgraph('All Bald Bearded Builder Blog Posts')
+    const metaUrl = 'https://baldbeardedbuilder.com/blog/'
+    const meta = [
+      { hid: 'og:url', property: 'og:url', content: metaUrl },
+      { hid: 'twitter:url', name: 'twitter:url', content: metaUrl },
+      {
+        hid: 'twitter:title',
+        name: 'twitter:title',
+        content: metaTitle,
+      },
+      {
+        hid: 'twitter:description',
+        name: 'twitter:description',
+        content: metaDescription,
+      },
+      {
+        hid: 'twitter:image',
+        name: 'twitter:image',
+        content: metaOgraph,
+      },
+      {
+        hid: 'twitter:image:alt',
+        name: 'twitter:image:alt',
+        content: metaTitle,
+      },
+      {
+        hid: 'og:title',
+        property: 'og:title',
+        content: metaTitle,
+      },
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: metaDescription,
+      },
+      {
+        hid: 'og:image',
+        property: 'og:image',
+        content: metaOgraph,
+      },
+      {
+        hid: 'og:image:alt',
+        name: 'og:image:alt',
+        content: metaTitle,
+      },
+    ]
+    return {
+      title: metaTitle,
+      meta,
     }
   },
   mounted() {
