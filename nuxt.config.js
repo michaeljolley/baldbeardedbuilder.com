@@ -95,7 +95,11 @@ export default {
     '/api': `${config.functionsUrl}/.netlify/functions`,
   },
 
-  plugins: ['~/plugins/scroll.client.js', '~/plugins/formatDate.js'],
+  plugins: [
+    '~/plugins/scroll.client.js',
+    '~/plugins/formatDate.js',
+    { src: '~/plugins/vuex-persist', ssr: false }
+  ],
 
   build: {},
 

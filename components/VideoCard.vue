@@ -9,6 +9,7 @@
       responsive
       type="youtube"
     >
+      <cld-placeholder type="pixelate" />
     </cld-image>
     <main>
       <h3>{{ video.title.replace(' | Extension Highlight', '') }}</h3>

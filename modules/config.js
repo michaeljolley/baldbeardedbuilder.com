@@ -1,5 +1,7 @@
 require('dotenv').config()
 
+const generateOgraph = require('../middleware/generateOgraph').default
+
 const config = {
   builtAt: new Date().toISOString(),
   baseUrl: 'https://baldbeardedbuilder.com',
@@ -75,7 +77,7 @@ const config = {
       {
         hid: 'twitter:image',
         name: 'twitter:image',
-        content: `${this.baseUrl}/images/Vonage-learn.png`,
+        content: generateOgraph('Building Better Builders\nwith Michael Jolley'),
       },
       {
         hid: 'twitter:image:width',
@@ -106,7 +108,7 @@ const config = {
       {
         hid: 'og:image',
         property: 'og:image',
-        content: `${this.baseUrl}/images/Vonage-learn.png`,
+        content: generateOgraph('Building Better Builders\nwith Michael Jolley'),
       },
       {
         hid: 'og:image:width',
@@ -155,10 +157,6 @@ const config = {
       {
         rel: 'preconnect',
         href: 'https://res.cloudinary.com',
-      },
-      {
-        rel: 'prerender',
-        href: `${this.baseUrl}/talks`,
       },
       {
         rel: 'prerender',

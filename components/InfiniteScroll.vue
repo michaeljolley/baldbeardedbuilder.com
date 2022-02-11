@@ -1,7 +1,7 @@
 <template>
   <div v-show="!enough" :id="id">
     <slot>
-      <font-awesome-icon :icon="['fas', 'spinner']" pulse />
+      <IconRefresh />
     </slot>
   </div>
 </template>

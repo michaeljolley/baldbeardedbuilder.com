@@ -9,23 +9,20 @@
   </div>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 export default {
-  head() {
-    return {
-      bodyAttrs: {
-        class: this.isDark ? 'dark' : '',
-      },
-    }
-  },
   computed: {
     ...mapGetters(['isDark']),
   },
-  created() {
-    this.initDarkMode()
-  },
-  methods: {
-    ...mapActions(['initDarkMode']),
+  watch: {
+    isDark(val) {
+      const root = document.body
+      if (val === true) {
+        root.classList.add('dark')
+      } else {
+        root.classList.remove('dark')
+      }
+    },
   },
 }
 </script>

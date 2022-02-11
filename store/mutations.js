@@ -4,30 +4,19 @@ export default {
   },
   toggleDarkMode(state) {
     state.isDark = !state.isDark
-  },
-  initDarkMode(state) {
-    if (isProduction()) {
-      state.isDark = defaultDarkMode()
-    }
   }
 }
 
-const isProduction = () => {
-  return process.env.CONTEXT && process.env.CONTEXT === 'production'
-}
+// function defaultDarkMode() {
+//   if (window.localStorage.getItem('darkMode')) {
+//     return window.localStorage.getItem('darkMode') === 'true'
+//   }
 
-function defaultDarkMode() {
-  if (process.client) {
-    if (window.localStorage.getItem('darkMode')) {
-      return window.localStorage.getItem('darkMode') === 'true'
-    }
-
-    if (
-      window.matchMedia &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
-    ) {
-      return true
-    }
-  }
-  return false
-}
+//   if (
+//     window.matchMedia &&
+//     window.matchMedia('(prefers-color-scheme: dark)').matches
+//   ) {
+//     return true
+//   }
+//   return false
+// }

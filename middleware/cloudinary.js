@@ -99,6 +99,7 @@ const copyAssets = async (document, slug, root) => {
     })
   }
 }
+
 export default {
-  copyAssets,
+  copyAssets
 }

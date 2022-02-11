@@ -31,6 +31,7 @@
   </article>
 </template>
 <script>
+import generateOgraph from '@/middleware/generateOgraph'
 import config from '@/modules/config'
 export default {
   async asyncData({ $content, params, error, payload }) {
@@ -70,9 +71,7 @@ export default {
       {
         hid: 'twitter:image',
         name: 'twitter:image',
-        content: this.post.ograph
-          ? this.post.ograph.secure_url
-          : this.post.cover.secure_url,
+        content: generateOgraph(this.post.title, this.post.tags),
       },
       {
         hid: 'twitter:image:width',
@@ -87,7 +86,7 @@ export default {
       {
         hid: 'twitter:image:alt',
         name: 'twitter:image:alt',
-        content: this.post.banner_image_alt || this.post.title,
+        content: this.post.title,
       },
       {
         hid: 'og:url',
@@ -107,9 +106,7 @@ export default {
       {
         hid: 'og:image',
         property: 'og:image',
-        content: this.post.ograph
-          ? this.post.ograph.secure_url
-          : this.post.cover.secure_url,
+        content: generateOgraph(this.post.title, this.post.tags),
       },
       {
         hid: 'og:image:width',
@@ -124,7 +121,7 @@ export default {
       {
         hid: 'og:image:alt',
         name: 'og:image:alt',
-        content: this.post.banner_image_alt || this.post.title,
+        content: this.post.title,
       },
       {
         hid: 'og:updated_time',

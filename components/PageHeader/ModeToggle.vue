@@ -14,15 +14,13 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   computed: {
     ...mapGetters(['isDark']),
   },
   methods: {
-    ...mapActions({
-      toggleDarkMode: 'toggleDarkMode',
-    }),
+    ...mapMutations(['toggleDarkMode']),
   },
 }
 </script>

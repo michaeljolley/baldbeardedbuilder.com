@@ -21,11 +21,13 @@ export default {
     }
   },
   async created() {
-    const response = await fetch(
-      `https://baldbeardedbuilder.com/.netlify/functions/twitch`
-    )
-    const { isOnline } = await response.json()
-    this.isOnline = isOnline
+    try {
+      const response = await fetch(
+        `https://baldbeardedbuilder.com/.netlify/functions/twitch`
+      )
+      const { isOnline } = await response.json()
+      this.isOnline = isOnline
+    } catch (ex) {}
   },
 }
 </script>

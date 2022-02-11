@@ -1,3 +1,4 @@
+
 export default () => {
   return {
     menuExpanded: false,
