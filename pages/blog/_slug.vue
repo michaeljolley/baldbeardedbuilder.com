@@ -56,7 +56,7 @@ export default {
       {
         hid: 'twitter:url',
         name: 'twitter:url',
-        content: `${config.baseUrl}${this.post.path}`,
+        content: `${config.baseUrl}${this.post.path}/`,
       },
       {
         hid: 'twitter:title',
@@ -91,7 +91,7 @@ export default {
       {
         hid: 'og:url',
         property: 'og:url',
-        content: `${config.baseUrl}${this.post.path}`,
+        content: `${config.baseUrl}${this.post.path}/`,
       },
       {
         hid: 'og:title',
