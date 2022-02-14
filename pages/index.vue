@@ -11,6 +11,12 @@
 import generateOgraph from '@/middleware/generateOgraph'
 export default {
   async asyncData({ $content, payload }) {
+    if (payload) {
+      return {
+        posts: payload.posts,
+        videos: payload.videos
+      }
+    } else {
     const posts = await $content('blog')
       .only([
         'path',
@@ -35,6 +41,7 @@ export default {
       .fetch()
 
     return { posts, videos }
+    }
   },
   head() {
     const metaTitle = `Building Better Builders`

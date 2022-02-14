@@ -41,38 +41,5 @@ export default () => {
     }))
   }
 
-  const getPrivateFeeds = () => {
-    const createPrivateFeedArticles = async function (feed) {
-      feed.options = {
-        title: `${config.indexTitle} » ${config.baseTitle}`,
-        link: `${config.baseUrl}/blog/`,
-        description: config.baseDescription,
-      }
-
-      const posts = await $content('blog')
-        .sortBy('date', 'desc')
-        .limit(50)
-        .fetch()
-
-      posts.forEach((post) => {
-        feed.addItem({
-          title: post.title,
-          id: post.slug,
-          date: new Date(post.updatedAt || post.date),
-          link: `${config.baseUrl}/blog/${post.slug}/`,
-          description: post.description,
-          content: `${post.excerpt} ...`,
-        })
-      })
-    }
-    return [
-      {
-        path: 'feed_private.xml',
-        type: 'rss2',
-        create: createPrivateFeedArticles,
-      },
-    ]
-  }
-
-  return [...getMainFeeds(), ...getPrivateFeeds()]
+  return getMainFeeds()
 }

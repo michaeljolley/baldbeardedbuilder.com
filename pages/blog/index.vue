@@ -15,11 +15,18 @@
 import Vue from 'vue'
 import generateOgraph from '@/middleware/generateOgraph'
 export default {
-  data() {
+  asyncData({payload}) {
+    let page = 0;
+    let posts = []
+    if (payload) {
+      page = 1;
+      posts = payload.posts
+    }
+
     return {
-      posts: [],
+      posts,
       enough: false,
-      page: 0,
+      page,
       pageSize: 12,
       isLoading: false,
     }

@@ -5,19 +5,12 @@ import {
   config,
   feed,
   googleAnalytics,
-  sanity,
   sitemap,
 } from './modules'
-
-
-const isProduction = () => {
-  return process.env.CONTEXT && process.env.CONTEXT === 'production'
-}
 
 const isPreviewBuild = () => {
   return process.env.PULL_REQUEST
 }
-
 
 export default {
   target: 'static',
@@ -81,7 +74,6 @@ export default {
   cloudinary,
   feed,
   googleAnalytics,
-  sanity,
   sitemap,
 
   tailwindcss: {
@@ -104,8 +96,55 @@ export default {
   build: {},
 
   generate: {
-    crawler: isProduction(),
+    crawler: false,
     fallback: true,
+    async routes() {
+
+      const { $content } = require('@nuxt/content')
+      const posts = await $content('blog').fetch()
+      const videos = await $content('videos').fetch()
+
+      return [
+        ...posts.map((post) => {
+          return {
+            route: `/blog/${post.slug}/`,
+            payload: { post },
+          }
+        }),
+        ...[
+          {
+            route: '/blog/',
+            payload: {
+              posts: posts
+                .filter((f) => new Date(f.date) < Date.now())
+                .sort((a, b) => {
+                  return new Date(b.date) - new Date(a.date)
+                })
+                .slice(0, 12),
+            },
+          },
+        ],
+        {
+          route: '/',
+          payload: {
+            posts: posts
+              .filter((f) => new Date(f.date) < Date.now())
+              .sort((a, b) => {
+                return new Date(b.date) - new Date(a.date)
+              })
+              .slice(0, 6),
+            videos: videos
+              .filter((f) => new Date(f.date) < Date.now())
+              .sort((a, b) => {
+                return new Date(b.date) - new Date(a.date)
+              })
+              .slice(0, 3),
+          }
+        }
+      ]
+
+
+    }
   },
 
   hooks: {

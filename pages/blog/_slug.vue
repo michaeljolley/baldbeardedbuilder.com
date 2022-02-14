@@ -34,9 +34,13 @@
 import generateOgraph from '@/middleware/generateOgraph'
 import config from '@/modules/config'
 export default {
-  async asyncData({ $content, params, error, payload }) {
-    const post = await $content('blog', params.slug).fetch()
-    return { post }
+  async asyncData({ $content, params, payload }) {
+    if (payload) {
+      return { post: payload.post }
+    } else {
+      const post = await $content('blog', params.slug).fetch()
+      return { post }
+    }
   },
   head() {
     const link = this.post.canonical_url
