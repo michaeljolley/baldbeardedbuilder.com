@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../layouts/base.astro'
+import { getCollection } from 'astro:content'
+
+import Separator from '../components/Separator.astro'
+import MastUses from '../components/MastUses.astro'
+import Gear from '../components/Gear.astro'
+
+const gearEntries = await getCollection(
+  'gear'
+)
+
+const gear = gearEntries.sort((a, b) => {
+  return a.data.category > b.data.category ? 1 : -1
+})
+
+const title = 'Stuff Michael Uses'
+const description =
+  'A history of the hardware and software I use on a regular basis for software development, streaming, and content creation.'
+const permalink = 'https://baldbeardedbuilder.com/uses/'
+const ograph =
+  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1688750972/website-assets/ograph/neon_gears_vpcc15_idu38v.png'
+---
+
+<BaseLayout {title} {description} {permalink} {ograph}>
+  <MastUses />
+  <Separator />
+  <section class="wrapper">
+    <main>
+      <blockquote>
+        <strong>Full disclosure:</strong> All the links on this page are affiliate
+        links. That means if you purchase the item I get a little change from Amazon.
+        So you get what you want/need and I get a coffee. Win/win.
+      </blockquote>
+      <div>
+        {
+          gear.map((gear) => (
+            <Gear gear={gear.data} /> 
+          ))
+        }
+      </div>
+  </main>
+</section>
+</BaseLayout>
+<style lang="scss">
+  .wrapper {
+    @apply pb-12;
+
+    blockquote {
+      @apply mt-0;
+    }
+
+    h2 {
+      @apply font-inter font-bold;
+      @apply text-gray-100;
+      @apply text-4xl md:text-4xl lg:text-5xl;
+      @apply mb-12;
+    }
+
+    main > div {
+      @apply grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8;
+    }
+  }
+</style>

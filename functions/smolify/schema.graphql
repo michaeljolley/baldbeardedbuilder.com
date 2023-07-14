@@ -1,9 +1,0 @@
-type ShortyMcShortLink {
-  source: String!
-  target: String!,
-  visits: Int
-}
-
-type Query {
-   shortyMcShortLinkBySource(source: String!): ShortyMcShortLink!
-}

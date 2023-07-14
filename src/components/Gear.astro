@@ -1,0 +1,95 @@
+---
+
+export interface Props {
+    gear: {
+        title: string;
+        description: string;
+        link?: string;
+        status: string;
+        rank: number;
+        tags?: string[];
+    }
+}
+
+const {gear: {title, description, link, tags}} = Astro.props;
+
+const tagColors: Record<string, string> = {
+  'video':        'border-teal-300',
+  'audio':        'border-blue-400',
+  'terminal':     'border-green-300',
+  'computer':     'border-purple-400',
+  'ide':          'border-yellow-300',
+  'productivity': 'border-red-400',
+}
+
+---
+
+<div class="gear">
+    { tags && (
+      <ul>
+        {tags.map(tag => (
+            <li class={tagColors[tag]}>{tag}</li>
+        ))}
+      </ul>
+    )
+
+    }
+    <h3>{title}</h3>
+    <p>{description}</p>
+    {link && (
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        learn more &gt;
+      </a>
+    )}
+  </div>
+
+<style lang="scss">
+ 
+    .gear {
+      --transition-duration: 500ms;
+      @apply flex flex-col;
+      @apply p-4;
+      @apply border border-transparent;
+      transition: transform var(--transition-duration) ease-in-out;
+
+      &:hover {
+        transform: scale(1.03);
+        border-image-source: linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.2),
+          rgba(255, 255, 255, 0.6) 100%
+        );
+        border-image-slice: 1;
+      }
+
+      ul {
+        @apply list-none;
+        @apply flex gap-4;
+
+        li {
+          @apply border;
+          @apply text-xs font-bold;
+          @apply px-2 py-1;
+        }
+      }
+
+      h3 {
+          @apply text-lg;
+          @apply my-2;
+      }
+      p {
+          @apply text-gray-400;
+          @apply text-sm;
+          @apply m-0;
+        @apply mb-auto;
+      }
+      a {
+        @apply text-neonPink text-sm;
+      }
+
+    }
+</style>

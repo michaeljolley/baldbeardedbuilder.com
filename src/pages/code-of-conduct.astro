@@ -1,0 +1,363 @@
+---
+import BaseLayout from '../layouts/base.astro'
+import Separator from '../components/Separator.astro'
+import MastCoC from '../components/MastCoC.astro'
+import TableOfContents from '../components/TableOfContents'
+
+const title = 'Code of Conduct'
+const description =
+  'Code of conduct for the Bald Bearded Builder and Build with Me community'
+const permalink = `https://${import.meta.env.HOST}/`
+const ograph =
+  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1689271118/website-assets/two_neon_robots_holding_hands_te9zic.png'
+
+const headings = [
+  {
+    depth: 2,
+    slug: 'being-a-good-community-member',
+    text: 'Being a Good Community Member'
+  },{
+    depth: 3,
+    slug: 'be-humble',
+    text: 'Be Humble'
+  },{
+    depth: 3,
+    slug: 'be-helpful-when-asked',
+    text: 'Be Helpful When Asked'
+  },{
+    depth: 3,
+    slug: 'encourage-others',
+    text: 'Encourage Others'
+  },{
+    depth: 2,
+    slug: 'code-of-conduct',
+    text: 'Code of Conduct'
+  },{
+    depth: 3,
+    slug: 'be-respectful',
+    text: 'Be Respectful'
+  },{
+    depth: 3,
+    slug: 'be-welcoming-and-open',
+    text: 'Be Welcoming and Open'
+  },{
+    depth: 3,
+    slug: 'respect-privacy',
+    text: 'Respect Privacy'
+  },{
+    depth: 3,
+    slug: 'respect-personal-boundries',
+    text: 'Respect Personal Boundries'
+  },{
+    depth: 3,
+    slug: 'be-a-good-neighbor',
+    text: 'Be a Good Neighbor'
+  },{
+    depth: 2,
+    slug: 'rules-for-online-spaces',
+    text: 'Rules for Online Spaces'
+  },{
+    depth: 3,
+    slug: 'dont-spam',
+    text: "Don't Spam"
+  },{
+    depth: 3,
+    slug: 'keep-it-legal',
+    text: 'Keep it Legal'
+  },{
+    depth: 3,
+    slug: 'no-trolling',
+    text: 'No Trolling'
+  },{
+    depth: 3,
+    slug: 'foul-and-graphic-language',
+    text: 'Foul and Graphic Language'
+  },{
+    depth: 2,
+    slug: 'reporting',
+    text: 'Reporting'
+  },{
+    depth: 3,
+    slug: 'report',
+    text: 'Report Form'
+  },{
+    depth: 3,
+    slug: 'thanks',
+    text: 'Thanks'
+  }
+]
+
+---
+
+<BaseLayout {title} {description} {permalink} {ograph}>
+  <MastCoC />
+  <Separator />
+  <section class="wrapper">
+    <main>
+      <section>
+        <p>
+          The Bald Bearded Builder community is filled with amazing, clever and
+          creative people, and we're excited for you to join us. Our goal is to
+          create spaces where people can gather and discuss important themes and
+          feelings that many of us will experience during our technical career.
+        </p>
+  
+        <h2 id="being-a-good-community-member">Being a Good Community Member</h2>
+        <p>
+          Yes, there are things we don't want you to do in our community — and
+          we'll get to those. But first we'd like to talk about things we do want
+          folks to do. These are ways you can be a positive member of the Bald
+          Bearded Builder community.
+        </p>
+        <p>
+          Please begin by thinking carefully about and agreeing with the following
+          statements:
+        </p>
+  
+        <ul>
+          <li>
+            I will be welcoming to everyone at the table, and patient with
+            newcomers
+          </li>
+          <li>I will treat everyone with respect, because they deserve it</li>
+          <li>I will be mindful of the needs and boundaries of others</li>
+        </ul>
+  
+        <p>
+          Here are a few other key things you can do to make the community great:
+        </p>
+  
+        <h3 id="be-humble">BE HUMBLE</h3>
+        <p>
+          People come from all different places, and it's best not to make
+          assumptions about what they think or feel. Approach others with
+          curiosity. We all have a lot to learn from each other.
+        </p>
+  
+        <h3 id="be-helpful-when-asked">BE HELPFUL WHEN ASKED</h3>
+        <p>
+          If someone asks for help, consider jumping in to point them in the right
+          direction.
+        </p>
+  
+        <h3 id="encourage-others">ENCOURAGE OTHERS</h3>
+        <p>
+          There's no one path to have a career in technology. Instead of shooting
+          down other people's ideas, try to engage them in ways that create
+          opportunities for learning and fun.
+        </p>
+  
+        <h2 id="code-of-conduct">Code of Conduct</h2>
+        <p>
+          We ask everyone who participates in our community upholds their ideals.
+          By vowing to follow these guidelines, you will help create a welcoming
+          and friendly community based on respect and trust.
+        </p>
+        <p>
+          We are committed to creating a harassment-free community. These rules
+          will be strictly enforced in any and all of our official spaces, like
+          our Discord server, Twitch chat and physical events, and everyone who
+          participates in these spaces is required to agree to this community
+          code. We have zero-tolerance for harassment, and anybody who engages in
+          the following behaviors may be banned without warning. We also ask and
+          expect community members to observe these rules anywhere the community
+          is meeting (for example, online chats in unofficial platforms or event
+          after-parties).
+        </p>
+  
+        <h3 id="be-respectful">BE RESPECTFUL</h3>
+        <p>
+          Don't make offensive comments related to gender, gender identity and
+          expression, sexual orientation, disability, mental illness,
+          neuro(a)typicality, physical appearance, body size, race, immigration
+          status, religion, or other identity markers.
+        </p>
+        <p>
+          Additionally, don't insult or demean others. This includes making
+          unwelcome comments about a person's lifestyle choices and practices,
+          including things related to diet, health, parenting, drugs, or
+          employment. It's not okay to insult or demean others if it's "just a
+          joke."
+        </p>
+  
+        <h3 id="be-welcoming-and-open">BE WELCOMING AND OPEN</h3>
+        <p>
+          Don't engage in gatekeeping behaviors, like questioning the intelligence
+          or knowledge of others as a way to prove their credentials. And don't
+          exclude people for prejudicial reasons.
+        </p>
+  
+        <h3 id="respect-privacy">RESPECT PRIVACY</h3>
+        <p>
+          Do not publish private communications without consent. Additionally,
+          never "out" private aspects of a person's personal identity without
+          consent, except as necessary to protect them from intentional abuse.
+        </p>
+  
+        <h3 id="respect-personal-boundries">RESPECT PERSONAL BOUNDARIES</h3>
+        <p>
+          Do not introduce gratuitous or off-topic sexual images, languages, or
+          behavior in spaces where they are not appropriate. Never make physical
+          contact or simulated physical contact without consent or after a request
+          to stop. Additionally, do not continue to message others about anything
+          if they ask you to stop or leave them alone.
+        </p>
+  
+        <h3 id="be-a-good-neighbor">BE A GOOD NEIGHBOR</h3>
+        <p>
+          Do not make threats of violence, intimidate others, incite violence or
+          intimidation against others, incite self-harm, stalk, follow, or
+          otherwise harass others.
+        </p>
+  
+        <h2 id="rules-for-online-spaces">Rules for online spaces</h2>
+        <p>
+          For Bald Bearded Builder' official online spaces, like our Twitch chat
+          and community Discord channel, we have some additional rules. Any of the
+          following behaviors can result in a ban without warning.
+        </p>
+  
+        <h3 id="dont-spam">DON'T SPAM</h3>
+        <p>Don't spam. We'll ban you.</p>
+  
+        <h3 id="keep-it-legal">KEEP IT LEGAL</h3>
+        <p>
+          If it's illegal, it's not allowed on our websites or in our online
+          spaces. Please don't share links to pirated material or other nefarious
+          things.
+        </p>
+  
+        <h3 id="no-trolling">NO TROLLING</h3>
+        <p>
+          Please be earnest. Don't use excessive sarcasm to annoy or undermine
+          other people. And don't bait them with bad faith comments or abuse.
+        </p>
+  
+        <h3 id="pornography-and-other-nsfw-stuff">
+          PORNOGRAPHY AND OTHER NSFW STUFF
+        </h3>
+        <p>
+          Please don't post it or link to it. It doesn't belong in our online
+          spaces.
+        </p>
+  
+        <h3 id="foul-and-graphic-language">FOUL AND GRAPHIC LANGUAGE</h3>
+        <p>
+          Please do not use excessive curse words. Additionally, do not use
+          graphic sexual or violent language — again, think of our spaces as
+          places for people of all ages.
+        </p>
+  
+        <h2 id="reporting">Reporting</h2>
+        <p>
+          If you are being harassed by a member of the Bald Bearded Builder
+          community, or if you observe someone else being harassed, please report
+          the behaviour using our
+          <a href="#report">Code of Conduct Report Form</a>.
+        </p>
+
+        <h3 id="report">Report Form</h3>
+
+        <p>
+          We take breaches of our Code of Conduct very seriously. If you have
+          experienced or witnessed a breach by a memmber of our community, we're
+          here for you.
+        </p>
+  
+        <p>
+          Please submit the form below with a description of the event(s). This
+          information is confidential and is sent directly to Michael to review as
+          quickly as possible.
+        </p>
+
+        <form
+        name="coc-report"
+        method="post"
+        action="/thanks/"
+        data-netlify="true"
+        data-netlify-honeypot="bot-field"
+      >
+        <input type="hidden" name="form-name" value="coc-report" />
+        <p hidden>
+          <label> Don't fill this out: <input name="bot-field" /></label>
+        </p>
+
+        <p>
+          <label for="description"
+            >Description of Event(s)<span class="required">* required</span>
+          </label><br/>
+          <textarea
+            id="description"
+            rows="6"
+            name="description"
+            required
+            placeholder="Describe the event(s) that occurred. Be sure to include the name of the person who violated the code of conduct."
+          ></textarea>
+        </p>
+        <p>
+          If you would like someone to follow up with you, please complete the
+          fields below.
+          <strong>For your privacy, they are NOT required.</strong>
+        </p>
+        <p>
+          <label for="name">Your Name</label><br/>
+          <input
+            id="name"
+            type="text"
+            name="name"
+            placeholder="Enter your name here"
+          />
+        </p>
+        <p>
+          <label for="email">Your Email</label><br/>
+          <input
+            id="email"
+            type="text"
+            name="email"
+            placeholder="Enter your email address here"
+          />
+        </p>
+        <p>
+          <button type="submit">Submit</button>
+        </p>
+      </form>
+
+  
+        <h3 id="thanks">Thanks</h3>
+        <p>This code of conduct is hugely inspired by You Got This Conference.</p>
+      </section>
+      <aside>
+        <TableOfContents {headings} client:load />
+      </aside>
+    </main>
+  </section>
+</BaseLayout>
+
+<style lang="scss">
+  .wrapper {
+    @apply pb-12;
+    
+    main {
+      @apply flex gap-12;
+      @apply pb-20;
+      @apply items-start;
+
+      .required {
+        @apply text-neonPink;
+        @apply font-normal text-sm ml-2;
+      }
+
+      section {
+        @apply flex flex-col;
+        @apply w-full md:w-4/6;
+      }
+      aside {
+        @apply hidden md:flex md:flex-col;
+        @apply md:w-2/6;
+        @apply z-0;
+        @apply sticky;
+        top: 105px;
+      }
+    }
+  }
+</style>

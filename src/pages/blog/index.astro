@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/base.astro'
+import Tall from '../../components/Cards/Tall.astro'
+import Small from '../../components/Cards/Small.astro'
+import { getCollection, CollectionEntry } from 'astro:content'
+import Condensed from '../../components/Cards/Condensed.astro'
+
+let blogPosts = await getCollection('blog')
+
+blogPosts = blogPosts.sort(
+  (a, b) => new Date(b.data.pubDate) - new Date(a.data.pubDate)
+)
+
+const posts = blogPosts.map((x) => x)
+const groups = []
+while (posts.length > 0) {
+  let featured: CollectionEntry<'blog'>[] = []
+  if (posts.length > 3) {
+    featured = posts.splice(0, 3)
+  }
+  groups.push({
+    featured,
+    posts: posts.splice(0, 6),
+  })
+}
+
+const title = "Michael's Blog Posts"
+const description =
+  'A listing of blog posts by Michael Jolley, the bald bearded builder.'
+const permalink = `https://${import.meta.env.HOST}/blog/`
+const ograph =
+  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1688515828/website-assets/ograph/neon_computers_hu9vou.png'
+---
+
+<BaseLayout {title} {description} {permalink} {ograph}>
+  <section class="wrapper">
+    <h1>All posts</h1>
+    {
+      groups.map((group, index) => {
+        const featuredColStart = index % 2 === 0 ? 1 : 2
+        return (
+          <>
+            {group.featured.length > 0 && (
+              <div class="featured">
+                <Tall
+                  post={group.featured[0]}
+                  class="md:row-start-1 md:row-span-2"
+                  style={`grid-column-start: ${featuredColStart};`}
+                />
+                <Small post={group.featured[1]} />
+                <Small post={group.featured[2]} />
+              </div>
+            )}
+            <ul>
+              {group.posts.map((post) => (
+                <li>
+                  <Condensed post={post} />
+                </li>
+              ))}
+            </ul>
+          </>
+        )
+      })
+    }
+  </section>
+</BaseLayout>
+
+<style lang="scss">
+  .wrapper {
+    @apply pb-12 pt-40;
+
+    h1 {
+      @apply font-inter font-bold;
+      @apply text-gray-100;
+      @apply text-5xl md:text-5xl lg:text-6xl;
+    }
+    .featured {
+      @apply py-12;
+      @apply grid grid-cols-1 md:grid-cols-2 gap-8;
+    }
+
+    ul {
+      @apply list-none grid grid-cols-1 sm:grid-cols-2 gap-12;
+    }
+  }
+</style>

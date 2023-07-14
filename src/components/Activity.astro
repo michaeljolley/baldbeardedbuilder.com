@@ -1,0 +1,94 @@
+---
+---
+
+<div class="rings-block" title="--MOVE-AMOUNT-- cal | --EXERCISE-AMOUNT-- mins | --STAND-AMOUNT-- hrs | --LOCAL-TIME-- local time">
+  <div class="circles-container">
+    <svg class="ActivityRings" viewBox="0 0 37 37">
+      <g class="ring ring1" style="transform: scale(1) rotate(-90deg);">
+        <circle stroke-width="3" r="15.915" cx="50%" cy="50%" class="background"
+        ></circle>
+        <circle
+          stroke-width="3"
+          r="15.915"
+          cx="50%"
+          cy="50%"
+          class="completed"
+          stroke-dasharray="--MOVE-RING--, 100"></circle>
+      </g>
+      <g class="ring ring2" style="transform: scale(0.75) rotate(-90deg);">
+        <circle stroke-width="4" r="15.915" cx="50%" cy="50%" class="background"
+        ></circle>
+        <circle
+          stroke-width="4"
+          r="15.915"
+          cx="50%"
+          cy="50%"
+          class="completed"
+          stroke-dasharray="--EXERCISE-RING--, 100"></circle>
+      </g>
+      <g class="ring ring3" style="transform: scale(0.5) rotate(-90deg);">
+        <circle stroke-width="6" r="15.915" cx="50%" cy="50%" class="background"
+        ></circle>
+        <circle
+          stroke-width="6"
+          r="15.915"
+          cx="50%"
+          cy="50%"
+          class="completed"
+          stroke-dasharray="--STAND-RING--, 100"></circle>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<style lang="scss">
+  .rings-block {
+    @apply flex items-center;
+
+    .circles-container {
+      @apply relative;
+      @apply h-6 w-6;
+
+      .ActivityRings {
+        @apply h-full w-full;
+
+        circle {
+          @apply fill-none;
+        }
+
+        .background {
+          @apply opacity-20;
+        }
+
+        .ring {
+          transform-origin: 50%;
+
+          .completed {
+            stroke-linecap: round;
+          }
+        }
+
+        .ring1 {
+          .background,
+          .completed {
+            stroke: #f71046;
+          }
+        }
+
+        .ring2 {
+          .background,
+          .completed {
+            stroke: #6fe430;
+          }
+        }
+
+        .ring3 {
+          .background,
+          .completed {
+            stroke: #15c2e0;
+          }
+        }
+      }
+    }
+  }
+</style>

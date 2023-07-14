@@ -1,3 +1,5 @@
 [build]
-command = 'npm run deploy'
-functions = 'lambda'
+  edge_functions = "netlify/edge-functions"
+  command = "npm run build"
+  publish = "dist"
+  

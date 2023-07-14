@@ -1,0 +1,10 @@
+---
+import Navigation from './Navigation.astro'
+import Socials from './Socials.astro'
+import SiteHeader from './Header'
+---
+
+<SiteHeader client:only>
+  <Socials />
+  <Navigation />
+</SiteHeader>

@@ -1,0 +1,67 @@
+---
+import type { CollectionEntry } from 'astro:content'
+interface Props {
+  class?: string
+  post: CollectionEntry<'blog'>
+}
+const { class: classes, post } = Astro.props
+---
+
+<div class={classes}>
+  <aside>
+    <ul>
+      {
+        post.data.tags &&
+          post.data.tags.slice(0, 3).map((tag: string) => (
+            <li>
+              <a href={`/blog/tags/${tag}/`}>{tag}</a>
+            </li>
+          ))
+      }
+    </ul>
+  </aside>
+  <a href={`/blog/${post.slug}/`}>
+    <h3>{post.data.title}</h3>
+  </a>
+</div>
+
+<style lang="scss">
+  div {
+    --transition-duration: 700ms;
+
+    @apply flex flex-col;
+    @apply p-4;
+    @apply h-full;
+    @apply border border-transparent;
+    transition: transform var(--transition-duration) ease-in-out;
+
+    &:hover {
+      transform: scale(1.03);
+      @apply border;
+      border-image-source: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.2),
+        rgba(255, 255, 255, 0.6) 100%
+      );
+      border-image-slice: 1;
+    }
+
+    aside ul {
+      @apply flex flex-row;
+      li {
+        @apply text-gray-400;
+        @apply text-xs lowercase;
+        &:not(:last-child) {
+          @apply mr-4;
+        }
+        a:hover {
+          @apply text-gray-100;
+        }
+      }
+    }
+
+    h3 {
+      @apply text-2xl text-gray-100;
+    }
+  }
+</style>

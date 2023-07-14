@@ -1,0 +1,67 @@
+name: Continuous Deployment
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [publish]
+  pull_request:
+    branches: [main]
+env:
+  TWITCH_CLIENT_ID: ${{secrets.TWITCH_CLIENT_ID}}
+  TWITCH_CLIENT_SECRET: ${{secrets.TWITCH_CLIENT_SECRET}}
+  TWITCH_CHANNEL_ID: ${{secrets.TWITCH_CHANNEL_ID}}
+jobs:
+  deploy:
+    name: Build & deploy site to Netlify
+    runs-on: ubuntu-latest
+    env:
+      PRODUCTION_DOMAIN: baldbeardedbuilder.com
+      STAGING_DOMAIN: sprightly-pavlova-e87859.netlify.app
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      IS_PRODUCTION: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+      DEPLOY_PREFIX: blog
+    steps:
+      - name: Configure dynamic environment variables for production
+        if: ${{ env.IS_PRODUCTION == 'true' }}
+        run: |
+          echo "URL=https://${{ env.PRODUCTION_DOMAIN }}" >> $GITHUB_ENV
+          echo "BUILD_ALIAS=" >> $GITHUB_ENV
+          echo "DEPLOY_MESSAGE=$(echo '${{ github.event.head_commit.message }}' | head -1)" >> $GITHUB_ENV
+          echo "ENVIRONMENT_NAME=${{ env.DEPLOY_PREFIX }}-production" >> $GITHUB_ENV
+          echo "ENVIRONMENT_DESC=Production deployment for ${{ env.DEPLOY_PREFIX }} site. Last deployment: $(echo '${{ github.event.head_commit.message }}' | head -1)" >> $GITHUB_ENV
+      - name: Configure dynamic environment variables for staging
+        if: ${{ env.IS_PRODUCTION != 'true' }}
+        run: |
+          echo "URL=https://deploy-preview-${{ github.event.number }}--${{ env.STAGING_DOMAIN }}" >> $GITHUB_ENV
+          echo "BUILD_ALIAS=deploy-preview-${{ github.event.number }}" >> $GITHUB_ENV
+          echo "DEPLOY_MESSAGE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+          echo "ENVIRONMENT_NAME=${{ env.DEPLOY_PREFIX }}-deploy-preview-${{ github.event.number }}" >> $GITHUB_ENV
+          echo "ENVIRONMENT_DESC=Deploy preview for ${{ env.DEPLOY_PREFIX }} site. Pull request: #${{ github.event.number }}" >> $GITHUB_ENV
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies & prep data
+        run: |
+          cd site
+          npm install
+
+      - name: Build site
+        run: |
+          ./node_modules/.bin/ntl build
+
+      - name: Deploy site to Netlify
+        uses: nwtgck/actions-netlify@v1.2
+        with:
+          publish-dir: dist
+          production-branch: main
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: ${{ env.DEPLOY_MESSAGE }}
+          enable-pull-request-comment: false # default: true
+          enable-commit-comment: true # default: true
+          overwrites-pull-request-comment: false # default: true
+          production-deploy: ${{ env.IS_PRODUCTION }}
+          functions-dir: ${{ env.BUILD_PATH }}netlify/functions/
+          alias: ${{ env.BUILD_ALIAS }}
+          github-deployment-environment: ${{ env.ENVIRONMENT_NAME }}
+          github-deployment-description: ${{ env.ENVIRONMENT_DESC }}
+        timeout-minutes: 5

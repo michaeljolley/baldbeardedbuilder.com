@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content'
+import Small from './Cards/Small.astro'
+import Tall from './Cards/Tall.astro'
+const featuredBlogPosts = await getCollection(
+  'blog',
+  (entry) => entry.data.featured && entry.data.featured > 0
+)
+
+const posts = featuredBlogPosts
+  .sort((a, b) => new Date(b.data.pubDate) - new Date(a.data.pubDate))
+  .slice(0, 3)
+---
+
+<section>
+  <div class="wrapper">
+    <Tall post={posts[0]} class="md:row-start-1 md:row-span-2" />
+    <Small post={posts[1]} />
+    <Small post={posts[2]} />
+  </div>
+</section>
+
+<style lang="scss">
+  section {
+    .wrapper {
+      @apply py-12;
+      @apply grid grid-cols-1 md:grid-cols-2 gap-8;
+    }
+  }
+</style>

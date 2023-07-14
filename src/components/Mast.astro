@@ -1,0 +1,49 @@
+---
+---
+
+<section>
+  <div class="wrapper">
+    <h1>
+      <span>I make content that</span>
+      <span>uplifts, educates, and</span>
+      <span>makes you laugh.</span>
+    </h1>
+    <img
+      aria-hidden="true"
+      alt="Michael peaking over a line."
+      src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1680985335/website-assets/head.png"
+      sizes="100vw"
+      height="590"
+      width="432"
+    />
+  </div>
+</section>
+
+<style lang="scss">
+  section {
+    @apply pt-32 sm:pt-40;
+
+    .wrapper {
+      @apply flex flex-col justify-center items-center;
+      @apply px-8;
+
+      h1 {
+        @apply flex flex-col justify-center items-center;
+        @apply w-2/3;
+        @apply mb-0;
+        @apply flex text-center;
+
+        span {
+          @apply block;
+          @apply whitespace-nowrap;
+          @apply m-0 p-0;
+        }
+      }
+
+      img {
+        @apply w-3/5 sm:w-1/2 md:w-2/5;
+        @apply lg:max-w-md;
+      }
+    }
+  }
+</style>

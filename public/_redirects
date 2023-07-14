@@ -1,0 +1,20 @@
+# old blog posts
+/posts/using-automapper-with-dotnetcore-3                           /posts/using-auto-mapper-with-asp-net-core-3/
+/posts/2019-year-in-review                                          /posts/cheers-to-2019-bring-on-2020/
+/posts/adding-hateoas-to-an-aspnetcore-rest-api                     /posts/adding-hateoas-to-an-asp-net-core-api/
+/posts/release-notes-with-github-appveyor-octopus-deploy            /posts/automating-release-notes-with-git-hub-app-veyor-and-octopus-deploy/
+/posts/using-azure-key-vault-with-azure-functions                   /posts/environment-variables-in-azure-functions-with-key-vault/
+/posts/sql-server-in-a-linux-container-to-do-quick-tasks            /posts/using-sql-server-in-docker-containers-for-basic-tasks/
+/posts/code-of-conduct-and-contributions-in-public-repositories     /posts/using-a-contributing-and-code-of-conduct-to-assist-others-in-contributing-to-public-repositories/
+/posts/setup-command-aliases-in-powershell-to-make-life-easier      /posts/adding-command-aliases-to-power-shell/
+/posts/stream-setup                                                 /posts/current-twitch-live-coding-stream-setup/
+/posts/docker-communication-between-containers                      /posts/communication-between-containers-using-docker-compose-in-windows/
+/posts/setting-up-raspberry-pi-for-kiosk-mode                       /posts/setting-up-raspberry-pi-for-use-in-kiosk-mode-with-chromium/
+
+# talks
+/talks/devfest-auburn                                               /talks/vscode-remote/
+/talks/dotnetconf2019/                                              /talks/sql-docker/
+/talks/bsides-bhm-2019/                                             /talks/vscode-remote/
+/talks/devopsdays2019/                                              /talks/vscode-remote/
+/talks/bhmnet/                                                      /talks/vscode-remote/
+/talks/dnnsummit/                                                   /talks/vscode-remote/

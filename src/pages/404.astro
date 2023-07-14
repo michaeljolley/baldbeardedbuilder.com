@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../layouts/base.astro'
+import Separator from '../components/Separator.astro'
+import Mast404 from '../components/Mast404.astro'
+import Tall from '../components/Cards/Tall.astro'
+import Small from '../components/Cards/Small.astro'
+import Condensed from '../components/Cards/Condensed.astro'
+import { getCollection, CollectionEntry } from 'astro:content'
+import { getAnalytics } from '../scripts/supabase'
+
+const analytics = await getAnalytics()
+
+let blogPosts = await getCollection('blog')
+
+let rankedPosts = blogPosts.map((post) => {
+  return {
+    post,
+    rank: analytics.find((x) => x.path === `/blog/${post.slug}/`)?.visits || 0,
+  }
+})
+
+rankedPosts = rankedPosts.sort((a, b) => b.rank - a.rank).splice(0, 10)
+
+const groups = []
+while (rankedPosts.length > 0) {
+  let featured: CollectionEntry<'blog'>[] = []
+  if (rankedPosts.length >= 3) {
+    featured = rankedPosts.splice(0, 3).map((m) => m.post)
+  }
+  groups.push({
+    featured,
+    posts: rankedPosts.splice(0, 4).map((m) => m.post),
+  })
+}
+
+const title = 'Michael Jolley - Bald Bearded Builder'
+const description =
+  'The home of Michael Jolley, the Bald Bearded Builder. Crafting unique learning experiences for myself and other organizations to enable developers to write better software.'
+const permalink = `https://${import.meta.env.HOST}/`
+const ograph =
+  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1688517887/website-assets/ograph/neon_gadgets_gtjbeh.png'
+---
+
+<BaseLayout {title} {description} {permalink} {ograph}>
+  <Mast404 />
+  <Separator />
+  <section class="wrapper">
+    <h3>
+      Sorry for the interruption. Maybe you're looking for one of these...
+    </h3>
+    {
+      groups.map((group, index) => {
+        const featuredColStart = index % 2 === 0 ? 1 : 2
+        return (
+          <>
+            {group.featured.length > 0 && (
+              <div class="featured">
+                <Tall
+                  post={group.featured[0]}
+                  class="md:row-start-1 md:row-span-2"
+                  style={`grid-column-start: ${featuredColStart};`}
+                />
+                <Small post={group.featured[1]} />
+                <Small post={group.featured[2]} />
+              </div>
+            )}
+            <ul>
+              {group.posts.map((post) => (
+                <li>
+                  <Condensed post={post} />
+                </li>
+              ))}
+            </ul>
+          </>
+        )
+      })
+    }
+  </section>
+</BaseLayout>
+
+<style lang="scss">
+  .wrapper {
+    @apply pb-12;
+
+    h3 {
+      @apply font-inter font-bold;
+      @apply text-gray-100;
+      @apply text-center;
+      @apply text-2xl;
+    }
+    .featured {
+      @apply py-12;
+      @apply grid grid-cols-1 md:grid-cols-2 gap-8;
+    }
+
+    ul {
+      @apply list-none grid grid-cols-1 sm:grid-cols-2 gap-12;
+    }
+  }
+</style>

@@ -1,0 +1,63 @@
+---
+import BrainDumpSmall from './BrainDumpSmall.astro'
+import Icon from './Icon.astro'
+import Separator from './Separator.astro'
+import Socials from './Socials.astro'
+---
+
+<footer>
+  <Separator />
+
+  <section class="wrapper">
+    <div>
+      <Icon icon="BBB" style="width:5rem;" class="icon" />
+
+      <nav>
+        <ul>
+          <li>
+            <a href="/">home</a>
+          </li>
+          <li>
+            <a href="/blog/">blog</a>
+          </li>
+          <li>
+            <a href="/speaking/">speaking</a>
+          </li>
+          <li>
+            <a href="/uses/">stuff I use</a>
+          </li>
+        </ul>
+        <ul>
+          <!-- <li>
+            <a href="/work-with-me/">work with me</a>
+          </li> -->
+          <li>
+            <a
+              href="https://youtube.com/baldbeardedbuilder"
+              rel="me"
+              target="_blank">videos</a
+            >
+          </li>
+          <li>
+            <a
+              href="https://twitch.tv/baldbeardedbuilder"
+              rel="me"
+              target="_blank">live streams</a
+            >
+          </li>
+          <li>
+            <a href="/code-of-conduct/">code of conduct</a>
+          </li>
+        </ul>
+      </nav>
+
+      <Socials />
+
+      <p class="copyright">
+        All Rights Reserved. &copy; 2023 Bald Bearded Builder
+      </p>
+    </div>
+
+    <BrainDumpSmall />
+  </section>
+</footer>

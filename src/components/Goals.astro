@@ -1,0 +1,71 @@
+---
+---
+
+<section>
+  <div class="wrapper">
+    <ul>
+      <li>
+        <img
+          aria-hidden="true"
+          height="64"
+          width="64"
+          src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1687208895/website-assets/educate.svg"
+          alt="Educate"
+          loading="lazy"
+        />
+        Educate.
+      </li>
+      <li>
+        <img
+          aria-hidden="true"
+          height="64"
+          width="64"
+          src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1687208895/website-assets/inspire.svg"
+          alt="Inspire"
+          loading="lazy"
+        />
+        Inspire.
+      </li>
+      <li>
+        <img
+          aria-hidden="true"
+          height="64"
+          width="64"
+          src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1687208895/website-assets/enjoy.svg"
+          alt="Enjoy"
+          loading="lazy"
+        />
+        Enjoy.
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style lang="scss">
+  section {
+    @apply py-4;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.03)
+    );
+    @apply border-t border-b border-grayBorder;
+
+    > .wrapper > ul {
+      @apply flex flex-col sm:flex-row items-center justify-between gap-8;
+      @apply p-6;
+
+      > li {
+        @apply flex flex-row whitespace-nowrap gap-4 items-center;
+        @apply text-2xl font-bold text-gradient;
+
+        img {
+          @apply h-16;
+          @apply border border-grayBorder;
+          @apply rounded-lg;
+          @apply p-2;
+        }
+      }
+    }
+  }
+</style>
