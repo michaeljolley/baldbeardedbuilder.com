@@ -17,7 +17,11 @@ export default defineConfig({
         applyAstroPreset: false,
       },
     }),
-    sitemap(),
+    sitemap({
+      filter: (page) =>
+        page !== 'https://baldbeardedbuilder.com/thanks/' &&
+        page !== 'https://baldbeardedbuilder.com/404/'
+    }),
     preact(),
     compress({
       logger: 0,
