@@ -1,0 +1,7 @@
+title: Dell PowerEdge R630
+description: This server has tons of storage and runs TrueNAS, which also runs Plex, OctoPrint, and Home Assistant.
+status: active
+category: Network
+rank: 0
+tags:
+  - server

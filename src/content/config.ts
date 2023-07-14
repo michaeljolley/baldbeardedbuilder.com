@@ -4,7 +4,7 @@ const gearCollection = defineCollection({
   type: 'data',
   schema: z.object({
     title: z.string(),
-    description: z.string(),
+    description: z.string().optional(),
     category: z.string(),
     status: z.enum(['active', 'retired', 'wishlist']),
     rank: z.number(),

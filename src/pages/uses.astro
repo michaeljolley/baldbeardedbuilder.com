@@ -10,9 +10,17 @@ const gearEntries = await getCollection(
   'gear'
 )
 
-const gear = gearEntries.sort((a, b) => {
-  return a.data.category > b.data.category ? 1 : -1
-})
+const groups = [...new Set(gearEntries.map(m => m.data.category))]
+  .map((group: string) => {
+    return {
+      name: group,
+      gear: gearEntries.filter((gear) => gear.data.category === group).sort((a, b) => {
+        return a.data.title > b.data.title ? 1 : -1
+      })
+    }
+  }).sort((a, b) => {
+    return a.name > b.name ? 1 : -1
+  })
 
 const title = 'Stuff Michael Uses'
 const description =
@@ -32,13 +40,20 @@ const ograph =
         links. That means if you purchase the item I get a little change from Amazon.
         So you get what you want/need and I get a coffee. Win/win.
       </blockquote>
-      <div>
-        {
-          gear.map((gear) => (
-            <Gear gear={gear.data} /> 
+      {
+        groups.map((group) => (
+          <>
+          <h2>{group.name}</h2>
+          <div>
+            {
+              group.gear.map((gear) => (
+                <Gear gear={gear.data} /> 
+              ))
+            }
+          </div>
+          </>
           ))
-        }
-      </div>
+      }
   </main>
 </section>
 </BaseLayout>
@@ -54,11 +69,12 @@ const ograph =
       @apply font-inter font-bold;
       @apply text-gray-100;
       @apply text-4xl md:text-4xl lg:text-5xl;
-      @apply mb-12;
+      @apply mt-12 mb-12;
     }
 
     main > div {
       @apply grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8;
+      @apply mb-24;
     }
   }
 </style>

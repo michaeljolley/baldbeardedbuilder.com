@@ -1,9 +1,6 @@
 title: Visual Studio Code (Insiders)
-description: Visual Studio Code is my go-to IDE for 100% of my development, but rather
-        than using the stable build, I use the insiders build. I've never experienced any weirdness by using it and it allows me
-        to try new features faster.
 status: active
-category: software
+category: Software
 rank: 0
 tags:
   - ide
