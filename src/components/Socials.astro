@@ -2,7 +2,7 @@
 import Icon from './Icon.astro'
 ---
 
-<ul class="socials" id="socials">
+<ul>
   <li>
     <a
       href="https://twitter.com/michaeljolley"
@@ -38,39 +38,6 @@ import Icon from './Icon.astro'
   </li>
   <li>
     <a
-      href="https://www.instagram.com/baldbeardedbuilder/"
-      rel="me"
-      target="_blank"
-      class="instagram"
-      title="Follow the fun on Instagram"
-    >
-      <Icon icon="Instagram" style="height:1.25rem;" class="icon" />
-    </a>
-  </li>
-  <li>
-    <a
-      href="https://www.linkedin.com/in/michaelwjolley/"
-      rel="me"
-      target="_blank"
-      class="linkedin"
-      title="Get professional on LinkedIn"
-    >
-      <Icon icon="LinkedIn" style="height:1.25rem;" class="icon" />
-    </a>
-  </li>
-  <li>
-    <a
-      href="https://github.com/michaeljolley"
-      rel="me"
-      target="_blank"
-      class="github"
-      title="Check out my code on GitHub"
-    >
-      <Icon icon="Github" style="height:1.25rem;" class="icon" />
-    </a>
-  </li>
-  <li>
-    <a
       href="https://discord.gg/kC8HTrs59R"
       rel="me"
       target="_blank"
@@ -81,3 +48,27 @@ import Icon from './Icon.astro'
     </a>
   </li>
 </ul>
+
+<style lang="scss">
+import '@styles/_variables';
+  ul {
+    display: none;
+    list-style: none;
+
+    @media screen and (min-width: $sm) {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .icon {
+      color: $light;
+      fill: $light;
+
+      &::hover,
+      &:active {
+        color: $green;
+        fill: $green;
+      }
+    }
+  }
+</style>

@@ -1,10 +1,10 @@
-import { defineConfig } from 'astro/config'
-import tailwind from '@astrojs/tailwind'
-import sitemap from '@astrojs/sitemap'
-import compress from 'astro-compress'
-import preact from '@astrojs/preact'
+import { defineConfig } from 'astro/config';
+import compress from 'astro-compress';
+import sitemap from '@astrojs/sitemap';
 
-import codeTheme from './monochrome-dark.json'
+import preact from '@astrojs/preact';
+
+import codeTheme from './code-theme.json';
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,15 +12,10 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   integrations: [
-    tailwind({
-      config: {
-        applyAstroPreset: false,
-      },
-    }),
     sitemap({
       filter: (page) =>
         page !== 'https://baldbeardedbuilder.com/thanks/' &&
-        page !== 'https://baldbeardedbuilder.com/404/'
+        page !== 'https://baldbeardedbuilder.com/404/',
     }),
     preact(),
     compress({
@@ -32,4 +27,4 @@ export default defineConfig({
       theme: codeTheme,
     },
   },
-})
+});

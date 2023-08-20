@@ -1,13 +1,5 @@
 ---
-import BaseLayout from '../layouts/base.astro'
-import type { Props as BaseHeadProps } from '../components/BaseHead.astro'
-import Mast from '../components/Mast.astro'
-import Intro from '../components/Intro.astro'
-import Separator from '../components/Separator.astro'
-import Proof from '../components/Proof.astro'
-import Goals from '../components/Goals.astro'
-import BrainDump from '../components/BrainDump.astro'
-import FeaturedPosts from '../components/FeaturedPosts.astro'
+import BaseLayout from '@layouts/base.astro'
 
 const title = 'Michael Jolley - Bald Bearded Builder'
 const description =
@@ -15,14 +7,10 @@ const description =
 const permalink = `https://${import.meta.env.HOST}/`
 const ograph =
   'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1688517887/website-assets/ograph/neon_gadgets_gtjbeh.png'
+
 ---
 
 <BaseLayout {title} {description} {permalink} {ograph}>
-  <Mast />
-  <Separator />
-  <Intro />
-  <Goals />
-  <BrainDump />
-  <Proof />
-  <FeaturedPosts />
+	<h1>test</h1>
 </BaseLayout>
+	

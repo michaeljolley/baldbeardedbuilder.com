@@ -1,4 +1,0 @@
-User-agent: * 
-Disallow: 
-
-Sitemap: https://baldbeardedbuilder.com/sitemap-index.xml
