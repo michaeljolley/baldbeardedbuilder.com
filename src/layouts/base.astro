@@ -2,6 +2,7 @@
 import BaseHead, {
   type Props as BaseHeadProps,
 } from '../components/BaseHead.astro';
+import Footer from '@components/Footer.astro';
 import Header from '@components/Header.astro';
 import SkipToContent from '@components/SkipToContent.astro';
 
@@ -20,28 +21,116 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
     <main id="content">
       <slot />
     </main>
-  </body><style lang="scss">
-    @import '@styles/_variables';
-
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: 100px;
-    }
-
-    html,
-    body {
-      height: 100%;
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      margin: 0;
-      padding: 0;
-
-      background-color: $bg-dark;
-      color: $light;
-      font-family: $inter;
-    }
-  </style>
+    <Footer />
+    <script src="../scripts/mode.ts"></script>
+  </body>
 </html>
+
+<style is:global>
+
+:root {
+  --dark: #262626;
+  --light: #fffefe;
+  --green: #1adbbb;
+  --blue: #14a5ed;
+  --purple: #7f64fb;
+  --pink: #f33265;
+  --yellow: #ffaf84;
+  --orange: #ff766c;
+  --gray: #777777;
+  --bg-dark: #121416;
+
+  --gradient: linear-gradient(
+    to right,
+    var(--green),
+    var(--blue),
+    var(--purple),
+    var(--pink),
+    var(--yellow),
+    var(--orange)
+  );
+
+  --glass-dark: rgba(38, 38, 38, 0.05);
+  --glass-light: rgba(255, 255, 255, 0.05);
+
+  --syne: 'Syne', sans-serif;
+  --inter: 'Inter', sans-serif;
+}
+
+[data-theme="light"] {
+  --bg: white;
+  --text: var(--dark);
+  --glass: var(--glass-dark);
+}
+
+[data-theme="dark"] {
+  --bg: var(--bg-dark);
+  --text: var(--light);
+  --glass: var(--glass-light);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+
+  color: var(--text);
+  font-family: var(--inter);
+
+  background: var(--bg) url('https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1692505933/website-assets/header.png') top center no-repeat;
+  background-size: contain;
+}
+
+main {
+  flex: 1;
+}
+
+.container {
+  width: 100%;
+  
+  /* @apply w-full;
+    @apply lg:mx-auto;
+    @apply lg:max-w-4xl xl:max-w-6xl;
+    @apply px-8; */
+}
+
+
+@media screen and (min-width: 640px) { /* sm */
+  .container {
+    max-width: 640px;
+  }
+}
+@media screen and (min-width: 768px) { /* md */
+  .container {
+    max-width: 768px;
+    margin: 0 auto;
+  }
+}
+@media screen and (min-width: 1024px) { /* lg */
+  .container {
+    max-width: 1024;
+  }
+}
+@media screen and (min-width: 1280px) { /* xl */
+  .container {
+    max-width: 1280px;
+  }
+}
+@media screen and (min-width: 1536px) { /* 2xl */
+  .container {
+    max-width: 1536px;
+  }
+}
+
+</style>

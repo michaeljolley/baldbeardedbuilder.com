@@ -1,7 +1,25 @@
 ---
+import Navigation from './Navigation.astro'
 import Socials from './Socials.astro'
 ---
 
 <header>
     <Socials />
+    <Navigation />
 </header>
+
+<style>
+  header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem 2rem;
+  }
+
+  @media screen and (min-width: 640px) {
+    header {
+      justify-content: space-between;
+    }
+  }
+</style>

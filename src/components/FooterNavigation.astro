@@ -1,0 +1,98 @@
+---
+---
+
+<nav>
+    <section>
+        <h5>About</h5>
+        <uL>
+            <li>
+                <a href="#">Speaking</a>
+            </li>
+            <li>
+                <a href="#">Work With Me</a>
+            </li>
+            <li>
+                <a href="#">What I Use</a>
+            </li>
+        </ul>
+    </section>
+    <section>
+        <h5>Content</h5>
+        <uL>
+            <li>
+                <a href="#">Videos</a>
+            </li>
+            <li>
+                <a href="#">Live Streams</a>
+            </li>
+            <li>
+                <a href="#">Blog</a>
+            </li>
+        </ul>
+    </section>
+    <section>
+        <h5>Community</h5>
+        <uL>
+            <li>
+                <a href="#">Brain Dump</a>
+            </li>
+            <li>
+                <a href="#">Build With Me</a>
+            </li>
+            <li>
+                <a href="#">Code of Conduct</a>
+            </li>
+        </ul>
+    </section>
+</nav>
+
+<style>
+:global([data-theme="light"]) {
+   --footer-link: var(--dark);
+   --footer-link-hover: var(--orange);
+}
+
+:global([data-theme="dark"]) {
+   --footer-link: var(--light);
+   --footer-link-hover: var(--green);
+}
+
+nav {
+    display: flex;
+}
+
+section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+h5 {
+    padding: 0;
+    margin: 0;
+}
+
+ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+li {
+    font-size: 0.8rem;
+}
+
+a {
+    color: var(--footer-link);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--footer-link-hover);
+}
+
+</style>

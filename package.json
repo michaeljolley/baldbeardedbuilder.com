@@ -1,5 +1,5 @@
 {
-  "name": "baldbeardedbuilder.com",
+  "name": "t",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
@@ -8,30 +8,22 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "format": "npx prettier --write .",
-    "lint": "npx eslint src"
+    "format": "npx prettier --config .prettierrc --write .",
+    "lint": "npx eslint src --fix"
   },
   "dependencies": {
-    "@astrojs/preact": "^2.2.2",
-    "astro": "^2.10.12",
-    "preact": "^10.17.1"
+    "astro": "^2.10.12"
   },
   "devDependencies": {
-    "@astrojs/sitemap": "^2.0.2",
-    "@astrojs/ts-plugin": "^1.1.1",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@typescript-eslint/parser": "^6.4.0",
-    "astro-compress": "^2.0.14",
     "eslint": "^8.47.0",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-astro": "^0.28.0",
-    "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-prettier": "^5.0.0",
     "node-html-parser": "^6.1.6",
     "prettier": "^3.0.2",
     "prettier-eslint": "^15.0.1",
     "prettier-plugin-astro": "^0.11.1",
-    "sass": "^1.66.1",
     "typescript": "^5.1.6"
   }
 }

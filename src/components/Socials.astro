@@ -49,26 +49,44 @@ import Icon from './Icon.astro'
   </li>
 </ul>
 
-<style lang="scss">
-import '@styles/_variables';
+<style>
+  
+:global([data-theme="light"]) {
+  --socials-link: var(--dark);
+  --socials-link-hover: var(--orange);
+}
+
+:global([data-theme="dark"]) {
+  --socials-link: var(--light);
+  --socials-link-hover: var(--green);
+}
+
   ul {
     display: none;
     list-style: none;
+    padding: 0;
+    margin: 0;
+  }
 
-    @media screen and (min-width: $sm) {
+  li:not(:last-child) {
+    margin-right: 1rem;
+  }
+
+  .icon {
+    color: var(--socials-link);
+    fill: var(--socials-link);
+  }
+
+  .icon:hover,
+  .icon:active {
+    color: var(--socials-link-hover);
+    fill: var(--socials-link-hover);
+  }
+
+  @media screen and (min-width: 640px) {
+    ul {
       display: flex;
       gap: 1rem;
-    }
-
-    .icon {
-      color: $light;
-      fill: $light;
-
-      &::hover,
-      &:active {
-        color: $green;
-        fill: $green;
-      }
     }
   }
 </style>

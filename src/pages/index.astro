@@ -1,16 +1,9 @@
 ---
-import BaseLayout from '@layouts/base.astro'
-
-const title = 'Michael Jolley - Bald Bearded Builder'
-const description =
-  'The home of Michael Jolley, the Bald Bearded Builder. Crafting unique learning experiences for myself and other organizations to enable developers to write better software.'
-const permalink = `https://${import.meta.env.HOST}/`
-const ograph =
-  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1688517887/website-assets/ograph/neon_gadgets_gtjbeh.png'
-
+import BaseLayout from "@layouts/base.astro";
+import Proof from "@components/Proof.astro";
 ---
 
-<BaseLayout {title} {description} {permalink} {ograph}>
-	<h1>test</h1>
+<BaseLayout>
+	<h1>Astro</h1>
+	<Proof />
 </BaseLayout>
-	
