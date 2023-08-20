@@ -1,17 +1,12 @@
 ---
 import FooterNavigation from './FooterNavigation.astro'
-import Socials from './Socials.astro'
+import FooterSocials from './FooterSocials.astro'
 ---
 
 <footer>
     <div class="container">
-        <section>
-            <FooterNavigation />
-            <p>&copy; 2023 Bald Bearded Builder</p>
-        </section>
-        <section>
-            <Socials/>
-        </section>
+       <FooterNavigation />
+       <FooterSocials/>
     </div>
 </footer>
 
@@ -25,23 +20,35 @@ import Socials from './Socials.astro'
 }
 
 footer {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-
     background: url('https://res.cloudinary.com/dk3rdh3yo/image/upload/v1692506116/website-assets/footer.png') center bottom no-repeat;
     background-size: cover;
     color: var(--footer-color);
 }
 
-section {
+.container {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    justify-content: space-between;
 }
 
 p {
     font-size: 0.75rem;
 }
 
+@media screen and (min-width: 640px) {
+    .container {
+    }
+}
+@media screen and (min-width: 768px) {
+    .container {
+        margin-top: 2rem;
+        flex-direction: row;
+    }
+}
+@media screen and (min-width: 1024px) {
+    .container {
+        margin-top: 3.5rem;
+        margin-bottom: 1.5rem;
+    }
+}
 </style>

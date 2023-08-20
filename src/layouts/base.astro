@@ -29,16 +29,23 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
 <style is:global>
 
 :root {
-  --dark: #262626;
-  --light: #fffefe;
-  --green: #1adbbb;
-  --blue: #14a5ed;
-  --purple: #7f64fb;
-  --pink: #f33265;
-  --yellow: #ffaf84;
-  --orange: #ff766c;
-  --gray: #777777;
-  --bg-dark: #121416;
+  --dark: rgb(38, 38, 38);
+  --light: rgb(255, 254, 254);
+  --green: rgb(26, 219, 187);
+  --blue: rgb(20, 165, 237);
+  --purple: rgb(127, 100, 251);
+  --pink: rgb(243, 50, 101);
+  --yellow: rgb(255, 175, 132);
+  --orange: rgb(255, 118, 108);
+  --gray: rgb(119, 119, 119);
+  --bg-dark: rgb(18, 20, 22);
+  
+  --green-fade: rgba(26, 219, 187, 0.2);
+  --blue-fade: rgba(20, 165, 237, 0.2);
+  --purple-fade: rgba(127, 100, 251, 0.2);
+  --pink-fade: rgba(243, 50, 101, 0.2);
+  --yellow-fade: rgba(255, 175, 132, 0.2);
+  --orange-fade: rgba(255, 118, 108, 0.2);
 
   --gradient: linear-gradient(
     to right,
@@ -48,6 +55,15 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
     var(--pink),
     var(--yellow),
     var(--orange)
+  );
+  --gradient-fade: linear-gradient(
+    to right,
+    var(--green-fade),
+    var(--blue-fade),
+    var(--purple-fade),
+    var(--pink-fade),
+    var(--yellow-fade),
+    var(--orange-fade)
   );
 
   --glass-dark: rgba(38, 38, 38, 0.05);
@@ -98,13 +114,7 @@ main {
 
 .container {
   width: 100%;
-  
-  /* @apply w-full;
-    @apply lg:mx-auto;
-    @apply lg:max-w-4xl xl:max-w-6xl;
-    @apply px-8; */
 }
-
 
 @media screen and (min-width: 640px) { /* sm */
   .container {

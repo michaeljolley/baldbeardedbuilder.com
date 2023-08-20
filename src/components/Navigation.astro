@@ -25,8 +25,8 @@ import Icon from "./Icon.astro";
 
 <style>
 :global([data-theme="light"]) {
-   --nav-link: var(--dark);
-   --nav-link-hover: var(--orange);
+   --nav-link: var(--light);
+   --nav-link-hover: var(--yellow);
 }
 
 :global([data-theme="dark"]) {
@@ -60,6 +60,8 @@ li:not(:first-child) {
 }
 
 a {
+    font-family: var(--syne);
+    font-weight: bold;
     color: var(--nav-link);
     text-decoration: none;
 }

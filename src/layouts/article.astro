@@ -1,0 +1,154 @@
+---
+import BaseLayout, {
+  type Props as BaseHeadProps,
+} from '@layouts/base.astro';
+
+export interface Props extends BaseHeadProps {}
+
+const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
+---
+
+<BaseLayout {title} {description} {permalink} {canonicalUrl} {ograph}>
+  <slot/>
+</BaseLayout>
+
+<style is:global>
+[data-theme="light"] {
+  --article-link: var(--orange);
+  --article-link-hover: var(--yellow);
+}
+
+[data-theme="dark"] {
+  --article-link: var(--blue);
+  --article-link-hover: var(--purple);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+article header {
+  margin: 5rem 0;
+}
+article header h1 {
+  text-align: center;
+  font-family: var(--syne);
+  font-size: 3rem;
+  line-height: 2.75rem;
+}
+
+article blockquote {
+  border: 1px solid;
+  border-image-source: var(--gradient);
+  border-image-slice: 1;
+  padding: 2rem;
+  background-image: var(--gradient-fade);
+}
+
+article h1,
+article h2,
+article h3,
+article h4,
+article h5,
+article h6 {
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--syne);
+}
+
+article h1 {
+  font-size: 3rem;
+  line-height: 1.5rem;
+}
+article h2 {
+  font-size: 2.5rem;
+  line-height: 1.5rem;
+}
+article h3 {
+  font-size: 2rem;
+  line-height: 1.25rem;
+}
+article h4 {
+  font-size: 1.75rem;
+  line-height: 1rem;
+}
+article h5 {
+  font-size: 1.5rem;
+  line-height: 1rem;
+}
+article h6 {
+  font-size: 1.25rem;
+  line-height: 1rem;
+}
+
+article a {
+  color: var(--article-link);
+  text-decoration: none;
+}
+article a:hover {
+  color: var(--article-link-hover);
+}
+
+article code {
+  font-weight: bold;
+  border: 1px solid;
+  padding: 0.1rem 0.25rem;
+  background-image: var(--gradient-fade);
+  border: 1px solid;
+  border-image-source: var(--gradient);
+  border-image-slice: 1;
+}
+
+article table {
+  width: 100%;
+  border: 1px solid;
+  border-image-source: var(--gradient);
+  border-image-slice: 1;
+}
+article table thead tr {
+  background-image: var(--gradient);
+}
+article table thead th {
+  color: var(--light);
+  font-family: var(--syne);
+}
+
+article table th,
+article table td {
+  text-align: left;
+  padding: 0.5rem;
+}
+
+article table tbody tr:nth-child(even) {
+  background-image: var(--gradient-fade);
+}
+
+@media screen and (min-width: 640px) { /* sm */
+  .container {
+    max-width: 640px;
+  }
+}
+@media screen and (min-width: 768px) { /* md */
+  .container {
+    max-width: 768px;
+    margin: 0 auto;
+  }
+}
+@media screen and (min-width: 1024px) { /* lg */
+  .container {
+    max-width: 1024;
+  }
+}
+@media screen and (min-width: 1280px) { /* xl */
+  .container {
+    max-width: 1280px;
+  }
+}
+@media screen and (min-width: 1536px) { /* 2xl */
+  .container {
+    max-width: 1536px;
+  }
+}
+
+</style>
