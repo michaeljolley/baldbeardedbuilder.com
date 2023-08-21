@@ -23,119 +23,142 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
     </main>
     <Footer />
     <script src="../scripts/mode.ts"></script>
+    <style is:global>
+      :root {
+        --dark: rgb(38, 38, 38);
+        --light: rgb(255, 254, 254);
+        --green: rgb(26, 219, 187);
+        --blue: rgb(20, 165, 237);
+        --purple: rgb(127, 100, 251);
+        --pink: rgb(243, 50, 101);
+        --yellow: rgb(255, 175, 132);
+        --orange: rgb(255, 118, 108);
+        --gray: rgb(119, 119, 119);
+        --bg-dark: rgb(18, 20, 22);
+
+        --green-fade: rgba(26, 219, 187, 0.2);
+        --blue-fade: rgba(20, 165, 237, 0.2);
+        --purple-fade: rgba(127, 100, 251, 0.2);
+        --pink-fade: rgba(243, 50, 101, 0.2);
+        --yellow-fade: rgba(255, 175, 132, 0.2);
+        --orange-fade: rgba(255, 118, 108, 0.2);
+
+        --gradient: linear-gradient(
+          to right,
+          var(--green),
+          var(--blue),
+          var(--purple),
+          var(--pink),
+          var(--yellow),
+          var(--orange)
+        );
+        --gradient-fade: linear-gradient(
+          to right,
+          var(--green-fade),
+          var(--blue-fade),
+          var(--purple-fade),
+          var(--pink-fade),
+          var(--yellow-fade),
+          var(--orange-fade)
+        );
+
+        --glass-dark: rgba(38, 38, 38, 0.05);
+        --glass-light: rgba(255, 255, 255, 0.05);
+
+        --syne: 'Syne', sans-serif;
+        --inter: 'Inter', sans-serif;
+      }
+
+      [data-theme='light'] {
+        --bg: white;
+        --text: var(--dark);
+        --glass: var(--glass-dark);
+      }
+
+      [data-theme='dark'] {
+        --bg: var(--bg-dark);
+        --text: var(--light);
+        --glass: var(--glass-light);
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 100px;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        padding: 0;
+
+        color: var(--text);
+        font-family: var(--inter);
+
+        background: var(--bg)
+          url('https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1692505933/website-assets/header.png')
+          no-repeat;
+        background-size: contain;
+        background-position: top center;
+      }
+
+      main {
+        flex: 1;
+      }
+
+      .container {
+        width: 100%;
+      }
+
+      @media screen and (min-width: 640px) {
+        /* sm */
+      }
+      @media screen and (min-width: 768px) {
+        /* md */
+      }
+      @media screen and (min-width: 1024px) {
+        /* lg */
+        .container {
+          max-width: 1024;
+          margin-left: auto;
+          margin-right: auto;
+        }
+      }
+      @media screen and (min-width: 1280px) {
+        /* xl */
+        body {
+          background-position: center -10%;
+        }
+        .container {
+          max-width: 1280px;
+        }
+      }
+      @media screen and (min-width: 1536px) {
+        /* 2xl */
+        body {
+          background-position: center -15%;
+        }
+        .container {
+          max-width: 1536px;
+        }
+      }
+      @media screen and (min-width: 1648px) {
+        /* 3xl */
+        body {
+          background-position: center -20%;
+        }
+      }
+      @media screen and (min-width: 1780px) {
+        /* 4xl */
+        body {
+          background-position: center -30%;
+        }
+      }
+    </style>
   </body>
 </html>
-
-<style is:global>
-
-:root {
-  --dark: rgb(38, 38, 38);
-  --light: rgb(255, 254, 254);
-  --green: rgb(26, 219, 187);
-  --blue: rgb(20, 165, 237);
-  --purple: rgb(127, 100, 251);
-  --pink: rgb(243, 50, 101);
-  --yellow: rgb(255, 175, 132);
-  --orange: rgb(255, 118, 108);
-  --gray: rgb(119, 119, 119);
-  --bg-dark: rgb(18, 20, 22);
-  
-  --green-fade: rgba(26, 219, 187, 0.2);
-  --blue-fade: rgba(20, 165, 237, 0.2);
-  --purple-fade: rgba(127, 100, 251, 0.2);
-  --pink-fade: rgba(243, 50, 101, 0.2);
-  --yellow-fade: rgba(255, 175, 132, 0.2);
-  --orange-fade: rgba(255, 118, 108, 0.2);
-
-  --gradient: linear-gradient(
-    to right,
-    var(--green),
-    var(--blue),
-    var(--purple),
-    var(--pink),
-    var(--yellow),
-    var(--orange)
-  );
-  --gradient-fade: linear-gradient(
-    to right,
-    var(--green-fade),
-    var(--blue-fade),
-    var(--purple-fade),
-    var(--pink-fade),
-    var(--yellow-fade),
-    var(--orange-fade)
-  );
-
-  --glass-dark: rgba(38, 38, 38, 0.05);
-  --glass-light: rgba(255, 255, 255, 0.05);
-
-  --syne: 'Syne', sans-serif;
-  --inter: 'Inter', sans-serif;
-}
-
-[data-theme="light"] {
-  --bg: white;
-  --text: var(--dark);
-  --glass: var(--glass-dark);
-}
-
-[data-theme="dark"] {
-  --bg: var(--bg-dark);
-  --text: var(--light);
-  --glass: var(--glass-light);
-}
-
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 100px;
-}
-
-html,
-body {
-  height: 100%;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
-
-  color: var(--text);
-  font-family: var(--inter);
-
-  background: var(--bg) url('https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1692505933/website-assets/header.png') top center no-repeat;
-  background-size: contain;
-}
-
-main {
-  flex: 1;
-}
-
-.container {
-  width: 100%;
-}
-
-@media screen and (min-width: 640px) { /* sm */
- 
-}
-@media screen and (min-width: 768px) { /* md */
-  
-}
-@media screen and (min-width: 1024px) { /* lg */
-  .container {
-    max-width: 1024;
-  }
-}
-@media screen and (min-width: 1280px) { /* xl */
-  .container {
-    max-width: 1280px;
-  }
-}
-@media screen and (min-width: 1536px) { /* 2xl */
-  .container {
-    max-width: 1536px;
-  }
-}
-
-</style>

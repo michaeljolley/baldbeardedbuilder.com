@@ -1,4 +1,4 @@
-import { defineCollection, reference, z } from 'astro:content'
+import { defineCollection, reference, z } from 'astro:content';
 
 const gearCollection = defineCollection({
   type: 'data',
@@ -11,7 +11,7 @@ const gearCollection = defineCollection({
     tags: z.array(z.string()).optional(),
     link: z.string().url().optional(),
   }),
-})
+});
 
 const blogCollection = defineCollection({
   type: 'content',
@@ -27,7 +27,7 @@ const blogCollection = defineCollection({
     featured: z.number().optional(),
     ograph: z.string().url().optional(),
   }),
-})
+});
 
 const talksCollection = defineCollection({
   type: 'content',
@@ -40,7 +40,7 @@ const talksCollection = defineCollection({
     featured: z.number().optional(),
     events: z.array(reference('events')),
   }),
-})
+});
 
 const eventsCollection = defineCollection({
   type: 'data',
@@ -50,11 +50,11 @@ const eventsCollection = defineCollection({
     location: z.string(),
     recording: z.string().url().optional(),
   }),
-})
+});
 
 export const collections = {
   blog: blogCollection,
   gear: gearCollection,
   talks: talksCollection,
   events: eventsCollection,
-}
+};

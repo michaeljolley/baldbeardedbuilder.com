@@ -51,13 +51,25 @@ import FooterSocials from './FooterSocials.astro';
       margin: 3.5rem 0 1.5rem 0;
     }
   }
-@media screen and (min-width: 1280px) { /* xl */
-  .container {
+  @media screen and (min-width: 1280px) {
+    /* xl */
+    .container {
       margin: 5rem auto 1.5rem auto;
+    }
   }
-}
-@media screen and (min-width: 1536px) { /* 2xl */
-  .container {
+  @media screen and (min-width: 1536px) {
+    /* 2xl */
   }
-}
+  @media screen and (min-width: 1648px) {
+    /* 3xl */
+    footer {
+      background-position: center -10%;
+    }
+  }
+  @media screen and (min-width: 1780px) {
+    /* 4xl */
+    footer {
+      background-position: center -20%;
+    }
+  }
 </style>

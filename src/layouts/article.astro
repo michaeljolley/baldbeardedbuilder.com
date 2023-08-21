@@ -1,7 +1,5 @@
 ---
-import BaseLayout, {
-  type Props as BaseHeadProps,
-} from '@layouts/base.astro';
+import BaseLayout, { type Props as BaseHeadProps } from '@layouts/base.astro';
 
 export interface Props extends BaseHeadProps {}
 
@@ -9,227 +7,275 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
 ---
 
 <BaseLayout {title} {description} {permalink} {canonicalUrl} {ograph}>
-  <slot/>
+  <slot />
 </BaseLayout>
 
 <style is:global>
-[data-theme="light"] {
-  --article-link: var(--orange);
-  --article-link-hover: var(--yellow);
-  --toc-link-active: var(--dark);
-  --article-table-th: var(--light);
-}
-
-[data-theme="dark"] {
-  --article-link: var(--blue);
-  --article-link-hover: var(--yellow);
-  --toc-link-active: var(--light);
-  --article-table-th: var(--dark);
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-}
-
-.container header {
-  margin: 5rem 0;
-  padding: 0 2rem;
-}
-.container header h1 {
-  text-align: center;
-  font-family: var(--syne);
-  font-size: 3rem;
-  line-height: 2.75rem;
-}
-
-article {
-  display: flex;
-  align-items: flex-start;
-  gap: 2rem;
-}
-
-article main blockquote {
-  border: 1px solid;
-  border-image-source: var(--gradient);
-  border-image-slice: 1;
-  padding: 2rem;
-  margin: 0;
-  margin-bottom: 2rem;
-  background-image: var(--gradient-fade);
-}
-
-article main h1,
-article main h2,
-article main h3,
-article main h4,
-article main h5,
-article main h6 {
-  margin-top: 2.5rem;
-  margin-bottom: 1.5rem;
-  font-family: var(--syne);
-}
-
-article main h1 {
-  font-size: 3rem;
-  line-height: 1.5rem;
-}
-article main h2 {
-  font-size: 2.5rem;
-  line-height: 1.5rem;
-}
-article main h3 {
-  font-size: 2rem;
-  line-height: 1.25rem;
-}
-article main h4 {
-  font-size: 1.75rem;
-  line-height: 1rem;
-}
-article main h5 {
-  font-size: 1.5rem;
-  line-height: 1rem;
-}
-article main h6 {
-  font-size: 1.25rem;
-  line-height: 1rem;
-}
-
-article main a {
-  color: var(--article-link);
-  text-decoration: none;
-}
-article main a:hover {
-  color: var(--article-link-hover);
-}
-
-article main p code {
-  font-weight: bold;
-  border: 1px solid;
-  padding: 0.1rem 0.25rem;
-  background-image: var(--gradient-fade);
-  border: 1px solid;
-  border-image-source: var(--gradient);
-  border-image-slice: 1;
-  display: inline-flex;
-}
-
-article main table {
-  width: 100%;
-  border: 1px solid;
-  border-image-source: var(--gradient);
-  border-image-slice: 1;
-  margin: 2rem 0;
-}
-article main table thead tr {
-  background-image: var(--gradient);
-}
-article main table thead th {
-  color: var(--article-table-th);
-  font-family: var(--syne);
-}
-
-article main table th,
-article main table td {
-  text-align: left;
-  padding: 0.5rem;
-}
-
-article main table tbody tr:nth-child(even) {
-  background-image: var(--gradient-fade);
-}
-
-article main ul {
-  list-style: square;
-  list-style-color: var(--green); 
-}
-article main ul li {
-  margin: 0.5rem 0;
-  padding-left: 0.5rem;
-}
-
-article main img {
-  --transition-duration: 700ms;
-  width: 75%;
-  margin: 2rem auto;
-  display: block;
-  padding: 0.75rem;
-  border: 4px solid;
-  border-image-source: var(--gradient);
-  border-image-slice: 1;
-  background-image: var(--gradient-fade);
-  transition: width var(--transition-duration);
-}
-article main img:hover {
-  width: 90%;  
-}
-
-article aside {
-  display: none;
-  flex-direction: column;
-  position: -webkit-sticky;
-  position: sticky;
-  top: 4rem;
-  z-index: 1;
-}
-
-article aside .toc,
-article aside .related {
-  padding: 0 1rem;
-}
-article aside .toc ul,
-article aside .related ul {
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  list-style: none;
-}
-article aside .toc ul li,
-article aside .related ul li {
-  font-size: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  border-left: 4px solid transparent;
-}
-article aside .toc ul li a,
-article aside .related ul li a {
-  color: var(--gray);
-  text-decoration: none;
-}
-article aside .toc ul li a:hover,
-article aside .related ul li a:hover {
-  color: var(--toc-link-active);
-}
-article aside .toc ul li.link--level3 {
-  padding-left: 2rem;
-}
-article aside .toc ul li.link--active {
-  border-image-source: var(--gradient);
-  border-image-slice: 1;
-}
-article aside .toc ul li.link--active a {
-  font-weight:  bold;
-  color: var(--toc-link-active);
-}
-
-@media screen and (min-width: 640px) { /* sm */
- 
-}
-@media screen and (min-width: 768px) { /* md */
-  article aside {
-    display: flex;
-    width: 28%;
+  [data-theme='light'] {
+    --article-link: var(--orange);
+    --article-link-hover: var(--yellow);
+    --toc-link-active: var(--dark);
+    --article-table-th: var(--light);
   }
-}
-@media screen and (min-width: 1024px) { /* lg */
-  
-}
-@media screen and (min-width: 1280px) { /* xl */
+
+  [data-theme='dark'] {
+    --article-link: var(--blue);
+    --article-link-hover: var(--yellow);
+    --toc-link-active: var(--light);
+    --article-table-th: var(--dark);
+  }
+
   .container {
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
   }
-}
-@media screen and (min-width: 1536px) { /* 2xl */
- 
-}
 
+  .container header {
+    margin: 5rem 0;
+    padding: 0 2rem;
+  }
+  .container header h1 {
+    text-align: center;
+    font-family: var(--syne);
+    font-size: 3rem;
+    line-height: 2.75rem;
+  }
+
+  article {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-bottom: 7rem;
+  }
+
+  article main blockquote {
+    border: 1px solid;
+    border-image-source: var(--gradient);
+    border-image-slice: 1;
+    padding: 2rem;
+    margin: 0;
+    margin-bottom: 2rem;
+    background-image: var(--gradient-fade);
+  }
+
+  article main h1,
+  article main h2,
+  article main h3,
+  article main h4,
+  article main h5,
+  article main h6 {
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+    font-family: var(--syne);
+  }
+
+  article main h1 {
+    font-size: 3rem;
+    line-height: 3rem;
+  }
+  article main h2 {
+    font-size: 2.5rem;
+    line-height: 2.5rem;
+  }
+  article main h3 {
+    font-size: 2rem;
+    line-height: 2rem;
+  }
+  article main h4 {
+    font-size: 1.75rem;
+    line-height: 1.75rem;
+  }
+  article main h5 {
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+  }
+  article main h6 {
+    font-size: 1.25rem;
+    line-height: 1.25rem;
+  }
+
+  article main a {
+    color: var(--article-link);
+    text-decoration: none;
+  }
+  article main a:hover {
+    color: var(--article-link-hover);
+  }
+
+  article main p code {
+    font-weight: bold;
+    border: 1px solid;
+    padding: 0.1rem 0.25rem;
+    background-image: var(--gradient-fade);
+    border: 1px solid;
+    border-image-source: var(--gradient);
+    border-image-slice: 1;
+    display: inline-flex;
+  }
+
+  article main table {
+    width: 100%;
+    border: 1px solid;
+    border-image-source: var(--gradient);
+    border-image-slice: 1;
+    margin: 2rem 0;
+  }
+  article main table thead tr {
+    background-image: var(--gradient);
+  }
+  article main table thead th {
+    color: var(--article-table-th);
+    font-family: var(--syne);
+  }
+
+  article main table th,
+  article main table td {
+    text-align: left;
+    padding: 0.5rem;
+  }
+
+  article main table tbody tr:nth-child(even) {
+    background-image: var(--gradient-fade);
+  }
+
+  article main ul {
+    list-style: square;
+    list-style-color: var(--green);
+  }
+  article main ul li {
+    margin: 0.5rem 0;
+    padding-left: 0.5rem;
+    text-wrap: pretty;
+  }
+
+  article main img {
+    --transition-duration: 700ms;
+    width: 75%;
+    margin: 2rem auto;
+    display: block;
+    padding: 0.75rem;
+    border: 4px solid;
+    border-image-source: var(--gradient);
+    border-image-slice: 1;
+    background-image: var(--gradient-fade);
+    transition: width var(--transition-duration);
+  }
+  article main img:hover {
+    width: 90%;
+  }
+
+  article main pre {
+    --transition-duration: 700ms;
+
+    margin: 2rem auto;
+    display: flex;
+    width: 40%;
+    justify-self: center;
+    text-wrap: pretty;
+
+    border: 4px solid;
+    border-image-source: var(--gradient);
+    border-image-slice: 1;
+    padding: 1rem;
+    scrollbar-width: thin;
+    scrollbar-color: red orange;
+    max-height: 25rem;
+
+    transition: width var(--transition-duration);
+  }
+  article main pre:hover {
+    width: 90%;
+  }
+  article main pre:-webkit-scrollbar {
+    width: 0.7rem;
+    background: transparent;
+  }
+  article main pre:-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  article main pre:-webkit-scrollbar-thumb {
+    width: 5px;
+    border: solid 0.075rem rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  article aside {
+    display: none;
+    flex-direction: column;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 4rem;
+    z-index: 1;
+  }
+
+  article aside .toc,
+  article aside .related {
+    padding: 0 1rem;
+  }
+  article aside .toc ul,
+  article aside .related ul {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    list-style: none;
+  }
+  article aside .toc ul li,
+  article aside .related ul li {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-left: 4px solid transparent;
+  }
+  article aside .toc ul li a,
+  article aside .related ul li a {
+    color: var(--gray);
+    text-decoration: none;
+  }
+  article aside .toc ul li a:hover,
+  article aside .related ul li a:hover {
+    color: var(--toc-link-active);
+  }
+  article aside .toc ul li.link--level3 {
+    padding-left: 2rem;
+  }
+  article aside .toc ul li.link--active {
+    border-image-source: var(--gradient);
+    border-image-slice: 1;
+  }
+  article aside .toc ul li.link--active a {
+    font-weight: bold;
+    color: var(--toc-link-active);
+  }
+
+  @media screen and (min-width: 640px) {
+    /* sm */
+    article main pre {
+      width: 80%;
+    }
+  }
+  @media screen and (min-width: 768px) {
+    /* md */
+    article aside {
+      display: flex;
+      width: 28%;
+    }
+  }
+  @media screen and (min-width: 1024px) {
+    /* lg */
+    .container header h1 {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .container header h1 {
+      max-width: 70%;
+    }
+  }
+  @media screen and (min-width: 1280px) {
+    /* xl */
+    .container {
+      margin: 0 auto;
+    }
+  }
+  @media screen and (min-width: 1536px) {
+    /* 2xl */
+  }
 </style>
