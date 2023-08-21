@@ -1,54 +1,63 @@
 ---
-import FooterNavigation from './FooterNavigation.astro'
-import FooterSocials from './FooterSocials.astro'
+import FooterNavigation from './FooterNavigation.astro';
+import FooterSocials from './FooterSocials.astro';
 ---
 
 <footer>
-    <div class="container">
-       <FooterNavigation />
-       <FooterSocials/>
-    </div>
+  <div class="container">
+    <FooterNavigation />
+    <FooterSocials />
+  </div>
 </footer>
 
 <style>
-:global([data-theme="light"]) {
-   --footer-color: var(--dark);
-}
+  :global([data-theme='light']) {
+    --footer-color: var(--dark);
+  }
 
-:global([data-theme="dark"]) {
-   --footer-color: var(--light);
-}
+  :global([data-theme='dark']) {
+    --footer-color: var(--light);
+  }
 
-footer {
-    background: url('https://res.cloudinary.com/dk3rdh3yo/image/upload/v1692506116/website-assets/footer.png') center bottom no-repeat;
+  footer {
+    background: url('https://res.cloudinary.com/dk3rdh3yo/image/upload/v1692506116/website-assets/footer.png')
+      center bottom no-repeat;
     background-size: cover;
     color: var(--footer-color);
-}
+  }
 
-.container {
+  .container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-}
+  }
 
-p {
+  p {
     font-size: 0.75rem;
-}
+  }
 
-@media screen and (min-width: 640px) {
+  @media screen and (min-width: 640px) {
     .container {
     }
+  }
+  @media screen and (min-width: 768px) {
+    .container {
+      margin-top: 2rem;
+      flex-direction: row;
+    }
+  }
+  @media screen and (min-width: 1024px) {
+    .container {
+      margin: 3.5rem 0 1.5rem 0;
+    }
+  }
+@media screen and (min-width: 1280px) { /* xl */
+  .container {
+      margin: 5rem auto 1.5rem auto;
+  }
 }
-@media screen and (min-width: 768px) {
-    .container {
-        margin-top: 2rem;
-        flex-direction: row;
-    }
-}
-@media screen and (min-width: 1024px) {
-    .container {
-        margin-top: 3.5rem;
-        margin-bottom: 1.5rem;
-    }
+@media screen and (min-width: 1536px) { /* 2xl */
+  .container {
+  }
 }
 </style>

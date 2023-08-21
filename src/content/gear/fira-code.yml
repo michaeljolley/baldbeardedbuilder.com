@@ -1,0 +1,9 @@
+title: Fira Code Font
+description: For all my development, I love using Fira Code with ligatures enabled.
+status: active
+category: Software
+rank: 0
+tags:
+  - terminal
+  - ide
+link: https://github.com/tonsky/FiraCode

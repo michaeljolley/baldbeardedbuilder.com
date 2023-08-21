@@ -1,0 +1,47 @@
+---
+import ArticleLayout from '@layouts/article.astro';
+import { getCollection, type CollectionEntry } from 'astro:content'
+import TableOfContents from '@components/TableOfContents'
+import RelatedPosts from '@components/RelatedPosts.astro'
+
+export async function getStaticPaths() {
+  const blogEntries = await getCollection(
+    'blog',
+    ({ data } : CollectionEntry) => data.pubDate < new Date()
+  )
+
+  return blogEntries.map((entry: CollectionEntry) => ({
+    params: { slug: entry.slug },
+    props: { post: entry },
+  }))
+}
+
+const { slug } = Astro.params
+const { post } = Astro.props
+const { title, description, tags, canonicalUrl, ograph } = post.data
+const { Content, headings } = await post.render()
+const permalink = `https://${import.meta.env.HOST}/blog/${slug}/`
+---
+
+<ArticleLayout {title} {description} {tags} {canonicalUrl} {ograph}>
+  <div class="container">
+    <header>
+      <h1>{title}</h1>
+    </header>
+    <article>
+      <main>
+        <Content />
+      </main>
+      <aside>
+        <TableOfContents {headings} client:load />
+        <RelatedPosts {slug} {tags} />
+      </aside>
+    </article>
+  </div>
+</ArticleLayout>
+
+<style>
+  article {
+    padding: 0 2rem;
+  }
+</style>
