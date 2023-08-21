@@ -4,16 +4,17 @@ import ArticleLayout from "@layouts/article.astro";
 
 <ArticleLayout>
 	<div class="container">
+		<header>
+			<h1>Building a Discord Bot to Improve Inclusive Language</h1>
+		</header>
 		<article>
-			<header>
-				<h1>Building a Discord Bot to Improve Inclusive Language</h1>
-			</header>
+			<main>
 
 			<blockquote>
 				So I built a workflow that allows people to call and leave me a 
 				message that will automatically be transcribed and emailed to me. 
 				This tutorial will show you how to build the same workflow using 
-				Twilio Studio, Pipedream, and Deepgram.
+				<a href="#">Twilio Studio</a>, Pipedream, and Deepgram.
 			</blockquote>
 			
 			<p>Personalized short URLs look so cool. Sure, I could use a service 
@@ -118,7 +119,26 @@ import ArticleLayout from "@layouts/article.astro";
 				I love building things, even when I don't need to. It allows me to 
 				explore and learn new things.</p>
 
-
+			</main>
+			<aside>
+				<nav aria-label="Table of Contents" class="toc">
+					<ul>
+						<li class="link--level2"><a href="#">How It Works</a></li>
+						<li class="link--level2"><a href="#">Prerequisites</a></li>
+						<li class="link--level3 link--active"><a href="#">Creating a Twilio Studio Flow</a></li>
+						<li class="link--level3"><a href="#">Configuring Your Twilio Phone Number</a></li>
+						<li class="link--level2"><a href="#">Conclusion</a></li>
+						<li></li>
+					</ul>
+				</nav>
+				<section class="related">
+					<h3>Related Articles</h3>
+					<ul>
+						<li><a href="#">Using Polywork to Break My Unconscious Biases</a></li>
+						<li><a href="#">Updating Notion Cover Images with Pipedream and JavaScript</a></li>
+					</ul>
+				</section>
+			</aside>
 		</article>
 	</div>
 </ArticleLayout>

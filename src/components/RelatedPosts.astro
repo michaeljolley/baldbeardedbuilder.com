@@ -1,0 +1,64 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content'
+import { getAnalytics } from '../scripts/supabase'
+
+interface Props {
+  slug: string | undefined
+  tags: string[]
+}
+
+const { slug: postSlug, tags } = Astro.props
+
+const analytics = await getAnalytics()
+
+const relatedPosts = await getCollection(
+  'blog',
+  ({ slug, data }: CollectionEntry) =>
+    data.tags?.some((tag: string) => tags.includes(tag)) && slug !== postSlug
+)
+
+if (relatedPosts.length < 3) {
+  const topPosts = analytics.sort((a, b) => b.visits - a.visits).slice(0, 5)
+
+  let morePosts = await getCollection(
+    'blog',
+    ({ slug }: CollectionEntry) =>
+      relatedPosts.map((post: CollectionEntry) => post.slug).includes(slug) === false &&
+      slug !== postSlug &&
+      topPosts
+        .map(({ path }) => path.replace('/blog/', '').replace('/', ''))
+        .includes(slug)
+  )
+
+  relatedPosts.push(
+    ...morePosts
+      .sort((a: CollectionEntry, b: CollectionEntry) => {
+        const aAnalytic = analytics.find(({ path }) => path === a.slug)
+        const bAnalytic = analytics.find(({ path }) => path === b.slug)
+
+        const aVisits = aAnalytic ? aAnalytic.visits : 0
+        const bVisits = bAnalytic ? bAnalytic.visits : 0
+
+        return bVisits - aVisits
+      })
+      .slice(0, 3 - relatedPosts.length)
+  )
+}
+---
+
+{
+  relatedPosts.length > 0 && (
+    <section>
+      <h3>Related Reading</h3>
+      <ul>
+        {
+            relatedPosts.map((post: CollectionEntry) => 
+            (
+                <li><a href={`/blog/${post.slug}/`}>{post.data.title}</a></li>
+            )
+            )
+        }
+        </ul>
+    </section>
+  )
+}

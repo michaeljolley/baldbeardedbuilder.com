@@ -12,7 +12,10 @@
     "lint": "npx eslint src --fix"
   },
   "dependencies": {
-    "astro": "^2.10.12"
+    "@astrojs/preact": "^2.2.2",
+    "@supabase/supabase-js": "^2.32.0",
+    "astro": "^2.10.12",
+    "preact": "^10.17.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.4.0",
