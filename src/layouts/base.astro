@@ -51,7 +51,7 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
           var(--pink),
           var(--yellow),
           var(--orange)
-        ); 
+        );
         --gradient-vert: linear-gradient(
           to bottom,
           var(--green),
@@ -82,12 +82,14 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
         --bg: white;
         --text: var(--dark);
         --glass: var(--glass-dark);
+        --flip-filter: invert(1) hue-rotate(180deg);
       }
 
       [data-theme='dark'] {
         --bg: var(--bg-dark);
         --text: var(--light);
         --glass: var(--glass-light);
+        --flip-filter: invert(0) contrast(85%) hue-rotate(0deg);
       }
 
       html {
@@ -122,6 +124,16 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
 
       .container {
         width: 100%;
+      }
+
+      .center {
+        text-align: center;
+      }
+
+      .flip {
+        filter: var(--flip-filter);
+        background: unset;
+        border: unset;
       }
 
       @media screen and (min-width: 640px) {

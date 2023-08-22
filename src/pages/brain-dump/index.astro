@@ -1,17 +1,24 @@
 ---
 import ArticleLayout from '@layouts/article.astro';
-import { getCollection } from 'astro:content'
-import BrainDumpSmall from '@components/Cards/BrainDumpSmall.astro'
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BrainDumpSmall from '@components/Cards/BrainDumpSmall.astro';
+import BrainDump from '@components/BrainDump.astro';
 
-const brainDumps = await getCollection('brainDump')
+let brainDumps = await getCollection('brainDump');
+brainDumps = brainDumps.sort(
+  (a: CollectionEntry<'brainDump'>, b: CollectionEntry<'brainDump'>) => {
+    return (
+      new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+    );
+  }
+);
 
-const title = 'Brain Dump - Weekly tech news, gadgets, tips & more'
+const title = 'Brain Dump - Weekly tech news, gadgets, tips & more';
 const description =
-  'The Brain Dump is a weekly newsletter that covers the latest in tech, gadgets, security, and more.'
-const permalink = `https://${import.meta.env.HOST}/brain-dump/`
+  'The Brain Dump is a weekly newsletter that covers the latest in tech, gadgets, security, and more.';
+const permalink = `https://${import.meta.env.HOST}/brain-dump/`;
 const ograph =
-  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1689271118/website-assets/two_neon_robots_holding_hands_te9zic.png'
-
+  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1689271118/website-assets/two_neon_robots_holding_hands_te9zic.png';
 ---
 
 <ArticleLayout {title} {description} {permalink} {ograph}>
@@ -22,16 +29,13 @@ const ograph =
     </header>
     <article>
       <main>
-        
+        <BrainDump />
 
-        <h2>Previous Brain Dumps</h2>
+        <h2 class="center">Previous Brain Dumps</h2>
 
         <ul>
-          {brainDumps.map((brainDump) => (
-            <BrainDumpSmall {brainDump} />
-          ))}
+          {brainDumps.map((brainDump) => <BrainDumpSmall {brainDump} />)}
         </ul>
-
       </main>
     </article>
   </div>
@@ -45,11 +49,16 @@ const ograph =
     display: grid;
     grid-template-columns: 1;
     gap: 2rem;
+    padding: 0;
   }
   @media screen and (min-width: 768px) {
-        /* md */
-        ul {
-    grid-template-columns: repeat(2, 1fr);
+    ul {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
-      }
+  @media screen and (min-width: 1536px) {
+    ul {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
 </style>

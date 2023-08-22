@@ -5,12 +5,12 @@ import TableOfContents from '@components/TableOfContents';
 import RelatedPosts from '@components/RelatedPosts.astro';
 
 export async function getStaticPaths() {
-  const blogEntries = await getCollection(
-    'blog',
-    ({ data }: CollectionEntry<'blog'>) => data.pubDate < new Date()
+  const brainDumps = await getCollection(
+    'brainDump',
+    ({ data }: CollectionEntry<'brainDump'>) => data.pubDate < new Date()
   );
 
-  return blogEntries.map((entry: CollectionEntry<'blog'>) => ({
+  return brainDumps.map((entry: CollectionEntry<'brainDump'>) => ({
     params: { slug: entry.slug },
     props: { post: entry },
   }));
@@ -18,12 +18,12 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const { post } = Astro.props;
-const { title, description, tags, canonicalUrl, ograph } = post.data;
+const { title, description, tags, ograph } = post.data;
 const { Content, headings } = await post.render();
-const permalink = `https://${import.meta.env.HOST}/blog/${slug}/`;
+const permalink = `https://${import.meta.env.HOST}/brain-dump/${slug}/`;
 ---
 
-<ArticleLayout {title} {description} {tags} {canonicalUrl} {ograph}>
+<ArticleLayout {title} {description} {permalink} {ograph}>
   <div class="container">
     <header>
       <h1>{title}</h1>
