@@ -29,6 +29,17 @@ const blogCollection = defineCollection({
   }),
 });
 
+const brainDumpCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    pubDate: z.date(),
+    title: z.string(),
+    description: z.string(),
+    tags: z.array(z.string()).optional(),
+    summary: z.string(),
+  }),
+});
+
 const talksCollection = defineCollection({
   type: 'content',
   schema: z.object({
@@ -54,6 +65,7 @@ const eventsCollection = defineCollection({
 
 export const collections = {
   blog: blogCollection,
+  brainDumps: brainDumpCollection,
   gear: gearCollection,
   talks: talksCollection,
   events: eventsCollection,

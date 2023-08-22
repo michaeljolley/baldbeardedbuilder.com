@@ -1,0 +1,43 @@
+---
+import type { CollectionEntry  } from "astro";
+
+export interface Props {
+    brainDump: CollectionEntry <'brainDump'>;
+}
+    
+const { brainDump } = Astro.props;
+---
+
+<li>
+    <h4>{brainDump.data.title}</h4>
+    <p>{brainDump.data.summary}</p>
+    <date>{brainDump.data.pubDate}</date>
+</li>
+
+<style>
+    li {
+        border-image-source: var(--gradient-vert);
+        border-left: 3px solid;
+        border-image-slice: 1;
+        padding-left: 2.5rem;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-evenly;
+    }
+    li h4 {
+        font-family: var(--inter);
+        font-size: 1.25rem;
+        margin: 0;
+        padding: 0;
+        color: var(--text);
+    }
+    p {
+        color: var(--gray);
+    }
+    date {
+        font-size: 0.75rem;
+        color: var(--gray);
+    }
+</style>

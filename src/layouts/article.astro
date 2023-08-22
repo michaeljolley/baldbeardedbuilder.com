@@ -40,6 +40,12 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
     font-size: 3rem;
     line-height: 2.75rem;
   }
+  .container header p {
+    text-align: center;
+    font-family: var(--inter);
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+  }
 
   article {
     display: flex;
@@ -111,6 +117,7 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
     border-image-source: var(--gradient);
     border-image-slice: 1;
     display: inline-flex;
+    word-break: break-all;
   }
 
   article main table {
@@ -149,8 +156,7 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
   }
 
   article main img {
-    --transition-duration: 700ms;
-    width: 75%;
+    width: 90%;
     margin: 2rem auto;
     display: block;
     padding: 0.75rem;
@@ -160,16 +166,12 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
     background-image: var(--gradient-fade);
     transition: width var(--transition-duration);
   }
-  article main img:hover {
-    width: 90%;
-  }
 
   article main pre {
-    --transition-duration: 700ms;
 
     margin: 2rem auto;
     display: flex;
-    width: 40%;
+    width: 90%;
     justify-self: center;
     text-wrap: pretty;
 
@@ -180,11 +182,7 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
     scrollbar-width: thin;
     scrollbar-color: red orange;
     max-height: 25rem;
-
-    transition: width var(--transition-duration);
-  }
-  article main pre:hover {
-    width: 90%;
+    word-break: break-all;
   }
   article main pre:-webkit-scrollbar {
     width: 0.7rem;
@@ -197,6 +195,51 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
     width: 5px;
     border: solid 0.075rem rgba(255, 255, 255, 0.3);
     background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  article main form {
+    margin: 2rem 0;
+  }
+
+  article main form label {
+    font-family: var(--syne);
+    font-weight: bold;
+  }
+  article main form label .required {
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+    color: var(--orange);
+  }
+
+  article main form input,
+  article main form textarea {
+    border: 1px solid var(--text);
+    padding: 1rem;
+    background-color: var(--bg);
+    width: 50%;
+    color: var(--text);
+  }
+  article main form input:focus,
+  article main form textarea:focus {
+    outline: none;
+    border-image-source: var(--gradient);
+    border-image-slice: 1;
+  }
+
+  article main form button {
+    border: 1px solid;
+    border-image-source: var(--gradient);
+    border-image-slice: 1;
+    padding: 0.75rem 2rem;
+    background: var(--bg);
+    font-family: var(--syne);
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: var(--text);
+  }
+  article main form button:hover {
+    background-image: var(--gradient-fade);
+    cursor: pointer;
   }
 
   article aside {
