@@ -74,7 +74,7 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
         --glass-dark: rgba(38, 38, 38, 0.05);
         --glass-light: rgba(255, 255, 255, 0.05);
 
-        --shadow-dark: 0 0 10px rgba(0, 0, 0, 0.2);
+        --shadow-dark: 0 0 10px rgba(0, 0, 0, 0.25);
         --shadow-light: 0 0 10px rgba(0, 0, 0, 0.75);
 
         --syne: 'Syne', sans-serif;
@@ -182,6 +182,9 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
         }
         .container {
           max-width: 1536px;
+        }
+        .cards {
+          grid-template-columns: repeat(3, 1fr);
         }
       }
       @media screen and (min-width: 1648px) {
