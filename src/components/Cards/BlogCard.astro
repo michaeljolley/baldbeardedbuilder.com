@@ -1,0 +1,56 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { title, summary, image, image_alt } = post.data;
+---
+
+<li class="card">
+  <a href={`/blog/${post.slug}/`}>
+    <section>
+      <h3>{title}</h3>
+      <p>{summary}</p>
+    </section>
+  </a>
+</li>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    box-shadow: var(--shadow);
+  }
+  .card a {
+  }
+  .card a:hover {
+  }
+  section {
+    padding: 2.5rem 2rem 1rem 2rem;
+    display: flex;
+  }
+  div {
+    border-right: 5px solid;
+    border-image-source: var(--gradient-vert);
+    border-image-slice: 1;
+    padding-right: 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .card > img {
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    object-fit: cover;
+  }
+  .card h3 {
+    margin: 0;
+  }
+</style>

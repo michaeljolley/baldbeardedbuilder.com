@@ -1,38 +1,38 @@
 ---
-import ArticleLayout from "@layouts/article.astro";
-import { getCollection, CollectionEntry } from 'astro:content'
+import BlogCard from '@components/Cards/BlogCard.astro';
+import ArticleLayout from '@layouts/article.astro';
+import { getCollection, CollectionEntry } from 'astro:content';
 
-let blogPosts = await getCollection('blog')
+let blogPosts = await getCollection('blog');
 
 blogPosts = blogPosts.sort(
   (a, b) => new Date(b.data.pubDate) - new Date(a.data.pubDate)
-)
-const title = "Michael's Blog Posts"
+);
+const title = "Michael's Blog Posts";
 const description =
-  'A listing of blog posts by Michael Jolley, the bald bearded builder.'
-const permalink = `https://${import.meta.env.HOST}/blog/`
+  'A listing of blog posts by Michael Jolley, the bald bearded builder.';
+const permalink = `https://${import.meta.env.HOST}/blog/`;
 const ograph =
-  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1688515828/website-assets/ograph/neon_computers_hu9vou.png'
-
+  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1688515828/website-assets/ograph/neon_computers_hu9vou.png';
 ---
 
 <ArticleLayout {title} {description} {permalink} {ograph}>
-	<div class="container">
-		<header>
-			<h1>All Posts</h1>
-		</header>
-		<article>
-			<main>
-				{
-					blogPosts.map((post) => <p><a href={`/blog/${post.slug}/`}>{post.data.title}</a></p>)
-				}
-			</main>
-		</article>
-	</div>
+  <div class="container">
+    <header>
+      <h1>All Posts</h1>
+    </header>
+    <article>
+      <main>
+        <ul class="cards">
+          {blogPosts.map((post) => <BlogCard {post} />)}
+        </ul>
+      </main>
+    </article>
+  </div>
 </ArticleLayout>
 
 <style>
-article {
-	padding: 0 2rem;
-}
+  article {
+    padding: 0 2rem;
+  }
 </style>
