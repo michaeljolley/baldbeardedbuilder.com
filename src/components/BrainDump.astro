@@ -2,13 +2,15 @@
 
 ---
 
-<section>
+<section class="brainDump">
   <div>
     <p>
-      Let's learn together with the Brain Dump newsletter. Michael curates the
-      latest news, gadgets, productivity hacks, and more in his newsletter.
+      Let's learn together with the Brain Dump newsletter! Each week, Michael 
+      curates the latest news, gadgets, and productivity hacks he finds and 
+      sends it to you every Monday morning, along with the latest content
+      created by members of the Build with Me community.
     </p>
-    <p>
+    <p class="fine-print">
       You can unsubscribe at any time and I will never sell your information to
       others.
     </p>
@@ -44,22 +46,40 @@
         />
       </p>
       <p>
-        <button type="submit">Submit</button>
+        <button type="submit">Subscribe</button>
       </p>
     </form>
-  </div>
-  <div>
-    <img
-      class="flip"
-      src="https://res.cloudinary.com/dk3rdh3yo/image/upload/v1688239156/website-assets/brain.png"
-    />
-  </div>
+  </div>  
+  <img
+    class="flip"
+    src="https://res.cloudinary.com/dk3rdh3yo/image/upload/v1688239156/website-assets/brain.png"
+    alt="AI generated art of neon brain made of circuitry dripping information."
+  />
 </section>
 
 <style>
-  section {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
+  .brainDump {
+    display: flex;
+  }
+  .brainDump > img {
+    display: none;
+  }
+  .fine-print {
+    color: var(--gray);
+    font-size: 0.8rem;
+  }
+  
+  @media screen and (min-width: 768px) {
+    .brainDump {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+    .brainDump div:first-child {
+      margin-left: 5rem;
+    }
+    .brainDump > img {
+      display: block;
+    }
   }
 </style>

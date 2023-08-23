@@ -1,45 +1,58 @@
 ---
-import Icon from "./Icon.astro";
+import Icon from './Icon.astro';
 ---
 
 <nav>
-    <ul>
-        <li>
-            <a href="/">
-                <Icon icon="BBB" style="height:1.25rem;" />
-            </a>
-        </li>
-        <li>
-            <a href="/blog/">Blog</a>
-        </li>
-        <li>
-            <a href="/speaking/">Speaking</a>
-        </li>
-        <li>
-            <button data-theme-toggle aria-label="Toggle light & dark mode">
-                Toggle
-            </button>
-        </li>
-    </ul>
+  <ul>
+    <li>
+      <a href="/">
+        <Icon icon="BBB" style="height:1.25rem;" />
+      </a>
+    </li>
+    <li>
+      <a href="/blog/">Blog</a>
+    </li>
+    <li>
+      <a href="/speaking/">Speaking</a>
+    </li>
+    <li>
+      <button data-theme-toggle aria-label="Toggle light & dark mode">
+        <Icon icon="Sun" class="sun" style="height:1.25rem;width:1.25rem;" />
+        <Icon icon="Moon" class="moon" style="height:1.25rem;width:1.25rem;" />
+      </button>
+    </li>
+  </ul>
 </nav>
 
 <style>
-:global([data-theme="light"]) {
-   --nav-link: var(--light);
-   --nav-link-hover: var(--yellow);
-}
+  :global([data-theme='light']) {
+    --nav-link: var(--light);
+    --nav-link-hover: var(--yellow);
+    .sun {
+      display: block;
+    }
+    .moon {
+      display: none;
+    }
+  }
 
-:global([data-theme="dark"]) {
-   --nav-link: var(--light);
-   --nav-link-hover: var(--green);
-}
+  :global([data-theme='dark']) {
+    --nav-link: var(--light);
+    --nav-link-hover: var(--green);
+    .sun {
+      display: none;
+    }
+    .moon {
+      display: block;
+    }
+  }
 
-nav {
+  nav {
     display: flex;
     width: 100%;
-}
+  }
 
-ul {
+  ul {
     display: flex;
     justify-content: space-between;
     width: 100%;
@@ -47,32 +60,44 @@ ul {
     list-style: none;
     margin: 0;
     padding: 0;
-}
+  }
 
-li {
+  li {
     display: flex;
     margin: 0;
     text-transform: lowercase;
-}
+  }
 
-li:not(:first-child) {
+  li:not(:first-child) {
     margin-left: 3rem;
-}
+  }
 
-a {
+  a {
     font-family: var(--syne);
     font-weight: bold;
     color: var(--nav-link);
     text-decoration: none;
-}
+  }
 
-a:hover {
+  a:hover {
     color: var(--nav-link-hover);
-}
+  }
 
-@media screen and (min-width: 640px) {
+  button {
+    background: transparent;
+    border: none;
+    border: 0;
+    cursor: pointer;
+    display: inline-block;
+  }
+  button svg {
+    fill: var(--text);
+    stroke: var(--text);
+  }
+
+  @media screen and (min-width: 640px) {
     nav {
-        width: auto;
+      width: auto;
     }
-}
+  }
 </style>

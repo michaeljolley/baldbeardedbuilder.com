@@ -15,28 +15,36 @@ let options = {
 ---
 
 <li class="card">
-  <h4><a href={`/brain-dump/${brainDump.slug}/`}>{brainDump.data.title}</a></h4>
+    <a href={`/brain-dump/${brainDump.slug}/`}>
+  <h4>{brainDump.data.title}</h4>
   <p>{brainDump.data.description}</p>
   <date
     >{
       new Intl.DateTimeFormat('en-US', options).format(brainDump.data.pubDate)
     }</date
-  >
+  ></a>
 </li>
 
 <style>
   .card {
-    border-image-source: var(--gradient-vert);
-    border-left: 6px solid;
-    border-image-slice: 1;
-    padding-left: 2.5rem;
     list-style: none;
+    padding: 1rem;
+  }
+  .card:hover {
+    box-shadow: var(--shadow);
+  }
+  .card > a {
     display: flex;
+    height: 100%;
     flex-direction: column;
     align-items: flex-start;
     justify-content: space-evenly;
+    padding-left: 2.5rem;
+    border-image-source: var(--gradient-vert);
+    border-left: 6px solid;
+    border-image-slice: 1;
   }
-  .card > h4 {
+  .card > a > h4 {
     font-family: var(--inter);
     font-size: 1.5rem;
     font-weight: normal;
@@ -44,12 +52,8 @@ let options = {
     padding: 0;
     color: var(--text);
   }
-  .card > h4 a,
-  .card > h4 a:hover {
-    color: var(--text);
-  }
-  p,
-  date {
+  .card > a > p,
+  .card > a > date {
     font-size: 0.8rem;
     color: var(--gray);
   }

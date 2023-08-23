@@ -4,7 +4,10 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import BrainDumpSmall from '@components/Cards/BrainDumpSmall.astro';
 import BrainDump from '@components/BrainDump.astro';
 
-let brainDumps = await getCollection('brainDump');
+let brainDumps = await getCollection('brainDump', ({ data }) => {
+  return data.pubDate < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+});
+
 brainDumps = brainDumps.sort(
   (a: CollectionEntry<'brainDump'>, b: CollectionEntry<'brainDump'>) => {
     return (
@@ -32,7 +35,8 @@ const ograph =
         <BrainDump />
 
         <h2 class="center">Previous Brain Dumps</h2>
-
+        <p class="center">Brain Dumps drop every Monday morning. Past brain dumps can be found 
+          below one week after their release date.</p>
         <ul>
           {brainDumps.map((brainDump) => <BrainDumpSmall {brainDump} />)}
         </ul>
@@ -45,11 +49,18 @@ const ograph =
   article {
     padding: 0 2rem;
   }
+  h2.center {
+    margin-top: 5rem;
+  }
   ul {
     display: grid;
     grid-template-columns: 1;
     gap: 2rem;
     padding: 0;
+    margin-top: 3rem;
+  }
+  p {
+    margin: 2.5rem 0;
   }
   @media screen and (min-width: 768px) {
     ul {

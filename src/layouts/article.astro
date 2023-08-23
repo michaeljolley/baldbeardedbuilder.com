@@ -216,8 +216,9 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
     border: 1px solid var(--text);
     padding: 1rem;
     background-color: var(--bg);
-    width: 50%;
+    width: 75%;
     color: var(--text);
+    margin-bottom: 1.5rem;
   }
   article main form input:focus,
   article main form textarea:focus {
@@ -310,7 +311,12 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
     }
     .container header h1 {
       max-width: 70%;
+    }  
+    article main form input,
+    article main form textarea {
+      width: 50%;
     }
+
   }
   @media screen and (min-width: 1280px) {
     /* xl */
