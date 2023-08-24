@@ -1,5 +1,5 @@
 ---
-import Icon from './Icon.astro'
+import Icon from './Icon.astro';
 ---
 
 <ul>
@@ -50,16 +50,15 @@ import Icon from './Icon.astro'
 </ul>
 
 <style>
-  
-:global([data-theme="light"]) {
-  --socials-link: var(--light);
-  --socials-link-hover: var(--yellow);
-}
+  :global([data-theme='light']) {
+    --socials-link: var(--light);
+    --socials-link-hover: var(--pink);
+  }
 
-:global([data-theme="dark"]) {
-  --socials-link: var(--light);
-  --socials-link-hover: var(--green);
-}
+  :global([data-theme='dark']) {
+    --socials-link: var(--light);
+    --socials-link-hover: var(--green);
+  }
 
   ul {
     display: none;

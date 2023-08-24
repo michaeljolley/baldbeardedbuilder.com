@@ -1,118 +1,120 @@
 ---
+
 ---
 
 <nav>
-    <section>
-        <h5>About</h5>
-        <uL>
-            <li>
-                <a href="/speaking/">Speaking</a>
-            </li>
-            <li>
-                <a href="/work-with-me/">Work With Me</a>
-            </li>
-            <li>
-                <a href="/uses/">What I Use</a>
-            </li>
-        </ul>
-    </section>
-    <section>
-        <h5>Content</h5>
-        <uL>
-            <li>
-                <a href="https://youtube.com/c/baldbeardedbuilder">Videos</a>
-            </li>
-            <li>
-                <a href="https://twitch.tv/baldbeardedbuilder">Live Streams</a>
-            </li>
-            <li>
-                <a href="/blog/">Blog</a>
-            </li>
-        </ul>
-    </section>
-    <section>
-        <h5>Community</h5>
-        <uL>
-            <li>
-                <a href="/brain-dump/">Brain Dump</a>
-            </li>
-            <li>
-                <a href="https://discord.gg/kC8HTrs59R">Build With Me</a>
-            </li>
-            <li>
-                <a href="/code-of-conduct/">Code of Conduct</a>
-            </li>
-        </ul>
-    </section>
+  <section>
+    <h4>About</h4>
+    <uL>
+      <li>
+        <a href="/speaking/">Speaking</a>
+      </li>
+      <li>
+        <a href="/work-with-me/">Work With Me</a>
+      </li>
+      <li>
+        <a href="/uses/">What I Use</a>
+      </li>
+    </uL>
+  </section>
+  <section>
+    <h4>Content</h4>
+    <uL>
+      <li>
+        <a href="https://youtube.com/c/baldbeardedbuilder">Videos</a>
+      </li>
+      <li>
+        <a href="https://twitch.tv/baldbeardedbuilder">Live Streams</a>
+      </li>
+      <li>
+        <a href="/blog/">Blog</a>
+      </li>
+    </uL>
+  </section>
+  <section>
+    <h4>Community</h4>
+    <uL>
+      <li>
+        <a href="/brain-dump/">Brain Dump</a>
+      </li>
+      <li>
+        <a href="https://discord.gg/kC8HTrs59R">Build With Me</a>
+      </li>
+      <li>
+        <a href="/code-of-conduct/">Code of Conduct</a>
+      </li>
+    </uL>
+  </section>
 </nav>
 
 <style>
-:global([data-theme="light"]) {
-   --footer-link: var(--dark);
-   --footer-link-hover: var(--orange);
-}
+  :global([data-theme='light']) {
+    --footer-link: var(--dark);
+    --footer-link-hover: var(--pink);
+  }
 
-:global([data-theme="dark"]) {
-   --footer-link: var(--light);
-   --footer-link-hover: var(--green);
-}
+  :global([data-theme='dark']) {
+    --footer-link: var(--light);
+    --footer-link-hover: var(--green);
+  }
 
-nav {
+  nav {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
     justify-content: space-between;
     padding: 2rem;
-}
+  }
 
-section {
+  section {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-}
+  }
 
-h5 {
+  h4 {
     padding: 0;
     margin: 0;
-}
+  }
 
-ul {
+  ul {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     margin: 0;
     padding: 0;
     list-style: none;
-}
+    margin-top: 1rem;
+  }
 
-li {
-    font-size: 0.8rem;
-}
+  li {
+    font-size: 1rem;
+  }
 
-a {
+  a {
     color: var(--footer-link);
     text-decoration: none;
     transition: color 0.2s ease;
-}
+  }
 
-a:hover {
+  a:hover {
     color: var(--footer-link-hover);
-}
+  }
 
-@media screen and (min-width: 768px) {
+  @media screen and (min-width: 768px) {
     nav {
-        padding: 4rem;
+      padding: 4rem;
     }
   }
-@media screen and (min-width: 1024px) {
+  @media screen and (min-width: 1024px) {
     nav {
       gap: 5rem;
     }
   }
-@media screen and (min-width: 1280px) { /* xl */
- 
-}
-@media screen and (min-width: 1536px) { /* 2xl */
- 
-}
+  @media screen and (min-width: 1280px) {
+    /* xl */
+  }
+  @media screen and (min-width: 1536px) {
+    /* 2xl */
+  }
 </style>

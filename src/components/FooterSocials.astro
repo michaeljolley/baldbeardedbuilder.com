@@ -1,5 +1,5 @@
 ---
-import Icon from './Icon.astro'
+import Icon from './Icon.astro';
 ---
 
 <div>
@@ -73,16 +73,15 @@ import Icon from './Icon.astro'
   </ul>
 </div>
 <style>
-  
-:global([data-theme="light"]) {
-  --footer-socials-link: var(--dark);
-  --footer-socials-link-hover: var(--orange);
-}
+  :global([data-theme='light']) {
+    --footer-socials-link: var(--dark);
+    --footer-socials-link-hover: var(--pink);
+  }
 
-:global([data-theme="dark"]) {
-  --footer-socials-link: var(--light);
-  --footer-socials-link-hover: var(--green);
-}
+  :global([data-theme='dark']) {
+    --footer-socials-link: var(--light);
+    --footer-socials-link-hover: var(--green);
+  }
 
   div {
     display: flex;
@@ -91,7 +90,7 @@ import Icon from './Icon.astro'
 
   ul {
     display: flex;
-      gap: 1rem;
+    gap: 1rem;
     list-style: none;
     padding: 2rem;
     margin: 0;
@@ -114,7 +113,7 @@ import Icon from './Icon.astro'
 
   @media screen and (min-width: 768px) {
     ul {
-        padding: 4rem;
+      padding: 4rem;
     }
   }
 </style>

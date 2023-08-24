@@ -6,7 +6,7 @@ import Icon from './Icon.astro';
   <ul>
     <li>
       <a href="/">
-        <Icon icon="BBB" style="height:1.25rem;" />
+        <Icon icon="BBB" style="height:1.5rem;" />
       </a>
     </li>
     <li>
@@ -26,8 +26,8 @@ import Icon from './Icon.astro';
 
 <style>
   :global([data-theme='light']) {
-    --nav-link: var(--light);
-    --nav-link-hover: var(--yellow);
+    --nav-link: var(--dark);
+    --nav-link-hover: var(--pink);
     .sun {
       display: block;
     }
@@ -93,6 +93,10 @@ import Icon from './Icon.astro';
   button svg {
     fill: var(--text);
     stroke: var(--text);
+  }
+  button:hover svg {
+    fill: var(--nav-link-hover);
+    stroke: var(--nav-link-hover);
   }
 
   @media screen and (min-width: 640px) {
