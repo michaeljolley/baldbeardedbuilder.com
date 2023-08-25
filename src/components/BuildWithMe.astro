@@ -1,0 +1,139 @@
+---
+import Icon from './Icon.astro';
+---
+
+<section>
+  <div class="container">
+    <h2 class="center">Build with Me</h2>
+    <div class="col">
+      <div>
+        <svg viewBox="0 0 450 50">
+          <text y="50">build</text>
+        </svg>
+      </div>
+      <div>
+        <p>
+          With regular discussions around software development, hardware, IoT
+          projects, 3D printing, and wood working, the Build with Me community
+          Discord is a place for developers, makers, & builders to gather to
+          learn and share. Want to engage with other developers/makers/builders?
+        </p>
+        <p>
+          <a
+            href="https://discord.gg/kC8HTrs59R"
+            rel="me"
+            target="_blank"
+            title="Join the conversation on Discord"
+          >
+            <Icon icon="Discord" style="height:1.25rem;" class="icon" />
+             Join the Build with Me Discord
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  [data-theme='light'] {
+    --glass: var(--glass-dark);
+    --flip-filter: invert(1) hue-rotate(180deg);
+  }
+
+  [data-theme='dark'] {
+    --glass: var(--glass-light);
+    --flip-filter: invert(0) contrast(85%) hue-rotate(0deg);
+  }
+
+  section {
+    padding: 4rem 0;
+    background-color: var(--glass);
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .col {
+    padding: 2rem;
+  }
+
+  svg {
+    font:
+      bold 70px Century Gothic,
+      Arial;
+    width: 100%;
+    height: 120px;
+  }
+  text {
+    fill: none;
+    stroke: var(--green);
+    stroke-width: 0.2rem;
+    stroke-linejoin: round;
+    animation: 2s pulsate infinite;
+  }
+
+  /* div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  div:not(:first-child) {
+    display: none;
+    align-items: flex-end;
+  } */
+  .col div:first-child {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .col div:first-child p {
+    font-size: 10rem;
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    border: 5px solid;
+    border-image-source: var(--gradient-vert);
+    border-image-slice: 1;
+  }
+
+  .col div:not(:first-child) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    color: var(--purple);
+    text-decoration: none;
+  }
+  a svg {
+    width: unset;
+    margin-right: 1rem;
+  }
+
+  h2 {
+    font-family: var(--syne);
+    font-weight: bold;
+    font-size: 2.5rem;
+    line-height: 2.5rem;
+    margin-bottom: 4rem;
+  }
+
+  @media screen and (min-width: 768px) {
+    /* lg */
+    .col {
+      display: grid;
+      grid-template-columns: 50% 50%;
+    }
+  }
+</style>
