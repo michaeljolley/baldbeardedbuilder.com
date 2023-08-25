@@ -72,8 +72,8 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
           var(--orange-fade)
         );
 
-        --glass-dark: rgba(38, 38, 38, 0.05);
-        --glass-light: rgba(255, 255, 255, 0.05);
+        --glass-dark: rgba(0, 0, 0, 0.2);
+        --glass-light: rgba(38, 38, 38, 0.06);
 
         --shadow-dark: 0 0 10px rgba(0, 0, 0, 0.25);
         --shadow-light: 0 0 10px rgba(0, 0, 0, 0.75);
@@ -85,7 +85,7 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
       [data-theme='light'] {
         --bg: white;
         --text: var(--dark);
-        --glass: var(--glass-dark);
+        --glass: var(--glass-light);
         --flip-filter: invert(1) hue-rotate(180deg);
         --shadow: var(--shadow-dark);
       }
@@ -93,7 +93,7 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
       [data-theme='dark'] {
         --bg: var(--bg-dark);
         --text: var(--light);
-        --glass: var(--glass-light);
+        --glass: var(--glass-dark);
         --flip-filter: invert(0) contrast(85%) hue-rotate(0deg);
         --shadow: var(--shadow-light);
       }
