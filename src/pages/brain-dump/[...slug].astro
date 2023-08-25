@@ -6,7 +6,7 @@ import RelatedPosts from '@components/RelatedPosts.astro';
 
 export async function getStaticPaths() {
   const brainDumps = await getCollection(
-    'brainDump',
+    'brainDumps',
     ({ data }: CollectionEntry<'brainDump'>) => data.pubDate < new Date()
   );
 
