@@ -1,0 +1,108 @@
+---
+import Icon from '@components/Icon.astro';
+import type { ScheduledEvent } from '@type/scheduledEvent';
+
+export interface Props {
+  event: ScheduledEvent;
+}
+
+const { date, title, description, type } = Astro.props.event;
+const link =
+  type === 'YouTube'
+    ? 'https://youtube.com/@baldbeardedbuilder'
+    : 'https://twitch.tv/baldbeardedbuilder';
+
+let options = {
+  month: 'long',
+  day: 'numeric',
+  weekday: 'short',
+};
+---
+
+<aside>
+  <h2>Next Up</h2>
+  <a href={link} target="_blank" rel="me" class={type}>
+    <date>{new Intl.DateTimeFormat('en-US', options).format(date)}</date>
+    <h3>
+      <Icon icon={type} style="height:1.25rem;" class="icon" />
+      {title}
+    </h3>
+    <p>{description}</p>
+  </a>
+</aside>
+
+<style>
+  aside {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    border: 1px solid var(--gray-fade);
+    box-shadow: var(--shadow);
+  }
+
+  h2 {
+    color: transparent;
+    font-size: 4rem;
+    margin: 0;
+    margin-bottom: 3rem;
+
+    background: var(--gradient);
+    -webkit-mask-image: url('https://res.cloudinary.com/dk3rdh3yo/image/upload/v1693077020/website-assets/next_up.png');
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    mask-image: url('https://res.cloudinary.com/dk3rdh3yo/image/upload/v1693077020/website-assets/next_up.png');
+    mask-repeat: no-repeat;
+    mask-size: contain;
+  }
+  a {
+    display: flex;
+    flex-direction: column;
+    color: unset;
+    padding: 0.75rem 0 0 1.5rem;
+    border-left: 5px solid;
+    text-decoration: none;
+  }
+  a.YouTube {
+    border-color: var(--pink);
+  }
+  a.Twitch {
+    border-color: var(--purple);
+  }
+
+  a.YouTube .icon {
+    color: var(--pink);
+    fill: var(--pink);
+  }
+  a.Twitch .icon {
+    color: var(--purple);
+    fill: var(--purple);
+  }
+
+  .icon {
+    margin-right: 1rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+  }
+  date {
+    font-size: 0.8rem;
+    font-weight: normal;
+  }
+  a.YouTube date {
+    color: var(--pink);
+  }
+  a.Twitch date {
+    color: var(--purple);
+  }
+
+  p {
+    margin: 0;
+    color: var(--gray);
+    font-size: 0.8rem;
+    line-height: 1.2rem;
+  }
+</style>

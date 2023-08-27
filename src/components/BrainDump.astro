@@ -5,8 +5,8 @@
 <section class="brainDump">
   <div>
     <p>
-      Let's learn together with the Brain Dump newsletter! Each week, Michael 
-      curates the latest news, gadgets, and productivity hacks he finds and 
+      Let's learn together with the Brain Dump newsletter! Each week, Michael
+      curates the latest news, gadgets, and productivity hacks he finds and
       sends it to you every Monday morning, along with the latest content
       created by members of the Build with Me community.
     </p>
@@ -49,7 +49,7 @@
         <button type="submit">Subscribe</button>
       </p>
     </form>
-  </div>  
+  </div>
   <img
     class="flip"
     src="https://res.cloudinary.com/dk3rdh3yo/image/upload/v1688239156/website-assets/brain.png"
@@ -58,6 +58,14 @@
 </section>
 
 <style>
+  [data-theme='light'] {
+    --flip-filter: invert(1) hue-rotate(180deg);
+  }
+
+  [data-theme='dark'] {
+    --flip-filter: invert(0) contrast(85%) hue-rotate(0deg);
+  }
+
   .brainDump {
     display: flex;
   }
@@ -68,7 +76,7 @@
     color: var(--gray);
     font-size: 0.8rem;
   }
-  
+
   @media screen and (min-width: 768px) {
     .brainDump {
       display: grid;

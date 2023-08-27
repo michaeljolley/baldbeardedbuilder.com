@@ -15,14 +15,15 @@ let options = {
 ---
 
 <li class="card">
-    <a href={`/brain-dump/${brainDump.slug}/`}>
-  <h4>{brainDump.data.title}</h4>
-  <p>{brainDump.data.description}</p>
-  <date
-    >{
-      new Intl.DateTimeFormat('en-US', options).format(brainDump.data.pubDate)
-    }</date
-  ></a>
+  <a href={`/brain-dump/${brainDump.slug}/`}>
+    <h4>{brainDump.data.title}</h4>
+    <p>{brainDump.data.description}</p>
+    <date
+      >{
+        new Intl.DateTimeFormat('en-US', options).format(brainDump.data.pubDate)
+      }</date
+    ></a
+  >
 </li>
 
 <style>
@@ -43,6 +44,9 @@ let options = {
     border-image-source: var(--gradient-vert);
     border-left: 6px solid;
     border-image-slice: 1;
+  }
+  .card > a:hover {
+    text-emphasis: none;
   }
   .card > a > h4 {
     font-family: var(--inter);

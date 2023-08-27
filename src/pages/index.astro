@@ -4,12 +4,22 @@ import Proof from '@components/Proof.astro';
 import Mast from '@components/Mast.astro';
 import LatestPosts from '@components/LatestPosts.astro';
 import BuildWithMe from '@components/BuildWithMe.astro';
+import Schedule from '@components/Schedule.astro';
+import BrainDumpAd from '@components/BrainDumpAd.astro';
+
+const title = 'Code of Conduct';
+const description =
+  'Code of conduct for the Bald Bearded Builder and Build with Me community';
+const permalink = `https://${import.meta.env.HOST}/code-of-conduct/`;
+const ograph =
+  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1689271118/website-assets/two_neon_robots_holding_hands_te9zic.png';
 ---
 
-<BaseLayout>
+<BaseLayout {title} {description} {permalink} {ograph}>
   <Mast />
   <Proof />
-  <LatestPosts />
+  <Schedule />
   <BuildWithMe />
   <LatestPosts />
+  <BrainDumpAd />
 </BaseLayout>

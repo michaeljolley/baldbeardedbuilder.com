@@ -15,6 +15,7 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
 <html lang="en" data-theme="light">
   <BaseHead {title} {description} {permalink} {canonicalUrl} {ograph} />
   <script src="../scripts/yo.ts"></script>
+  <script src="../scripts/mode.ts"></script>
   <body>
     <SkipToContent />
     <Header />
@@ -22,7 +23,6 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
       <slot />
     </main>
     <Footer />
-    <script src="../scripts/mode.ts"></script>
     <style is:global>
       :root {
         --dark: rgb(38, 38, 38);
@@ -88,6 +88,8 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
         --glass: var(--glass-light);
         --flip-filter: invert(1) hue-rotate(180deg);
         --shadow: var(--shadow-dark);
+        --link: var(--blue);
+        --link-hover: var(--purple);
       }
 
       [data-theme='dark'] {
@@ -96,6 +98,8 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
         --glass: var(--glass-dark);
         --flip-filter: invert(0) contrast(85%) hue-rotate(0deg);
         --shadow: var(--shadow-light);
+        --link: var(--blue);
+        --link-hover: var(--green);
       }
 
       html {

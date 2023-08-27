@@ -12,15 +12,11 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
 
 <style is:global>
   [data-theme='light'] {
-    --article-link: var(--orange);
-    --article-link-hover: var(--yellow);
     --toc-link-active: var(--dark);
     --article-table-th: var(--light);
   }
 
   [data-theme='dark'] {
-    --article-link: var(--blue);
-    --article-link-hover: var(--yellow);
     --toc-link-active: var(--light);
     --article-table-th: var(--dark);
   }
@@ -101,11 +97,11 @@ const { title, description, permalink, canonicalUrl, ograph } = Astro.props;
   }
 
   article main a {
-    color: var(--article-link);
+    color: var(--link);
     text-decoration: none;
   }
   article main a:hover {
-    color: var(--article-link-hover);
+    color: var(--link-hover);
   }
 
   article main p code {
