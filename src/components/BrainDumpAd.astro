@@ -56,6 +56,10 @@ import Icon from './Icon.astro';
     padding: 0 2rem;
   }
 
+  .col div:first-child {
+    display: none;
+  }
+
   a {
     display: inline-flex;
     align-items: center;
@@ -75,13 +79,14 @@ import Icon from './Icon.astro';
     margin-bottom: 4rem;
   }
 
-  @media screen and (min-width: 640px) {
+  @media screen and (min-width: 768px) {
     .col {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
     }
-  }
-  @media screen and (min-width: 768px) {
+    .col div:first-child {
+      display: flex;
+    }
   }
   @media screen and (min-width: 1280px) {
   }
