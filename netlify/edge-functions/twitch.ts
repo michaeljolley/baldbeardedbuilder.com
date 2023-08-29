@@ -1,20 +1,20 @@
-import type { Config, Context } from 'https://edge.netlify.com/'
-import * as queryString from 'https://deno.land/x/querystring@v1.0.2/mod.js'
+import type { Config, Context } from 'https://edge.netlify.com/';
+import * as queryString from 'https://deno.land/x/querystring@v1.0.2/mod.js';
 
 export default async (request: Request, context: Context) => {
-  const response = await context.next()
-  const page = await response.text()
+  const response = await context.next();
+  const page = await response.text();
 
-  let updatedPage = page
+  let updatedPage = page;
 
   try {
     // Search for the placeholder
-    const regex = /<!-- TWITCH_STATUS -->/i
+    const regex = /<!-- TWITCH_STATUS -->/i;
 
     // Replace the content
-    let twitchEmbed = ''
+    let twitchEmbed = '';
 
-    const isLive = await isLiveOnTwitch()
+    const isLive = await isLiveOnTwitch();
 
     if (isLive) {
       twitchEmbed = `<section class="liveOnTwitch">
@@ -24,15 +24,15 @@ export default async (request: Request, context: Context) => {
             I'm live on <a href="https://twitch.tv/baldbeardedbuilder" target="_blank">Twitch</a> right now. Come join in!
           </p>
         </div>
-    </section>`
+    </section>`;
     }
 
-    updatedPage = page.replace(regex, twitchEmbed)
+    updatedPage = page.replace(regex, twitchEmbed);
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
-  return new Response(updatedPage, response)
-}
+  return new Response(updatedPage, response);
+};
 
 const isLiveOnTwitch = async (): Promise<boolean> => {
   const opts = {
@@ -40,17 +40,17 @@ const isLiveOnTwitch = async (): Promise<boolean> => {
     client_secret: Deno.env.get('TWITCH_CLIENT_SECRET'),
     grant_type: 'client_credentials',
     scopes: '',
-  }
-  const params = queryString.stringify(opts)
+  };
+  const params = queryString.stringify(opts);
 
   const authResponse = await fetch(
     `https://id.twitch.tv/oauth2/token?${params}`,
     {
       method: 'POST',
     }
-  )
-  const authBody = await authResponse.text()
-  const authData = JSON.parse(authBody)
+  );
+  const authBody = await authResponse.text();
+  const authData = JSON.parse(authBody);
 
   const response = await fetch(
     `https://api.twitch.tv/helix/streams?user_login=baldbeardedbuilder`,
@@ -60,13 +60,13 @@ const isLiveOnTwitch = async (): Promise<boolean> => {
         Authorization: `Bearer ${authData.access_token}`,
       },
     }
-  )
-  const body = await response.text()
+  );
+  const body = await response.text();
 
-  const { data: streams } = JSON.parse(body)
+  const { data: streams } = JSON.parse(body);
 
-  return streams && streams.length > 0
-}
+  return streams && streams.length > 0;
+};
 
 export const config: Config = {
   path: '/blah/*',
@@ -86,4 +86,4 @@ export const config: Config = {
     '/*.astro',
     '/fonts/*',
   ],
-}
+};
