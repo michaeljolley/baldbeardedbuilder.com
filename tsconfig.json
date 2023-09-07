@@ -8,6 +8,7 @@
       "@styles/*": ["src/styles/*"],
       "@type/*": ["src/types/*"]
     },
+    "strictNullChecks": true,
     "jsx": "react-jsx",
     "jsxImportSource": "preact"
   }

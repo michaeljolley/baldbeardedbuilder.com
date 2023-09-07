@@ -1,5 +1,5 @@
 ---
-import Icon from './Icon.astro';
+import Icon from "./Icon.astro";
 ---
 
 <div>
@@ -70,19 +70,15 @@ import Icon from './Icon.astro';
         <Icon icon="Discord" style="height:1rem;" class="icon" />
       </a>
     </li>
+    <li>
+      <button data-theme-toggle aria-label="Toggle light & dark mode">
+        <Icon icon="Sun" class="sun" style="height:1rem;width:1rem;" />
+        <Icon icon="Moon" class="moon" style="height:1rem;width:1rem;" />
+      </button>
+    </li>
   </ul>
 </div>
 <style>
-  :global([data-theme='light']) {
-    --footer-socials-link: var(--dark);
-    --footer-socials-link-hover: var(--pink);
-  }
-
-  :global([data-theme='dark']) {
-    --footer-socials-link: var(--light);
-    --footer-socials-link-hover: var(--green);
-  }
-
   div {
     display: flex;
     align-items: flex-end;
@@ -111,9 +107,22 @@ import Icon from './Icon.astro';
     fill: var(--footer-socials-link-hover);
   }
 
-  @media screen and (min-width: 768px) {
+  button {
+    background: transparent;
+    cursor: pointer;
+    display: inline-block;
+    border: none;
+  }
+  button svg {
+    fill: var(--text);
+    stroke: var(--text);
+  }
+  button:hover {
+    border-color: var(--nav-link);
+  }
+
+  @media screen and (min-width: 1024px) {
     ul {
-      padding: 4rem;
     }
   }
 </style>

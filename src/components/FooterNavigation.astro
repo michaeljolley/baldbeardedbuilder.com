@@ -51,16 +51,6 @@
 </nav>
 
 <style>
-  :global([data-theme='light']) {
-    --footer-link: var(--dark);
-    --footer-link-hover: var(--pink);
-  }
-
-  :global([data-theme='dark']) {
-    --footer-link: var(--light);
-    --footer-link-hover: var(--green);
-  }
-
   nav {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -105,17 +95,17 @@
   }
 
   @media screen and (min-width: 768px) {
+  }
+  @media screen and (min-width: 1024px) {
     nav {
       padding: 4rem;
     }
   }
-  @media screen and (min-width: 1024px) {
+  @media screen and (min-width: 1280px) {
+    /* xl */
     nav {
       gap: 5rem;
     }
-  }
-  @media screen and (min-width: 1280px) {
-    /* xl */
   }
   @media screen and (min-width: 1536px) {
     /* 2xl */

@@ -12,14 +12,17 @@
       </h1>
     </div>
     <div>
-      <img style="width:100%" src="https://res.cloudinary.com/dk3rdh3yo/image/upload/e_grayscale,f_auto/v1687460581/website-assets/mast-bbb.png" alt="Michael, with three arms. One pointing to his bald head, one pointing to his beard, and the last holding a mechanical keyboard."/>
+      <img
+        style="width:100%"
+        src="https://res.cloudinary.com/dk3rdh3yo/image/upload/e_grayscale,f_auto/v1687460581/website-assets/mast-bbb.png"
+        alt="Michael, with three arms. One pointing to his bald head, one pointing to his beard, and the last holding a mechanical keyboard."
+      />
     </div>
   </div>
 </section>
 
 <style>
   .container {
-    display: flex;
     margin-top: 3rem;
   }
 
@@ -39,7 +42,7 @@
   h1 {
     font-family: var(--syne);
     color: var(--text);
-    font-size: 3rem;
+    font-size: 2.5rem;
     text-align: center;
     white-space: nowrap;
   }
@@ -51,7 +54,6 @@
   }
 
   @media screen and (min-width: 768px) {
-    /* lg */
     .container {
       display: grid;
       grid-template-columns: 50% 50%;
@@ -60,14 +62,9 @@
       display: flex;
     }
   }
-  @media screen and (min-width: 1280px) {
-    /* xl */
-    .container {
-    }
-  }
-  @media screen and (min-width: 1536px) {
-    /* 2xl */
-    .container {
+  @media screen and (min-width: 1024px) {
+    h1 {
+      font-size: 3rem;
     }
   }
 </style>

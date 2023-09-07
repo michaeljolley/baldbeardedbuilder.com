@@ -1,20 +1,20 @@
 ---
-import BlogCard from '@components/Cards/BlogCard.astro';
-import ArticleLayout from '@layouts/article.astro';
-import { getCollection, type CollectionEntry } from 'astro:content';
+import BlogCard from "@components/Cards/BlogCard.astro";
+import ArticleLayout from "@layouts/Article.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
 
-let blogPosts = await getCollection('blog');
+let blogPosts = await getCollection("blog");
 
 blogPosts = blogPosts.sort(
-  (a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) =>
+  (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
     new Date(b.data.pubDate) - new Date(a.data.pubDate)
 );
 const title = "Michael's Blog Posts";
 const description =
-  'A listing of blog posts by Michael Jolley, the bald bearded builder.';
+  "A listing of blog posts by Michael Jolley, the bald bearded builder.";
 const permalink = `https://${import.meta.env.HOST}/blog/`;
 const ograph =
-  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1688515828/website-assets/ograph/neon_computers_hu9vou.png';
+  "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1688515828/website-assets/ograph/neon_computers_hu9vou.png";
 ---
 
 <ArticleLayout {title} {description} {permalink} {ograph}>
@@ -32,8 +32,4 @@ const ograph =
   </div>
 </ArticleLayout>
 
-<style>
-  article {
-    padding: 0 2rem;
-  }
-</style>
+<style></style>

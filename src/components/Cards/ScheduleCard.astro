@@ -6,7 +6,7 @@ export interface Props {
   event: ScheduledEvent;
 }
 
-const { type, title, description, date } = Astro.props.event;
+const { type, title, date } = Astro.props.event;
 let options = {
   month: 'long',
   day: 'numeric',

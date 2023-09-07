@@ -58,19 +58,14 @@
 </section>
 
 <style>
-  [data-theme='light'] {
-    --flip-filter: invert(1) hue-rotate(180deg);
-  }
-
-  [data-theme='dark'] {
-    --flip-filter: invert(0) contrast(85%) hue-rotate(0deg);
-  }
-
   .brainDump {
     display: flex;
   }
   .brainDump > img {
     display: none;
+    border: 0;
+    padding: 0;
+    background: none;
   }
   .fine-print {
     color: var(--gray);
