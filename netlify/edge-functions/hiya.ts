@@ -8,6 +8,7 @@ export default async function handler(req: Request) {
   if (!analytic) {
     return new Response(JSON.stringify({}), {
       status: 400,
+
       headers: {
         'Content-Type': 'application/json',
       },
@@ -18,6 +19,7 @@ export default async function handler(req: Request) {
 
   return new Response(JSON.stringify({}), {
     status: 200,
+
     headers: {
       'Content-Type': 'application/json',
     },
