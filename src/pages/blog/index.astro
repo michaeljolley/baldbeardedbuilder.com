@@ -1,6 +1,6 @@
 ---
+import ArticleLayout from "@layouts/article.astro";
 import BlogCard from "@components/Cards/BlogCard.astro";
-import ArticleLayout from "@layouts/Article.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 
 let blogPosts = await getCollection("blog");
