@@ -9,7 +9,10 @@ export default defineConfig({
   trailingSlash: 'always',
   integrations: [
     sitemap({
-      filter: page => page !== 'https://baldbeardedbuilder.com/thanks-bd/' && page !== 'https://baldbeardedbuilder.com/thanks-r/' && page !== 'https://baldbeardedbuilder.com/404/'
+      filter: page => 
+        page !== 'https://baldbeardedbuilder.com/brain-dump/thanks/' && 
+        page !== 'https://baldbeardedbuilder.com/code-of-conduct/thanks/' && 
+        page !== 'https://baldbeardedbuilder.com/404/'
     }),
     preact(),
     prefetch({

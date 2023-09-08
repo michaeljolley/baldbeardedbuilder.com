@@ -1,0 +1,56 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import ArticleLayout from '@layouts/article.astro';
+import BrainDumpSmall from '@components/Cards/BrainDumpSmall.astro';
+
+let brainDumps = await getCollection('brainDumps', ({ data }) => {
+  return data.pubDate < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+});
+
+brainDumps = brainDumps.sort(
+  (a: CollectionEntry<'brainDump'>, b: CollectionEntry<'brainDump'>) => {
+    return (
+      new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+    );
+  }
+);
+
+const title = 'Welcome to the Brain Dump'
+const description =
+  'You successfully registered for the Brain Dump newsletter'
+const permalink = `https://${import.meta.env.HOST}/brain-dump/thanks/`
+const ograph =
+  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1689271118/website-assets/two_neon_robots_holding_hands_te9zic.png'
+
+---
+
+<ArticleLayout {title} {description} {permalink} {ograph}>
+  <div class="container">
+    <header>
+      <h1>Welcome to the Brain Dump</h1>
+    </header>
+    <article>
+      <main>
+        <blockquote>
+          <strong>A note from Michael:</strong><br />
+           Thanks for subscribing! Curating cool stuff for the Brain Dump is one 
+           of my favorite weekly activities. I can't wait to hear what you think!
+        </blockquote>
+
+        <h2 class="center">Previous Brain Dumps</h2>
+        <p class="center">Brain Dumps drop every Monday morning. Past brain dumps can be found
+          below one week after their release date.</p>
+        <ul>
+          {brainDumps.map((brainDump) => <BrainDumpSmall {brainDump} />)}
+        </ul>
+
+      </main>
+    </article>
+  </div>
+</ArticleLayout>
+
+<style>
+  article {
+    padding: 0 2rem;
+  }
+</style>
