@@ -6,7 +6,7 @@ image_alt: AI generated image of neon code symbols floating in the air on black 
 description: Building in Visual Studio Code is amazing and it's made even better
   by extensions. In this post, we talk about the top 10 VS Code extensions you
   should be using in 2021.
-featured: 3
+featured: 2
 tags:
   - vscode
   - extensions

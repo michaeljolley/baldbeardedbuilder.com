@@ -1,28 +1,23 @@
 ---
-import BaseLayout from '../layouts/base.astro'
-import type { Props as BaseHeadProps } from '../components/BaseHead.astro'
-import Mast from '../components/Mast.astro'
-import Intro from '../components/Intro.astro'
-import Separator from '../components/Separator.astro'
-import Proof from '../components/Proof.astro'
-import Goals from '../components/Goals.astro'
-import BrainDump from '../components/BrainDump.astro'
-import FeaturedPosts from '../components/FeaturedPosts.astro'
+import BaseLayout from "@layouts/base.astro";
+import Proof from "@components/Proof.astro";
+import Mast from "@components/Mast.astro";
+import LatestPosts from "@components/LatestPosts.astro";
+import BuildWithMe from "@components/BuildWithMe.astro";
+import Schedule from "@components/Schedule.astro";
+import BrainDumpAd from "@components/BrainDumpAd.astro";
 
-const title = 'Michael Jolley - Bald Bearded Builder'
+const title = "Bald Bearded Builder => Michael Jolley";
 const description =
-  'The home of Michael Jolley, the Bald Bearded Builder. Crafting unique learning experiences for myself and other organizations to enable developers to write better software.'
-const permalink = `https://${import.meta.env.HOST}/`
-const ograph =
-  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1688517887/website-assets/ograph/neon_gadgets_gtjbeh.png'
+  "Welcome to the home of Michael Jolley, also known as the bald, bearded, builder. Here you'll find all Michael's content curated for easier viewing.";
+const permalink = `https://${import.meta.env.HOST}/`;
 ---
 
-<BaseLayout {title} {description} {permalink} {ograph}>
+<BaseLayout {title} {description} {permalink}>
   <Mast />
-  <Separator />
-  <Intro />
-  <Goals />
-  <BrainDump />
   <Proof />
-  <FeaturedPosts />
+  <Schedule />
+  <BuildWithMe />
+  <LatestPosts />
+  <BrainDumpAd />
 </BaseLayout>

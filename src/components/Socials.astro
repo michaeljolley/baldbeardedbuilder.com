@@ -1,8 +1,8 @@
 ---
-import Icon from './Icon.astro'
+import Icon from './Icon.astro';
 ---
 
-<ul class="socials" id="socials">
+<ul>
   <li>
     <a
       href="https://twitter.com/michaeljolley"
@@ -38,39 +38,6 @@ import Icon from './Icon.astro'
   </li>
   <li>
     <a
-      href="https://www.instagram.com/baldbeardedbuilder/"
-      rel="me"
-      target="_blank"
-      class="instagram"
-      title="Follow the fun on Instagram"
-    >
-      <Icon icon="Instagram" style="height:1.25rem;" class="icon" />
-    </a>
-  </li>
-  <li>
-    <a
-      href="https://www.linkedin.com/in/michaelwjolley/"
-      rel="me"
-      target="_blank"
-      class="linkedin"
-      title="Get professional on LinkedIn"
-    >
-      <Icon icon="LinkedIn" style="height:1.25rem;" class="icon" />
-    </a>
-  </li>
-  <li>
-    <a
-      href="https://github.com/michaeljolley"
-      rel="me"
-      target="_blank"
-      class="github"
-      title="Check out my code on GitHub"
-    >
-      <Icon icon="Github" style="height:1.25rem;" class="icon" />
-    </a>
-  </li>
-  <li>
-    <a
       href="https://discord.gg/kC8HTrs59R"
       rel="me"
       target="_blank"
@@ -81,3 +48,35 @@ import Icon from './Icon.astro'
     </a>
   </li>
 </ul>
+
+<style>
+ 
+  ul {
+    display: none;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li:not(:last-child) {
+    margin-right: 1rem;
+  }
+
+  .icon {
+    color: var(--socials-link);
+    fill: var(--socials-link);
+  }
+
+  .icon:hover,
+  .icon:active {
+    color: var(--socials-link-hover);
+    fill: var(--socials-link-hover);
+  }
+
+  @media screen and (min-width: 640px) {
+    ul {
+      display: flex;
+      gap: 1rem;
+    }
+  }
+</style>

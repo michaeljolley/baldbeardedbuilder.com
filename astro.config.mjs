@@ -1,35 +1,22 @@
-import { defineConfig } from 'astro/config'
-import tailwind from '@astrojs/tailwind'
-import sitemap from '@astrojs/sitemap'
-import compress from 'astro-compress'
-import preact from '@astrojs/preact'
+import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
+import preact from "@astrojs/preact";
+import prefetch from "@astrojs/prefetch";
 
-import codeTheme from './monochrome-dark.json'
-
-// https://astro.build/config
 export default defineConfig({
-  site: `https://baldbeardedbuilder.com`,
+  site: 'https://baldbeardedbuilder.com',
   output: 'static',
   trailingSlash: 'always',
   integrations: [
-    tailwind({
-      config: {
-        applyAstroPreset: false,
-      },
-    }),
     sitemap({
-      filter: (page) =>
-        page !== 'https://baldbeardedbuilder.com/thanks/' &&
+      filter: page => 
+        page !== 'https://baldbeardedbuilder.com/brain-dump/thanks/' && 
+        page !== 'https://baldbeardedbuilder.com/code-of-conduct/thanks/' && 
         page !== 'https://baldbeardedbuilder.com/404/'
     }),
     preact(),
-    compress({
-      logger: 0,
-    }),
-  ],
-  markdown: {
-    shikiConfig: {
-      theme: codeTheme,
-    },
-  },
-})
+    prefetch({
+      throttle: 3,
+    })
+  ]
+});

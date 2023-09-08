@@ -1,80 +1,67 @@
 ---
-import BaseLayout from '../layouts/base.astro'
-import { getCollection } from 'astro:content'
+import { getCollection } from "astro:content";
+import ArticleLayout from "@layouts/article.astro";
+import GearCard from "@components/Cards/GearCard.astro";
 
-import Separator from '../components/Separator.astro'
-import MastUses from '../components/MastUses.astro'
-import Gear from '../components/Gear.astro'
+let gearEntries = await getCollection("gear");
 
-const gearEntries = await getCollection(
-  'gear'
-)
-
-const groups = [...new Set(gearEntries.map(m => m.data.category))]
+const groups = [...new Set(gearEntries.map((m) => m.data.category))]
   .map((group: string) => {
     return {
       name: group,
-      gear: gearEntries.filter((gear) => gear.data.category === group).sort((a, b) => {
-        return a.data.title > b.data.title ? 1 : -1
-      })
-    }
-  }).sort((a, b) => {
-    return a.name > b.name ? 1 : -1
+      gear: gearEntries
+        .filter((gear) => gear.data.category === group)
+        .sort((a, b) => {
+          return a.data.title > b.data.title ? 1 : -1;
+        }),
+    };
   })
+  .sort((a, b) => {
+    return a.name > b.name ? 1 : -1;
+  });
 
-const title = 'Stuff Michael Uses'
+const title = "What Hardware and Software Does Michael Use?";
 const description =
-  'A history of the hardware and software I use on a regular basis for software development, streaming, and content creation.'
-const permalink = 'https://baldbeardedbuilder.com/uses/'
-const ograph =
-  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1688750972/website-assets/ograph/neon_gears_vpcc15_idu38v.png'
+  "A listing of hardware, software, and other tools that Michael uses on a regular basis.";
+const permalink = `https://${import.meta.env.HOST}/uses/`;
 ---
 
-<BaseLayout {title} {description} {permalink} {ograph}>
-  <MastUses />
-  <Separator />
-  <section class="wrapper">
-    <main>
-      <blockquote>
-        <strong>Full disclosure:</strong> All the links on this page are affiliate
-        links. That means if you purchase the item I get a little change from Amazon.
-        So you get what you want/need and I get a coffee. Win/win.
-      </blockquote>
-      {
-        groups.map((group) => (
-          <>
-          <h2>{group.name}</h2>
-          <div>
-            {
-              group.gear.map((gear) => (
-                <Gear gear={gear.data} /> 
-              ))
-            }
-          </div>
-          </>
+<ArticleLayout {title} {description} {permalink}>
+  <div class="container">
+    <header>
+      <h1>What Michael Uses</h1>
+      <p>Hardware, software, &amp; other sundries.</p>
+    </header>
+    <article>
+      <main>
+        <blockquote>
+          <strong>A note from Michael:</strong><br />
+           I get asked about the stuff I use on a regular basis. To make it
+          easier to share with others, I try to keep the lists below up-to-date.
+          Something missing? Hit me up and let me know.
+        </blockquote>
+
+        {
+          groups.map((group) => (
+            <>
+              <h2 id={group.name.toLowerCase().replace(/\s/g, "-")}>
+                {group.name}
+              </h2>
+              <ul class="cards">
+                {group.gear.map((gear) => (
+                  <GearCard {gear} />
+                ))}
+              </ul>
+            </>
           ))
-      }
-  </main>
-</section>
-</BaseLayout>
-<style lang="scss">
-  .wrapper {
-    @apply pb-12;
+        }
+      </main>
+    </article>
+  </div>
+</ArticleLayout>
 
-    blockquote {
-      @apply mt-0;
-    }
-
-    h2 {
-      @apply font-inter font-bold;
-      @apply text-gray-100;
-      @apply text-4xl md:text-4xl lg:text-5xl;
-      @apply mt-12 mb-12;
-    }
-
-    main > div {
-      @apply grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8;
-      @apply mb-24;
-    }
+<style>
+  article {
+    padding: 0 2rem;
   }
 </style>

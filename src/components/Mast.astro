@@ -1,49 +1,70 @@
 ---
+
 ---
 
 <section>
-  <div class="wrapper">
-    <h1>
-      <span>I make content that</span>
-      <span>uplifts, educates, and</span>
-      <span>makes you laugh.</span>
-    </h1>
-    <img
-      aria-hidden="true"
-      alt="Michael peaking over a line."
-      src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1680985335/website-assets/head.png"
-      sizes="100vw"
-      height="590"
-      width="432"
-    />
+  <div class="container">
+    <div>
+      <h1>
+        I make content<br />
+         that <span>educates</span><br />
+         and <span>entertains</span>.
+      </h1>
+    </div>
+    <div>
+      <img
+        style="width:100%"
+        src="https://res.cloudinary.com/dk3rdh3yo/image/upload/e_grayscale,f_auto/v1687460581/website-assets/mast-bbb.png"
+        alt="Michael, with three arms. One pointing to his bald head, one pointing to his beard, and the last holding a mechanical keyboard."
+      />
+    </div>
   </div>
 </section>
 
-<style lang="scss">
-  section {
-    @apply pt-32 sm:pt-40;
+<style>
+  .container {
+    margin-top: 3rem;
+  }
 
-    .wrapper {
-      @apply flex flex-col justify-center items-center;
-      @apply px-8;
+  div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
 
-      h1 {
-        @apply flex flex-col justify-center items-center;
-        @apply w-2/3;
-        @apply mb-0;
-        @apply flex text-center;
+  div:not(:first-child) {
+    display: none;
+    align-items: flex-end;
+  }
 
-        span {
-          @apply block;
-          @apply whitespace-nowrap;
-          @apply m-0 p-0;
-        }
-      }
+  h1 {
+    font-family: var(--syne);
+    color: var(--text);
+    font-size: 2.5rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+  h1 span {
+    background-image: var(--gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 
-      img {
-        @apply w-3/5 sm:w-1/2 md:w-2/5;
-        @apply lg:max-w-md;
-      }
+  @media screen and (min-width: 768px) {
+    .container {
+      display: grid;
+      grid-template-columns: 50% 50%;
+    }
+    div:not(:first-child) {
+      display: flex;
+    }
+  }
+  @media screen and (min-width: 1024px) {
+    h1 {
+      font-size: 3rem;
     }
   }
 </style>

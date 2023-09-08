@@ -1,27 +1,88 @@
 ---
+
 ---
 
-<section id="braindump">
-  <div class="wrapper">
-    <div>
-      <h2>Brain <span class="text-gradient">Dump</span></h2>
-      --BRAINDUMP_STATUS--
-    </div>
-    <img
-      alt="AI generated image of a neon human brain with digital lights dripping off it."
-      src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1687805654/website-assets/brain.png"
-      sizes="100vw"
-      height="355"
-      width="532"
-      loading="lazy"
-      />
+<section class="brainDump">
+  <div>
+    <p>
+      Let's learn together with the Brain Dump newsletter! Each week, Michael
+      curates the latest news, gadgets, and productivity hacks he finds and
+      sends it to you every Monday morning, along with the latest content
+      created by members of the Build with Me community.
+    </p>
+    <p class="fine-print">
+      You can unsubscribe at any time and I will never sell your information to
+      others.
+    </p>
+
+    <form
+      name="brain-dump"
+      method="post"
+      action="/brain-dump/thanks/"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+    >
+      <input type="hidden" name="form-name" value="brain-dump" />
+      <p hidden>
+        <label> Don't fill this out: <input name="bot-field" /></label>
+      </p>
+
+      <p>
+        <label for="firstName">Your First Name</label><br />
+        <input
+          id="firstName"
+          type="text"
+          name="firstName"
+          placeholder="Dwight"
+        />
+      </p>
+      <p>
+        <label for="email">Your Email</label><br />
+        <input
+          id="email"
+          type="text"
+          name="email"
+          placeholder="dschrutt@dundermifflin.com"
+        />
+      </p>
+      <p>
+        <button type="submit">Subscribe</button>
+      </p>
+    </form>
   </div>
+  <img
+    class="flip"
+    src="https://res.cloudinary.com/dk3rdh3yo/image/upload/v1688239156/website-assets/brain.png"
+    alt="AI generated art of neon brain made of circuitry dripping information."
+  />
 </section>
 
-<style lang="scss">
-  .wrapper {
-    @apply flex flex-col-reverse md:grid md:grid-cols-2 gap-8 md:gap-6 items-center;
-    @apply px-8;
-    @apply my-12;
+<style>
+  .brainDump {
+    display: flex;
+  }
+  .brainDump > img {
+    display: none;
+    border: 0;
+    padding: 0;
+    background: none;
+  }
+  .fine-print {
+    color: var(--gray);
+    font-size: 0.8rem;
+  }
+
+  @media screen and (min-width: 768px) {
+    .brainDump {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+    .brainDump div:first-child {
+      margin-left: 5rem;
+    }
+    .brainDump > img {
+      display: block;
+    }
   }
 </style>

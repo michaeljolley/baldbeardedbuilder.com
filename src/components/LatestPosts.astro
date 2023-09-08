@@ -1,0 +1,55 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import BlogCard from "@components/Cards/BlogCard.astro";
+
+let blogPosts = await getCollection("blog", ({ data }) => data.featured);
+blogPosts = blogPosts.sort(
+  (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
+    a.data.featured! - b.data.featured!
+);
+---
+
+<section>
+  <div class="container">
+    <div class="col">
+      <h2 class="center">Latest Blog Posts</h2>
+      <ul>
+        {blogPosts.map((post) => <BlogCard {post} />)}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .container {
+    padding: 4rem 0;
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
+    padding: 0 2rem;
+  }
+
+  h2 {
+    font-family: var(--syne);
+    font-weight: bold;
+    font-size: 2.5rem;
+    line-height: 2.5rem;
+    margin-bottom: 6rem;
+  }
+
+  ul {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 2rem;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media screen and (min-width: 1024px) {
+    ul {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

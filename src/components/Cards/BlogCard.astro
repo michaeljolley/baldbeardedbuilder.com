@@ -1,0 +1,80 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+export interface Props {
+  post: CollectionEntry<"blog">;
+}
+
+const { post } = Astro.props;
+const { title, summary, image } = post.data;
+---
+
+<li class="card">
+  <a href={`/blog/${post.slug}/`}>
+    <div class="img" style={`background-image:url(${image})`}></div>
+    <section>
+      <div class="summary">
+        <h5>{title}</h5>
+        <p>{summary}</p>
+      </div>
+    </section>
+  </a>
+</li>
+
+<style>
+  .card {
+    display: flex;
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--gray-fade);
+  }
+  .card:hover {
+    box-shadow: var(--shadow);
+  }
+  .card a {
+    color: unset;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+  }
+  .card a:hover {
+    color: unset;
+    text-decoration: none;
+  }
+  section {
+    padding: 2rem 2rem 1.5rem 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  div.img {
+    background-size: cover;
+    background-position: center;
+    height: 10rem;
+    width: 100%;
+    display: block;
+  }
+  div:not(.img) {
+    border-right: 5px solid;
+    border-image-source: var(--gradient-vert);
+    border-image-slice: 1;
+    padding-right: 2rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .summary > h5 {
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+    margin: 0;
+  }
+  .summary > p {
+    color: var(--gray);
+  }
+  @media screen and (min-width: 640px) {
+    /* sm */
+    div.img {
+      height: 15rem;
+    }
+  }
+</style>

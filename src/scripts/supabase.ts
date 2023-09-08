@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   import.meta.env.SUPABASE_URL as string,
@@ -8,7 +8,7 @@ const supabase = createClient(
       persistSession: false,
     },
   }
-)
+);
 
 export async function getAnalytics() {
   try {
@@ -18,13 +18,13 @@ export async function getAnalytics() {
       .eq('host', import.meta.env.HOST)
       .neq('path', '/blog/')
       .like('path', '/blog/%')
-      .order('visits', { ascending: false })
+      .order('visits', { ascending: false });
 
     if (response.data) {
-      return response.data
+      return response.data;
     }
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
-  return []
+  return [];
 }

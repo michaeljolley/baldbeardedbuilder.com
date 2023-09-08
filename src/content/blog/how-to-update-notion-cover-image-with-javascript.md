@@ -9,7 +9,6 @@ tags:
   - notion
   - javascript
   - pipedream
-featured: 2
 summary: Using JavaScript and Pipedream to automate changing my Notion cover
   image each night.
 ograph: https://res.cloudinary.com/dk3rdh3yo/image/upload/v1688750573/blog/how-to-update-notion-cover-image-with-javascript/ograph.png
@@ -131,7 +130,7 @@ module.exports = defineComponent({
   },
   async run({ steps, $ }) {
     try {
-      const pageId = 'YOUR_NOTION_PAGE_ID'
+      const pageId = 'YOUR_NOTION_PAGE_ID';
 
       const data = {
         cover: {
@@ -140,7 +139,7 @@ module.exports = defineComponent({
             url: `https://picsum.photos/1500/600?v=${Date.now()}`,
           },
         },
-      }
+      };
 
       await require('@pipedreamhq/platform').axios(this, {
         url: `https://api.notion.com/v1/pages/${pageId}`,
@@ -150,13 +149,13 @@ module.exports = defineComponent({
         },
         method: 'PATCH',
         data,
-      })
+      });
     } catch (error) {
-      console.log(error)
-      throw error
+      console.log(error);
+      throw error;
     }
   },
-})
+});
 ```
 
 The code above updates the page to use an external url. That external url is a

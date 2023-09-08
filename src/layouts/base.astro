@@ -1,27 +1,24 @@
 ---
-import '../styles/main.scss'
-import BaseHead, { Props as BaseHeadProps } from '../components/BaseHead.astro'
-import OhSnap from '../components/OhSnap.astro'
-import Header from '../components/Header.astro'
-import Footer from '../components/Footer.astro'
-import TwitchEmbed from '../components/TwitchEmbed.astro'
+import BaseHead, {
+  type Props as BaseHeadProps,
+} from "../components/BaseHead.astro";
+import Footer from "@components/Footer.astro";
+import Header from "@components/Header.astro";
+import SkipToContent from "@components/SkipToContent.astro";
+import "../styles/global.css";
+import { ViewTransitions } from "astro:transitions";
 
 export interface Props extends BaseHeadProps {}
 
-const { title, description, permalink, canonicalUrl, ograph } = Astro.props
+const { title, description, permalink, canonicalUrl } = Astro.props;
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-  <OhSnap />
-
-  <BaseHead {title} {description} {permalink} {canonicalUrl} {ograph} />
-  <script src="../scripts/yo.ts"></script>
-  <script src="../scripts/favicon.ts"></script>
-
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <ViewTransitions />
+  <BaseHead {title} {description} {permalink} {canonicalUrl} />
   <body>
-    <a href="#content" class="hideMe">Skip to content</a>
-    <TwitchEmbed />
+    <SkipToContent />
     <Header />
     <main id="content">
       <slot />

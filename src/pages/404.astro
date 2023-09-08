@@ -1,100 +1,58 @@
 ---
-import BaseLayout from '../layouts/base.astro'
-import Separator from '../components/Separator.astro'
-import Mast404 from '../components/Mast404.astro'
-import Tall from '../components/Cards/Tall.astro'
-import Small from '../components/Cards/Small.astro'
-import Condensed from '../components/Cards/Condensed.astro'
-import { getCollection, CollectionEntry } from 'astro:content'
-import { getAnalytics } from '../scripts/supabase'
+import ArticleLayout from '@layouts/article.astro';
 
-const analytics = await getAnalytics()
-
-let blogPosts = await getCollection('blog')
-
-let rankedPosts = blogPosts.map((post) => {
-  return {
-    post,
-    rank: analytics.find((x) => x.path === `/blog/${post.slug}/`)?.visits || 0,
-  }
-})
-
-rankedPosts = rankedPosts.sort((a, b) => b.rank - a.rank).splice(0, 10)
-
-const groups = []
-while (rankedPosts.length > 0) {
-  let featured: CollectionEntry<'blog'>[] = []
-  if (rankedPosts.length >= 3) {
-    featured = rankedPosts.splice(0, 3).map((m) => m.post)
-  }
-  groups.push({
-    featured,
-    posts: rankedPosts.splice(0, 4).map((m) => m.post),
-  })
-}
-
-const title = 'Michael Jolley - Bald Bearded Builder'
+const title = 'Uh Oh! How did you get here!?'
 const description =
-  'The home of Michael Jolley, the Bald Bearded Builder. Crafting unique learning experiences for myself and other organizations to enable developers to write better software.'
-const permalink = `https://${import.meta.env.HOST}/`
-const ograph =
-  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1688517887/website-assets/ograph/neon_gadgets_gtjbeh.png'
+  "The page you're looking for doesn't exist or has moved."
+const permalink = `https://${import.meta.env.HOST}/404/`
 ---
 
-<BaseLayout {title} {description} {permalink} {ograph}>
-  <Mast404 />
-  <Separator />
-  <section class="wrapper">
-    <h3>
-      Sorry for the interruption. Maybe you're looking for one of these...
-    </h3>
-    {
-      groups.map((group, index) => {
-        const featuredColStart = index % 2 === 0 ? 1 : 2
-        return (
-          <>
-            {group.featured.length > 0 && (
-              <div class="featured">
-                <Tall
-                  post={group.featured[0]}
-                  class="md:row-start-1 md:row-span-2"
-                  style={`grid-column-start: ${featuredColStart};`}
-                />
-                <Small post={group.featured[1]} />
-                <Small post={group.featured[2]} />
-              </div>
-            )}
-            <ul>
-              {group.posts.map((post) => (
-                <li>
-                  <Condensed post={post} />
-                </li>
-              ))}
-            </ul>
-          </>
-        )
-      })
-    }
-  </section>
-</BaseLayout>
+<ArticleLayout {title} {description} {permalink}>
+  <div class="container">
+    <header>
+      <h1>Thank You for Reporting a Code of Conduct Violation</h1>
+    </header>
+    <article>
+      <main>
+        <blockquote>
+          <strong>A note from Michael:</strong><br />
+           I recognize the courage that it often requires to report a Code of
+          Conduct violation and that's why I take it so seriously. If, at any
+          point, you feel that your report is falling through the cracks or is
+          being overlooked, please reach out to me or any of our Core Team
+          members personally. Thank you.
+        </blockquote>
 
-<style lang="scss">
-  .wrapper {
-    @apply pb-12;
+        <h2>What's Next?</h2>
 
-    h3 {
-      @apply font-inter font-bold;
-      @apply text-gray-100;
-      @apply text-center;
-      @apply text-2xl;
-    }
-    .featured {
-      @apply py-12;
-      @apply grid grid-cols-1 md:grid-cols-2 gap-8;
-    }
+        <p>
+          You're report will be brought to our Core Team's attention. They will 
+		  review your report and take appropriate action. 
+        </p>
 
-    ul {
-      @apply list-none grid grid-cols-1 sm:grid-cols-2 gap-12;
-    }
+		<h4>What If My Report Involves a Core Team Member?</h4>
+
+		<p>
+			That member will be sequestered from the review process. Once a 
+			decision on any needed corrective actions has been made, the 
+			remaining Core Team members will communicate those actions to the 
+			Core Team member in question. It's important to note that your
+			information will be kept confidential from that Core Team member.
+		</p>
+		
+		<p>
+		  If you have any questions, please feel free to reach out to any 
+		  members of the Core Team directly. You can identify them in Discord 
+		  by the "Core Team" role.
+		</p>
+
+      </main>
+    </article>
+  </div>
+</ArticleLayout>
+
+<style>
+  article {
+    padding: 0 2rem;
   }
 </style>

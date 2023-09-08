@@ -30,11 +30,11 @@ Most of our developers are using VS 2017 or 2019 so we used the built in functio
 
 Once we started debugging we found our docker based IoT application couldn't communicate with the localhost:port that the API was loaded to. This made complete sense because the docker container thinks that it is localhost, not the host machine. So we decided to load our API into a container. Same steps, using Visual Studio to add the Dockerfile.
 
-## The fun begins (or doesn't)
+## The Fun Begins (or Doesn't)
 
 With the two Dockerfiles in place we setup a docker-compose that would launch each of them. After reviewing multiple sites explaining varying ways to allow the two containers to communicate we finally found the correct solution. So, for our future reminder, and possibly a chance to help others:
 
-## How to setup a docker-compose file to allow communication between two or more containers on Windows
+## Setting up the Docker-Compose File
 
 While the wind-up for this post has been huge, actually getting the docker-compose right is fairly straight forward.
 

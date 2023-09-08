@@ -1,0 +1,68 @@
+---
+import Icon from '../Icon.astro';
+import type { ScheduledEvent } from '@type/scheduledEvent';
+
+export interface Props {
+  event: ScheduledEvent;
+}
+
+const { type, title, date } = Astro.props.event;
+let options = {
+  month: 'long',
+  day: 'numeric',
+  weekday: 'short',
+};
+const link =
+  type === 'YouTube'
+    ? 'https://youtube.com/@baldbeardedbuilder'
+    : 'https://twitch.tv/baldbeardedbuilder';
+---
+
+<li>
+  <a href={link} target="_blank" rel="me" class={type}>
+    <date>{new Intl.DateTimeFormat('en-US', options).format(date)}</date>
+    <h4>
+      <Icon icon={type} style="height:1.25rem;" class="icon" />
+      {title}
+    </h4>
+  </a>
+</li>
+
+<style>
+  a {
+    display: flex;
+    flex-direction: column;
+    color: unset;
+    text-decoration: none;
+  }
+
+  a.YouTube .icon {
+    color: var(--pink);
+    fill: var(--pink);
+  }
+  a.Twitch .icon {
+    color: var(--purple);
+    fill: var(--purple);
+  }
+
+  .icon {
+    margin-right: 1rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 0;
+  }
+  date {
+    font-size: 0.8rem;
+    font-weight: normal;
+  }
+  a.YouTube date {
+    color: var(--pink);
+  }
+  a.Twitch date {
+    color: var(--purple);
+  }
+</style>

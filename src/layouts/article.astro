@@ -1,0 +1,11 @@
+---
+import BaseLayout, { type Props as BaseHeadProps } from "@layouts/base.astro";
+
+export interface Props extends BaseHeadProps {}
+
+const { title, description, permalink, canonicalUrl } = Astro.props;
+---
+
+<BaseLayout {title} {description} {permalink} {canonicalUrl}>
+  <slot />
+</BaseLayout>

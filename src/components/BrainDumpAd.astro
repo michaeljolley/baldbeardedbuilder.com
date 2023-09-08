@@ -1,0 +1,85 @@
+---
+
+---
+
+<section>
+  <div class="container">
+    <div class="col">
+      <div>
+        <img
+          class="flip astro-LNVGYLZR"
+          src="https://res.cloudinary.com/dk3rdh3yo/image/upload/v1688239156/website-assets/brain.png"
+          alt="AI generated art of neon brain made of circuitry dripping information."
+          width="100%"
+        />
+      </div>
+      <div>
+        <h2 class="center">Brain Dump</h2>
+        <p>
+          Want to hear all the latest news, gadgets, and productivity hacks that
+          Michael finds each week? Every Monday, the Brain Dump newsletter is
+          sent with all that, plus the latest content created by members of the
+          Build with Me community.
+        </p>
+        <p>
+          <a href="/brain-dump/"
+            >Check out previous editions &amp; subscribe now</a
+          >
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    padding: 4rem 0;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 0 2rem;
+  }
+
+  .col div:first-child {
+    display: none;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    color: var(--link);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--link-hover);
+  }
+
+  h2 {
+    font-family: var(--syne);
+    font-weight: bold;
+    font-size: 2.5rem;
+    line-height: 2.5rem;
+    margin-bottom: 4rem;
+  }
+
+  @media screen and (min-width: 768px) {
+    .col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .col div:first-child {
+      display: flex;
+    }
+  }
+  @media screen and (min-width: 1280px) {
+  }
+</style>

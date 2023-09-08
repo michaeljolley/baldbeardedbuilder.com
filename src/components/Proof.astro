@@ -1,33 +1,52 @@
 ---
+
 ---
 
 <section>
-  <div class="wrapper">
+  <div class="container">
     <ul>
       <li>
         <img
-        height="40"
-        width="192"
-          src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1687208895/website-assets/logrocket.svg"
-          alt="LogRocket"
+          height="58"
+          width="200"
+          src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1692669753/website-assets/logos/tigris.svg"
+          alt="Tigris Data"
           loading="lazy"
         />
       </li>
       <li>
         <img
-        height="40"
-        width="139"
-          src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1687208895/website-assets/azure.svg"
+          height="58"
+          width="200"
+          src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1692669753/website-assets/logos/vonage.svg"
+          alt="Vonage"
+          loading="lazy"
+        />
+      </li>
+      <li>
+        <img
+          height="58"
+          width="200"
+          src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1692669753/website-assets/logos/azure.svg"
           alt="Microsoft Azure"
           loading="lazy"
         />
       </li>
       <li>
         <img
-          height="40"
-          width="93"
-          src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1687208895/website-assets/tigris.svg"
-          alt="Tigris Data"
+          height="58"
+          width="200"
+          src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1692669753/website-assets/logos/log-rocket.svg"
+          alt="Log Rocket"
+          loading="lazy"
+        />
+      </li>
+      <li>
+        <img
+          height="58"
+          width="200"
+          src="https://res.cloudinary.com/dk3rdh3yo/image/upload/dpr_auto,f_auto/v1692669753/website-assets/logos/deepgram.svg"
+          alt="Deepgram"
           loading="lazy"
         />
       </li>
@@ -35,23 +54,73 @@
   </div>
 </section>
 
-<style lang="scss">
+<style>
   section {
-    @apply py-4;
-    background-image: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.05),
-      rgba(255, 255, 255, 0.03)
-    );
-    @apply border-t border-b border-grayBorder;
+    background-color: var(--glass);
+    padding: 3rem 0;
+  }
+  ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 2rem;
+    margin: 0;
+    padding: 0 1rem;
+    list-style: none;
+  }
 
-    > .wrapper > ul {
-      @apply flex flex-col sm:flex-row items-center justify-between gap-8;
-      @apply p-6;
+  li:nth-child(1n + 3) {
+    display: none;
+  }
 
-      > li > img {
-        @apply h-10;
-      }
+  @media screen and (min-width: 640px) {
+    ul {
+      flex-direction: row;
+    }
+  }
+  @media screen and (min-width: 768px) {
+    /* md */
+    li:nth-child(1n + 3) {
+      display: flex;
+    }
+    li:nth-child(1n + 4) {
+      display: none;
+    }
+  }
+  @media screen and (min-width: 1024px) {
+    /* lg */
+    .container {
+      max-width: 1024;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    li:nth-child(1n + 4) {
+      display: flex;
+    }
+    li:nth-child(1n + 5) {
+      display: none;
+    }
+  }
+  @media screen and (min-width: 1280px) {
+    /* xl */
+    body {
+      background-position: center -10%;
+    }
+    .container {
+      max-width: 1280px;
+    }
+    li:nth-child(1n + 5) {
+      display: flex;
+    }
+  }
+  @media screen and (min-width: 1536px) {
+    /* 2xl */
+    body {
+      background-position: center -15%;
+    }
+    .container {
+      max-width: 1536px;
     }
   }
 </style>

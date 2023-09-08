@@ -1,63 +1,68 @@
 ---
-import BrainDumpSmall from './BrainDumpSmall.astro'
-import Icon from './Icon.astro'
-import Separator from './Separator.astro'
-import Socials from './Socials.astro'
+import FooterNavigation from "./FooterNavigation.astro";
+import FooterSocials from "./FooterSocials.astro";
 ---
 
 <footer>
-  <Separator />
-
-  <section class="wrapper">
-    <div>
-      <Icon icon="BBB" style="width:5rem;" class="icon" />
-
-      <nav>
-        <ul>
-          <li>
-            <a href="/">home</a>
-          </li>
-          <li>
-            <a href="/blog/">blog</a>
-          </li>
-          <li>
-            <a href="/speaking/">speaking</a>
-          </li>
-          <li>
-            <a href="/uses/">stuff I use</a>
-          </li>
-        </ul>
-        <ul>
-          <!-- <li>
-            <a href="/work-with-me/">work with me</a>
-          </li> -->
-          <li>
-            <a
-              href="https://youtube.com/baldbeardedbuilder"
-              rel="me"
-              target="_blank">videos</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://twitch.tv/baldbeardedbuilder"
-              rel="me"
-              target="_blank">live streams</a
-            >
-          </li>
-          <li>
-            <a href="/code-of-conduct/">code of conduct</a>
-          </li>
-        </ul>
-      </nav>
-
-      <Socials />
-
-      <p class="copyright">
-        All Rights Reserved. &copy; 2023 Bald Bearded Builder
-      </p>
-    </div>
-
-    <BrainDumpSmall />
-  </section>
+  <div class="container">
+    <FooterNavigation />
+    <FooterSocials />
+  </div>
 </footer>
+
+<style>
+  footer {
+    background: url("https://res.cloudinary.com/dk3rdh3yo/image/upload/v1692506116/website-assets/footer.png")
+      center bottom no-repeat;
+    background-size: cover;
+    color: var(--footer-color);
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  p {
+    font-size: 0.75rem;
+  }
+
+  @media screen and (min-width: 640px) {
+    .container {
+    }
+  }
+  @media screen and (min-width: 768px) {
+    .container {
+      margin-top: 2rem;
+    }
+  }
+  @media screen and (min-width: 1024px) {
+    .container {
+      margin-top: 3.5rem;
+      margin-bottom: 1.5rem;
+      flex-direction: row;
+    }
+  }
+  @media screen and (min-width: 1280px) {
+    /* xl */
+    .container {
+      margin: 5rem auto 1.5rem auto;
+    }
+  }
+  @media screen and (min-width: 1536px) {
+    /* 2xl */
+  }
+  @media screen and (min-width: 1648px) {
+    /* 3xl */
+    footer {
+      background-position: center -10%;
+    }
+  }
+  @media screen and (min-width: 1780px) {
+    /* 4xl */
+    footer {
+      background-position: center -20%;
+    }
+  }
+</style>
