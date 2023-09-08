@@ -23,7 +23,7 @@ const { Content, headings } = await post.render();
 const permalink = `https://${import.meta.env.HOST}/blog/${slug}/`;
 ---
 
-<ArticleLayout {title} {description} {permalink} {canonicalUrl} >
+<ArticleLayout {title} {description} {permalink} {canonicalUrl}>
   <div class="container">
     <header>
       <h1>{title}</h1>

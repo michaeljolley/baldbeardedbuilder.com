@@ -1,51 +1,60 @@
 ---
-import ArticleLayout from '@layouts/article.astro';
+import { getCollection } from "astro:content";
+import ArticleLayout from "@layouts/article.astro";
+import GearCard from "@components/Cards/GearCard.astro";
 
-const title = 'What Hardware and Software Does Michael Use?'
+let gearEntries = await getCollection("gear");
+
+const groups = [...new Set(gearEntries.map((m) => m.data.category))]
+  .map((group: string) => {
+    return {
+      name: group,
+      gear: gearEntries
+        .filter((gear) => gear.data.category === group)
+        .sort((a, b) => {
+          return a.data.title > b.data.title ? 1 : -1;
+        }),
+    };
+  })
+  .sort((a, b) => {
+    return a.name > b.name ? 1 : -1;
+  });
+
+const title = "What Hardware and Software Does Michael Use?";
 const description =
-  'A listing of hardware, software, and other tools that Michael uses on a regular basis.'
-const permalink = `https://${import.meta.env.HOST}/uses/`
+  "A listing of hardware, software, and other tools that Michael uses on a regular basis.";
+const permalink = `https://${import.meta.env.HOST}/uses/`;
 ---
 
 <ArticleLayout {title} {description} {permalink}>
   <div class="container">
     <header>
-      <h1>Thank You for Reporting a Code of Conduct Violation</h1>
+      <h1>What Michael Uses</h1>
+      <p>Hardware, software, &amp; other sundries.</p>
     </header>
     <article>
       <main>
         <blockquote>
           <strong>A note from Michael:</strong><br />
-           I recognize the courage that it often requires to report a Code of
-          Conduct violation and that's why I take it so seriously. If, at any
-          point, you feel that your report is falling through the cracks or is
-          being overlooked, please reach out to me or any of our Core Team
-          members personally. Thank you.
+           I get asked about the stuff I use on a regular basis. To make it
+          easier to share with others, I try to keep the lists below up-to-date.
+          Something missing? Hit me up and let me know.
         </blockquote>
 
-        <h2>What's Next?</h2>
-
-        <p>
-          You're report will be brought to our Core Team's attention. They will 
-		  review your report and take appropriate action. 
-        </p>
-
-		<h4>What If My Report Involves a Core Team Member?</h4>
-
-		<p>
-			That member will be sequestered from the review process. Once a 
-			decision on any needed corrective actions has been made, the 
-			remaining Core Team members will communicate those actions to the 
-			Core Team member in question. It's important to note that your
-			information will be kept confidential from that Core Team member.
-		</p>
-		
-		<p>
-		  If you have any questions, please feel free to reach out to any 
-		  members of the Core Team directly. You can identify them in Discord 
-		  by the "Core Team" role.
-		</p>
-
+        {
+          groups.map((group) => (
+            <>
+              <h2 id={group.name.toLowerCase().replace(/\s/g, "-")}>
+                {group.name}
+              </h2>
+              <ul class="cards">
+                {group.gear.map((gear) => (
+                  <GearCard {gear} />
+                ))}
+              </ul>
+            </>
+          ))
+        }
       </main>
     </article>
   </div>

@@ -1,16 +1,16 @@
 ---
-import type { CollectionEntry } from 'astro';
+import type { CollectionEntry } from "astro";
 
 export interface Props {
-  brainDump: CollectionEntry<'brainDump'>;
+  brainDump: CollectionEntry<"brainDump">;
 }
 
 const { brainDump } = Astro.props;
 
 let options = {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
+  year: "numeric",
+  month: "long",
+  day: "numeric",
 };
 ---
 
@@ -20,7 +20,7 @@ let options = {
     <p>{brainDump.data.description}</p>
     <date
       >{
-        new Intl.DateTimeFormat('en-US', options).format(brainDump.data.pubDate)
+        new Intl.DateTimeFormat("en-US", options).format(brainDump.data.pubDate)
       }</date
     ></a
   >

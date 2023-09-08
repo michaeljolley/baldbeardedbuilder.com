@@ -1,0 +1,61 @@
+---
+import type { CollectionEntry } from "astro:content";
+export interface Props {
+  gear: CollectionEntry<"gear">;
+}
+
+const { title, description, link } = Astro.props.gear.data;
+---
+
+<li class="gear">
+  <div class="deets">
+    <h3>{title}</h3>
+    {description && <p>{description}</p>}
+    {
+      link && (
+        <a href={link} target="_blank" rel="noopener noreferrer">
+          more →
+        </a>
+      )
+    }
+  </div>
+</li>
+
+<style>
+  .gear {
+    list-style: none;
+    padding: 1rem;
+  }
+  .gear:hover {
+    box-shadow: var(--shadow);
+  }
+  .gear .deets {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-evenly;
+    padding-left: 2.5rem;
+    border-image-source: var(--gradient-vert);
+    border-left: 6px solid;
+    border-image-slice: 1;
+  }
+  .gear .deets:hover {
+    text-emphasis: none;
+  }
+  .gear h3 {
+    font-family: var(--inter);
+    font-size: 1.5rem;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    color: var(--text);
+  }
+  .gear p {
+    font-size: 0.9rem;
+    color: var(--gray);
+  }
+  .gear a {
+    font-size: 0.9rem;
+  }
+</style>

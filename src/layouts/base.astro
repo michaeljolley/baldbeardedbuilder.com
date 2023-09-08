@@ -6,6 +6,7 @@ import Footer from "@components/Footer.astro";
 import Header from "@components/Header.astro";
 import SkipToContent from "@components/SkipToContent.astro";
 import "../styles/global.css";
+import { ViewTransitions } from "astro:transitions";
 
 export interface Props extends BaseHeadProps {}
 
@@ -14,6 +15,7 @@ const { title, description, permalink, canonicalUrl } = Astro.props;
 
 <!doctype html>
 <html lang="en" data-theme="dark">
+  <ViewTransitions />
   <BaseHead {title} {description} {permalink} {canonicalUrl} />
   <body>
     <SkipToContent />
