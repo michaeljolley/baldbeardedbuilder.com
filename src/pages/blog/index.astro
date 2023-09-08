@@ -9,15 +9,13 @@ blogPosts = blogPosts.sort(
   (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
     new Date(b.data.pubDate) - new Date(a.data.pubDate)
 );
-const title = "Michael's Blog Posts";
+const title = "All Blog Posts by Michael";
 const description =
   "A listing of blog posts by Michael Jolley, the bald bearded builder.";
 const permalink = `https://${import.meta.env.HOST}/blog/`;
-const ograph =
-  "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1688515828/website-assets/ograph/neon_computers_hu9vou.png";
 ---
 
-<ArticleLayout {title} {description} {permalink} {ograph}>
+<ArticleLayout {title} {description} {permalink} >
   <div class="container">
     <header>
       <h1>All Posts</h1>

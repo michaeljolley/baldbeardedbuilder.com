@@ -15,16 +15,13 @@ brainDumps = brainDumps.sort(
   }
 );
 
-const title = 'Welcome to the Brain Dump'
+const title = 'Thanks for Subscribing to the Brain Dump Newsletter'
 const description =
   'You successfully registered for the Brain Dump newsletter'
 const permalink = `https://${import.meta.env.HOST}/brain-dump/thanks/`
-const ograph =
-  'https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_auto,f_auto/v1689271118/website-assets/two_neon_robots_holding_hands_te9zic.png'
-
 ---
 
-<ArticleLayout {title} {description} {permalink} {ograph}>
+<ArticleLayout {title} {description} {permalink}>
   <div class="container">
     <header>
       <h1>Welcome to the Brain Dump</h1>
@@ -50,7 +47,27 @@ const ograph =
 </ArticleLayout>
 
 <style>
-  article {
-    padding: 0 2rem;
+  h2.center {
+    margin-top: 5rem;
+  }
+  ul {
+    display: grid;
+    grid-template-columns: 1;
+    gap: 2rem;
+    padding: 0;
+    margin-top: 3rem;
+  }
+  p {
+    margin: 2.5rem 0;
+  }
+  @media screen and (min-width: 768px) {
+    ul {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media screen and (min-width: 1536px) {
+    ul {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 </style>

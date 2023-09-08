@@ -4,10 +4,11 @@ export interface Props {
   description: string
   permalink: string
   canonicalUrl?: string
-  ograph: string
 }
 
-const { title, description, permalink, canonicalUrl, ograph } = Astro.props
+const { title, description, permalink, canonicalUrl } = Astro.props
+
+const ograph = `https://res.cloudinary.com/dk3rdh3yo/image/upload/g_south_west,x_100,y_100,w_1000,c_fit,co_white,l_text:Roboto_64_bold:${encodeURI(title)}/website-assets/1200x700.png`
 ---
 
 <!-- Global Metadata -->

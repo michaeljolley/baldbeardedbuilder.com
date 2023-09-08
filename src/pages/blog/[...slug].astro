@@ -18,12 +18,12 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const { post } = Astro.props;
-const { title, description, tags, canonicalUrl, ograph } = post.data;
+const { title, description, tags, canonicalUrl } = post.data;
 const { Content, headings } = await post.render();
 const permalink = `https://${import.meta.env.HOST}/blog/${slug}/`;
 ---
 
-<ArticleLayout {title} {description} {permalink} {canonicalUrl} {ograph}>
+<ArticleLayout {title} {description} {permalink} {canonicalUrl} >
   <div class="container">
     <header>
       <h1>{title}</h1>

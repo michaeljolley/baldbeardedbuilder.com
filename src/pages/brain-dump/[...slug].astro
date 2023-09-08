@@ -18,12 +18,12 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const { post } = Astro.props;
-const { title, description, tags, ograph } = post.data;
+const { title, description, tags } = post.data;
 const { Content, headings } = await post.render();
 const permalink = `https://${import.meta.env.HOST}/brain-dump/${slug}/`;
 ---
 
-<ArticleLayout {title} {description} {permalink} {ograph}>
+<ArticleLayout {title} {description} {permalink}>
   <div class="container">
     <header>
       <h1>{title}</h1>
