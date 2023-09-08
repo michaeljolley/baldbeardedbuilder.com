@@ -64,7 +64,7 @@ Once you’re in there, add this line to the end of the file:
 
 This launches Chromium with the settings we mentioned above and directs it immediately to your site at [http://localhost:5000](http://localhost:5000).
 
-## Turn off the screen saver and hide the cursor
+## Turn off the Screen Saver and Hide the Cursor
 
 While you're still editing the **autostart** file, add the following:
 
@@ -93,7 +93,7 @@ xserver-command= X -s 0 -dpms
 
 Then save and exit.
 
-## Disable power management on WiFi
+## Disable Power Management on WiFi
 
 The Pi's WiFi will also go to sleep if we don't change it. Modify it by editing the **rc.local** file with:
 
@@ -107,7 +107,7 @@ Add the following line before _exit 0_ and save:
 iwconfig wlan0 power off
 ```
 
-## You're in business
+## You're in Business
 
 All that's left is to reboot your Pi. Once it restarts you'll load directly to Chromium viewing your local application.
 

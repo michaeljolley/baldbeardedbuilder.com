@@ -19,11 +19,11 @@ I was actually a little jealous of my friends using bash with their nice aliases
 
 <!--more-->
 
-### This seat's taken
+## This Seat's Taken
 
 PowerShell has built in commands that we don't want to step on. I won't list them all (there are MANY), but if you get something wildly unexpected from your aliases then you can Google them.
 
-## So show me already
+## So Show me Already
 
 Okay, okay. So first, let's create a function in a `.ps1` file.
 
@@ -47,7 +47,7 @@ Then from your PowerShell console you can type `gs` and it will run `git status`
 
 That's a very simplistic example but gives you an idea of what's possible.
 
-### What about parameters
+### What About Parameters
 
 Great question! We can define parameters in the function and then pass them in.
 
