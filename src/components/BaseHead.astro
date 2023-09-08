@@ -1,21 +1,26 @@
 ---
 export interface Props {
-  title: string
-  description: string
-  permalink: string
-  canonicalUrl?: string
+  title: string;
+  description: string;
+  permalink: string;
+  canonicalUrl?: string;
 }
 
-const { title, description, permalink, canonicalUrl } = Astro.props
+const { title, description, permalink, canonicalUrl } = Astro.props;
 
-const ograph = `https://res.cloudinary.com/dk3rdh3yo/image/upload/g_south_west,x_100,y_100,w_1000,c_fit,co_white,l_text:Roboto_64_bold:${encodeURI(title)}/website-assets/1200x700.png`
+const ograph = `https://res.cloudinary.com/dk3rdh3yo/image/upload/g_south_west,x_100,y_100,w_1000,c_fit,co_white,l_text:Roboto_64_bold:${encodeURI(
+  title
+).replace(",", "%2C")}/website-assets/1200x700.png`;
 ---
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="generator" content={Astro.generator} />
-<meta http-equiv="delegate-ch" content="sec-ch-width https://res.cloudinary.com; sec-ch-dpr https://res.cloudinary.com; sec-ch-viewport-width https://res.cloudinary.com;">
+<meta
+  http-equiv="delegate-ch"
+  content="sec-ch-width https://res.cloudinary.com; sec-ch-dpr https://res.cloudinary.com; sec-ch-viewport-width https://res.cloudinary.com;"
+/>
 
 <link rel="icon" type="image/x-icon" href="/images/active-favicon.ico" />
 <link
@@ -39,7 +44,10 @@ const ograph = `https://res.cloudinary.com/dk3rdh3yo/image/upload/g_south_west,x
 <meta name="robots" content="index, follow" />
 <link rel="sitemap" href="/sitemap-0.xml" />
 <link rel="manifest" href="/site.webmanifest" />
-<meta name="google-site-verification" content="tVxgKEIfMonxcyLLkr0zFTdU7fHI4aeskXgtc0wE-zg" />
+<meta
+  name="google-site-verification"
+  content="tVxgKEIfMonxcyLLkr0zFTdU7fHI4aeskXgtc0wE-zg"
+/>
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>
