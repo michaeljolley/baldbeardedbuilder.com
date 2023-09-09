@@ -1,24 +1,25 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
-import ArticleLayout from '@layouts/article.astro';
-import BrainDumpSmall from '@components/Cards/BrainDumpSmall.astro';
-import BrainDump from '@components/BrainDump.astro';
+import { getCollection, type CollectionEntry } from "astro:content";
+import ArticleLayout from "@layouts/article.astro";
+import BrainDumpSmall from "@components/Cards/BrainDumpSmall.astro";
+import BrainDump from "@components/BrainDump.astro";
 
-let brainDumps = await getCollection('brainDumps', ({ data }) => {
+let brainDumps = await getCollection("brainDumps", ({ data }) => {
   return data.pubDate < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 });
 
 brainDumps = brainDumps.sort(
-  (a: CollectionEntry<'brainDump'>, b: CollectionEntry<'brainDump'>) => {
+  (a: CollectionEntry<"brainDump">, b: CollectionEntry<"brainDump">) => {
     return (
       new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
     );
   }
 );
 
-const title = 'Brain Dump - Weekly Tech News, Gadgets, Tips & More';
+const title =
+  "Brain Dump - A Weekly Collection of Things Michael Finds Interesting";
 const description =
-  'The Brain Dump is a weekly newsletter that covers the latest in tech, gadgets, security, and more.';
+  "The Brain Dump is a weekly newsletter that covers the latest in tech, gadgets, security, and more.";
 const permalink = `https://${import.meta.env.HOST}/brain-dump/`;
 ---
 
@@ -33,8 +34,10 @@ const permalink = `https://${import.meta.env.HOST}/brain-dump/`;
         <BrainDump />
 
         <h2 class="center">Previous Brain Dumps</h2>
-        <p class="center">Brain Dumps drop every Monday morning. Past brain dumps can be found
-          below one week after their release date.</p>
+        <p class="center">
+          Brain Dumps drop every Monday morning. Past brain dumps can be found
+          below one week after their release date.
+        </p>
         <ul>
           {brainDumps.map((brainDump) => <BrainDumpSmall {brainDump} />)}
         </ul>
@@ -44,7 +47,6 @@ const permalink = `https://${import.meta.env.HOST}/brain-dump/`;
 </ArticleLayout>
 
 <style>
-  
   h2.center {
     margin-top: 5rem;
   }
