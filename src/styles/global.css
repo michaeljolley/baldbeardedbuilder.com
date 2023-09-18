@@ -577,12 +577,16 @@ article main table tbody tr:nth-child(even) {
 
 article main ul {
   list-style: square;
-  list-style-color: var(--green);
 }
 article main ul li {
   margin: 1rem 0;
-  padding-left: 0.5rem;
   text-wrap: pretty;
+}
+
+article.toc main ul li {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-all;
 }
 
 article main img {
