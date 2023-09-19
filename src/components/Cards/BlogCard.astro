@@ -23,7 +23,7 @@ const { title, summary, image } = post.data;
 
 <style>
   .card {
-    display: flex;
+    list-style: none;
     padding: 0;
     margin: 0;
     border: 1px solid var(--gray-fade);
@@ -47,14 +47,13 @@ const { title, summary, image } = post.data;
     display: flex;
     flex-direction: column;
   }
-  div.img {
+  .img {
     background-size: cover;
     background-position: center;
     height: 10rem;
     width: 100%;
-    display: block;
   }
-  div:not(.img) {
+  .summary {
     border-right: 5px solid;
     border-image-source: var(--gradient-vert);
     border-image-slice: 1;

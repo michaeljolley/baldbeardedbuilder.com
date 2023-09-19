@@ -1,7 +1,6 @@
 ---
 pubDate: 2019-05-20T00:00:00.000Z
-title: Using a CONTRIBUTING & CODE_OF_CONDUCT to assist others in contributing
-  to public repositories
+title: Using a Code of Conduct and Contributing Guidelines in Public Repositories
 image: https://res.cloudinary.com/dk3rdh3yo/image/upload/w_526,dpr_auto,f_auto/v1688343901/blog/code-of-conduct-and-contributions-in-public-repositories/neon_Girl_with_a_laptop_on_black_background_eyr5v7.png
 image_alt: AI generated image of a neon girl with a laptop on a black background
 description: Helping other contribute to public repositories on GitHub by
