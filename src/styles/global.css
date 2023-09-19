@@ -794,6 +794,12 @@ article aside .toc ul li.link--active a {
   .container {
     max-width: 1536px;
   }
+  .container > header {
+    margin: 7rem 0;
+  }
+  .container > header h1 {
+    max-width: 70%;
+  }
   .cards {
     grid-template-columns: repeat(3, 1fr);
   }
