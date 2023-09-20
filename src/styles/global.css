@@ -481,6 +481,10 @@ article {
   padding: 0 2rem;
 }
 
+article main {
+  line-height: 1.5rem;
+}
+
 article main blockquote {
   border: 1px solid;
   border-image-source: var(--gradient);
@@ -489,6 +493,16 @@ article main blockquote {
   margin: 0;
   margin-bottom: 2rem;
   background-image: var(--gradient-fade);
+}
+article main blockquote ul {
+  margin: 0;
+}
+article main blockquote ul li {
+  margin: 0;
+}
+article main blockquote p {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 article main h1,
@@ -530,9 +544,22 @@ article main h6 {
 article main a {
   color: var(--link);
   text-decoration: none;
+  border-bottom: 3px solid var(--link);
 }
 article main a:hover {
+  --angle: 0deg;
   color: var(--link-hover);
+  border-image-source: linear-gradient(
+    var(--angle),
+    var(--green),
+    var(--blue),
+    var(--purple),
+    var(--pink),
+    var(--yellow),
+    var(--orange)
+  );
+  border-image-slice: 1;
+  animation: 10s rotate linear infinite;
 }
 
 article main p > code {
@@ -796,9 +823,6 @@ article aside .toc ul li.link--active a {
   body {
     background-position: center -15%;
   }
-  .container {
-    max-width: 1536px;
-  }
   .container > header {
     margin: 7rem 0;
   }
@@ -822,4 +846,15 @@ article aside .toc ul li.link--active a {
   body {
     background-position: center -30%;
   }
+}
+
+@keyframes rotate {
+  to {
+    --angle: 360deg;
+  }
+}
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
 }
