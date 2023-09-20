@@ -471,7 +471,6 @@ body {
 }
 
 article {
-  display: grid;
   align-items: flex-start;
   gap: 2rem;
   margin-bottom: 7rem;
@@ -536,7 +535,7 @@ article main a:hover {
   color: var(--link-hover);
 }
 
-article main p code {
+article main p > code {
   font-weight: bold;
   border: 1px solid;
   padding: 0.1rem 0.25rem;
@@ -575,14 +574,15 @@ article main table tbody tr:nth-child(even) {
 
 article main ul {
   list-style: square;
-  margin-left: 1rem;
+  margin: 2rem 0;
+  padding-left: 1rem;
 }
 article main ul li {
   margin: 1rem 0;
   text-wrap: pretty;
 }
 
-article.toc main ul li {
+article.toc main ul li a {
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-all;
@@ -603,9 +603,8 @@ article main img {
 article main pre {
   margin: 2rem auto;
   display: flex;
-  width: 90%;
   justify-self: center;
-  text-wrap: pretty;
+  overflow: scroll;
 
   border: 4px solid;
   border-image-source: var(--gradient);
@@ -614,7 +613,6 @@ article main pre {
   scrollbar-width: thin;
   scrollbar-color: red orange;
   max-height: 25rem;
-  word-break: break-all;
 }
 article main pre:-webkit-scrollbar {
   width: 0.7rem;
@@ -737,9 +735,6 @@ article aside .toc ul li.link--active a {
     margin-right: auto;
     max-width: 640px;
   }
-  article main pre {
-    width: 80%;
-  }
 }
 
 /* md */
@@ -761,8 +756,12 @@ article aside .toc ul li.link--active a {
   .container header h1 {
     max-width: 70%;
   }
+  article {
+    display: flex;
+  }
   article.toc {
-    grid-template-columns: 2fr 1fr;
+    display: grid;
+    grid-template-columns: 70% 1fr;
   }
   article aside {
     display: flex;
@@ -770,6 +769,9 @@ article aside .toc ul li.link--active a {
   article main form input,
   article main form textarea {
     width: 50%;
+  }
+  article main pre {
+    width: 90%;
   }
   .cards {
     grid-template-columns: repeat(2, 1fr);
@@ -783,6 +785,9 @@ article aside .toc ul li.link--active a {
   }
   .container {
     max-width: 1280px;
+  }
+  article.toc {
+    grid-template-columns: 75% 1fr;
   }
 }
 

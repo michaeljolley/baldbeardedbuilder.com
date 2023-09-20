@@ -35,17 +35,17 @@ Let's add a rudimentary implementation of HATEOAS in an ASP.NET Core web API.
 
 ## Getting Started
 
-First, download the sample code at <a href="https://github.com/MichaelJolley/aspnetcore-hateoas" target="blank">https://github.com/MichaelJolley/aspnetcore-hateoas</a>.
+First, download the sample code in this <a href="https://github.com/MichaelJolley/aspnetcore-hateoas" target="blank">GitHub repository</a>.
 
 The solution contains two C# projects: BaldBeardedBuilder.HATEOAS.Lib (Lib) and BaldBeardedBuilder.HATEOAS (API).
 
-### BaldBeardedBuilder.HATEOAS.Lib (Lib)
+### HATEOAS.Lib (Lib)
 
 We're not going to go into much detail about the Lib project, but I want to provide a little context to how it's used.
 Its sole purpose is to provide an example data access layer. The Lib project contains a small Entity Framework Core DbContext
 with two related DbSets; Clients and Addresses. The solution will use an in-memory database and will seed it each time you debug.
 
-### BaldBeardedBuilder.HATEOAS (API)
+### HATEOAS (API)
 
 The API project is where all of our HATEOAS magic happens, but before we get into those details, let's take care of some housekeeping.
 

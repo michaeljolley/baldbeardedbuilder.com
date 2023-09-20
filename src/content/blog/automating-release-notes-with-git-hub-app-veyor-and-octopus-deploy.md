@@ -61,7 +61,6 @@ install:
 At the top of the release-gen.ps1 file are the variables that you'll need to set based on the items we mentioned above.
 
 ```powershell
-
 $global:github_owner = "GitHub Owner Name Here"
 $global:github_repo = "GitHub Repo Name Here"
 $global:github_token = "GitHub Personal Access Token"
@@ -72,7 +71,6 @@ $global:octopus_password = ConvertTo-SecureString "Octopus Deploy Password" -AsP
 $global:octopus_apikey = "Octopus Deploy API Key"
 $global:octopus_projectName = "Octopus Deploy Project Name"
 $global:octopus_productionEnvironment = "Name of Production Environment in Octopus Deploy"
-
 ```
 
 ## Bringing it all together
@@ -99,7 +97,7 @@ When the final commit is made the developer will enter a quality commit message 
 
 Our team is committed to adding close messages to our final commits when they close an issue. (i.e. Did some kind of fix. Closes #430)
 
-The script identifies the pattern of Closes %23%7Bissue number%7D or Fixes %23%7Bissue number%7D and modifies it to make the issue number a link to that issue in GitHub. So that line on the release notes will have both a link to the commit and links to any issues denoted in the commit message.
+The script identifies the pattern of Closes #{issue number} or Fixes #{issue number} and modifies it to make the issue number a link to that issue in GitHub. So that line on the release notes will have both a link to the commit and links to any issues denoted in the commit message.
 
 ## Download the full script
 

@@ -1,73 +1,73 @@
 ---
-import ArticleLayout from '@layouts/article.astro';
-import TableOfContents from '@components/TableOfContents';
+import ArticleLayout from "@layouts/article.astro";
+import TableOfContents from "@components/TableOfContents";
 
 const headings = [
   {
     depth: 2,
-    slug: 'our-pledge',
-    text: 'Our Pledge',
+    slug: "our-pledge",
+    text: "Our Pledge",
   },
   {
     depth: 2,
-    slug: 'our-standards',
-    text: 'Our Standards',
+    slug: "our-standards",
+    text: "Our Standards",
   },
   {
     depth: 2,
-    slug: 'enforcement-responsibilities',
-    text: 'Enforcement Responsibilities',
+    slug: "enforcement-responsibilities",
+    text: "Enforcement Responsibilities",
   },
   {
     depth: 2,
-    slug: 'scope',
-    text: 'Scope',
+    slug: "scope",
+    text: "Scope",
   },
   {
     depth: 2,
-    slug: 'enforcement',
-    text: 'Enforcement',
+    slug: "enforcement",
+    text: "Enforcement",
   },
   {
     depth: 2,
-    slug: 'enforcement-guidelines',
-    text: 'Enforcement Guidelines',
+    slug: "enforcement-guidelines",
+    text: "Enforcement Guidelines",
   },
   {
     depth: 3,
-    slug: '1-correction',
-    text: '1. Correction',
+    slug: "1-correction",
+    text: "1. Correction",
   },
   {
     depth: 3,
-    slug: '2-warning',
-    text: '2. Warning',
+    slug: "2-warning",
+    text: "2. Warning",
   },
   {
     depth: 3,
-    slug: '3-temporary-ban',
-    text: '3. Temporary Ban',
+    slug: "3-temporary-ban",
+    text: "3. Temporary Ban",
   },
   {
     depth: 3,
-    slug: '4-permanent-ban',
-    text: '4. Permanent Ban',
+    slug: "4-permanent-ban",
+    text: "4. Permanent Ban",
   },
   {
     depth: 2,
-    slug: 'attribution',
-    text: 'Attribution',
+    slug: "attribution",
+    text: "Attribution",
   },
   {
     depth: 2,
-    slug: 'report',
-    text: 'Report Form',
+    slug: "report",
+    text: "Report Form",
   },
 ];
 
-const title = 'Build with Me Community Code of Conduct';
+const title = "Build with Me Community Code of Conduct";
 const description =
-  'Code of conduct for the Bald Bearded Builder and Build with Me community';
+  "Code of conduct for the Bald Bearded Builder and Build with Me community";
 const permalink = `https://${import.meta.env.HOST}/code-of-conduct/`;
 ---
 
@@ -326,9 +326,3 @@ const permalink = `https://${import.meta.env.HOST}/code-of-conduct/`;
     </article>
   </div>
 </ArticleLayout>
-
-<style>
-  article {
-    padding: 0 2rem;
-  }
-</style>

@@ -1,10 +1,9 @@
 ---
-import ArticleLayout from '@layouts/article.astro';
+import ArticleLayout from "@layouts/article.astro";
 
-const title = 'Thanks for Reporting a Code of Conduct Violation'
-const description =
-  'Thank you for submitting a Code of Conduct violation.'
-const permalink = `https://${import.meta.env.HOST}/code-of-conduct/thanks/`
+const title = "Thanks for Reporting a Code of Conduct Violation";
+const description = "Thank you for submitting a Code of Conduct violation.";
+const permalink = `https://${import.meta.env.HOST}/code-of-conduct/thanks/`;
 ---
 
 <ArticleLayout {title} {description} {permalink}>
@@ -26,33 +25,26 @@ const permalink = `https://${import.meta.env.HOST}/code-of-conduct/thanks/`
         <h2>What's Next?</h2>
 
         <p>
-          You're report will be brought to our Core Team's attention. They will 
-		  review your report and take appropriate action. 
+          You're report will be brought to our Core Team's attention. They will
+          review your report and take appropriate action.
         </p>
 
-		<h4>What If My Report Involves a Core Team Member?</h4>
+        <h4>What If My Report Involves a Core Team Member?</h4>
 
-		<p>
-			That member will be sequestered from the review process. Once a 
-			decision on any needed corrective actions has been made, the 
-			remaining Core Team members will communicate those actions to the 
-			Core Team member in question. It's important to note that your
-			information will be kept confidential from that Core Team member.
-		</p>
-		
-		<p>
-		  If you have any questions, please feel free to reach out to any 
-		  members of the Core Team directly. You can identify them in Discord 
-		  by the "Core Team" role.
-		</p>
+        <p>
+          That member will be sequestered from the review process. Once a
+          decision on any needed corrective actions has been made, the remaining
+          Core Team members will communicate those actions to the Core Team
+          member in question. It's important to note that your information will
+          be kept confidential from that Core Team member.
+        </p>
 
+        <p>
+          If you have any questions, please feel free to reach out to any
+          members of the Core Team directly. You can identify them in Discord by
+          the "Core Team" role.
+        </p>
       </main>
     </article>
   </div>
 </ArticleLayout>
-
-<style>
-  article {
-    padding: 0 2rem;
-  }
-</style>
