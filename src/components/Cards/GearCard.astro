@@ -36,12 +36,22 @@ const { title, description, link } = Astro.props.gear.data;
     align-items: flex-start;
     justify-content: space-evenly;
     padding-left: 2.5rem;
-    border-image-source: var(--gradient-vert);
+    border-image-source: linear-gradient(
+      var(--angle),
+      var(--green),
+      var(--blue),
+      var(--purple),
+      var(--pink),
+      var(--yellow),
+      var(--orange)
+    );
     border-left: 6px solid;
     border-image-slice: 1;
   }
   .gear .deets:hover {
     text-emphasis: none;
+    --angle: 0deg;
+    animation: 10s rotate linear infinite;
   }
   .gear h3 {
     font-family: var(--inter);

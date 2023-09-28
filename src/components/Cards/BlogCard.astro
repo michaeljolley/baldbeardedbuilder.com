@@ -43,6 +43,7 @@ const { title, summary, image } = post.data;
     color: unset;
     text-decoration: none;
   }
+
   section {
     padding: 2rem 2rem 1.5rem 2rem;
     flex: 1;
@@ -57,7 +58,15 @@ const { title, summary, image } = post.data;
   }
   .summary {
     border-right: 5px solid;
-    border-image-source: var(--gradient-vert);
+    border-image-source: linear-gradient(
+      var(--angle),
+      var(--green),
+      var(--blue),
+      var(--purple),
+      var(--pink),
+      var(--yellow),
+      var(--orange)
+    );
     border-image-slice: 1;
     padding-right: 2rem;
     display: flex;
@@ -71,6 +80,10 @@ const { title, summary, image } = post.data;
   }
   .summary > p {
     color: var(--gray);
+  }
+  .card a:hover .summary {
+    --angle: 0deg;
+    animation: 10s rotate linear infinite;
   }
   @media screen and (min-width: 640px) {
     /* sm */
