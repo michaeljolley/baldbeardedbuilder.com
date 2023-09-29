@@ -1,5 +1,5 @@
 ---
-pubDate: 2023-09-10-03T00:00:00.000Z
+pubDate: 2023-10-03T00:00:00.000Z
 title: Integrating Notion with Astro Sites
 image: https://res.cloudinary.com/dk3rdh3yo/image/upload/w_526,dpr_auto,f_auto/blog/integrating-notion-with-astro-sites/mast.png
 image_alt: AI generated image of a neon rocket ship blasting off into space
