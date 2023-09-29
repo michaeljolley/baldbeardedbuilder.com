@@ -48,5 +48,7 @@ of your database.
 
 ### Getting the Integration Token
 
-Within Notion, click on the "Settings & Members" button in the top right corner.
-Then click on the "Integrations" tab. Click the "Create new integration" button
+Within the Notion app, click on the "Settings & Members" button in the top 
+right corner. Then click on the "Connections" section under "Workspace." On the
+connections screen, click the link at the bottom that says "Develop or manage
+integrations". This will take you to the integrations page. Click the "Create
