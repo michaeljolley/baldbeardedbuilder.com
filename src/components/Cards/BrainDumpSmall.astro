@@ -41,7 +41,15 @@ let options = {
     align-items: flex-start;
     justify-content: space-evenly;
     padding-left: 2.5rem;
-    border-image-source: var(--gradient-vert);
+    border-image-source: linear-gradient(
+      var(--angle),
+      var(--green),
+      var(--blue),
+      var(--purple),
+      var(--pink),
+      var(--yellow),
+      var(--orange)
+    );
     border-left: 6px solid;
     border-image-slice: 1;
     border-bottom: 0px;
@@ -49,6 +57,8 @@ let options = {
   }
   .card > a:hover {
     text-emphasis: none;
+    --angle: 0deg;
+    animation: 10s rotate linear infinite;
   }
   .card > a > h4 {
     font-family: var(--inter);

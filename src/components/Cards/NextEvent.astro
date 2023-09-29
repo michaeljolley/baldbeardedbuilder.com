@@ -1,28 +1,38 @@
 ---
-import Icon from '../Icon.astro';
-import type { ScheduledEvent } from '@type/scheduledEvent';
+import Icon from "../Icon.astro";
+import type { ScheduledEvent } from "@type/scheduledEvent";
 
 export interface Props {
   event: ScheduledEvent;
 }
 
 const { date, title, description, type } = Astro.props.event;
-const link =
-  type === 'YouTube'
-    ? 'https://youtube.com/@baldbeardedbuilder'
-    : 'https://twitch.tv/baldbeardedbuilder';
+let link = "";
+let target = "_blank";
+switch (type) {
+  case "YouTube":
+    link = "https://youtube.com/@baldbeardedbuilder";
+    break;
+  case "Twitch":
+    link = "https://twitch.tv/baldbeardedbuilder";
+    break;
+  case "Blog":
+    link = "https://baldbeardedbuilder.com/blog/";
+    target = "_self";
+    break;
+}
 
 let options = {
-  month: 'long',
-  day: 'numeric',
-  weekday: 'short',
+  month: "long",
+  day: "numeric",
+  weekday: "short",
 };
 ---
 
 <aside>
   <h2>Next Up</h2>
-  <a href={link} target="_blank" rel="me" class={type}>
-    <date>{new Intl.DateTimeFormat('en-US', options).format(date)}</date>
+  <a href={link} target={target} rel="me" class={type}>
+    <date>{new Intl.DateTimeFormat("en-US", options).format(date)}</date>
     <h3>
       <Icon icon={type} style="height:1.25rem;" class="icon" />
       {title}
@@ -47,10 +57,10 @@ let options = {
     margin-bottom: 3rem;
 
     background: var(--gradient);
-    -webkit-mask-image: url('https://res.cloudinary.com/dk3rdh3yo/image/upload/v1693077020/website-assets/next_up.png');
+    -webkit-mask-image: url("https://res.cloudinary.com/dk3rdh3yo/image/upload/v1693077020/website-assets/next_up.png");
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: contain;
-    mask-image: url('https://res.cloudinary.com/dk3rdh3yo/image/upload/v1693077020/website-assets/next_up.png');
+    mask-image: url("https://res.cloudinary.com/dk3rdh3yo/image/upload/v1693077020/website-assets/next_up.png");
     mask-repeat: no-repeat;
     mask-size: contain;
   }
@@ -68,6 +78,9 @@ let options = {
   a.Twitch {
     border-color: var(--purple);
   }
+  a.Blog {
+    border-color: var(--yellow);
+  }
 
   a.YouTube .icon {
     color: var(--pink);
@@ -76,6 +89,10 @@ let options = {
   a.Twitch .icon {
     color: var(--purple);
     fill: var(--purple);
+  }
+  a.Blog .icon {
+    color: var(--yellow);
+    fill: var(--yellow);
   }
 
   .icon {
@@ -97,6 +114,9 @@ let options = {
   }
   a.Twitch date {
     color: var(--purple);
+  }
+  a.Blog date {
+    color: var(--yellow);
   }
 
   p {

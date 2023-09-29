@@ -1,6 +1,6 @@
 ---
-import Icon from '../Icon.astro';
-import type { ScheduledEvent } from '@type/scheduledEvent';
+import Icon from "../Icon.astro";
+import type { ScheduledEvent } from "@type/scheduledEvent";
 
 export interface Props {
   event: ScheduledEvent;
@@ -8,19 +8,27 @@ export interface Props {
 
 const { type, title, date } = Astro.props.event;
 let options = {
-  month: 'long',
-  day: 'numeric',
-  weekday: 'short',
+  month: "long",
+  day: "numeric",
+  weekday: "short",
 };
-const link =
-  type === 'YouTube'
-    ? 'https://youtube.com/@baldbeardedbuilder'
-    : 'https://twitch.tv/baldbeardedbuilder';
+let link = "";
+switch (type) {
+  case "YouTube":
+    link = "https://youtube.com/@baldbeardedbuilder";
+    break;
+  case "Twitch":
+    link = "https://twitch.tv/baldbeardedbuilder";
+    break;
+  case "Blog":
+    link = "https://baldbeardedbuilder.com/blog/";
+    break;
+}
 ---
 
 <li>
   <a href={link} target="_blank" rel="me" class={type}>
-    <date>{new Intl.DateTimeFormat('en-US', options).format(date)}</date>
+    <date>{new Intl.DateTimeFormat("en-US", options).format(date)}</date>
     <h4>
       <Icon icon={type} style="height:1.25rem;" class="icon" />
       {title}
@@ -44,6 +52,10 @@ const link =
     color: var(--purple);
     fill: var(--purple);
   }
+  a.Blog .icon {
+    color: var(--yellow);
+    fill: var(--yellow);
+  }
 
   .icon {
     margin-right: 1rem;
@@ -64,5 +76,8 @@ const link =
   }
   a.Twitch date {
     color: var(--purple);
+  }
+  a.Blog date {
+    color: var(--yellow);
   }
 </style>
