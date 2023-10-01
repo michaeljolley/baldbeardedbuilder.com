@@ -5,7 +5,7 @@ image: https://res.cloudinary.com/dk3rdh3yo/image/upload/w_526,dpr_auto,f_auto/v
 image_alt: AI generated image of neon robots on a black background
 description: Helping Discord members use more inclusive language by building a
   bot using JavaScript & Fauna and hosted by Azure in a Docker container.
-featured: 1
+featured: 2
 tags:
   - discord
   - inclusion

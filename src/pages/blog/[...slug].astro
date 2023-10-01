@@ -7,7 +7,8 @@ import RelatedPosts from "@components/RelatedPosts.astro";
 export async function getStaticPaths() {
   const blogEntries = await getCollection(
     "blog",
-    ({ data }: CollectionEntry<"blog">) => data.pubDate < new Date()
+    ({ data }: CollectionEntry<"blog">) =>
+      data.pubDate < new Date() || import.meta.env.CONTEXT !== "production"
   );
 
   return blogEntries.map((entry: CollectionEntry<"blog">) => ({
@@ -18,9 +19,15 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const { post } = Astro.props;
-const { title, description, tags, canonicalUrl } = post.data;
+const { title, description, tags, canonicalUrl, snapshot, pubDate } = post.data;
 const { Content, headings } = await post.render();
 const permalink = `https://${import.meta.env.HOST}/blog/${slug}/`;
+let options = {
+  month: "long",
+  day: "numeric",
+  weekday: "long",
+  year: "numeric",
+};
 ---
 
 <ArticleLayout {title} {description} {permalink} {canonicalUrl}>
@@ -30,12 +37,41 @@ const permalink = `https://${import.meta.env.HOST}/blog/${slug}/`;
     </header>
     <article class="toc">
       <main>
-        <Content />
+        {pubDate <= new Date() && <Content />}
+        {
+          pubDate > new Date() && (
+            <div class="snapshot">
+              <blockquote>
+                <h4>Coming Soon</h4>
+                <p>
+                  This article is scheduled to drop on{" "}
+                  <b>
+                    {new Intl.DateTimeFormat("en-US", options).format(pubDate)}
+                  </b>
+                  . In the meantime, here's a snapshot of the article as it will
+                  appear when published.
+                </p>
+              </blockquote>
+              <div class="summary" set:html={snapshot} />
+            </div>
+          )
+        }
       </main>
       <aside>
-        <TableOfContents {headings} client:load />
+        <TableOfContents {headings} {pubDate} client:load />
         <RelatedPosts {slug} {tags} />
       </aside>
     </article>
   </div>
 </ArticleLayout>
+
+<style>
+  blockquote h4 {
+    margin-top: 0;
+  }
+  .summary {
+    background: -webkit-linear-gradient(var(--text), var(--bg));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+</style>

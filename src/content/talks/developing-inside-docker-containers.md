@@ -4,7 +4,6 @@ description: How to develop software inside docker containers to avoid conflicts
 summary: How to develop software inside docker containers to avoid conflicts, improve security and speed up on-boarding.
 image: https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,w_520,dpr_auto,f_auto/v1688593669/website-assets/neon_box_full_of_programming_code_f0tofy.png
 image_alt: AI generated image of a neon box full of programming code.
-featured: 1
 video: rIBasrQy228
 tags: [vscode, devops, docker]
 events:

@@ -1,17 +1,24 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from "preact/hooks";
 
-function TableOfContents(props) {
+function TableOfContents(props: {
+  headings: { depth: number; text: string; slug: string }[];
+  pubDate?: Date;
+}) {
   const headers = props.headings.filter((f) => f.depth < 4);
+  const pubDate = props.pubDate;
+
   const [activeId, setActiveId] = useState();
-  useIntersectionObserver(setActiveId);
+  if (!pubDate || pubDate <= new Date()) {
+    useIntersectionObserver(setActiveId);
+  }
 
   const scrollToHeading = (e) => {
     e.preventDefault();
     if (e.target.href) {
       document
-        .querySelector(`#${e.target.getAttribute('data-attr-id')}`)
+        .querySelector(`#${e.target.getAttribute("data-attr-id")}`)
         .scrollIntoView({
-          behavior: 'smooth',
+          behavior: "smooth",
         });
     }
   };
@@ -24,17 +31,24 @@ function TableOfContents(props) {
             {headers.map((header) => {
               const className = [
                 `link--level${header.depth}`,
-                header.slug === activeId ? 'link--active' : '',
+                header.slug === activeId ? "link--active" : "",
               ];
               return (
-                <li className={className.join(' ')}>
-                  <a
-                    href={`#${header.slug}`}
-                    data-attr-id={header.slug}
-                    onClick={scrollToHeading}
-                  >
-                    {header.text}
-                  </a>
+                <li className={className.join(" ")}>
+                  {(!pubDate || pubDate <= new Date()) && (
+                    <a
+                      href={`#${header.slug}`}
+                      data-attr-id={header.slug}
+                      onClick={scrollToHeading}
+                    >
+                      {header.text}
+                    </a>
+                  )}
+                  {pubDate && pubDate > new Date() && (
+                    <a href="#" data-attr-id={header.slug}>
+                      {header.text}
+                    </a>
+                  )}
                 </li>
               );
             })}
@@ -76,10 +90,10 @@ const useIntersectionObserver = (setActiveId) => {
     };
 
     const observer = new IntersectionObserver(callback, {
-      rootMargin: '0px 0px -30% 0px',
+      rootMargin: "0px 0px -30% 0px",
     });
 
-    const headingElements = Array.from(document.querySelectorAll('h2, h3'));
+    const headingElements = Array.from(document.querySelectorAll("h2, h3"));
 
     headingElements.forEach((element) => observer.observe(element));
 
