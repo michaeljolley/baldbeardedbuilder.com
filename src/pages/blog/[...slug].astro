@@ -6,10 +6,7 @@ import RelatedPosts from "@components/RelatedPosts.astro";
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection(
-    "blog",
-    ({ data }: CollectionEntry<"blog">) =>
-      data.pubDate < new Date() || import.meta.env.CONTEXT !== "production"
-  );
+    "blog");
 
   return blogEntries.map((entry: CollectionEntry<"blog">) => ({
     params: { slug: entry.slug },
