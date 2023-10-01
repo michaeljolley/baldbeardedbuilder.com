@@ -6,7 +6,7 @@ export interface Props {
   event: ScheduledEvent;
 }
 
-const { type, title, date } = Astro.props.event;
+const { type, title, date, url } = Astro.props.event;
 let options = {
   month: "long",
   day: "numeric",
@@ -21,7 +21,7 @@ switch (type) {
     link = "https://twitch.tv/baldbeardedbuilder";
     break;
   case "Blog":
-    link = "https://baldbeardedbuilder.com/blog/";
+    link = url;
     break;
 }
 ---

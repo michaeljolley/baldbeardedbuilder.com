@@ -3,4 +3,5 @@ export type ScheduledEvent = {
   title: string;
   description: string;
   type: string;
+  url: string;
 }

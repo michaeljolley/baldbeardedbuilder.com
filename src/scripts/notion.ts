@@ -66,7 +66,8 @@ export async function getEvents(): Promise<ScheduledEvent[]> {
         title: page.properties.Name.title[0].plain_text,
         description: page.properties.Description.rich_text[0].plain_text,
         date: new Date(page.properties['Release Date'].date.start),
-        type: type
+        type: type,
+        url: page.properties.URL?.url,
       };
     })
     .sort((a, b) => a.date.getTime() - b.date.getTime())
