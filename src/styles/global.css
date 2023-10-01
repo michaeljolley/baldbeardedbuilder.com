@@ -654,6 +654,14 @@ article main pre:-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
+article main hr {
+  border: 0;
+  height: 2px;
+  background: var(--gradient);
+  margin: 2rem auto;
+  width: 90%;
+}
+
 article main form {
   margin: 2rem 0;
 }

@@ -1,7 +1,7 @@
 ---
-import { getEvents } from 'src/scripts/notion';
-import NextEvent from './Cards/NextEvent.astro';
-import ScheduleCard from './Cards/ScheduleCard.astro';
+import { getEvents } from "src/scripts/notion";
+import NextEvent from "./Cards/NextEvent.astro";
+import ScheduleCard from "./Cards/ScheduleCard.astro";
 
 const events = await getEvents();
 const next = events.splice(0, 1)[0];

@@ -1,13 +1,15 @@
 ---
 import ArticleLayout from "@layouts/article.astro";
 import BlogCard from "@components/Cards/BlogCard.astro";
-import { getCollection, type CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
 
-let blogPosts = await getCollection("blog");
+let blogPosts = await getCollection(
+  "blog",
+  ({ data }) => data.pubDate <= new Date()
+);
 
 blogPosts = blogPosts.sort(
-  (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) =>
-    new Date(b.data.pubDate) - new Date(a.data.pubDate)
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
 const title = "All Blog Posts by Michael";
 const description =

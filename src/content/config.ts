@@ -16,6 +16,7 @@ const blogCollection = defineCollection({
 		summary: z.string(),
 		canonicalUrl: z.string().url().optional(),
 		featured: z.number().optional(),
+		snapshot: z.string().optional(),
 	}),
 });
 
