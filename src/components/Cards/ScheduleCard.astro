@@ -13,6 +13,7 @@ let options = {
   weekday: "short",
 };
 let link = "";
+let target = "_blank";
 switch (type) {
   case "YouTube":
     link = "https://youtube.com/@baldbeardedbuilder";
@@ -22,12 +23,13 @@ switch (type) {
     break;
   case "Blog":
     link = url;
+    target = "_self";
     break;
 }
 ---
 
 <li>
-  <a href={link} target="_blank" rel="me" class={type}>
+  <a href={link} target={target} rel="me" class={type}>
     <date>{new Intl.DateTimeFormat("en-US", options).format(date)}</date>
     <h4>
       <Icon icon={type} style="height:1.25rem;" class="icon" />
