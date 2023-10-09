@@ -1,6 +1,6 @@
 [[redirects]]
   from = "https://bbb.dev/*"
-  to = "/api/smolify?path=:splat"
+  to = "https://baldbeardedbuilder.com/api/smolify?path=:splat"
   status = 301
   force = true
   

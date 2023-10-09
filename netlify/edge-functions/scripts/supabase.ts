@@ -21,11 +21,8 @@ export async function insertAnalytic(analytic: Analytic) {
 
 export async function getShortUrl(slug: string) {
   const { data, error } = await supabase
-
     .from('shorturls')
-
     .select()
-
     .eq('slug', slug);
 
   if (data && data[0] && data[0].target) {
