@@ -44,6 +44,8 @@ jobs:
           NOTION_CONTENT_DATABASE_ID: ${{ secrets.NOTION_CONTENT_DATABASE_ID }}
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           WEBMENTION_IO_TOKEN: ${{ secrets.WEBMENTION_IO_TOKEN }}
+      - name: Copy Edge Functions
+        run: cp -r ./netlify ./dist/
       - name: Publish to Netlify
         uses: nwtgck/actions-netlify@v2.0
         with:
