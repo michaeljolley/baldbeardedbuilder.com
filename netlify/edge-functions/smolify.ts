@@ -23,7 +23,7 @@ export default async function handler(req: Request) {
       if (target) {
         return Response.redirect(target, 301);
       } else {
-        return Response.redirect('http://baldbeardedbuilder.com/404/', 404);
+        return Response.redirect('http://baldbeardedbuilder.com/404/', 301);
       }
     } catch (e) {
       console.error(e);
