@@ -45,7 +45,10 @@ jobs:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           WEBMENTION_IO_TOKEN: ${{ secrets.WEBMENTION_IO_TOKEN }}
       - name: Copy Edge Functions
-        run: cp -r ./netlify ./dist/
+        run: |
+          cp -r ./netlify ./dist/
+          cd ./dist/netlify
+          ls
       - name: Publish to Netlify
         uses: nwtgck/actions-netlify@v2.0
         with:

@@ -1,6 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import type { Analytic } from '../types/analytics.ts';
-import type { Activity } from '../types/activity.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') as string,
@@ -18,52 +17,6 @@ export async function insertAnalytic(analytic: Analytic) {
   if (error) {
     console.error(error);
   }
-}
-
-export async function insertActivity(activity: Activity) {
-  const { error } = await supabase.from('activities').upsert(activity).select();
-
-  if (error) {
-    console.error(error);
-  }
-}
-
-export async function getActivity(today: string) {
-  const { data, error } = await supabase
-
-    .from('activities')
-
-    .select()
-
-    .eq('activity_date', today);
-
-  if (data && data[0]) {
-    return data[0];
-  }
-
-  if (error) {
-    console.error(error);
-  }
-
-  return {
-    activity_date: today,
-
-    updated: '',
-
-    stand_goal: 12,
-
-    stand: 0,
-
-    exercise_goal: 0,
-
-    exercise: 30,
-
-    energy: 500,
-
-    energy_goal: 0,
-
-    battery: 100,
-  };
 }
 
 export async function getShortUrl(slug: string) {
