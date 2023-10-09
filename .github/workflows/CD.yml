@@ -45,9 +45,9 @@ jobs:
       #     NOTION_CONTENT_DATABASE_ID: ${{ secrets.NOTION_CONTENT_DATABASE_ID }}
       #     NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
       #     WEBMENTION_IO_TOKEN: ${{ secrets.WEBMENTION_IO_TOKEN }}
-      - name: Deploy to Netlify
-        run: |
-          netlify deploy --prod ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+      # - name: Deploy to Netlify
+      #   run: |
+      #     netlify deploy --prod ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
       # - name: Publish to Netlify
       #   uses: nwtgck/actions-netlify@v2.0
       #   with:
