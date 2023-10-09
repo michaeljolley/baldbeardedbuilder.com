@@ -36,19 +36,18 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install
-      - name: Build site
-        run: |
-          echo '{"siteId": "${{ secrets.NETLIFY_SITE_ID }}"}' | tee ./netlify/state.json
-          netlify build
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          NOTION_CONTENT_DATABASE_ID: ${{ secrets.NOTION_CONTENT_DATABASE_ID }}
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          WEBMENTION_IO_TOKEN: ${{ secrets.WEBMENTION_IO_TOKEN }}
+      # - name: Build site
+      #   run: |
+      #     netlify build
+      #   env:
+      #     SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      #     SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      #     NOTION_CONTENT_DATABASE_ID: ${{ secrets.NOTION_CONTENT_DATABASE_ID }}
+      #     NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      #     WEBMENTION_IO_TOKEN: ${{ secrets.WEBMENTION_IO_TOKEN }}
       - name: Deploy to Netlify
         run: |
-          netlify deploy --build false --prod ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+          netlify deploy --prod ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
       # - name: Publish to Netlify
       #   uses: nwtgck/actions-netlify@v2.0
       #   with:
