@@ -38,6 +38,7 @@ jobs:
         run: pnpm install
       - name: Build site
         run: |
+          echo '{"siteId": "${{ secrets.NETLIFY_SITE_ID }}"}' | tee ./netlify/state.json
           netlify build
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
