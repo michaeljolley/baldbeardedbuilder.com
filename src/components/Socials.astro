@@ -8,10 +8,9 @@ import Icon from './Icon.astro';
       href="https://twitter.com/michaeljolley"
       rel="me"
       target="_blank"
-      class="twitter"
       title="Follow the musings on Twitter"
     >
-      <Icon icon="Twitter" style="height:1.25rem;" class="icon" />
+      <Icon icon="Twitter" style="height:1.25rem;"  />
     </a>
   </li>
   <li>
@@ -19,10 +18,9 @@ import Icon from './Icon.astro';
       href="https://youtube.com/baldbeardedbuilder"
       rel="me"
       target="_blank"
-      class="youtube"
       title="Subscribe, like & comment on YouTube videos"
     >
-      <Icon icon="YouTube" style="height:1.25rem;" class="icon" />
+      <Icon icon="YouTube" style="height:1.25rem;" />
     </a>
   </li>
   <li>
@@ -30,53 +28,23 @@ import Icon from './Icon.astro';
       href="https://twitch.tv/baldbeardedbuilder"
       rel="me"
       target="_blank"
-      class="twitch"
       title="Check out the live streams on Twitch"
     >
-      <Icon icon="Twitch" style="height:1.25rem;" class="icon" />
-    </a>
-  </li>
-  <li>
-    <a
-      href="https://discord.gg/kC8HTrs59R"
-      rel="me"
-      target="_blank"
-      class="discord"
-      title="Join the conversation on Discord"
-    >
-      <Icon icon="Discord" style="height:1.25rem;" class="icon" />
+      <Icon icon="Twitch" style="height:1.25rem;" />
     </a>
   </li>
 </ul>
 
 <style>
- 
   ul {
-    display: none;
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    @apply hidden md:flex list-none gap-10 p-0 m-0;
   }
-
-  li:not(:last-child) {
-    margin-right: 1rem;
+  li {
+    @apply flex justify-center items-center;
   }
-
-  .icon {
-    color: var(--socials-link);
-    fill: var(--socials-link);
-  }
-
-  .icon:hover,
-  .icon:active {
-    color: var(--socials-link-hover);
-    fill: var(--socials-link-hover);
-  }
-
-  @media screen and (min-width: 640px) {
-    ul {
-      display: flex;
-      gap: 1rem;
-    }
+  a svg {
+    @apply text-fadedGray fill-fadedGray;
+    @apply hover:text-neon active:text-neon;
+    @apply hover:fill-neon active:fill-neon;
   }
 </style>

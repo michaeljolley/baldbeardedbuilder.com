@@ -6,6 +6,7 @@ import LatestPosts from "@components/LatestPosts.astro";
 import BuildWithMe from "@components/BuildWithMe.astro";
 import Schedule from "@components/Schedule.astro";
 import BrainDumpAd from "@components/BrainDumpAd.astro";
+import Featured from "@components/Featured.astro";
 
 const title = "Bald Bearded Builder => Michael Jolley";
 const description =
@@ -15,9 +16,10 @@ const permalink = `https://${import.meta.env.HOST}/`;
 
 <BaseLayout {title} {description} {permalink}>
   <Mast />
+  <Featured />
   <Proof />
-  <Schedule />
+  <!-- <Schedule />
   <BuildWithMe />
   <LatestPosts />
-  <BrainDumpAd />
+  <BrainDumpAd /> -->
 </BaseLayout>

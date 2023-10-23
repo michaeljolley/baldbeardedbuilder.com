@@ -1,6 +1,6 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
-import ArticleLayout from "@layouts/article.astro";
+import BaseLayout from "@layouts/base.astro";
 import TableOfContents from "@components/TableOfContents";
 import RelatedPosts from "@components/RelatedPosts.astro";
 
@@ -23,7 +23,7 @@ const { Content, headings } = await post.render();
 const permalink = `https://${import.meta.env.HOST}/brain-dump/${slug}/`;
 ---
 
-<ArticleLayout {title} {description} {permalink}>
+<BaseLayout {title} {description} {permalink}>
   <div class="container">
     <header>
       <h1>{title}</h1>
@@ -38,4 +38,4 @@ const permalink = `https://${import.meta.env.HOST}/brain-dump/${slug}/`;
       </aside>
     </article>
   </div>
-</ArticleLayout>
+</BaseLayout>

@@ -7,89 +7,61 @@ export interface Props {
 
 const { post } = Astro.props;
 const { title, summary, image } = post.data;
+const bgImage = `url('${image}')`;
 ---
 
-<li class="card">
+<li>
   <a href={`/blog/${post.slug}/`}>
-    <div class="img" style={`background-image:url(${image})`}></div>
+    <div class="img"></div>
     <section>
       <div class="summary">
-        <h5>{title}</h5>
+        <h2>{title}</h2>
         <p>{summary}</p>
       </div>
     </section>
   </a>
 </li>
 
-<style>
-  .card {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    border: 1px solid var(--gray-fade);
+<style define:vars={{ bgImage }}>
+  li {
+    @apply flex-grow;
+    @apply card hover:bg-muted hover:shadow-xl;
   }
-  .card:hover {
-    box-shadow: var(--shadow);
+
+  a {
+    @apply grid gap-4 m-0;
+    @apply h-full;
+    grid-template-columns: 12rem auto;
   }
-  .card a {
-    color: unset;
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-    border-bottom: 0px;
-    animation: unset;
-    height: 100%;
+
+  .img {
+    @apply bg-darkGray;
+    @apply rounded-tl-lg rounded-bl-lg;
+    border: 2px solid rgba(148, 148, 148, 0.3);
+    border-right: none;
+    background-image: var(--bgImage);
+    @apply bg-cover bg-center;
+    @apply bg-blend-luminosity;
+    filter: blur(5px);
+    -webkit-filter: blur(5px);
   }
-  .card a:hover {
-    color: unset;
-    text-decoration: none;
+
+  a:hover .img {
+    @apply bg-blend-normal;
+    filter: none;
+    -webkit-filter: none;
   }
 
   section {
-    padding: 2rem 2rem 1.5rem 2rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    @apply flex p-6;
   }
-  .img {
-    background-size: cover;
-    background-position: center;
-    height: 10rem;
-    width: 100%;
+
+  h2 {
+    @apply font-kanit font-semibold text-white;
+    @apply text-xl md:text-2xl;
+    @apply pb-2;
   }
-  .summary {
-    border-right: 5px solid;
-    border-image-source: linear-gradient(
-      var(--angle),
-      var(--green),
-      var(--blue),
-      var(--purple),
-      var(--pink),
-      var(--yellow),
-      var(--orange)
-    );
-    border-image-slice: 1;
-    padding-right: 2rem;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-  .summary > h5 {
-    font-size: 1.5rem;
-    line-height: 1.5rem;
-    margin: 0;
-  }
-  .summary > p {
-    color: var(--gray);
-  }
-  .card a:hover .summary {
-    --angle: 0deg;
-    animation: 10s rotate linear infinite;
-  }
-  @media screen and (min-width: 640px) {
-    /* sm */
-    div.img {
-      height: 15rem;
-    }
+  p {
+    @apply text-sm;
   }
 </style>

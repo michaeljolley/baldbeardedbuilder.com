@@ -1,5 +1,5 @@
 ---
-import ArticleLayout from "@layouts/article.astro";
+import BaseLayout from "@layouts/base.astro";
 import BlogCard from "@components/Cards/BlogCard.astro";
 import { getCollection } from "astro:content";
 
@@ -17,7 +17,7 @@ const description =
 const permalink = `https://${import.meta.env.HOST}/blog/`;
 ---
 
-<ArticleLayout {title} {description} {permalink}>
+<BaseLayout {title} {description} {permalink}>
   <div class="container">
     <header>
       <h1>All Posts</h1>
@@ -30,4 +30,20 @@ const permalink = `https://${import.meta.env.HOST}/blog/`;
       </main>
     </article>
   </div>
-</ArticleLayout>
+</BaseLayout>
+
+<style>
+  header {
+    @apply my-24 md:my-48 flex items-center justify-center;
+  }
+  h1 {
+    @apply font-kanit font-semibold text-6xl;
+  }
+  main {
+    @apply px-8 lg:px-0;
+  }
+  ul {
+    @apply grid gap-8 list-none;
+    @apply grid-cols-1 lg:grid-cols-3;
+  }
+</style>

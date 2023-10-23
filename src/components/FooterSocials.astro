@@ -1,7 +1,6 @@
 ---
 import Icon from "./Icon.astro";
 ---
-
 <div>
   <ul>
     <li>
@@ -9,7 +8,6 @@ import Icon from "./Icon.astro";
         href="https://twitter.com/michaeljolley"
         rel="me"
         target="_blank"
-        class="twitter"
         title="Follow the musings on Twitter"
       >
         <Icon icon="Twitter" style="height:1rem;" class="icon" />
@@ -20,7 +18,6 @@ import Icon from "./Icon.astro";
         href="https://youtube.com/baldbeardedbuilder"
         rel="me"
         target="_blank"
-        class="youtube"
         title="Subscribe, like & comment on YouTube videos"
       >
         <Icon icon="YouTube" style="height:1rem;" class="icon" />
@@ -31,7 +28,6 @@ import Icon from "./Icon.astro";
         href="https://twitch.tv/baldbeardedbuilder"
         rel="me"
         target="_blank"
-        class="twitch"
         title="Check out the live streams on Twitch"
       >
         <Icon icon="Twitch" style="height:1rem;" class="icon" />
@@ -42,7 +38,6 @@ import Icon from "./Icon.astro";
         href="https://linkedin.com/in/michaelwjolley"
         rel="me"
         target="_blank"
-        class="linkedin"
         title="Let's get professional"
       >
         <Icon icon="LinkedIn" style="height:1rem;" class="icon" />
@@ -53,7 +48,6 @@ import Icon from "./Icon.astro";
         href="https://github.com/michaeljolley"
         rel="me"
         target="_blank"
-        class="github"
         title="Yeah. I write code."
       >
         <Icon icon="GitHub" style="height:1rem;" class="icon" />
@@ -64,65 +58,25 @@ import Icon from "./Icon.astro";
         href="https://discord.gg/kC8HTrs59R"
         rel="me"
         target="_blank"
-        class="discord"
         title="Join the conversation on Discord"
       >
         <Icon icon="Discord" style="height:1rem;" class="icon" />
       </a>
     </li>
-    <li>
-      <button data-theme-toggle aria-label="Toggle light & dark mode">
-        <Icon icon="Sun" class="sun" style="height:1rem;width:1rem;" />
-        <Icon icon="Moon" class="moon" style="height:1rem;width:1rem;" />
-      </button>
-    </li>
   </ul>
 </div>
 <style>
   div {
-    display: flex;
-    align-items: flex-end;
+    @apply flex items-end;
   }
-
   ul {
-    display: flex;
-    gap: 1rem;
-    list-style: none;
-    padding: 2rem;
-    margin: 0;
+    @apply flex gap-8 list-none m-0;
   }
-
-  li:not(:last-child) {
-    margin-right: 1rem;
-  }
-
   .icon {
-    color: var(--footer-socials-link);
-    fill: var(--footer-socials-link);
+    @apply text-fadedGray fill-fadedGray;
   }
-
   .icon:hover,
   .icon:active {
-    color: var(--footer-socials-link-hover);
-    fill: var(--footer-socials-link-hover);
-  }
-
-  button {
-    background: transparent;
-    cursor: pointer;
-    display: inline-block;
-    border: none;
-  }
-  button svg {
-    fill: var(--text);
-    stroke: var(--text);
-  }
-  button:hover {
-    border-color: var(--nav-link);
-  }
-
-  @media screen and (min-width: 1024px) {
-    ul {
-    }
+    @apply text-neon fill-neon;
   }
 </style>

@@ -1,0 +1,28 @@
+---
+import BlogCard from "./Cards/BlogCard.astro";
+import { getCollection } from "astro:content";
+
+let blogPosts = await getCollection(
+  "blog",
+  ({ data }) => data.pubDate <= new Date() && data.featured
+);
+
+blogPosts = blogPosts.sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+---
+
+<section>
+  <div class="container">
+    <ul>
+      {blogPosts.map((post) => <BlogCard post={post} />)}
+    </ul>
+  </div>
+</section>
+
+<style>
+  ul {
+    @apply grid gap-8 list-none;
+    @apply grid-cols-1 lg:grid-cols-2;
+  }
+</style>

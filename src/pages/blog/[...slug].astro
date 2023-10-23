@@ -1,12 +1,11 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
-import ArticleLayout from "@layouts/article.astro";
+import BaseLayout from "@layouts/base.astro";
 import TableOfContents from "@components/TableOfContents";
 import RelatedPosts from "@components/RelatedPosts.astro";
 
 export async function getStaticPaths() {
-  const blogEntries = await getCollection(
-    "blog");
+  const blogEntries = await getCollection("blog");
 
   return blogEntries.map((entry: CollectionEntry<"blog">) => ({
     params: { slug: entry.slug },
@@ -27,7 +26,7 @@ let options = {
 };
 ---
 
-<ArticleLayout {title} {description} {permalink} {canonicalUrl}>
+<BaseLayout {title} {description} {permalink} {canonicalUrl}>
   <div class="container">
     <header>
       <h1>{title}</h1>
@@ -60,7 +59,7 @@ let options = {
       </aside>
     </article>
   </div>
-</ArticleLayout>
+</BaseLayout>
 
 <style>
   blockquote h4 {

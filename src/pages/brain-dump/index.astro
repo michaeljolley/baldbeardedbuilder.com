@@ -1,6 +1,6 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
-import ArticleLayout from "@layouts/article.astro";
+import BaseLayout from "@layouts/base.astro";
 import BrainDumpSmall from "@components/Cards/BrainDumpSmall.astro";
 import BrainDump from "@components/BrainDump.astro";
 
@@ -23,7 +23,7 @@ const description =
 const permalink = `https://${import.meta.env.HOST}/brain-dump/`;
 ---
 
-<ArticleLayout {title} {description} {permalink}>
+<BaseLayout {title} {description} {permalink}>
   <div class="container">
     <header>
       <h1>The Brain Dump</h1>
@@ -44,7 +44,7 @@ const permalink = `https://${import.meta.env.HOST}/brain-dump/`;
       </main>
     </article>
   </div>
-</ArticleLayout>
+</BaseLayout>
 
 <style>
   h2.center {

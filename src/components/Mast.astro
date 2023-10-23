@@ -1,70 +1,34 @@
 ---
-
+import Mike from "./Mike";
 ---
 
 <section>
   <div class="container">
     <div>
-      <h1>
-        I make content<br />
-         that <span>educates</span><br />
-         and <span>entertains</span>.
-      </h1>
+      <Mike client:only />
     </div>
     <div>
-      <img
-        style="width:100%"
-        src="https://res.cloudinary.com/dk3rdh3yo/image/upload/e_grayscale,f_auto/v1687460581/website-assets/mast-bbb.png"
-        alt="Michael, with three arms. One pointing to his bald head, one pointing to his beard, and the last holding a mechanical keyboard."
-      />
+      <h1>
+        I make content<br />
+         that educates<br />
+         and entertains.
+      </h1>
     </div>
   </div>
 </section>
 
 <style>
   .container {
-    margin-top: 3rem;
+    @apply flex flex-col gap-3 sm:flex-row;
+    @apply justify-center items-center;
   }
-
-  div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-  }
-
-  div:not(:first-child) {
-    display: none;
-    align-items: flex-end;
+  .container div {
+    @apply flex flex-col justify-center items-center;
+    @apply w-full h-full;
   }
 
   h1 {
-    font-family: var(--syne);
-    color: var(--text);
-    font-size: 2.5rem;
-    text-align: center;
-    white-space: nowrap;
-  }
-  h1 span {
-    background-image: var(--gradient);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  @media screen and (min-width: 768px) {
-    .container {
-      display: grid;
-      grid-template-columns: 50% 50%;
-    }
-    div:not(:first-child) {
-      display: flex;
-    }
-  }
-  @media screen and (min-width: 1024px) {
-    h1 {
-      font-size: 3rem;
-    }
+    @apply font-kanit font-semibold text-5xl lg:text-6xl;
+    @apply whitespace-nowrap text-center sm:text-left;
   }
 </style>

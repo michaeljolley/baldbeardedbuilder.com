@@ -12,57 +12,11 @@ import FooterSocials from "./FooterSocials.astro";
 
 <style>
   footer {
-    background: url("https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/website-assets/footer.png")
-      center bottom no-repeat;
-    background-size: cover;
-    color: var(--footer-color);
+    @apply p-6;
+    @apply mt-24;
   }
-
   .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  p {
-    font-size: 0.75rem;
-  }
-
-  @media screen and (min-width: 640px) {
-    .container {
-    }
-  }
-  @media screen and (min-width: 768px) {
-    .container {
-      margin-top: 2rem;
-    }
-  }
-  @media screen and (min-width: 1024px) {
-    .container {
-      margin-top: 3.5rem;
-      margin-bottom: 1.5rem;
-      flex-direction: row;
-    }
-  }
-  @media screen and (min-width: 1280px) {
-    /* xl */
-    .container {
-      margin: 5rem auto 1.5rem auto;
-    }
-  }
-  @media screen and (min-width: 1536px) {
-    /* 2xl */
-  }
-  @media screen and (min-width: 1648px) {
-    /* 3xl */
-    footer {
-      background-position: center -10%;
-    }
-  }
-  @media screen and (min-width: 1780px) {
-    /* 4xl */
-    footer {
-      background-position: center -20%;
-    }
+    @apply text-fadedGray;
+    @apply flex flex-col md:flex-row md:justify-between gap-12;
   }
 </style>

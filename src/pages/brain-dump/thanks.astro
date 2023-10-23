@@ -1,6 +1,6 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
-import ArticleLayout from "@layouts/article.astro";
+import BaseLayout from "@layouts/base.astro";
 import BrainDumpSmall from "@components/Cards/BrainDumpSmall.astro";
 
 let brainDumps = await getCollection("brainDumps", ({ data }) => {
@@ -20,7 +20,7 @@ const description = "You successfully registered for the Brain Dump newsletter";
 const permalink = `https://${import.meta.env.HOST}/brain-dump/thanks/`;
 ---
 
-<ArticleLayout {title} {description} {permalink}>
+<BaseLayout {title} {description} {permalink}>
   <div class="container">
     <header>
       <h1>Welcome to the Brain Dump Newsletter</h1>
@@ -44,7 +44,7 @@ const permalink = `https://${import.meta.env.HOST}/brain-dump/thanks/`;
       </main>
     </article>
   </div>
-</ArticleLayout>
+</BaseLayout>
 
 <style>
   h2.center {

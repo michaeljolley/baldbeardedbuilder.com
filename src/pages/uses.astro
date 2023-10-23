@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import ArticleLayout from "@layouts/article.astro";
+import BaseLayout from "@layouts/base.astro";
 import GearCard from "@components/Cards/GearCard.astro";
 
 let gearEntries = await getCollection("gear");
@@ -26,7 +26,7 @@ const description =
 const permalink = `https://${import.meta.env.HOST}/uses/`;
 ---
 
-<ArticleLayout {title} {description} {permalink}>
+<BaseLayout {title} {description} {permalink}>
   <div class="container">
     <header>
       <h1>What Michael Uses</h1>
@@ -58,4 +58,4 @@ const permalink = `https://${import.meta.env.HOST}/uses/`;
       </main>
     </article>
   </div>
-</ArticleLayout>
+</BaseLayout>
