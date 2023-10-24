@@ -1,0 +1,53 @@
+---
+
+---
+
+<li>
+  <slot />
+</li>
+
+<style>
+  li {
+    @apply flex-grow;
+    @apply relative rounded-lg;
+    @apply bg-darken;
+
+    &:hover {
+      &:before,
+      &:after {
+        --a: 0deg;
+        content: "";
+        @apply rounded-lg;
+        @apply absolute;
+        left: -2px;
+        top: -2px;
+        background: conic-gradient(
+          from var(--a) at 50% 50%,
+          rgba(60, 60, 60, 0.45) 30%,
+          rgb(103, 229, 101) 50%,
+          rgba(60, 60, 60, 0.45) 70%
+        );
+        width: calc(100% + 4px);
+        height: calc(100% + 4px);
+        z-index: -1;
+        animation: steam 5s linear infinite;
+      }
+    }
+
+    &::before {
+      z-index: -1;
+    }
+
+    &:after {
+      filter: blur(15px);
+    }
+  }
+  @keyframes steam {
+    from {
+      --a: 0deg;
+    }
+    to {
+      --a: 360deg;
+    }
+  }
+</style>

@@ -1,5 +1,5 @@
 ---
-import Icon from './Icon.astro';
+import Icon from "./Icon.astro";
 ---
 
 <ul>
@@ -8,9 +8,10 @@ import Icon from './Icon.astro';
       href="https://twitter.com/michaeljolley"
       rel="me"
       target="_blank"
+      class="optout"
       title="Follow the musings on Twitter"
     >
-      <Icon icon="Twitter" style="height:1.25rem;"  />
+      <Icon icon="Twitter" style="height:1.25rem;" />
     </a>
   </li>
   <li>
@@ -18,6 +19,7 @@ import Icon from './Icon.astro';
       href="https://youtube.com/baldbeardedbuilder"
       rel="me"
       target="_blank"
+      class="optout"
       title="Subscribe, like & comment on YouTube videos"
     >
       <Icon icon="YouTube" style="height:1.25rem;" />
@@ -28,6 +30,7 @@ import Icon from './Icon.astro';
       href="https://twitch.tv/baldbeardedbuilder"
       rel="me"
       target="_blank"
+      class="optout"
       title="Check out the live streams on Twitch"
     >
       <Icon icon="Twitch" style="height:1.25rem;" />
@@ -43,7 +46,7 @@ import Icon from './Icon.astro';
     @apply flex justify-center items-center;
   }
   a svg {
-    @apply text-fadedGray fill-fadedGray;
+    @apply text-zinc-400 fill-zinc-400;
     @apply hover:text-neon active:text-neon;
     @apply hover:fill-neon active:fill-neon;
   }

@@ -1,6 +1,7 @@
 ---
 
 ---
+
 <nav>
   <input id="nav-toggle" class="hidden" type="checkbox" />
   <label class="nav-button-container" for="nav-toggle">
@@ -25,7 +26,6 @@
   </ul>
 </nav>
 
-  
 <style>
   nav {
     @apply flex flex-col md:flex-row;
@@ -39,7 +39,6 @@
   .nav-button-container {
     @apply flex md:hidden items-center;
     @apply pb-8 md:pb-0;
-    @apply mr-8 md:mr-0;
     @apply h-full w-8;
     @apply cursor-pointer;
   }
@@ -59,7 +58,7 @@
     @apply overflow-hidden;
   }
   a {
-    @apply text-zinc-600 md:text-fadedGray hover:text-neon active:text-neon;
+    @apply font-inter text-zinc-400 hover:text-neon;
     @apply no-underline;
   }
   .nav-button,

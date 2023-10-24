@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import Card from "./Card.astro";
 
 export interface Props {
   post: CollectionEntry<"blog">;
@@ -10,8 +11,8 @@ const { title, summary, image } = post.data;
 const bgImage = `url('${image}')`;
 ---
 
-<li class="card">
-  <a href={`/blog/${post.slug}/`}>
+<Card>
+  <a href={`/blog/${post.slug}/`} class="optout">
     <div class="img"></div>
     <section>
       <div class="summary">
@@ -20,13 +21,9 @@ const bgImage = `url('${image}')`;
       </div>
     </section>
   </a>
-</li>
+</Card>
 
 <style define:vars={{ bgImage }}>
-  li {
-    @apply flex-grow;
-  }
-
   a {
     @apply grid gap-4 m-0;
     @apply h-full;

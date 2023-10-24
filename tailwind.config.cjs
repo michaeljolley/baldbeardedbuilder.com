@@ -11,7 +11,7 @@ module.exports = {
         white: "#fff",
         fadedGray: "rgba(60, 60 , 60, .75)",
         muted: "rgba(100, 100, 100, .05)",
-        darken: "rgba(0, 0, 0, .2)",
+        darken: "#0E0F11",
         gradientGray:
           "linear-gradient(90deg, rgba(148, 148, 148, 100), rgba(148, 148, 148, 0), rgba(148, 148, 148, 100))",
         gradientColor:
@@ -34,6 +34,5 @@ module.exports = {
         },
       });
     }),
-    require("@tailwindcss/typography"),
   ],
 };

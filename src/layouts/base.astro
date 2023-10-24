@@ -5,7 +5,7 @@ import BaseHead, {
 import Footer from "@components/Footer.astro";
 import Header from "@components/Header.astro";
 import SkipToContent from "@components/SkipToContent.astro";
-// import "../styles/global.css";
+import "../styles/global.css";
 
 export interface Props extends BaseHeadProps {}
 
@@ -25,66 +25,10 @@ const { title, description, permalink, canonicalUrl } = Astro.props;
     <style is:global>
       body {
         @apply font-inter;
-        @apply text-fadedGray;
+        @apply text-zinc-400;
       }
       .container {
         @apply mx-auto;
-      }
-
-      @property --a {
-        syntax: "<angle>";
-        inherits: false;
-        initial-value: 90deg;
-      }
-
-      .card {
-        @apply relative rounded-lg;
-        @apply bg-darken;
-        @apply border-2 border-fadedGray;
-
-        &:hover {
-          @apply bg-darken;
-
-          &:before,
-          &:after {
-            content: "";
-            display: block;
-            position: absolute;
-            inset: -0.25rem;
-            @apply rounded-lg;
-
-            --a: 0deg;
-
-            background-image: conic-gradient(
-              from var(--a) at 50% 50%,
-              rgb(103, 229, 101) 0%,
-              rgba(60, 60, 60, 0.75) 30%
-            );
-
-            animation: animatedBgAngle 5s linear;
-            animation-iteration-count: infinite;
-          }
-        }
-
-        /* the gradient border */
-        &::before {
-          z-index: -1;
-        }
-
-        /* the "glow" */
-        &::after {
-          z-index: -2;
-          filter: blur(15px);
-          opacity: 0.35;
-        }
-      }
-      @keyframes animatedBgAngle {
-        from {
-          --a: 0deg;
-        }
-        to {
-          --a: 360deg;
-        }
       }
     </style>
   </body>

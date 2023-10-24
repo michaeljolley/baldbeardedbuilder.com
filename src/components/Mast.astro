@@ -10,8 +10,8 @@ import Mike from "./Mike";
     <div>
       <h1>
         I make content<br />
-         that educates<br />
-         and entertains.
+         that <span>educates</span><br />
+         and <span>entertains</span>.
       </h1>
     </div>
   </div>
@@ -30,5 +30,25 @@ import Mike from "./Mike";
   h1 {
     @apply font-kanit font-semibold text-5xl lg:text-6xl;
     @apply whitespace-nowrap text-center sm:text-left;
+    @apply text-zinc-400;
+
+    > span {
+      @apply text-neon;
+      /* background: linear-gradient(
+        to bottom,
+        rgba(103, 229, 101, 0.2) 30%,
+        rgba(103, 229, 101, 1) 90%
+      ); */
+      /* -webkit-background-clip: text;
+      -webkit-text-stroke: 4px transparent; */
+      text-shadow: rgba(103, 229, 101, 0.3) 0px 0px 10px;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+  }
+
+  @keyframes glow {
+    to {
+      text-shadow: rgba(103, 229, 101, 0.9) 0px 0px 20px;
+    }
   }
 </style>
