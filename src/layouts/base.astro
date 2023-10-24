@@ -22,14 +22,5 @@ const { title, description, permalink, canonicalUrl } = Astro.props;
       <slot />
     </main>
     <Footer />
-    <style is:global>
-      body {
-        @apply font-inter;
-        @apply text-zinc-400;
-      }
-      .container {
-        @apply mx-auto;
-      }
-    </style>
   </body>
 </html>
