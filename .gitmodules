@@ -1,3 +1,6 @@
 [submodule "content"]
 	path = content
 	url = https://github.com/michaeljolley/content
+[submodule "src/content"]
+	path = src/content
+	url = https://github.com/michaeljolley/content
