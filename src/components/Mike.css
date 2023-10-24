@@ -1,7 +1,0 @@
-h1 {
-  @apply font-kanit font-semibold text-4xl md:text-5xl lg:text-6xl;
-  @apply text-center whitespace-nowrap;
-}
-h1 span {
-  @apply heading;
-}

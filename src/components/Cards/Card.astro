@@ -1,46 +1,48 @@
 ---
+export interface Props {
+  hoverColor?: string;
+}
 
+const { hoverColor = "rgb(103, 229, 101)" } = Astro.props;
 ---
 
 <li>
   <slot />
 </li>
 
-<style>
+<style define:vars={{ hoverColor }}>
   li {
     @apply flex-grow;
     @apply relative rounded-lg;
     @apply bg-darken;
+    @apply border border-zinc-800;
+  }
+  li:hover:before,
+  li:hover:after {
+    --a: 0deg;
+    content: "";
+    @apply rounded-lg;
+    @apply absolute;
+    left: -2px;
+    top: -2px;
+    background: conic-gradient(
+      from var(--a) at 50% 50%,
+      rgba(60, 60, 60, 0.45) 30%,
+      var(--hoverColor) 50%,
+      rgba(60, 60, 60, 0.45) 70%
+    );
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    z-index: -1;
+    animation: steam 5s linear infinite;
+  }
 
-    &:hover {
-      &:before,
-      &:after {
-        --a: 0deg;
-        content: "";
-        @apply rounded-lg;
-        @apply absolute;
-        left: -2px;
-        top: -2px;
-        background: conic-gradient(
-          from var(--a) at 50% 50%,
-          rgba(60, 60, 60, 0.45) 30%,
-          rgb(103, 229, 101) 50%,
-          rgba(60, 60, 60, 0.45) 70%
-        );
-        width: calc(100% + 4px);
-        height: calc(100% + 4px);
-        z-index: -1;
-        animation: steam 5s linear infinite;
-      }
-    }
+  li:before {
+    z-index: -1;
+  }
 
-    &::before {
-      z-index: -1;
-    }
-
-    &:after {
-      filter: blur(15px);
-    }
+  li:after {
+    filter: blur(15px);
   }
   @keyframes steam {
     from {

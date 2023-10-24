@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro";
+import Card from "./Card.astro";
 
 export interface Props {
   brainDump: CollectionEntry<"brainDump">;
@@ -14,7 +15,7 @@ let options = {
 };
 ---
 
-<li class="card">
+<Card>
   <a href={`/brain-dump/${brainDump.slug}/`}>
     <h4>{brainDump.data.title}</h4>
     <p>{brainDump.data.description}</p>
@@ -24,7 +25,7 @@ let options = {
       }</date
     ></a
   >
-</li>
+</Card>
 
 <style>
   .card {

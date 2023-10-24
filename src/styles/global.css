@@ -42,3 +42,14 @@ a:not(.optout):hover {
     text-shadow: rgba(103, 229, 101, 0.9) 0px 0px 20px;
   }
 }
+
+@keyframes blur {
+  from {
+    background-blend-mode: luminosity;
+  }
+  to {
+    background-blend-mode: normal;
+    filter: blur(0px);
+    -webkit-filter: blur(0px);
+  }
+}

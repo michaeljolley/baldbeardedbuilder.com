@@ -1,7 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "@layouts/base.astro";
-import BrainDumpSmall from "@components/Cards/BrainDumpSmall.astro";
+import BrainDumpCard from "@components/Cards/BrainDumpCard.astro";
 
 let brainDumps = await getCollection("brainDumps", ({ data }) => {
   return data.pubDate < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -39,7 +39,7 @@ const permalink = `https://${import.meta.env.HOST}/brain-dump/thanks/`;
           below one week after their release date.
         </p>
         <ul>
-          {brainDumps.map((brainDump) => <BrainDumpSmall {brainDump} />)}
+          {brainDumps.map((brainDump) => <BrainDumpCard {brainDump} />)}
         </ul>
       </main>
     </article>

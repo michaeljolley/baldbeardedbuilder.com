@@ -1,21 +1,33 @@
 ---
 import BlogCard from "./Cards/BlogCard.astro";
+import VideoCard from "./Cards/VideoCard.astro";
 import { getCollection } from "astro:content";
 
-let blogPosts = await getCollection(
-  "blog",
-  ({ data }) => data.pubDate <= new Date() && data.featured
-);
-
-blogPosts = blogPosts.sort(
-  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
-);
+const latestPost = (
+  await getCollection(
+    "blog",
+    ({ data }) =>
+      import.meta.env.NODE_ENV !== "production" || data.pubDate <= new Date()
+  )
+)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 1)[0];
+const latestVideo = (
+  await getCollection(
+    "videos",
+    ({ data }) =>
+      import.meta.env.NODE_ENV !== "production" || data.date <= new Date()
+  )
+)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 1)[0];
 ---
 
 <section>
   <div class="container">
     <ul>
-      {blogPosts.map((post) => <BlogCard post={post} />)}
+      <BlogCard post={latestPost} />
+      <VideoCard video={latestVideo} />
     </ul>
   </div>
 </section>
