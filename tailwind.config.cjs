@@ -30,11 +30,7 @@ module.exports = {
           "border-image-slice": "1",
           "border-width": "2px",
           "border-image-source":
-            "linear-gradient(100deg, rgba(148, 148, 148, 100), rgba(148, 148, 148, 0), rgba(148, 148, 148, 100))",
-        },
-        ".card": {
-          border: "2px solid rgba(148, 148, 148, .3)",
-          "border-radius": "0.5rem",
+            "linear-gradient(100deg, rgba(148, 148, 148, 1), rgba(148, 148, 148, 0), rgba(148, 148, 148, 100))",
         },
       });
     }),
