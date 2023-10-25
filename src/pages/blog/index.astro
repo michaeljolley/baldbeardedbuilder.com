@@ -1,5 +1,5 @@
 ---
-import BaseLayout from "@layouts/base.astro";
+import ArticleLayout from "@layouts/article.astro";
 import BlogCard from "@components/Cards/BlogCard.astro";
 import { getCollection } from "astro:content";
 
@@ -15,35 +15,20 @@ const title = "All Blog Posts by Michael";
 const description =
   "A listing of blog posts by Michael Jolley, the bald bearded builder.";
 const permalink = `https://${import.meta.env.HOST}/blog/`;
+const header = "All Posts";
 ---
 
-<BaseLayout {title} {description} {permalink}>
-  <div class="container">
-    <header>
-      <h1>All Posts</h1>
-    </header>
-    <article>
-      <main>
-        <ul class="cards">
-          {blogPosts.map((post) => <BlogCard {post} />)}
-        </ul>
-      </main>
-    </article>
-  </div>
-</BaseLayout>
+<ArticleLayout {title} {description} {permalink} {header}>
+  <main>
+    <ul class="cards">
+      {blogPosts.map((post) => <BlogCard {post} />)}
+    </ul>
+  </main>
+</ArticleLayout>
 
 <style>
-  header {
-    @apply my-24 md:my-48 flex items-center justify-center;
-  }
-  h1 {
-    @apply font-kanit font-semibold text-6xl;
-  }
-  main {
-    @apply px-8 lg:px-0;
-  }
   ul {
     @apply grid gap-8 list-none;
-    @apply grid-cols-1 lg:grid-cols-3;
+    @apply grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3;
   }
 </style>

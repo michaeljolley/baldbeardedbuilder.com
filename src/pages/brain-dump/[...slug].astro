@@ -1,16 +1,15 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
-import BaseLayout from "@layouts/base.astro";
+import ArticleLayout from "@layouts/article.astro";
 import TableOfContents from "@components/TableOfContents";
 import RelatedPosts from "@components/RelatedPosts.astro";
 
 export async function getStaticPaths() {
   const brainDumps = await getCollection(
     "brainDumps",
-    ({ data }: CollectionEntry<"brainDump">) => data.pubDate < new Date()
+    ({ data }: CollectionEntry<"brainDumps">) => data.pubDate < new Date()
   );
-
-  return brainDumps.map((entry: CollectionEntry<"brainDump">) => ({
+  return brainDumps.map((entry: CollectionEntry<"brainDumps">) => ({
     params: { slug: entry.slug },
     props: { post: entry },
   }));
@@ -21,21 +20,15 @@ const { post } = Astro.props;
 const { title, description, tags } = post.data;
 const { Content, headings } = await post.render();
 const permalink = `https://${import.meta.env.HOST}/brain-dump/${slug}/`;
+const header = title;
 ---
 
-<BaseLayout {title} {description} {permalink}>
-  <div class="container">
-    <header>
-      <h1>{title}</h1>
-    </header>
-    <article class="toc">
-      <main>
-        <Content />
-      </main>
-      <aside>
-        <TableOfContents {headings} client:load />
-        <RelatedPosts {slug} {tags} />
-      </aside>
-    </article>
-  </div>
-</BaseLayout>
+<ArticleLayout {title} {description} {permalink} {header}>
+  <main>
+    <Content />
+  </main>
+  <aside>
+    <TableOfContents {headings} client:load />
+    <RelatedPosts {slug} {tags} />
+  </aside>
+</ArticleLayout>

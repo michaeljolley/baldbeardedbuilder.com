@@ -28,11 +28,26 @@ import Mike from "./Mike";
   }
 
   h1 {
-    @apply font-kanit font-semibold text-5xl lg:text-6xl;
+    @apply font-kanit font-semibold;
     @apply whitespace-nowrap text-center sm:text-left;
     @apply text-zinc-400;
+
+    background: linear-gradient(
+      to bottom,
+      rgba(148, 148, 148, 1) 0%,
+      rgba(148, 148, 148, 0.2)
+    );
+    -webkit-background-clip: text;
+    @apply bg-clip-text;
+    -webkit-text-fill-color: transparent;
+    @apply text-transparent;
   }
   h1 > span {
+    background: unset;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    -webkit-text-fill-color: rgb(103 229 101 / var(--tw-text-opacity));
+    text-fill-color: rgb(103 229 101 / var(--tw-text-opacity));
     @apply text-neon;
     text-shadow: rgba(103, 229, 101, 0.3) 0px 0px 10px;
     animation: glow 1.5s ease-in-out infinite alternate;

@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       colors: {
         neon: "#67E565",
+        fadedNeon: "rgba(112, 255, 0, .5)",
         darkGray: "#121416",
         white: "#fff",
         fadedGray: "rgba(60, 60 , 60, .75)",

@@ -1,5 +1,5 @@
 ---
-
+import Icon from "./Icon.astro";
 ---
 
 <section>
@@ -15,7 +15,8 @@
         </p>
         <p>
           <a href="/brain-dump/"
-            >Check out previous editions &amp; subscribe now</a
+            ><Icon icon="ChevronRight" style="height:1rem;" /> Read past
+            editions</a
           >
         </p>
       </div>
@@ -38,6 +39,7 @@
             type="text"
             name="firstName"
             placeholder="Dwight"
+            class="strobe"
             required
           />
         </p>
@@ -48,6 +50,7 @@
             type="text"
             name="email"
             placeholder="dschrutt@dundermifflin.com"
+            class="strobe"
             required
           />
         </p>
@@ -65,7 +68,7 @@
     @apply px-8 md:px-0;
   }
   .panel {
-    @apply flex flex-col-reverse lg:grid lg:grid-cols-2 gap-8;
+    @apply flex flex-col lg:grid lg:grid-cols-2 gap-8;
     @apply p-8;
     @apply rounded-lg;
     @apply border border-zinc-800;
@@ -83,5 +86,9 @@
   }
   a {
     @apply text-neon;
+    @apply flex items-center;
+  }
+  svg {
+    @apply mr-2;
   }
 </style>

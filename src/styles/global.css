@@ -1,9 +1,19 @@
+@property --a {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
 body {
   @apply font-inter;
   @apply text-zinc-400;
 }
 .container {
   @apply mx-auto;
+}
+
+#content {
+  @apply lg:px-4;
 }
 
 a:not(.optout) {
@@ -19,10 +29,110 @@ a:not(.optout):hover {
   animation: strobe 1s ease-in-out infinite alternate;
 }
 
-@property --a {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
+label {
+  @apply inline-block text-zinc-300;
+  @apply font-kanit font-semibold;
+  @apply mb-2;
+}
+label .required {
+  @apply text-red-500;
+  @apply font-normal font-inter;
+  @apply text-sm;
+  @apply ml-2;
+}
+
+input,
+textarea {
+  @apply border border-zinc-600 rounded-md;
+  @apply p-2;
+  @apply w-3/4;
+  @apply text-zinc-300 bg-darkGray;
+}
+input:focus,
+textarea:focus {
+  @apply outline-none;
+  @apply border-fadedNeon;
+}
+
+button {
+  @apply border border-zinc-600 rounded-md;
+  @apply uppercase text-zinc-300 font-bold;
+  @apply px-8 py-3 relative;
+  @apply bg-darkGray !important;
+  @apply mt-6;
+}
+
+button:before,
+button:after {
+  --a: 0deg;
+  content: "";
+  @apply rounded-md;
+  @apply absolute;
+  left: -2px;
+  top: -2px;
+  background: conic-gradient(
+    from var(--a) at 50% 50%,
+    rgba(60, 60, 60, 0.45) 35%,
+    rgba(212, 212, 216, 1) 50%,
+    rgba(60, 60, 60, 0.45) 65%
+  );
+  z-index: -1;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: steam 5s linear infinite;
+}
+button:after {
+  filter: blur(15px);
+}
+button:hover {
+  @apply text-neon;
+  @apply border-fadedNeon;
+}
+button:hover:before,
+button:hover:after {
+  background: conic-gradient(
+    from var(--a) at 50% 50%,
+    rgba(60, 60, 60, 0.45) 35%,
+    rgba(103, 229, 101, 1) 50%,
+    rgba(60, 60, 60, 0.45) 65%
+  );
+}
+
+#content h1,
+#content h2,
+#content h3,
+#content h4,
+#content h5,
+#content h6 {
+  @apply font-kanit font-semibold;
+  @apply text-zinc-300;
+}
+#content h1 {
+  @apply text-5xl lg:text-6xl;
+}
+#content h2 {
+  @apply text-4xl lg:text-5xl;
+  @apply my-5;
+}
+#content h3 {
+  @apply text-3xl lg:text-4xl;
+  @apply my-4;
+}
+#content h4 {
+  @apply text-2xl lg:text-3xl;
+  @apply my-3;
+}
+#content h5 {
+  @apply text-xl lg:text-2xl;
+  @apply my-1;
+}
+#content h6 {
+  @apply text-lg lg:text-xl;
+}
+
+#content p,
+#content li {
+  @apply my-6;
 }
 
 @keyframes rotate {
@@ -34,6 +144,15 @@ a:not(.optout):hover {
 @keyframes strobe {
   to {
     filter: drop-shadow(0 0 5px rgba(103, 229, 101, 0.9));
+  }
+}
+
+@keyframes steam {
+  from {
+    --a: 45deg;
+  }
+  to {
+    --a: 405deg;
   }
 }
 

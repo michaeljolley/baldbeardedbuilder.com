@@ -1,8 +1,8 @@
 ---
-
+import Mike from "./Mike";
 ---
 
-<section class="brainDump">
+<section>
   <div>
     <p>
       Let's learn together with the Brain Dump newsletter! Each week, Michael
@@ -10,7 +10,7 @@
       sends it to you every Monday morning, along with the latest content
       created by members of the Build with Me community.
     </p>
-    <p class="fine-print">
+    <p class="small">
       You can unsubscribe at any time and I will never sell your information to
       others.
     </p>
@@ -34,6 +34,7 @@
           type="text"
           name="firstName"
           placeholder="Dwight"
+          class="strobe"
           required
         />
       </p>
@@ -44,6 +45,7 @@
           type="text"
           name="email"
           placeholder="dschrutt@dundermifflin.com"
+          class="strobe"
           required
         />
       </p>
@@ -52,26 +54,20 @@
       </p>
     </form>
   </div>
-  <img
-    class="flip"
-    src="https://res.cloudinary.com/dk3rdh3yo/image/upload/f_auto,c_scale/website-assets/brain.png"
-    alt="AI generated art of neon brain made of circuitry dripping information."
-  />
+
+  <Mike client:only />
 </section>
 
 <style>
-  .brainDump {
-    display: flex;
+  section {
+    @apply flex;
   }
-  .brainDump > img {
-    display: none;
-    border: 0;
-    padding: 0;
-    background: none;
+  .small {
+    @apply text-sm text-zinc-500 italic;
   }
-  .fine-print {
-    color: var(--gray);
-    font-size: 0.8rem;
+
+  form {
+    @apply mt-12;
   }
 
   @media screen and (min-width: 768px) {

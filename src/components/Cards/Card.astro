@@ -16,6 +16,7 @@ const { hoverColor = "rgb(103, 229, 101)" } = Astro.props;
     @apply relative rounded-lg;
     @apply bg-darken;
     @apply border border-zinc-800;
+    min-height: 10rem;
   }
   li:hover:before,
   li:hover:after {
@@ -43,13 +44,5 @@ const { hoverColor = "rgb(103, 229, 101)" } = Astro.props;
 
   li:after {
     filter: blur(15px);
-  }
-  @keyframes steam {
-    from {
-      --a: 0deg;
-    }
-    to {
-      --a: 360deg;
-    }
   }
 </style>
