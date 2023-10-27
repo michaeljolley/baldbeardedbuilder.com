@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
+import "./TableOfContents.css";
 
 function TableOfContents(props: {
   headings: { depth: number; text: string; slug: string }[];

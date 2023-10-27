@@ -135,6 +135,47 @@ button:hover:after {
   @apply my-6;
 }
 
+article aside {
+  @apply hidden flex-col;
+  position: -webkit-sticky;
+  @apply sticky;
+  @apply top-12;
+  z-index: 1;
+}
+
+@screen lg {
+  header {
+    @apply mx-auto;
+  }
+  header h1 {
+    @apply w-5/6;
+  }
+}
+
+@screen lg {
+  article {
+    @apply flex;
+  }
+  article:has(aside) {
+    @apply grid;
+    grid-template-columns: 70% 1fr;
+    @apply items-start;
+    @apply gap-8;
+  }
+  article aside {
+    @apply flex;
+  }
+}
+
+@screen xl {
+  #content header {
+    max-width: 70%;
+  }
+  article:has(aside) {
+    grid-template-columns: 75% 1fr;
+  }
+}
+
 @keyframes rotate {
   to {
     --a: 0deg;

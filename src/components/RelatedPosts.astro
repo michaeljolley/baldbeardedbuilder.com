@@ -1,6 +1,6 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
-import { getAnalytics } from '../scripts/supabase';
+import { getCollection, type CollectionEntry } from "astro:content";
+import { getAnalytics } from "../scripts/supabase";
 
 interface Props {
   slug: string | undefined;
@@ -12,8 +12,8 @@ const { slug: postSlug, tags } = Astro.props;
 const analytics = await getAnalytics();
 
 const relatedPosts = await getCollection(
-  'blog',
-  ({ slug, data }: CollectionEntry) =>
+  "blog",
+  ({ slug, data }: CollectionEntry<"blog">) =>
     data.tags?.some((tag: string) => tags.includes(tag)) && slug !== postSlug
 );
 
@@ -21,19 +21,20 @@ if (relatedPosts.length < 3) {
   const topPosts = analytics.sort((a, b) => b.visits - a.visits).slice(0, 5);
 
   let morePosts = await getCollection(
-    'blog',
-    ({ slug }: CollectionEntry) =>
-      relatedPosts.map((post: CollectionEntry) => post.slug).includes(slug) ===
-        false &&
+    "blog",
+    ({ slug }: CollectionEntry<"blog">) =>
+      relatedPosts
+        .map((post: CollectionEntry<"blog">) => post.slug)
+        .includes(slug) === false &&
       slug !== postSlug &&
       topPosts
-        .map(({ path }) => path.replace('/blog/', '').replace('/', ''))
+        .map(({ path }) => path.replace("/blog/", "").replace("/", ""))
         .includes(slug)
   );
 
   relatedPosts.push(
     ...morePosts
-      .sort((a: CollectionEntry, b: CollectionEntry) => {
+      .sort((a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) => {
         const aAnalytic = analytics.find(({ path }) => path === a.slug);
         const bAnalytic = analytics.find(({ path }) => path === b.slug);
 
@@ -50,9 +51,9 @@ if (relatedPosts.length < 3) {
 {
   relatedPosts.length > 0 && (
     <section class="related">
-      <h3>Related Reading</h3>
+      <h5>Related Reading</h5>
       <ul>
-        {relatedPosts.map((post: CollectionEntry) => (
+        {relatedPosts.map((post: CollectionEntry<"blog">) => (
           <li>
             <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
           </li>
@@ -63,7 +64,23 @@ if (relatedPosts.length < 3) {
 }
 
 <style>
-  h3 {
-    font-family: var(--syne);
+  .related {
+    @apply px-4;
+    @apply mt-8;
+  }
+  .related ul {
+    @apply flex flex-col p-0 list-none;
+  }
+  .related li {
+    @apply text-sm p-0 py-2 m-0 !important;
+    @apply border-l-4 border-transparent;
+  }
+  .related a {
+    @apply p-0 !important;
+    @apply text-zinc-500;
+    @apply no-underline;
+  }
+  .related a:hover {
+    @apply text-neon !important;
   }
 </style>

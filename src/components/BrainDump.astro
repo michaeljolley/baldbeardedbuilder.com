@@ -1,4 +1,5 @@
 ---
+import BrainDumpForm from "./BrainDumpForm.astro";
 import Mike from "./Mike";
 ---
 
@@ -15,72 +16,24 @@ import Mike from "./Mike";
       others.
     </p>
 
-    <form
-      name="brain-dump"
-      method="post"
-      action="/brain-dump/thanks/"
-      data-netlify="true"
-      data-netlify-honeypot="bot-field"
-    >
-      <input type="hidden" name="form-name" value="brain-dump" />
-      <p hidden>
-        <label> Don't fill this out: <input name="bot-field" /></label>
-      </p>
-
-      <p>
-        <label for="firstName">Your First Name</label><br />
-        <input
-          id="firstName"
-          type="text"
-          name="firstName"
-          placeholder="Dwight"
-          class="strobe"
-          required
-        />
-      </p>
-      <p>
-        <label for="email">Your Email</label><br />
-        <input
-          id="email"
-          type="text"
-          name="email"
-          placeholder="dschrutt@dundermifflin.com"
-          class="strobe"
-          required
-        />
-      </p>
-      <p>
-        <button type="submit">Subscribe</button>
-      </p>
-    </form>
+    <BrainDumpForm />
   </div>
-
-  <Mike client:only />
+  <div>
+    <Mike client:only />
+  </div>
 </section>
 
 <style>
   section {
-    @apply flex;
+    @apply flex flex-col-reverse mt-0;
+    @apply lg:grid lg:grid-cols-2;
+    grid-template-columns: 50% 1fr;
+  }
+  section div:nth-child(2) {
+    @apply hidden lg:flex;
+    @apply lg:justify-center lg:items-center;
   }
   .small {
     @apply text-sm text-zinc-500 italic;
-  }
-
-  form {
-    @apply mt-12;
-  }
-
-  @media screen and (min-width: 768px) {
-    .brainDump {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 2rem;
-    }
-    .brainDump div:first-child {
-      margin-left: 5rem;
-    }
-    .brainDump > img {
-      display: block;
-    }
   }
 </style>
