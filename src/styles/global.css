@@ -16,9 +16,6 @@ body {
   @apply lg:px-4;
 }
 
-a:not(.optout) {
-  @apply px-2;
-}
 a:not(.optout):hover {
   filter: text-shadow(0 0 4px rgba(103, 229, 101, 0.3));
   animation: strobe 1.5s ease-in-out infinite alternate;
@@ -105,34 +102,97 @@ button:hover:after {
 #content h5,
 #content h6 {
   @apply font-kanit font-semibold;
-  @apply text-zinc-300;
 }
 #content h1 {
   @apply text-5xl lg:text-6xl;
 }
 #content h2 {
   @apply text-4xl lg:text-5xl;
-  @apply my-5;
+  @apply my-12;
 }
 #content h3 {
   @apply text-3xl lg:text-4xl;
-  @apply my-4;
+  @apply my-10;
 }
 #content h4 {
   @apply text-2xl lg:text-3xl;
-  @apply my-3;
+  @apply my-8;
 }
 #content h5 {
   @apply text-xl lg:text-2xl;
-  @apply my-1;
+  @apply my-6;
 }
 #content h6 {
   @apply text-lg lg:text-xl;
+  @apply my-4;
 }
 
 #content p,
 #content li {
+  @apply mb-6;
+}
+
+#content main h1,
+#content main h2,
+#content main h3,
+#content main h4,
+#content main h5,
+#content main h6 {
+  @apply text-zinc-300;
+}
+
+#content main a {
+  @apply text-neon;
+}
+#content main ul {
+  @apply list-disc;
+  @apply ml-6;
+}
+#content main blockquote {
+  @apply border-l-4 border-l-neon;
+  @apply bg-zinc-900;
+  @apply px-6 py-2;
   @apply my-6;
+}
+#content main blockquote p {
+  @apply my-2;
+}
+
+#content img {
+  @apply w-5/6;
+  @apply my-8 mx-auto;
+  @apply block;
+  @apply p-3;
+  @apply border-4 border-zinc-600;
+  @apply rounded-sm;
+}
+
+#content pre {
+  @apply my-8 mx-auto;
+  @apply p-4;
+  @apply flex;
+  @apply border-4 border-zinc-600;
+  @apply max-h-96;
+  @apply rounded-sm;
+}
+#content pre:-webkit-scrollbar {
+  width: 0.7rem;
+  background: transparent;
+}
+#content pre:-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+#content pre:-webkit-scrollbar-thumb {
+  width: 5px;
+  border: solid 0.075rem rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+#content p > code {
+  @apply text-zinc-300;
+  @apply italic p-0.5 px-1.5 rounded-md;
+  background-color: rgba(200, 200, 200, 0.2);
+  /* background-color: rgba(103, 229, 101, 0.1); */
 }
 
 article aside {

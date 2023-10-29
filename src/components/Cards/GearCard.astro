@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import Card from "./Card.astro";
 export interface Props {
   gear: CollectionEntry<"gear">;
 }
@@ -7,9 +8,9 @@ export interface Props {
 const { title, description, link } = Astro.props.gear.data;
 ---
 
-<li class="gear">
+<Card>
   <div class="deets">
-    <h3>{title}</h3>
+    <h5>{title}</h5>
     {description && <p>{description}</p>}
     {
       link && (
@@ -19,55 +20,31 @@ const { title, description, link } = Astro.props.gear.data;
       )
     }
   </div>
-</li>
+</Card>
 
 <style>
-  .gear {
-    list-style: none;
-    padding: 1rem;
+  .deets {
+    @apply flex h-full flex-col items-start justify-start;
+    @apply p-4 pl-6 border-l-4 border-zinc-300;
+    @apply rounded-lg;
   }
-  .gear:hover {
-    box-shadow: var(--shadow);
+  .deets:hover {
+    @apply border-neon;
   }
-  .gear .deets {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-evenly;
-    padding-left: 2.5rem;
-    border-image-source: linear-gradient(
-      var(--angle),
-      var(--green),
-      var(--blue),
-      var(--purple),
-      var(--pink),
-      var(--yellow),
-      var(--orange)
-    );
-    border-left: 6px solid;
-    border-image-slice: 1;
+  h5 {
+    @apply font-inter font-normal;
+    @apply text-zinc-300 !important;
+    @apply m-0 p-0;
+    @apply m-0 !important;
   }
-  .gear .deets:hover {
-    text-emphasis: none;
-    --angle: 0deg;
-    animation: 10s rotate linear infinite;
+  p {
+    @apply my-3 !important;
   }
-  .gear h3 {
-    font-family: var(--inter);
-    font-size: 1.5rem;
-    font-weight: normal;
-    margin: 0;
-    padding: 0;
-    color: var(--text);
+  p {
+    @apply text-zinc-500;
+    @apply text-sm xl:text-base;
   }
-  .gear p {
-    font-size: 0.9rem;
-    color: var(--gray);
-  }
-  .gear a {
-    font-size: 0.9rem;
-    border-bottom: 0px;
-    animation: unset;
+  a {
+    @apply mt-auto;
   }
 </style>

@@ -2,13 +2,10 @@
 import BaseLayout from "@layouts/base.astro";
 import Proof from "@components/Proof.astro";
 import Mast from "@components/Mast.astro";
-import LatestPosts from "@components/LatestPosts.astro";
-import BuildWithMe from "@components/BuildWithMe.astro";
-import Schedule from "@components/Schedule.astro";
 import BrainDumpAd from "@components/BrainDumpAd.astro";
 import Featured from "@components/Featured.astro";
 
-const title = "Bald Bearded Builder => Michael Jolley";
+const title = "Build with Michael Jolley, the Bald Bearded Builder";
 const description =
   "Welcome to the home of Michael Jolley, also known as the bald, bearded, builder. Here you'll find all Michael's content curated for easier viewing.";
 const permalink = `https://${import.meta.env.HOST}/`;
@@ -19,8 +16,4 @@ const permalink = `https://${import.meta.env.HOST}/`;
   <Featured />
   <Proof />
   <BrainDumpAd />
-  <!-- <Schedule />
-  <BuildWithMe />
-  <LatestPosts />
-   -->
 </BaseLayout>

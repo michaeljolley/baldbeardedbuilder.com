@@ -9,7 +9,7 @@ let brainDumps = await getCollection("brainDumps", ({ data }) => {
 });
 
 brainDumps = brainDumps.sort(
-  (a: CollectionEntry<"brainDump">, b: CollectionEntry<"brainDump">) => {
+  (a: CollectionEntry<"brainDumps">, b: CollectionEntry<"brainDumps">) => {
     return (
       new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
     );
@@ -17,7 +17,7 @@ brainDumps = brainDumps.sort(
 );
 
 const title =
-  "Brain Dump - A Weekly Collection of Things Michael Finds Interesting";
+  "The Brain Dump - A Weekly Newsletter of Things Michael Finds Interesting";
 const description =
   "The Brain Dump is a weekly newsletter that covers the latest in tech, gadgets, security, and more.";
 const permalink = `https://${import.meta.env.HOST}/brain-dump/`;
@@ -40,6 +40,7 @@ const subheader = "Weekly tech news, gadgets, tips & more";
 <style>
   ul {
     @apply grid gap-8 p-0 mt-12;
+    @apply list-none !important;
     grid-template-columns: 1;
   }
 

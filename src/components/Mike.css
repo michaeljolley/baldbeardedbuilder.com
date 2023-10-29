@@ -1,0 +1,6 @@
+img {
+  @apply border-none;
+  width: unset;
+  margin: unset;
+  padding: unset;
+}

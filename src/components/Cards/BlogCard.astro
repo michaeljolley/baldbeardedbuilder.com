@@ -25,6 +25,7 @@ const bgImage = `url('${image}')`;
 
 <style define:vars={{ bgImage }}>
   a {
+    @apply text-zinc-400 !important;
     @apply grid gap-4 m-0;
     @apply h-full;
     grid-template-columns: 6rem auto;
@@ -64,6 +65,7 @@ const bgImage = `url('${image}')`;
     @apply font-kanit font-semibold text-white;
     @apply text-xl md:text-2xl;
     @apply pb-2;
+    @apply m-0 !important;
   }
   p {
     @apply text-sm;

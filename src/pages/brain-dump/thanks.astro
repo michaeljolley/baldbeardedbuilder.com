@@ -1,6 +1,6 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
-import BaseLayout from "@layouts/base.astro";
+import ArticleLayout from "@layouts/article.astro";
 import BrainDumpCard from "@components/Cards/BrainDumpCard.astro";
 
 let brainDumps = await getCollection("brainDumps", ({ data }) => {
@@ -8,7 +8,7 @@ let brainDumps = await getCollection("brainDumps", ({ data }) => {
 });
 
 brainDumps = brainDumps.sort(
-  (a: CollectionEntry<"brainDump">, b: CollectionEntry<"brainDump">) => {
+  (a: CollectionEntry<"brainDumps">, b: CollectionEntry<"brainDumps">) => {
     return (
       new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
     );
@@ -18,54 +18,45 @@ brainDumps = brainDumps.sort(
 const title = "Thanks for Subscribing to the Brain Dump Newsletter";
 const description = "You successfully registered for the Brain Dump newsletter";
 const permalink = `https://${import.meta.env.HOST}/brain-dump/thanks/`;
+const header = title;
 ---
 
-<BaseLayout {title} {description} {permalink}>
-  <div class="container">
-    <header>
-      <h1>Welcome to the Brain Dump Newsletter</h1>
-    </header>
-    <article>
-      <main>
-        <blockquote>
-          <strong>A note from Michael:</strong><br />
-           Thanks for subscribing! Curating cool stuff for the Brain Dump is one
-          of my favorite weekly activities. I can't wait to hear what you think!
-        </blockquote>
+<ArticleLayout {title} {description} {permalink} {header}>
+  <main>
+    <blockquote>
+      <strong>A note from Michael:</strong><br />
+       Thanks for subscribing! Curating cool stuff for the Brain Dump is one of
+      my favorite weekly activities. I can't wait to hear what you think!
+    </blockquote>
 
-        <h2 class="center">Previous Brain Dumps</h2>
-        <p class="center">
-          Brain Dumps drop every Monday morning. Past brain dumps can be found
-          below one week after their release date.
-        </p>
-        <ul>
-          {brainDumps.map((brainDump) => <BrainDumpCard {brainDump} />)}
-        </ul>
-      </main>
-    </article>
-  </div>
-</BaseLayout>
+    <h2 class="center">Previous Brain Dumps</h2>
+    <p class="center">
+      Brain Dumps drop every Monday morning. Past brain dumps can be found below
+      one week after their release date.
+    </p>
+    <ul>
+      {brainDumps.map((brainDump) => <BrainDumpCard {brainDump} />)}
+    </ul>
+  </main>
+</ArticleLayout>
 
 <style>
-  h2.center {
-    margin-top: 5rem;
-  }
   ul {
-    display: grid;
+    @apply mt-12;
+    @apply grid gap-8;
+    @apply p-0;
+    @apply list-none !important;
     grid-template-columns: 1;
-    gap: 2rem;
-    padding: 0;
-    margin-top: 3rem;
   }
   p {
-    margin: 2.5rem 0;
+    @apply my-10 mx-0;
   }
-  @media screen and (min-width: 768px) {
+  @screen md {
     ul {
       grid-template-columns: repeat(2, 1fr);
     }
   }
-  @media screen and (min-width: 1536px) {
+  @screen 2xl {
     ul {
       grid-template-columns: repeat(3, 1fr);
     }

@@ -52,6 +52,7 @@ const bgImage = `url('${image}')`;
     @apply font-kanit font-semibold text-white;
     @apply text-xl md:text-2xl;
     @apply pb-2;
+    @apply m-0 !important;
   }
 
   @screen md {
@@ -62,9 +63,6 @@ const bgImage = `url('${image}')`;
   @screen lg {
     a {
       grid-template-columns: 12rem auto;
-    }
-    .img {
-      background-size: initial;
     }
   }
 

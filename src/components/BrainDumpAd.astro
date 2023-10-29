@@ -33,6 +33,7 @@ import Icon from "./Icon.astro";
   }
   .panel {
     @apply flex flex-col lg:grid lg:grid-cols-2 gap-8;
+    @apply justify-center lg:items-center;
     @apply p-8;
     @apply rounded-lg;
     @apply border border-zinc-800;
@@ -43,6 +44,7 @@ import Icon from "./Icon.astro";
     @apply font-kanit font-semibold text-white;
     @apply text-3xl md:text-4xl;
     @apply pb-4 md:pb-6;
+    @apply m-0 !important;
   }
   p {
     @apply text-base text-zinc-400;

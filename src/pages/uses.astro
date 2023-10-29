@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import BaseLayout from "@layouts/base.astro";
+import ArticleLayout from "@layouts/article.astro";
 import GearCard from "@components/Cards/GearCard.astro";
 
 let gearEntries = await getCollection("gear");
@@ -24,38 +24,55 @@ const title = "What Hardware and Software Does Michael Use?";
 const description =
   "A listing of hardware, software, and other tools that Michael uses on a regular basis.";
 const permalink = `https://${import.meta.env.HOST}/uses/`;
+const header = "What Michael Uses";
+const subheader = "Hardware, software, & other sundries.";
 ---
 
-<BaseLayout {title} {description} {permalink}>
-  <div class="container">
-    <header>
-      <h1>What Michael Uses</h1>
-      <p>Hardware, software, &amp; other sundries.</p>
-    </header>
-    <article>
-      <main>
-        <blockquote>
-          <strong>A note from Michael:</strong><br />
-           I get asked about the stuff I use on a regular basis. To make it
-          easier to share with others, I try to keep the lists below up-to-date.
-          Something missing? Hit me up and let me know.
-        </blockquote>
+<ArticleLayout {title} {description} {permalink} {header} {subheader}>
+  <main>
+    <blockquote>
+      <strong>A note from Michael:</strong><br />
+       I get asked about the stuff I use on a regular basis. To make it easier
+      to share with others, I try to keep the lists below up-to-date. Something
+      missing? Hit me up and let me know.
+    </blockquote>
 
-        {
-          groups.map((group) => (
-            <>
-              <h2 id={group.name.toLowerCase().replace(/\s/g, "-")}>
-                {group.name}
-              </h2>
-              <ul class="cards">
-                {group.gear.map((gear) => (
-                  <GearCard {gear} />
-                ))}
-              </ul>
-            </>
-          ))
-        }
-      </main>
-    </article>
-  </div>
-</BaseLayout>
+    {
+      groups.map((group) => (
+        <>
+          <h2 id={group.name.toLowerCase().replace(/\s/g, "-")}>
+            {group.name}
+          </h2>
+          <ul class="cards">
+            {group.gear.map((gear) => (
+              <GearCard {gear} />
+            ))}
+          </ul>
+        </>
+      ))
+    }
+  </main>
+</ArticleLayout>
+
+<style>
+  ul {
+    @apply grid gap-8 p-0 mt-12;
+    @apply list-none !important;
+    grid-template-columns: 1;
+  }
+
+  h2 {
+    @apply mt-24 !important;
+  }
+
+  @screen lg {
+    ul {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @screen xl {
+    ul {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
