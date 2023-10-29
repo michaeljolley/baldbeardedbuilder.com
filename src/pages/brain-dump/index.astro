@@ -1,7 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
 import ArticleLayout from "@layouts/article.astro";
-import BrainDumpSmall from "@components/Cards/BrainDumpSmall.astro";
+import BrainDumpCard from "@components/Cards/BrainDumpCard.astro";
 import BrainDump from "@components/BrainDump.astro";
 
 let brainDumps = await getCollection("brainDumps", ({ data }) => {
@@ -9,7 +9,7 @@ let brainDumps = await getCollection("brainDumps", ({ data }) => {
 });
 
 brainDumps = brainDumps.sort(
-  (a: CollectionEntry<"brainDump">, b: CollectionEntry<"brainDump">) => {
+  (a: CollectionEntry<"brainDumps">, b: CollectionEntry<"brainDumps">) => {
     return (
       new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
     );
@@ -17,55 +17,43 @@ brainDumps = brainDumps.sort(
 );
 
 const title =
-  "Brain Dump - A Weekly Collection of Things Michael Finds Interesting";
+  "The Brain Dump - A Weekly Newsletter of Things Michael Finds Interesting";
 const description =
   "The Brain Dump is a weekly newsletter that covers the latest in tech, gadgets, security, and more.";
 const permalink = `https://${import.meta.env.HOST}/brain-dump/`;
+const header = "The Brain Dump";
+const subheader = "Weekly tech news, gadgets, tips & more";
 ---
 
-<ArticleLayout {title} {description} {permalink}>
-  <div class="container">
-    <header>
-      <h1>The Brain Dump</h1>
-      <p>Weekly tech news, gadgets, tips &amp; more</p>
-    </header>
-    <article>
-      <main>
-        <BrainDump />
+<ArticleLayout {title} {description} {permalink} {header} {subheader}>
+  <main>
+    <BrainDump />
 
-        <h2 class="center">Previous Brain Dumps</h2>
-        <p class="center">
-          Brain Dumps drop every Monday morning. Past brain dumps can be found
-          below one week after their release date.
-        </p>
-        <ul>
-          {brainDumps.map((brainDump) => <BrainDumpSmall {brainDump} />)}
-        </ul>
-      </main>
-    </article>
-  </div>
+    <h2>Previous Brain Dumps</h2>
+    <p>Brain Dumps drop every Monday morning.</p>
+    <ul>
+      {brainDumps.map((brainDump) => <BrainDumpCard {brainDump} />)}
+    </ul>
+  </main>
 </ArticleLayout>
 
 <style>
-  h2.center {
-    margin-top: 5rem;
-  }
   ul {
-    display: grid;
+    @apply grid gap-8 p-0 mt-12;
+    @apply list-none !important;
     grid-template-columns: 1;
-    gap: 2rem;
-    padding: 0;
-    margin-top: 3rem;
   }
-  p {
-    margin: 2.5rem 0;
+
+  h2 {
+    @apply mt-24 !important;
   }
-  @media screen and (min-width: 768px) {
+
+  @screen lg {
     ul {
       grid-template-columns: repeat(2, 1fr);
     }
   }
-  @media screen and (min-width: 1536px) {
+  @screen xl {
     ul {
       grid-template-columns: repeat(3, 1fr);
     }

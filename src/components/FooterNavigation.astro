@@ -49,63 +49,24 @@
 
 <style>
   nav {
-    display: grid;
+    @apply grid gap-8 justify-between;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    justify-content: space-between;
-    padding: 2rem;
   }
-
   section {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    @apply flex flex-col gap-2;
   }
-
   p {
-    font-weight: bold;
-    padding: 0;
-    margin: 0;
+    @apply font-kanit font-semibold text-white;
+    @apply p-0 m-0;
   }
-
   ul {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    margin-top: 1rem;
+    @apply flex flex-col gap-4;
+    @apply list-none;
+    @apply p-0 m-0;
+    @apply mt-4;
   }
-
-  li {
-    font-size: 1rem;
-  }
-
   a {
-    color: var(--footer-link);
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-
-  a:hover {
-    color: var(--footer-link-hover);
-  }
-
-  @media screen and (min-width: 768px) {
-  }
-  @media screen and (min-width: 1024px) {
-    nav {
-      padding: 4rem;
-    }
-  }
-  @media screen and (min-width: 1280px) {
-    /* xl */
-    nav {
-      gap: 5rem;
-    }
-  }
-  @media screen and (min-width: 1536px) {
-    /* 2xl */
+    @apply text-zinc-400 hover:text-neon;
+    @apply no-underline;
   }
 </style>

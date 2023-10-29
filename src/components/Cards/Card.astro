@@ -1,0 +1,48 @@
+---
+export interface Props {
+  hoverColor?: string;
+}
+
+const { hoverColor = "rgb(103, 229, 101)" } = Astro.props;
+---
+
+<li>
+  <slot />
+</li>
+
+<style define:vars={{ hoverColor }}>
+  li {
+    @apply flex-grow;
+    @apply relative rounded-lg;
+    @apply bg-darken;
+    @apply border border-zinc-800;
+    min-height: 10rem;
+  }
+  li:hover:before,
+  li:hover:after {
+    --a: 0deg;
+    content: "";
+    @apply rounded-lg;
+    @apply absolute;
+    left: -2px;
+    top: -2px;
+    background: conic-gradient(
+      from var(--a) at 50% 50%,
+      rgba(60, 60, 60, 0.45) 30%,
+      var(--hoverColor) 50%,
+      rgba(60, 60, 60, 0.45) 70%
+    );
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    z-index: -1;
+    animation: steam 5s linear infinite;
+  }
+
+  li:before {
+    z-index: -1;
+  }
+
+  li:after {
+    filter: blur(15px);
+  }
+</style>

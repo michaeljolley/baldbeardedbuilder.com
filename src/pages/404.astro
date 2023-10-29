@@ -1,12 +1,12 @@
 ---
-import ArticleLayout from "@layouts/article.astro";
+import BaseLayout from "@layouts/base.astro";
 
 const title = "Uh Oh! How did you get here!?";
 const description = "The page you're looking for doesn't exist or has moved.";
 const permalink = `https://${import.meta.env.HOST}/404/`;
 ---
 
-<ArticleLayout {title} {description} {permalink}>
+<BaseLayout {title} {description} {permalink}>
   <div class="container">
     <header>
       <h1>Thank You for Reporting a Code of Conduct Violation</h1>
@@ -47,4 +47,4 @@ const permalink = `https://${import.meta.env.HOST}/404/`;
       </main>
     </article>
   </div>
-</ArticleLayout>
+</BaseLayout>

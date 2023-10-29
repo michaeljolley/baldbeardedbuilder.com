@@ -1,8 +1,9 @@
 ---
-
+import BrainDumpForm from "./BrainDumpForm.astro";
+import Mike from "./Mike";
 ---
 
-<section class="brainDump">
+<section>
   <div>
     <p>
       Let's learn together with the Brain Dump newsletter! Each week, Michael
@@ -10,81 +11,29 @@
       sends it to you every Monday morning, along with the latest content
       created by members of the Build with Me community.
     </p>
-    <p class="fine-print">
+    <p class="small">
       You can unsubscribe at any time and I will never sell your information to
       others.
     </p>
 
-    <form
-      name="brain-dump"
-      method="post"
-      action="/brain-dump/thanks/"
-      data-netlify="true"
-      data-netlify-honeypot="bot-field"
-    >
-      <input type="hidden" name="form-name" value="brain-dump" />
-      <p hidden>
-        <label> Don't fill this out: <input name="bot-field" /></label>
-      </p>
-
-      <p>
-        <label for="firstName">Your First Name</label><br />
-        <input
-          id="firstName"
-          type="text"
-          name="firstName"
-          placeholder="Dwight"
-          required
-        />
-      </p>
-      <p>
-        <label for="email">Your Email</label><br />
-        <input
-          id="email"
-          type="text"
-          name="email"
-          placeholder="dschrutt@dundermifflin.com"
-          required
-        />
-      </p>
-      <p>
-        <button type="submit">Subscribe</button>
-      </p>
-    </form>
+    <BrainDumpForm />
   </div>
-  <img
-    class="flip"
-    src="https://res.cloudinary.com/dk3rdh3yo/image/upload/f_auto,c_scale/website-assets/brain.png"
-    alt="AI generated art of neon brain made of circuitry dripping information."
-  />
+  <div>
+    <Mike client:only />
+  </div>
 </section>
 
 <style>
-  .brainDump {
-    display: flex;
+  section {
+    @apply flex flex-col-reverse mt-0;
+    @apply lg:grid lg:grid-cols-2;
+    grid-template-columns: 50% 1fr;
   }
-  .brainDump > img {
-    display: none;
-    border: 0;
-    padding: 0;
-    background: none;
+  section div:nth-child(2) {
+    @apply hidden lg:flex;
+    @apply lg:justify-center lg:items-center;
   }
-  .fine-print {
-    color: var(--gray);
-    font-size: 0.8rem;
-  }
-
-  @media screen and (min-width: 768px) {
-    .brainDump {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 2rem;
-    }
-    .brainDump div:first-child {
-      margin-left: 5rem;
-    }
-    .brainDump > img {
-      display: block;
-    }
+  .small {
+    @apply text-sm text-zinc-500 italic;
   }
 </style>

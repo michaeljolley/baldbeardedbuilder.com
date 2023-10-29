@@ -1,0 +1,99 @@
+---
+
+---
+
+<nav>
+  <input id="nav-toggle" class="hidden" type="checkbox" />
+  <label class="nav-button-container" for="nav-toggle">
+    <div class="nav-button"></div>
+  </label>
+  <ul>
+    <li>
+      <a href="/">Home</a>
+    </li>
+    <li>
+      <a href="/blog/">Blog</a>
+    </li>
+    <li>
+      <a href="/brain-dump/">Brain Dump</a>
+    </li>
+    <li>
+      <a href="/uses/">What I Use</a>
+    </li>
+    <!-- <li>
+      <a href="/work-with-me/">Work With Me</a>
+    </li> -->
+  </ul>
+</nav>
+
+<style>
+  nav {
+    @apply flex flex-col md:flex-row;
+    @apply justify-end items-end md:items-center;
+    @apply w-full;
+    @apply p-0;
+  }
+  #nav-toggle {
+    @apply hidden;
+  }
+  .nav-button-container {
+    @apply flex md:hidden items-center;
+    @apply mr-6 pb-8 md:mr-0 md:pb-0;
+    @apply h-full w-8;
+    @apply cursor-pointer;
+  }
+  ul {
+    @apply flex flex-col md:flex-row md:gap-12 list-none;
+    @apply justify-center md:justify-between items-center;
+    @apply w-full md:w-auto p-0 m-0;
+    @apply bg-muted md:bg-transparent;
+    backdrop-filter: blur(10px);
+  }
+  ul > li {
+    @apply flex justify-center items-center;
+    @apply m-0 py-2 px-0;
+    @apply w-full md:w-auto;
+    @apply lowercase;
+    @apply whitespace-nowrap;
+    @apply overflow-hidden;
+  }
+  a {
+    @apply font-inter text-zinc-400 hover:text-neon;
+    @apply no-underline;
+  }
+  .nav-button,
+  .nav-button::before,
+  .nav-button::after {
+    @apply block absolute h-1 w-8;
+    @apply bg-fadedGray;
+    @apply rounded-sm;
+    transition: transform 400ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .nav-button::before {
+    content: "";
+    @apply -mt-2;
+  }
+  .nav-button::after {
+    content: "";
+    @apply mt-2;
+  }
+  #nav-toggle:checked + .nav-button-container .nav-button::before {
+    @apply mt-0;
+    transform: rotate(405deg);
+  }
+  #nav-toggle:checked + .nav-button-container .nav-button {
+    @apply bg-darkGray;
+  }
+  #nav-toggle:checked + .nav-button-container .nav-button::after {
+    @apply mt-0;
+    transform: rotate(-405deg);
+  }
+  #nav-toggle ~ ul li {
+    @apply h-0 md:h-auto m-0 p-0;
+    transition: height 400ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  #nav-toggle:checked ~ ul li {
+    @apply h-10 py-8 px-0;
+    transition: height 400ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+</style>

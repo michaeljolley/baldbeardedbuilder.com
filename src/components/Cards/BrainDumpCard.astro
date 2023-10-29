@@ -1,34 +1,39 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import Card from "./Card.astro";
+
 export interface Props {
-  gear: CollectionEntry<"gear">;
+  brainDump: CollectionEntry<"brainDumps">;
 }
 
-const { title, description, link } = Astro.props.gear.data;
+const { brainDump } = Astro.props;
+
+let options = {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+};
 ---
 
 <Card>
-  <div class="deets">
-    <h5>{title}</h5>
-    {description && <p>{description}</p>}
-    {
-      link && (
-        <a href={link} target="_blank" rel="noopener noreferrer">
-          more →
-        </a>
-      )
-    }
-  </div>
+  <a href={`/brain-dump/${brainDump.slug}/`} class="optout">
+    <h5>{brainDump.data.title}</h5>
+    <p>{brainDump.data.description}</p>
+    <date
+      >{
+        new Intl.DateTimeFormat("en-US", options).format(brainDump.data.pubDate)
+      }</date
+    ></a
+  >
 </Card>
 
 <style>
-  .deets {
+  a {
     @apply flex h-full flex-col items-start justify-start;
     @apply p-4 pl-6 border-l-4 border-zinc-300;
     @apply rounded-lg;
   }
-  .deets:hover {
+  a:hover {
     @apply border-neon;
   }
   h5 {
@@ -40,11 +45,15 @@ const { title, description, link } = Astro.props.gear.data;
   p {
     @apply my-3 !important;
   }
-  p {
+  p,
+  date {
     @apply text-zinc-500;
+  }
+  p {
     @apply text-sm xl:text-base;
   }
-  a {
+  date {
     @apply mt-auto;
+    @apply text-sm;
   }
 </style>

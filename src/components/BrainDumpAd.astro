@@ -1,18 +1,11 @@
 ---
-
+import BrainDumpForm from "./BrainDumpForm.astro";
+import Icon from "./Icon.astro";
 ---
 
 <section>
   <div class="container">
-    <div class="col">
-      <div>
-        <img
-          class="flip astro-LNVGYLZR"
-          src="https://res.cloudinary.com/dk3rdh3yo/image/upload/f_auto,c_scale/website-assets/brain.png"
-          alt="AI generated art of neon brain made of circuitry dripping information."
-          width="100%"
-        />
-      </div>
+    <div class="panel">
       <div>
         <h2 class="center">Brain Dump</h2>
         <p>
@@ -23,63 +16,45 @@
         </p>
         <p>
           <a href="/brain-dump/"
-            >Check out previous editions &amp; subscribe now</a
+            ><Icon icon="ChevronRight" style="height:1rem;" /> Read past
+            editions</a
           >
         </p>
       </div>
+      <BrainDumpForm />
     </div>
   </div>
 </section>
 
 <style>
-  section {
-    padding: 4rem 0;
-  }
-
   .container {
-    display: flex;
-    flex-direction: column;
+    @apply py-8 md:py-6;
+    @apply px-8 md:px-0;
   }
-
-  .col {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    padding: 0 2rem;
-  }
-
-  .col div:first-child {
-    display: none;
-  }
-
-  a {
-    display: inline-flex;
-    align-items: center;
-    color: var(--link);
-    text-decoration: none;
-  }
-
-  a:hover {
-    color: var(--link-hover);
+  .panel {
+    @apply flex flex-col lg:grid lg:grid-cols-2 gap-8;
+    @apply justify-center lg:items-center;
+    @apply p-8;
+    @apply rounded-lg;
+    @apply border border-zinc-800;
+    @apply bg-darken;
   }
 
   h2 {
-    font-family: var(--syne);
-    font-weight: bold;
-    font-size: 2.5rem;
-    line-height: 2.5rem;
-    margin-bottom: 4rem;
+    @apply font-kanit font-semibold text-white;
+    @apply text-3xl md:text-4xl;
+    @apply pb-4 md:pb-6;
+    @apply m-0 !important;
   }
-
-  @media screen and (min-width: 768px) {
-    .col {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .col div:first-child {
-      display: flex;
-    }
+  p {
+    @apply text-base text-zinc-400;
+    @apply mb-4;
   }
-  @media screen and (min-width: 1280px) {
+  a {
+    @apply text-neon;
+    @apply flex items-center;
+  }
+  svg {
+    @apply mr-2;
   }
 </style>

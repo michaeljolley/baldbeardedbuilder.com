@@ -3,21 +3,20 @@ import type { CollectionEntry } from "astro:content";
 import Card from "./Card.astro";
 
 export interface Props {
-  post: CollectionEntry<"blog">;
+  video: CollectionEntry<"videos">;
 }
 
-const { post } = Astro.props;
-const { title, summary, image } = post.data;
+const { video } = Astro.props;
+const { title, thumbnail: image } = video.data;
 const bgImage = `url('${image}')`;
 ---
 
-<Card>
-  <a href={`/blog/${post.slug}/`} class="optout">
+<Card hoverColor="rgba(255, 0, 0, .8)">
+  <a href={`https://www.youtube.com/watch?v=${video.id}`} class="optout">
     <div class="img"></div>
     <section>
       <div class="summary">
         <h5>{title}</h5>
-        <p>{summary}</p>
       </div>
     </section>
   </a>
@@ -25,29 +24,17 @@ const bgImage = `url('${image}')`;
 
 <style define:vars={{ bgImage }}>
   a {
-    @apply text-zinc-400 !important;
     @apply grid gap-4 m-0;
     @apply h-full;
-    grid-template-columns: 6rem auto;
+    grid-template-columns: 12rem auto;
     @apply overflow-hidden;
-  }
-
-  @screen md {
-    a {
-      grid-template-columns: 10rem auto;
-    }
-  }
-  @screen lg {
-    a {
-      grid-template-columns: 12rem auto;
-    }
   }
 
   .img {
     @apply bg-darkGray;
     @apply rounded-tl-lg rounded-bl-lg;
     background-image: var(--bgImage);
-    @apply bg-cover bg-center;
+    @apply bg-center bg-no-repeat bg-cover;
     @apply bg-blend-luminosity;
     filter: blur(5px);
     -webkit-filter: blur(5px);
@@ -67,7 +54,24 @@ const bgImage = `url('${image}')`;
     @apply pb-2;
     @apply m-0 !important;
   }
-  p {
-    @apply text-sm;
+
+  @screen md {
+    a {
+      grid-template-columns: 16rem auto;
+    }
+  }
+  @screen lg {
+    a {
+      grid-template-columns: 12rem auto;
+    }
+  }
+
+  @screen xl {
+    a {
+      grid-template-columns: 20rem auto;
+    }
+    .img {
+      @apply bg-cover;
+    }
   }
 </style>
