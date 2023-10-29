@@ -1,11 +1,14 @@
 ---
-import Mike from "./Mike";
+
 ---
 
 <section>
   <div class="container">
     <div>
-      <Mike />
+      <img
+        src="https://res.cloudinary.com/dk3rdh3yo/image/upload/e_grayscale,f_auto/v1687460581/website-assets/mast-bbb.png"
+        alt="Michael, with three arms. One pointing to his bald head, one pointing to his beard, and the last holding a mechanical keyboard."
+      />
     </div>
     <div>
       <h1>
@@ -26,28 +29,13 @@ import Mike from "./Mike";
     @apply flex flex-col justify-center items-center;
     @apply w-full h-full;
   }
-  .container div:first-child {
-    @apply min-h-[300];
-  }
-  @screen sm {
-    .container div:first-child {
-      @apply min-h-[180];
-    }
-  }
-  @screen md {
-    .container div:first-child {
-      @apply min-h-[237];
-    }
-  }
-  @screen lg {
-    .container div:first-child {
-      @apply min-h-[309];
-    }
-  }
-  @screen xl {
-    .container div:first-child {
-      @apply min-h-[397];
-    }
+
+  img {
+    @apply border-none;
+    @apply mix-blend-luminosity;
+    width: unset;
+    margin: unset;
+    padding: unset;
   }
 
   h1 {
