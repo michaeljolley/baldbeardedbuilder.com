@@ -26,6 +26,29 @@ import Mike from "./Mike";
     @apply flex flex-col justify-center items-center;
     @apply w-full h-full;
   }
+  .container div:first-child {
+    @apply min-h-[300];
+  }
+  @screen sm {
+    .container div:first-child {
+      @apply min-h-[180];
+    }
+  }
+  @screen md {
+    .container div:first-child {
+      @apply min-h-[237];
+    }
+  }
+  @screen lg {
+    .container div:first-child {
+      @apply min-h-[309];
+    }
+  }
+  @screen xl {
+    .container div:first-child {
+      @apply min-h-[397];
+    }
+  }
 
   h1 {
     @apply font-kanit font-semibold;

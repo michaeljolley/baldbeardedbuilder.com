@@ -7,28 +7,28 @@ export default function () {
     <picture>
       <source
         media="(max-width:640px)"
-        style="width:450px;"
-        srcset={`https://res.cloudinary.com/dk3rdh3yo/image/upload/w_450,f_auto/v1607302424/mj_${imageNumber}.png`}
+        style="height:450px;"
+        srcset={`https://res.cloudinary.com/dk3rdh3yo/image/upload/h_300,f_auto/v1607302424/mj_${imageNumber}.png`}
       />
       <source
         media="(max-width:768px)"
-        style="width:270px;"
-        srcset={`https://res.cloudinary.com/dk3rdh3yo/image/upload/w_270,f_auto/v1607302424/mj_${imageNumber}.png`}
+        style="height:180px;"
+        srcset={`https://res.cloudinary.com/dk3rdh3yo/image/upload/h_180x,f_auto/v1607302424/mj_${imageNumber}.png`}
       />
       <source
         media="(max-width:1024px)"
-        style="width:355px;"
-        srcset={`https://res.cloudinary.com/dk3rdh3yo/image/upload/w_355,f_auto/v1607302424/mj_${imageNumber}.png`}
+        style="height:237px;"
+        srcset={`https://res.cloudinary.com/dk3rdh3yo/image/upload/h_237,f_auto/v1607302424/mj_${imageNumber}.png`}
       />
       <source
         media="(max-width:1280px)"
-        style="width:464px;"
-        srcset={`https://res.cloudinary.com/dk3rdh3yo/image/upload/w_464,f_auto/v1607302424/mj_${imageNumber}.png`}
+        style="height:309px;"
+        srcset={`https://res.cloudinary.com/dk3rdh3yo/image/upload/h_309,f_auto/v1607302424/mj_${imageNumber}.png`}
       />
       <source
         media="(max-width:1536px)"
-        style="width:596px;"
-        srcset={`https://res.cloudinary.com/dk3rdh3yo/image/upload/w_596,f_auto/v1607302424/mj_${imageNumber}.png`}
+        style="height:397px;"
+        srcset={`https://res.cloudinary.com/dk3rdh3yo/image/upload/h_397,f_auto/v1607302424/mj_${imageNumber}.png`}
       />
       <img
         src={`https://res.cloudinary.com/dk3rdh3yo/image/upload/f_auto/v1607302424/mj_${imageNumber}.png`}
