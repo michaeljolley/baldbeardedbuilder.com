@@ -1,4 +1,6 @@
-picture {
+picture,
+img,
+source {
   @apply border-none;
   mix-blend-mode: luminosity;
   width: unset;
