@@ -5,7 +5,7 @@ import BrainDumpCard from "@components/Cards/BrainDumpCard.astro";
 import BrainDump from "@components/BrainDump.astro";
 
 let brainDumps = await getCollection("brainDumps", ({ data }) => {
-  return data.pubDate < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  return data.pubDate < new Date();
 });
 
 brainDumps = brainDumps.sort(
