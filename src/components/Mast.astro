@@ -6,6 +6,7 @@
   <div class="container">
     <div>
       <img
+        id="michael"
         src="https://res.cloudinary.com/dk3rdh3yo/image/upload/e_grayscale,f_auto/v1687460581/website-assets/mast-bbb.png"
         alt="Michael, with three arms. One pointing to his bald head, one pointing to his beard, and the last holding a mechanical keyboard."
       />
@@ -25,17 +26,26 @@
     @apply flex flex-col gap-3 sm:flex-row;
     @apply justify-center items-center;
   }
+
+  @screen md {
+    .container {
+      display: grid;
+      grid-template-columns: 50% 50%;
+    }
+  }
+
   .container div {
     @apply flex flex-col justify-center items-center;
     @apply w-full h-full;
   }
 
-  img {
+  #michael {
     @apply border-none;
     @apply mix-blend-luminosity;
     width: unset;
     margin: unset;
     padding: unset;
+    @apply border-0 m-0 p-0;
   }
 
   h1 {
