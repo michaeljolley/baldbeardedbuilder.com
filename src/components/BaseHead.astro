@@ -9,7 +9,7 @@ export interface Props {
 const { title, description, permalink, canonicalUrl } = Astro.props;
 const encodedTitle = encodeURI(title.replaceAll(",", "%2C"));
 
-const ograph = `https://res.cloudinary.com/dk3rdh3yo/image/upload/g_south_west,x_100,y_100,w_1000,c_fit,co_white,l_text:Roboto_64_bold:${encodedTitle}/website-assets/1200x700.png`;
+const ograph = `https://res.cloudinary.com/dk3rdh3yo/image/upload/g_south_west,x_100,y_300,w_1000,c_fit,co_white,l_text:Roboto_64_bold:${encodedTitle}/website-assets/1200x700.png`;
 ---
 
 <!-- Global Metadata -->
