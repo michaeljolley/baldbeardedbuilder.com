@@ -7,7 +7,8 @@ const latestPost = (
   await getCollection(
     "blog",
     ({ data }) =>
-      import.meta.env.NODE_ENV !== "production" || data.pubDate <= new Date()
+      data.featured &&
+      (import.meta.env.NODE_ENV !== "production" || data.pubDate <= new Date())
   )
 )
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
