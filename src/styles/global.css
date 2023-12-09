@@ -1,518 +1,181 @@
-/* cyrillic-ext */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2JL7SUc.woff2)
-    format("woff2");
-  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F,
-    U+FE2E-FE2F;
-}
-/* cyrillic */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa0ZL7SUc.woff2)
-    format("woff2");
-  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
-}
-/* greek-ext */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2ZL7SUc.woff2)
-    format("woff2");
-  unicode-range: U+1F00-1FFF;
-}
-/* greek */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1pL7SUc.woff2)
-    format("woff2");
-  unicode-range: U+0370-03FF;
-}
-/* vietnamese */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2pL7SUc.woff2)
-    format("woff2");
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1,
-    U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329,
-    U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa25L7SUc.woff2)
-    format("woff2");
-  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF,
-    U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2)
-    format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
-    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* cyrillic-ext */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2JL7SUc.woff2)
-    format("woff2");
-  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F,
-    U+FE2E-FE2F;
-}
-/* cyrillic */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa0ZL7SUc.woff2)
-    format("woff2");
-  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
-}
-/* greek-ext */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2ZL7SUc.woff2)
-    format("woff2");
-  unicode-range: U+1F00-1FFF;
-}
-/* greek */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1pL7SUc.woff2)
-    format("woff2");
-  unicode-range: U+0370-03FF;
-}
-/* vietnamese */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa2pL7SUc.woff2)
-    format("woff2");
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1,
-    U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329,
-    U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa25L7SUc.woff2)
-    format("woff2");
-  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF,
-    U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/inter/v13/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2)
-    format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
-    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* thai */
-@font-face {
-  font-family: "Kanit";
-  font-style: italic;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/kanit/v15/nKKS-Go6G5tXcraQI92kZbdhMWJy.woff2)
-    format("woff2");
-  unicode-range: U+0E01-0E5B, U+200C-200D, U+25CC;
-}
-/* vietnamese */
-@font-face {
-  font-family: "Kanit";
-  font-style: italic;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/kanit/v15/nKKS-Go6G5tXcraQI92kZaxhMWJy.woff2)
-    format("woff2");
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1,
-    U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329,
-    U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: "Kanit";
-  font-style: italic;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/kanit/v15/nKKS-Go6G5tXcraQI92kZa1hMWJy.woff2)
-    format("woff2");
-  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF,
-    U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: "Kanit";
-  font-style: italic;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/kanit/v15/nKKS-Go6G5tXcraQI92kZaNhMQ.woff2)
-    format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
-    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* thai */
-@font-face {
-  font-family: "Kanit";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/kanit/v15/nKKU-Go6G5tXcr5KPxWzVaF5NQ.woff2)
-    format("woff2");
-  unicode-range: U+0E01-0E5B, U+200C-200D, U+25CC;
-}
-/* vietnamese */
-@font-face {
-  font-family: "Kanit";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/kanit/v15/nKKU-Go6G5tXcr5KPxWoVaF5NQ.woff2)
-    format("woff2");
-  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1,
-    U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329,
-    U+1EA0-1EF9, U+20AB;
-}
-/* latin-ext */
-@font-face {
-  font-family: "Kanit";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/kanit/v15/nKKU-Go6G5tXcr5KPxWpVaF5NQ.woff2)
-    format("woff2");
-  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF,
-    U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: "Kanit";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/kanit/v15/nKKU-Go6G5tXcr5KPxWnVaE.woff2)
-    format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
-    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+@import url("./fonts.css");
+@import url("./reset.css");
+@import url("./keyframes.css");
+@import url("./content.css");
+
+:root {
+	--pink: oklch(70.17% 0.322 328.36);
+	--blue: oklch(90.54% 0.154 194.76);
+
+	--dark: oklch(14.96% 0 0);
+	--light: oklch(98.51% 0 0);
+
+	--gradient: linear-gradient(
+		to right in srgb,
+		var(--pink),
+		var(--blue),
+		var(--pink)
+	);
+	--gradient-gray: linear-gradient(
+		to right in srgb,
+		var(--gray-light),
+		var(--gray-dark)
+	);
+
+	--size: clamp(10rem, 1rem + 40vmin, 30rem);
+	--gap: calc(var(--size) / 14);
+	--duration: 60s;
+	--scroll-start: 0;
+	--scroll-end: calc(-100% - var(--gap));
+
+	--discord: #7289da;
+	--facebook: #3B5998;
+	--github: var(--light);
+	--instagram: #bc2a8d;
+	--linkedin: #0077B5;
+	--twitch: #6441A4;
+	--twitter: #1da1f2;
+	--tiktok: #ff0050;
+	--youtube: #e52d27;
+	
+	--light-text: oklch(51.2% 0 225.9);
+
+	--gray-light: oklch(31.6% 0 227.38);
+	--gray-dark: oklch(19.6% 0 228.44);
 }
 
-@property --a {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
+[data-theme="light"] {
+	--bg: var(--light);
+	--text: var(--dark);
+	--glass: oklch(0% 0 0 / 3%);
+	--glass-border: oklch(17.6% 0 0 / 20%);
+	
+	--nav-link: var(--dark);
+  --nav-link-hover: var(--pink);
+
+}
+
+[data-theme="dark"] {
+	--bg: var(--dark);
+	--text: var(--light);
+	--glass: oklch(100% 0 0 / 1%);
+	--glass-border: oklch(50.67% 0 0 / 20%);
+
+	--nav-link: var(--light);
+  --nav-link-hover: var(--blue);
 }
 
 body {
-  @apply font-inter;
-  @apply text-zinc-400;
+	background: var(--bg);
+	font-family: 'Poppins', sans-serif;
+	color: var(--text);
 }
+
 .container {
-  @apply mx-auto;
+	width: 100%;
 }
 
-#content {
-  @apply lg:px-4;
+.gradient {
+  --bg-size: 400%;
+  background: var(--gradient) 0 0 / var(--bg-size) 100%;
+  color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: move-bg 15s infinite linear;
 }
 
-a:not(.optout):hover {
-  filter: text-shadow(0 0 4px rgba(103, 229, 101, 0.3));
-  animation: strobe 1.5s ease-in-out infinite alternate;
+.glass {
+  background: var(--glass);
+  border-top: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
+	backdrop-filter: blur(15px);
 }
 
-.strobe:hover {
-  filter: drop-shadow(0 0 3px rgba(103, 229, 101, 0.5));
-  animation: strobe 1s ease-in-out infinite alternate;
+section.mast h1 {
+	font-size: 3rem;
+	color: var(--text);
+	background-color: oklch(14.96% 0 0 / 30%);
+	padding: 0.5rem;
+	backdrop-filter: blur(10px);
+	text-align: center;
 }
 
-label {
-  @apply inline-block text-zinc-300;
-  @apply font-kanit font-semibold;
-  @apply mb-2;
-}
-label .required {
-  @apply text-red-500;
-  @apply font-normal font-inter;
-  @apply text-sm;
-  @apply ml-2;
+section.mast h1 span {
+  --bg-size: 400%;
+  background: var(--gradient) 0 0 / var(--bg-size) 100%;
+  color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: move-bg 15s infinite linear;
 }
 
-input,
-textarea {
-  @apply border border-zinc-600 rounded-md;
-  @apply p-2;
-  @apply w-3/4;
-  @apply text-zinc-300 bg-darkGray;
-}
-input:focus,
-textarea:focus {
-  @apply outline-none;
-  @apply border-fadedNeon;
+section.mast p {
+	color: var(--text);
+	margin-top: 0.5rem;
+	background-color: oklch(14.96% 0 0 / 30%);
+	padding: 0.25rem;
+	backdrop-filter: blur(10px);
 }
 
-button {
-  @apply border border-zinc-600 rounded-md;
-  @apply uppercase text-zinc-300 font-bold;
-  @apply px-8 py-3 relative;
-  @apply bg-darkGray !important;
-  @apply mt-6;
-}
-
-button:before,
-button:after {
-  --a: 0deg;
-  content: "";
-  @apply rounded-md;
-  @apply absolute;
-  left: -2px;
-  top: -2px;
-  background: conic-gradient(
-    from var(--a) at 50% 50%,
-    rgba(60, 60, 60, 0.45) 35%,
-    rgba(212, 212, 216, 1) 50%,
-    rgba(60, 60, 60, 0.45) 65%
-  );
-  z-index: -1;
-  width: calc(100% + 4px);
-  height: calc(100% + 4px);
-  animation: steam 5s linear infinite;
-}
-button:after {
-  filter: blur(15px);
-}
-button:hover {
-  @apply text-neon;
-  @apply border-fadedNeon;
-}
-button:hover:before,
-button:hover:after {
-  background: conic-gradient(
-    from var(--a) at 50% 50%,
-    rgba(60, 60, 60, 0.45) 35%,
-    rgba(103, 229, 101, 1) 50%,
-    rgba(60, 60, 60, 0.45) 65%
-  );
-}
-
-#content h1,
-#content h2,
-#content h3,
-#content h4,
-#content h5,
-#content h6 {
-  @apply font-kanit font-semibold;
-}
-#content h1 {
-  @apply text-5xl lg:text-6xl;
-}
-#content h2 {
-  @apply text-4xl lg:text-5xl;
-  @apply my-12;
-}
-#content h3 {
-  @apply text-3xl lg:text-4xl;
-  @apply my-10;
-}
-#content h4 {
-  @apply text-2xl lg:text-3xl;
-  @apply my-8;
-}
-#content h5 {
-  @apply text-xl lg:text-2xl;
-  @apply my-6;
-}
-#content h6 {
-  @apply text-lg lg:text-xl;
-  @apply my-4;
-}
-
-#content p,
-#content li {
-  @apply mb-6;
-}
-
-#content main h1,
-#content main h2,
-#content main h3,
-#content main h4,
-#content main h5,
-#content main h6 {
-  @apply text-zinc-300;
-}
-
-#content main a {
-  @apply text-neon;
-}
-#content main ul {
-  @apply list-disc;
-  @apply ml-6;
-}
-#content main blockquote {
-  @apply border-l-4 border-l-neon;
-  @apply bg-zinc-900;
-  @apply px-6 py-2;
-  @apply my-6;
-}
-#content main blockquote p {
-  @apply my-2;
-}
-
-#content img {
-  @apply w-5/6;
-  @apply my-8 mx-auto;
-  @apply block;
-  @apply p-3;
-  @apply border-4 border-zinc-600;
-  @apply rounded-sm;
-}
-
-#content pre {
-  @apply my-8 mx-auto;
-  @apply p-4;
-  @apply flex;
-  @apply border-4 border-zinc-600;
-  @apply max-h-96;
-  @apply rounded-sm;
-}
-#content pre:-webkit-scrollbar {
-  width: 0.7rem;
-  background: transparent;
-}
-#content pre:-webkit-scrollbar-track {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-#content pre:-webkit-scrollbar-thumb {
-  width: 5px;
-  border: solid 0.075rem rgba(255, 255, 255, 0.3);
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-#content p > code {
-  @apply text-zinc-300;
-  @apply italic p-0.5 px-1.5 rounded-md;
-  background-color: rgba(200, 200, 200, 0.2);
-  /* background-color: rgba(103, 229, 101, 0.1); */
-}
-
-article aside {
-  @apply hidden flex-col;
-  position: -webkit-sticky;
-  @apply sticky;
-  @apply top-12;
-  z-index: 1;
-}
-
-@screen lg {
-  header {
-    @apply mx-auto;
-  }
-  header h1 {
-    @apply w-5/6;
+@media (min-width:640px) /* sm */ {
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
   }
 }
 
-@screen lg {
-  article {
-    @apply flex;
-  }
-  article:has(aside) {
-    @apply grid;
-    grid-template-columns: 70% 1fr;
-    @apply items-start;
-    @apply gap-8;
-  }
-  article aside {
-    @apply flex;
+@media (min-width:768px) /* md */ {
+  .container {
+    max-width: 768px
   }
 }
 
-@screen xl {
-  #content header {
-    max-width: 70%;
-  }
-  article:has(aside) {
-    grid-template-columns: 75% 1fr;
+@media (min-width:1024px) /* lg */ {
+  .container {
+    max-width: 1024px
   }
 }
 
-@keyframes rotate {
-  to {
-    --a: 0deg;
+@media (min-width:1280px) /* xl */ {
+  .container {
+    max-width: 1280px
   }
 }
 
-@keyframes strobe {
-  to {
-    filter: drop-shadow(0 0 5px rgba(103, 229, 101, 0.9));
+@media (min-width:1536px) /* 2xl */ {
+  .container {
+    max-width: 1536px
+  }
+}
+@media (min-width:768px) /* md */ {
+  .container {
+    max-width: 768px
   }
 }
 
-@keyframes steam {
-  from {
-    --a: 45deg;
+@media (min-width:1024px) /* lg */ {
+  .container {
+    max-width: 1024px
   }
-  to {
-    --a: 405deg;
-  }
+	.container > .card:nth-of-type(1n+7) {
+		display: none;
+	}
 }
 
-@keyframes glow {
-  to {
-    text-shadow: rgba(103, 229, 101, 0.9) 0px 0px 20px;
-  }
+@media (max-width:1024px)  {
+	.container > .card:nth-of-type(1n+5) {
+		display: none;
+	}
 }
 
-@keyframes blur {
-  from {
-    background-blend-mode: luminosity;
+@media (min-width:1279px) /* xl */ {
+  .container {
+    max-width: 1280px
   }
-  to {
-    background-blend-mode: normal;
-    filter: blur(0px);
-    -webkit-filter: blur(0px);
-  }
+	.container > .card:nth-of-type(1n+7) {
+		display: flex;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
 }

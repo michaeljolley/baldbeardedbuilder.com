@@ -4,35 +4,29 @@
 
 <nav>
   <section>
-    <p>About</p>
     <uL>
       <li>
         <a href="/">Home</a>
       </li>
-      <!-- <li>
-        <a href="/work-with-me/">Work With Me</a>
-      </li> -->
       <li>
         <a href="/uses/">What I Use</a>
       </li>
     </uL>
   </section>
   <section>
-    <p>Content</p>
     <uL>
       <li>
         <a href="https://youtube.com/c/baldbeardedbuilder">Videos</a>
       </li>
       <li>
-        <a href="https://twitch.tv/baldbeardedbuilder">Live Streams</a>
+        <a href="/blog/">Blog</a>
       </li>
       <li>
-        <a href="/blog/">Blog</a>
+        <a href="https://twitch.tv/baldbeardedbuilder">Live Streams</a>
       </li>
     </uL>
   </section>
   <section>
-    <p>Community</p>
     <uL>
       <li>
         <a href="/brain-dump/">Brain Dump</a>
@@ -40,33 +34,43 @@
       <li>
         <a href="https://discord.gg/kC8HTrs59R">Build With Me</a>
       </li>
-      <li>
-        <a href="/code-of-conduct/">Code of Conduct</a>
-      </li>
     </uL>
   </section>
 </nav>
 
 <style>
   nav {
-    @apply grid gap-8 justify-between;
+		display: grid;
+		gap: 2rem;
+		justify-content: space-between;
     grid-template-columns: repeat(3, 1fr);
   }
   section {
-    @apply flex flex-col gap-2;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
   }
   p {
-    @apply font-kanit font-semibold text-white;
-    @apply p-0 m-0;
+		font-weight: bold;
+		padding: 0;
+		margin: 0;
+		font-size: 0.8rem;
   }
   ul {
-    @apply flex flex-col gap-4;
-    @apply list-none;
-    @apply p-0 m-0;
-    @apply mt-4;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		padding: 0;
+		margin: 0;
+		margin-top: 1rem;
+		list-style: none;
+		font-size: 0.9rem;
   }
   a {
-    @apply text-zinc-400 hover:text-neon;
-    @apply no-underline;
+		text-decoration: none;
+		color: var(--light-text);
   }
+	a:hover {
+		color: var(--nav-link-hover);
+	}
 </style>

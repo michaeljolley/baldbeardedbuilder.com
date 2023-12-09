@@ -1,19 +1,17 @@
 ---
-import BaseLayout from "@layouts/base.astro";
+import HomeMast from "@components/HomeMast.astro";
+import LatestPosts from "@components/LatestPosts.astro";
 import Proof from "@components/Proof.astro";
-import Mast from "@components/Mast.astro";
-import BrainDumpAd from "@components/BrainDumpAd.astro";
-import Featured from "@components/Featured.astro";
+import BaseLayout from "@layouts/base.astro";
 
-const title = "Build with Michael Jolley, the Bald Bearded Builder";
+const title = "Bald Bearded Builder => Michael Jolley";
 const description =
   "Welcome to the home of Michael Jolley, also known as the bald, bearded, builder. Here you'll find all Michael's content curated for easier viewing.";
 const permalink = `https://${import.meta.env.HOST}/`;
 ---
 
 <BaseLayout {title} {description} {permalink}>
-  <Mast />
-  <Featured />
-  <Proof />
-  <BrainDumpAd />
+	<HomeMast/>
+	<Proof/>
+	<LatestPosts/>
 </BaseLayout>

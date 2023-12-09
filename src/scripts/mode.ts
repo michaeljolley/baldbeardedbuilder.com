@@ -30,7 +30,6 @@ updateThemeOnHtmlEl(currentThemeSetting);
 
 button.addEventListener('click', () => {
   const newTheme = currentThemeSetting === 'dark' ? 'light' : 'dark';
-
   localStorage.setItem('theme', newTheme);
   updateThemeOnHtmlEl(newTheme);
 

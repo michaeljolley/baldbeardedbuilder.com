@@ -2,10 +2,10 @@
 import BaseHead, {
   type Props as BaseHeadProps,
 } from "../components/BaseHead.astro";
-import Footer from "@components/Footer.astro";
 import Header from "@components/Header.astro";
+import Footer from "@components/Footer.astro";
 import SkipToContent from "@components/SkipToContent.astro";
-import "../styles/global.css";
+import "@styles/global.css";
 
 export interface Props extends BaseHeadProps {}
 
@@ -15,7 +15,7 @@ const { title, description, permalink, canonicalUrl } = Astro.props;
 <!doctype html>
 <html lang="en" data-theme="dark">
   <BaseHead {title} {description} {permalink} {canonicalUrl} />
-  <body class="bg-darkGray">
+  <body>
     <SkipToContent />
     <Header />
     <main id="content">

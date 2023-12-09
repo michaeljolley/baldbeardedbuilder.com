@@ -1,35 +1,70 @@
 ---
-import ArticleLayout from "@layouts/article.astro";
-import BlogCard from "@components/Cards/BlogCard.astro";
 import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/base.astro";
+import Mast from "@components/Mast.astro";
+import Card from "@components/Card.astro";
 
-let blogPosts = await getCollection(
+let posts = await getCollection(
   "blog",
   ({ data }) => data.pubDate <= new Date()
 );
 
-blogPosts = blogPosts.sort(
+posts = posts.sort(
   (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
-const title = "All Blog Posts by Michael";
+
+const title = `All ${posts.length} Things I've Written Down | Michael Jolley`;
 const description =
-  "A listing of blog posts by Michael Jolley, the bald bearded builder.";
+  "Blog posts written by Michael Jolley, the bald bearded builder.";
 const permalink = `https://${import.meta.env.HOST}/blog/`;
-const header = "All Posts";
+const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1688594948/website-assets/neon_robot_with_words_coming_from_its_mouth_ectqfv.png"
 ---
 
-<ArticleLayout {title} {description} {permalink} {header}>
-  <main>
-    <ul class="cards">
-      {blogPosts.map((post) => <BlogCard {post} />)}
-    </ul>
-  </main>
-</ArticleLayout>
+<BaseLayout {title} {description} {permalink}>
+	<Mast {image}>
+		<h1>All {posts.length} Things I've Written Down</h1>
+		<p>Learnings I'll find when I try to do them again.</p>
+	</Mast>
+	<section>
+		<div class="container">
+			{posts.map((post) => <Card {post} />)}
+		</div>
+	</section>
+</BaseLayout>
 
 <style>
-  ul {
-    @apply grid gap-8;
-    @apply list-none !important;
-    @apply grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3;
-  }
+	section {
+		margin: 3rem 0;
+		padding: 0 2rem;
+	}
+
+	.container {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+	}
+
+	@media (min-width:640px) /* sm */ {
+		.container {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (min-width:768px) /* md */ {
+		.container {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (min-width:1024px) /* lg */ {
+		.container {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+	}
+
+	@media (min-width:1280px) /* xl */ {
+		.container {
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+		}
+	}
 </style>

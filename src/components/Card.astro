@@ -1,0 +1,81 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+export interface Props {
+  post: CollectionEntry<"blog">;
+}
+
+const { post, ...rest } = Astro.props;
+const { title, summary } = post.data;
+---
+
+<a {...rest} href={`/blog/${post.slug}/`}>
+  <h3>{title}</h3>
+  <p>{summary}</p>
+</a>
+
+<style>
+
+	@property --a {
+		syntax: "<angle>";
+		inherits: false;
+		initial-value: 90deg;
+	}
+	
+	a {
+		flex-direction: column;
+		position: relative;
+		padding: 1rem;
+		text-decoration: none;
+		color: oklch(58.8% 0 234.79);
+		background: var(--bg);
+		border: solid 1px var(--gray-light);
+	}
+
+	a:hover {
+		border-color: transparent;
+	}
+
+  a:hover:before,
+  a:hover:after {
+    --a: 0deg;
+    content: "";
+    position: absolute;
+    left: -2px;
+    top: -2px;
+    background: conic-gradient( from var(--a) at 50% 50% in srgb, var(--pink), var(--blue), var(--pink));
+		width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    z-index: -1;
+    animation: steam 10s linear infinite;
+	}
+
+	a:before {
+		z-index: -1;
+	}
+
+	a:after {
+		filter: blur(0.5rem);
+	}
+
+	h3 {
+		background: unset;
+		animation: unset;
+		--bg-size: 400%;
+		animation: unset;
+		-webkit-background-clip: unset;
+		-webkit-text-fill-color: unset;
+		color: oklch(100% 0 0);
+		font-weight: bold;
+		font-size: 1.2rem;
+		line-height: 1.4rem;
+		padding: 0.2rem;
+	}
+
+	p {
+		font-size: 0.8rem;
+		line-height: 0.9rem;
+		padding: 0.2rem;
+	}
+
+</style>

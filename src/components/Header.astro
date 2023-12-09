@@ -1,18 +1,22 @@
 ---
 import Navigation from "./Navigation.astro";
-import Socials from "./Socials.astro";
 ---
 
 <header>
   <div class="container">
-    <Socials />
-    <Navigation />
+    <Navigation/>
   </div>
 </header>
 
 <style>
   .container {
-    @apply flex justify-end md:justify-between;
-    @apply py-8 md:py-6;
+		display: flex;
+		justify-content: flex-end;
   }
+	
+	@media (min-width:768px) /* md */ {
+		.container {
+			justify-content: space-between;
+		}
+	}
 </style>

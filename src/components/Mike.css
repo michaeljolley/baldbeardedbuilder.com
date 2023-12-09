@@ -1,9 +1,0 @@
-picture,
-img,
-source {
-  @apply border-none;
-  mix-blend-mode: luminosity;
-  width: unset;
-  margin: unset;
-  padding: unset;
-}
