@@ -1,0 +1,76 @@
+---
+import BrainDumpForm from "./BrainDumpForm.astro";
+import Icon from "./Icon.astro";
+---
+
+<section>
+  <div class="container">
+    <div class="panel glass">
+      <div>
+        <h2 class="gradient">Brain Dump</h2>
+        <p>
+          Want to hear all the latest news, gadgets, and productivity hacks that
+          Michael finds? The Brain Dump newsletter is
+          sent with all that, plus the latest content created by members of the
+          Build with Me community.
+        </p>
+        <p>
+          <a href="/brain-dump/"
+            ><Icon icon="ChevronRight" style="height:1rem;" /> Read past
+            editions</a
+          >
+        </p>
+      </div>
+      <BrainDumpForm />
+    </div>
+  </div>
+</section>
+
+<style>
+	section {
+		margin: 3rem 0;
+		padding: 0 2rem;
+	}
+  .container {
+		color: oklch(58.8% 0 234.79);
+		background: var(--bg);
+		border: solid 1px var(--gray-light);
+  }
+  .panel {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		padding: 2rem;
+  }
+
+  h2 {
+		font-size: 2.5rem;
+		line-height: 1.2;
+		padding-bottom: 1rem;
+		margin: 0;
+  }
+  p {
+		margin-bottom: 1rem;
+		font-size: 0.9rem;
+		line-height: 1.1rem;
+  }
+  a {
+		color: var(--pink);
+		display: flex;
+		align-items: center;
+		text-decoration: none;
+  }
+  svg {
+		margin-right: 0.5rem;
+  }
+
+	
+@media (min-width:1024px) /* lg */ {
+	.panel {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 2rem;
+		align-items: center;
+  }
+}
+</style>

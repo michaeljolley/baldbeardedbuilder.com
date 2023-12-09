@@ -1,8 +1,9 @@
 ---
+import BaseLayout from "@layouts/base.astro";
+import BrainDumpAd from "@components/BrainDumpAd.astro";
 import HomeMast from "@components/HomeMast.astro";
 import LatestPosts from "@components/LatestPosts.astro";
 import Proof from "@components/Proof.astro";
-import BaseLayout from "@layouts/base.astro";
 
 const title = "Bald Bearded Builder => Michael Jolley";
 const description =
@@ -14,4 +15,5 @@ const permalink = `https://${import.meta.env.HOST}/`;
 	<HomeMast/>
 	<Proof/>
 	<LatestPosts/>
+	<BrainDumpAd/>
 </BaseLayout>

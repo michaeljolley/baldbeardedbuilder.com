@@ -117,6 +117,81 @@ section.mast p {
 	backdrop-filter: blur(10px);
 }
 
+
+label {
+	display: inline-block;
+	margin: 0.5rem 0;
+	font-size: 0.9rem;
+	color: var(--text);
+}
+label .required {
+	color: red;
+	font-weight: normal;
+	font-size: 0.75rem;
+	margin-left: 0.5rem;
+}
+
+input,
+textarea {
+	border: 1px solid var(--gray-light);
+	padding: 0.5rem;
+	width: 75%;
+	border-color: var(--bg);
+	background-color: var(--gray-light);
+	color: var(--text);
+}
+input:focus,
+textarea:focus {
+	outline: none;
+	border-color: var(--pink);
+}
+
+button {
+	margin-top: 1.5rem;
+	padding: 0.75rem 2rem;
+	text-transform: uppercase;
+	position: relative;
+	font-weight: bold;
+	color: var(--light-text);
+	background-color: var(--bg);
+	cursor: pointer;
+}
+
+button:before,
+button:after {
+  --a: 0deg;
+  content: "";
+	position: absolute;
+  left: -2px;
+  top: -2px;
+  background: conic-gradient(
+    from var(--a) at 50% 50%,
+    rgba(60, 60, 60, 0.45) 35%,
+    rgba(212, 212, 216, 1) 50%,
+    rgba(60, 60, 60, 0.45) 65%
+  );
+  z-index: -1;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: steam 5s linear infinite;
+}
+button:after {
+  filter: blur(15px);
+}
+button:hover {
+	color: var(--pink);
+	background-color: var(--gray-dark);
+}
+button:hover:before,
+button:hover:after {
+	border-color: transparent;
+  background: conic-gradient(
+    from var(--a) at 50% 50% in srgb,
+    var(--pink) ,
+    var(--blue) 
+  );
+}
+
 @media (min-width:640px) /* sm */ {
   .container {
     max-width: 640px;
