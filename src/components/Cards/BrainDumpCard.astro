@@ -6,12 +6,6 @@ export interface Props {
   post: CollectionEntry<"brainDumps">;
 }
 
-let options = {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-};
-
 const { post, ...rest } = Astro.props;
 const { title, description, pubDate } = post.data;
 const url = `/brain-dump/${post.slug}/`;
@@ -22,7 +16,11 @@ const url = `/brain-dump/${post.slug}/`;
   <p>{description}</p>
 	<date
       >{
-        new Intl.DateTimeFormat("en-US", options).format(pubDate)
+        new Intl.DateTimeFormat("en-US", {
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				}).format(pubDate)
       }</date
     >
 </Card>

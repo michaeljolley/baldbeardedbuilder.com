@@ -17,8 +17,8 @@ function getSVG(name: string) {
     throw new Error(`${filepath} not found`)
   }
   const root = parse(files[filepath])
-  const svg = root.querySelector('svg')
-  const { attributes, innerHTML } = svg
+  const svg = root.querySelector('svg') as SVGElement | null
+  const { attributes, innerHTML } = svg!
   return {
     attributes,
     innerHTML,

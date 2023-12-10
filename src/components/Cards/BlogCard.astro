@@ -4,14 +4,15 @@ import Card from "./Card.astro";
 
 export interface Props {
   post: CollectionEntry<"blog">;
+	classes?: string | undefined;
 }
 
-const { post, ...rest } = Astro.props;
+const { post, classes, ...attributes } = Astro.props;
 const { title, summary } = post.data;
 const url = `/blog/${post.slug}/`
 ---
 
-<Card {...rest} {url}>
+<Card {...attributes} {classes} {url}>
   <h3>{title}</h3>
   <p>{summary}</p>
 </a>

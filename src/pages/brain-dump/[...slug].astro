@@ -15,22 +15,15 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
-const { post } = Astro.props as CollectionEntry<"brainDumps">;
-const { title, description, tags, canonicalUrl, pubDate } = post.data;
-const header = title;
+const { post } = Astro.props ;
+const { title, description, tags, pubDate } = post.data;
 const { Content, headings } = await post.render();
 const permalink = `https://${import.meta.env.HOST}/brain-dump/${slug}/`;
-let options = {
-  month: "long",
-  day: "numeric",
-  weekday: "long",
-  year: "numeric",
-};
-const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1688239156/website-assets/brain.png"
 
+const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1688239156/website-assets/brain.png"
 ---
 
-<BaseLayout {title} {description} {permalink} {header} {canonicalUrl}>
+<BaseLayout {title} {description} {permalink} >
 	<header>
 		<Mast {image}>
 			<h1>{title}</h1>

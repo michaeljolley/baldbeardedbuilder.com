@@ -3,14 +3,14 @@ import { getCollection } from "astro:content";
 import BlogCard from "./Cards/BlogCard.astro";
 
 let posts = await getCollection("blog",({ data }) => data.pubDate <= new Date());
-posts = posts.sort((a, b) => 
-			new Date(a.data.pubDate) < new Date(b.data.pubDate))
-			.splice(0, 8);
+
+posts = posts.sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime())
+						.splice(0, 8);
 ---
 
 <section>
 	<div class="container">
-		{posts.map((post) => <BlogCard {post} class="card"/>)}
+		{posts.map((post) => <BlogCard {post} classes="card"/>)}
 	</div>
 </section>
 

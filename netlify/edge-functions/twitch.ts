@@ -1,7 +1,7 @@
 import type { Config, Context } from "https://edge.netlify.com/";
 import * as queryString from "https://deno.land/x/querystring@v1.0.2/mod.js";
 
-export default async (request: Request, context: Context) => {
+export default async (_request: Request, context: Context) => {
 	const response = await context.next();
 	const page = await response.text();
 

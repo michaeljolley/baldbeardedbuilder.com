@@ -3,7 +3,6 @@ import { getCollection } from "astro:content";
 import BaseLayout from "@layouts/base.astro";
 import Mast from "@components/Mast.astro";
 import BrainDumpCard from "@components/Cards/BrainDumpCard.astro";
-import BrainDump from "@components/BrainDump.astro";
 
 let posts = await getCollection(
   "brainDumps",

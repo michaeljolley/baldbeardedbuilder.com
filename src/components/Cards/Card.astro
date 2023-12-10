@@ -1,13 +1,14 @@
 ---
 
 export interface Props {
-	url: string;
+	url: string | undefined;
+	classes?: string | undefined;
 }
 
-const { url, ...rest } = Astro.props;
+const { url, classes, ...rest } = Astro.props;
 ---
 
-<a {...rest} href={url}>
+<a {...rest} class={classes} href={url}>
 	<slot/>
 </a>
 

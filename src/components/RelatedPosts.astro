@@ -4,7 +4,7 @@ import { getAnalytics } from "@scripts/supabase";
 
 interface Props {
   slug: string | undefined;
-  tags: string[];
+  tags: string[] | undefined;
 }
 
 const { slug: postSlug, tags } = Astro.props;
@@ -13,7 +13,7 @@ const analytics = await getAnalytics();
 let relatedPosts = await getCollection(
   "blog",
   ({ slug, data }: CollectionEntry<"blog">) =>
-    data.tags?.some((tag: string) => tags.includes(tag)) && slug !== postSlug
+    tags && data.tags?.some((tag: string) => tags.includes(tag)) && slug !== postSlug
 );
 
 if (relatedPosts.length < 3) {
