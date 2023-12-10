@@ -1,7 +1,7 @@
 {
 	"extends": "astro/tsconfigs/strict",
 	"compilerOptions": {
-		"baseUrl": "F:/sources/michaeljolley/baldbeardedbuilder.com",
+		"baseUrl": ".",
 		"paths": {
 			"@components/*": ["src/components/*"],
 			"@layouts/*": ["src/layouts/*"],
