@@ -4,7 +4,7 @@ import BlogCard from "./Cards/BlogCard.astro";
 
 let posts = await getCollection("blog",({ data }) => data.pubDate <= new Date());
 
-posts = posts.sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime())
+posts = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
 						.splice(0, 8);
 ---
 
