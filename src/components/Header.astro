@@ -4,7 +4,9 @@ import Navigation from "./Navigation.astro";
 
 <header>
   <div class="container">
-    <Navigation/>
+    <div>
+			<Navigation/>
+		</div>
   </div>
 </header>
 
@@ -14,9 +16,10 @@ import Navigation from "./Navigation.astro";
 		justify-content: flex-end;
   }
 	
-	@media (min-width:768px) /* md */ {
-		.container {
-			justify-content: space-between;
-		}
+	.container div {
+		padding: 0 1rem;
+		display: flex;
+		justify-content: flex-end;
 	}
+
 </style>

@@ -10,8 +10,7 @@ interface Props {
 const { slug: postSlug, tags } = Astro.props;
 
 const analytics = await getAnalytics();
-
-const relatedPosts = await getCollection(
+let relatedPosts = await getCollection(
   "blog",
   ({ slug, data }: CollectionEntry<"blog">) =>
     data.tags?.some((tag: string) => tags.includes(tag)) && slug !== postSlug
@@ -46,6 +45,8 @@ if (relatedPosts.length < 3) {
       .slice(0, 3 - relatedPosts.length)
   );
 }
+
+relatedPosts = relatedPosts.slice(0, 5);
 ---
 
 {

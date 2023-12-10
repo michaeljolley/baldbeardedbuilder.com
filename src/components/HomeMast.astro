@@ -4,7 +4,25 @@ import Mast from "./Mast.astro";
 const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto,e_grayscale,o_20/v1687460581/website-assets/mast-bbb.png";
 ---
 
-<Mast {image}>
-	<h1 style="margin-top: 5rem;">Hi! I'm <span>Michael</span>.</h1>
+<Mast {image} >
+	<h1 style="margin-top: 5rem;" class="home">Hi! I'm <span>Michael</span>.</h1>
 	<p>A developer who likes to learn & share.</p>
 </Mast>
+
+<style>
+	h1.home {
+		font-size: 2.5rem;
+	}
+
+@media (min-width:768px) /* md */ {
+  h1.home {
+		font-size: 3rem;
+	}
+}
+@media (min-width:1024px) /* lg */ {
+  h1.home {
+		font-size: 3.5rem;
+	}
+}
+
+</style>

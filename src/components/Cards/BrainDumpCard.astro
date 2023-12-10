@@ -1,0 +1,56 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Card from "./Card.astro";
+
+export interface Props {
+  post: CollectionEntry<"brainDumps">;
+}
+
+let options = {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+};
+
+const { post, ...rest } = Astro.props;
+const { title, description, pubDate } = post.data;
+const url = `/brain-dump/${post.slug}/`;
+---
+
+<Card {...rest} {url}>
+  <h3>{title}</h3>
+  <p>{description}</p>
+	<date
+      >{
+        new Intl.DateTimeFormat("en-US", options).format(pubDate)
+      }</date
+    >
+</Card>
+
+<style>
+	h3 {
+		background: unset;
+		animation: unset;
+		--bg-size: 400%;
+		animation: unset;
+		-webkit-background-clip: unset;
+		-webkit-text-fill-color: unset;
+		color: oklch(100% 0 0);
+		font-weight: bold;
+		font-size: 1.2rem;
+		line-height: 1.4rem;
+		padding: 0.2rem;
+	}
+
+	p {
+		font-size: 0.8rem;
+		line-height: 0.9rem;
+		padding: 0.2rem;
+	}
+
+	date {
+		font-size: 0.6rem;
+		padding: 0.2rem;
+		margin-top: auto;
+	}
+</style>

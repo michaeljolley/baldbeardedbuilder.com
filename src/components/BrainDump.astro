@@ -1,0 +1,51 @@
+---
+import BrainDumpForm from "./BrainDumpForm.astro";
+---
+
+<section class="glass">
+  <div class="container">
+		<div>
+			<p>
+				Let's learn together with the Brain Dump newsletter! Michael
+				curates the latest news, gadgets, and productivity hacks he finds and
+				sends it to you, along with the latest content
+				created by members of the Build with Me community.
+			</p>
+			<p class="small">
+				You can unsubscribe at any time and I will never sell your information to
+				others.
+			</p>
+		</div>
+		<BrainDumpForm />
+	</div>
+</section>
+
+<style>
+  section {
+		margin: 2rem 0;
+		padding: 2rem;
+  }
+	.container {
+		display: flex;
+		flex-direction: column;
+		gap: 3rem;
+	}
+
+	p {
+		font-size: 0.9rem;
+		line-height: 1.1rem;
+		margin-top: 1rem;
+	}
+  .small {
+		font-size: 0.75rem;
+		color: var(--light-text);
+		font-style: italic
+  }
+	
+	@media (min-width:768px) /* lg */ {
+		.container {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>

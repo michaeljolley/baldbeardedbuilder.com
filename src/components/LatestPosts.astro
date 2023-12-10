@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import Card from "./Card.astro";
+import BlogCard from "./Cards/BlogCard.astro";
 
 let posts = await getCollection("blog",({ data }) => data.pubDate <= new Date());
 posts = posts.sort((a, b) => 
@@ -10,7 +10,7 @@ posts = posts.sort((a, b) =>
 
 <section>
 	<div class="container">
-		{posts.map((post) => <Card {post} class="card"/>)}
+		{posts.map((post) => <BlogCard {post} class="card"/>)}
 	</div>
 </section>
 

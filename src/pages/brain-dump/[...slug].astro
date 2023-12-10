@@ -1,0 +1,87 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import BaseLayout from "@layouts/base.astro";
+import TableOfContents from "@components/TableOfContents";
+import Mast from "@components/Mast.astro";
+import RelatedPosts from "@components/RelatedPosts.astro";
+
+export async function getStaticPaths() {
+  const blogEntries = await getCollection("brainDumps", ({ data }) => data.pubDate <= new Date());
+
+  return blogEntries.map((entry: CollectionEntry<"brainDumps">) => ({
+    params: { slug: entry.slug },
+    props: { post: entry },
+  }));
+}
+
+const { slug } = Astro.params;
+const { post } = Astro.props as CollectionEntry<"brainDumps">;
+const { title, description, tags, canonicalUrl, pubDate } = post.data;
+const header = title;
+const { Content, headings } = await post.render();
+const permalink = `https://${import.meta.env.HOST}/brain-dump/${slug}/`;
+let options = {
+  month: "long",
+  day: "numeric",
+  weekday: "long",
+  year: "numeric",
+};
+const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1688239156/website-assets/brain.png"
+
+---
+
+<BaseLayout {title} {description} {permalink} {header} {canonicalUrl}>
+	<header>
+		<Mast {image}>
+			<h1>{title}</h1>
+		</Mast>
+	</header>
+	<article class="container">
+		<main class="content">
+			<Content />
+		</main>
+		<aside>
+			<TableOfContents {headings} {pubDate} client:load />
+			<RelatedPosts {slug} {tags} />
+		</aside>
+	</article>
+</ArticleLayout>
+
+<style>
+  article aside {
+    display: none;
+		position: -webkit-sticky;
+		position: sticky;
+		top: 5rem;
+		z-index: 1;
+  }
+
+	main {
+		padding: 0 2rem;
+	}
+	
+	@media (min-width:1024px) /* lg */ {
+		article aside {
+      display: flex;
+			flex-direction: column;
+		}
+	}
+		
+	@media (min-width:1024px) /* lg */ {
+		article {
+			@apply flex;
+		}
+		article {
+			display: grid;
+			grid-template-columns: 70% 1fr;
+			align-items: flex-start;
+			gap: 2rem;
+		}
+	}
+		
+	@media (min-width:1280px) /* xl */ {
+		article:has(aside) {
+			grid-template-columns: 75% 1fr;
+		}
+	}
+</style>

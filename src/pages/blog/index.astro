@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "@layouts/base.astro";
 import Mast from "@components/Mast.astro";
-import Card from "@components/Card.astro";
+import BlogCard from "@components/Cards/BlogCard.astro";
 
 let posts = await getCollection(
   "blog",
@@ -27,7 +27,7 @@ const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/
 	</Mast>
 	<section>
 		<div class="container">
-			{posts.map((post) => <Card {post} />)}
+			{posts.map((post) => <BlogCard {post} />)}
 		</div>
 	</section>
 </BaseLayout>

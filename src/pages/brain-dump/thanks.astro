@@ -14,21 +14,24 @@ posts = posts.sort(
   (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
 
-const title = `The Archive of ${posts.length} Brain Dumps | Michael Jolley`;
-const description =
-  "An archive of the Brain Dump newsletter by Michael Jolley.";
-const permalink = `https://${import.meta.env.HOST}/brain-dump/`;
+const title = "Thanks for Subscribing to the Brain Dump Newsletter";
+const description = "You successfully registered for the Brain Dump newsletter";
+const permalink = `https://${import.meta.env.HOST}/brain-dump/thanks/`;
 const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1688239156/website-assets/brain.png"
 ---
 
 <BaseLayout {title} {description} {permalink}>
 	<Mast {image}>
-		<h1>The Brain Dump</h1>
-		<p>All the cool stuff I find around the interwebs.</p>
+		<h1>Thanks for Subscribing to the Brain Dump Newsletter</h1>
+		<p>&nbsp;</p>
 	</Mast>
-	<BrainDump/>
 	<section>
 		<div class="container">
+			<blockquote>
+				<strong>A note from Michael:</strong><br /><br />
+				 Thanks for subscribing! Curating cool stuff for the Brain Dump is one of
+				my favorite activities. I can't wait to hear what you think!
+			</blockquote>
 			<h2>Past Brain Dumps</h2>
 			<div class="posts">
 				{posts.map((post) => <BrainDumpCard {post} />)}
@@ -63,6 +66,19 @@ const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/
 		-webkit-text-fill-color: transparent;
 		animation: move-bg 15s infinite linear;
 		font-size: 1.8rem;
+	}
+	
+	blockquote {
+		border-left: 4px solid var(--blue);
+		padding: 0.5rem 1.5rem;
+		margin: 1rem 0;
+		background: oklch(100% 0 0 / 5%);
+		backdrop-filter: blur(15px);
+	}
+	blockquote p {
+		margin: 0.5rem 0;
+		font-size: 0.9rem;
+		line-height: 1.1rem;
 	}
 
 	@media (min-width:640px) /* sm */ {

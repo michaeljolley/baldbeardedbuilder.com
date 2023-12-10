@@ -1,37 +1,37 @@
-const button = document.querySelector('[data-theme-toggle]')!;
-const localStorageTheme = localStorage.getItem('theme');
-const systemSettingDark = window.matchMedia('(prefers-color-scheme: dark)');
+const button = document.querySelector("[data-theme-toggle]")!;
+const localStorageTheme = localStorage.getItem("theme");
+const systemSettingDark = window.matchMedia("(prefers-color-scheme: dark)");
 
 function calculateSettingAsThemeString(
-  localStorageTheme: string | null,
-  systemSettingDark: MediaQueryList
+	localStorageTheme: string | null,
+	systemSettingDark: MediaQueryList,
 ): string {
-  if (localStorageTheme !== null) {
-    return localStorageTheme;
-  }
+	if (localStorageTheme !== null) {
+		return localStorageTheme;
+	}
 
-  if (systemSettingDark.matches) {
-    return 'dark';
-  }
+	if (systemSettingDark.matches) {
+		return "dark";
+	}
 
-  return 'light';
+	return "light";
 }
 
 function updateThemeOnHtmlEl(theme: string) {
-  document.querySelector('html')!.setAttribute('data-theme', theme);
+	document.querySelector("html")!.setAttribute("data-theme", theme);
 }
 
 let currentThemeSetting = calculateSettingAsThemeString(
-  localStorageTheme,
-  systemSettingDark
+	localStorageTheme,
+	systemSettingDark,
 );
 
 updateThemeOnHtmlEl(currentThemeSetting);
 
-button.addEventListener('click', () => {
-  const newTheme = currentThemeSetting === 'dark' ? 'light' : 'dark';
-  localStorage.setItem('theme', newTheme);
-  updateThemeOnHtmlEl(newTheme);
+button.addEventListener("click", () => {
+	const newTheme = currentThemeSetting === "dark" ? "light" : "dark";
+	localStorage.setItem("theme", newTheme);
+	updateThemeOnHtmlEl(newTheme);
 
-  currentThemeSetting = newTheme;
+	currentThemeSetting = newTheme;
 });
