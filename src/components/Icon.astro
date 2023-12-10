@@ -9,15 +9,16 @@ export interface Props {
 
 function getSVG(name: string) {
   const filepath = `/src/assets/icons/${name}.svg`
-  const files = import.meta.globEager<string>('/src/assets/icons/*.svg', {
+  const files = import.meta.glob<string>('/src/assets/icons/*.svg', {
     as: 'raw',
+		eager: true,
   })
   if (!(filepath in files)) {
     throw new Error(`${filepath} not found`)
   }
   const root = parse(files[filepath])
-  const svg = root.querySelector('svg')
-  const { attributes, innerHTML } = svg
+  const svg = root.querySelector('svg') as SVGElement | null
+  const { attributes, innerHTML } = svg!
   return {
     attributes,
     innerHTML,

@@ -1,76 +1,36 @@
 ---
+export interface Props {
+	image: string | undefined;
+}
 
+const { image } = Astro.props;
+const bgImg = `url(${image})`;
 ---
 
-<section>
-  <div class="container">
-    <div>
-      <img
-        id="michael"
-        src="https://res.cloudinary.com/dk3rdh3yo/image/upload/e_grayscale,f_auto/v1687460581/website-assets/mast-bbb.png"
-        alt="Michael, with three arms. One pointing to his bald head, one pointing to his beard, and the last holding a mechanical keyboard."
-      />
-    </div>
-    <div>
-      <h1>
-        I make content<br />
-         that <span>educates</span><br />
-         and <span>entertains</span>.
-      </h1>
-    </div>
-  </div>
+<section class="container mast">
+  <slot/>
 </section>
 
-<style>
-  .container {
-    @apply flex flex-col gap-3 sm:flex-row;
-    @apply justify-center items-center;
-  }
-
-  @screen md {
-    .container {
-      display: grid;
-      grid-template-columns: 50% 50%;
-    }
-  }
-
-  .container div {
-    @apply flex flex-col justify-center items-center;
-    @apply w-full h-full;
-  }
-
-  #michael {
-    @apply border-none;
-    @apply mix-blend-luminosity;
-    width: unset;
-    margin: unset;
-    padding: unset;
-    @apply border-0 m-0 p-0;
-  }
-
-  h1 {
-    @apply font-kanit font-semibold;
-    @apply whitespace-nowrap text-center sm:text-left;
-    @apply text-zinc-400;
-
-    background: linear-gradient(
-      to bottom,
-      rgba(148, 148, 148, 1) 0%,
-      rgba(148, 148, 148, 0.2)
-    );
-    -webkit-background-clip: text;
-    @apply bg-clip-text;
-    -webkit-text-fill-color: transparent;
-    @apply text-transparent;
-  }
-  h1 > span {
-    background: unset;
-    -webkit-background-clip: unset;
-    background-clip: unset;
-    -webkit-text-fill-color: rgb(103 229 101 / var(--tw-text-opacity));
-    text-fill-color: rgb(103 229 101 / var(--tw-text-opacity));
-    @apply text-neon;
-    text-shadow: rgba(103, 229, 101, 0.3) 0px 0px 10px;
-    animation: glow 1.5s ease-in-out infinite alternate;
-  }
-</style>
+<style define:vars={{ bgImg }}>
+	section {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		background-image: var(--bgImg);
+		background-repeat: no-repeat;
+		background-position: bottom center;
+		background-size: contain;
+		height: 14rem;
+		margin-top: 3rem;
+		background-color: var(--bg);
+		background-blend-mode: exclusion;
+	}
+	
+	@media (min-width:768px) /* md */ {
+		section {
+			height: 20rem;
+		}
+	}
+	</style>
+	

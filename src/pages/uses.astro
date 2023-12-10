@@ -1,78 +1,132 @@
 ---
 import { getCollection } from "astro:content";
-import ArticleLayout from "@layouts/article.astro";
+import BaseLayout from "@layouts/base.astro";
+import Mast from "@components/Mast.astro";
 import GearCard from "@components/Cards/GearCard.astro";
 
-let gearEntries = await getCollection("gear");
+const gear = await getCollection("gear");
 
-const groups = [...new Set(gearEntries.map((m) => m.data.category))]
-  .map((group: string) => {
-    return {
-      name: group,
-      gear: gearEntries
-        .filter((gear) => gear.data.category === group)
-        .sort((a, b) => {
-          return a.data.title > b.data.title ? 1 : -1;
-        }),
-    };
-  })
-  .sort((a, b) => {
-    return a.name > b.name ? 1 : -1;
-  });
+const categories = gear
+	.map((item) => item.data.category)
+	.filter((value, index, self) => self.indexOf(value) === index);
 
-const title = "What Hardware and Software Does Michael Use?";
+const title = "Stuff I Use | Michael Jolley";
 const description =
-  "A listing of hardware, software, and other tools that Michael uses on a regular basis.";
+  "All the tools Michael Jolley uses to build things on the web.";
 const permalink = `https://${import.meta.env.HOST}/uses/`;
-const header = "What Michael Uses";
-const subheader = "Hardware, software, & other sundries.";
+const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1702169693/website-assets/0_2_irmwvq.webp"
 ---
 
-<ArticleLayout {title} {description} {permalink} {header} {subheader}>
-  <main>
-    <blockquote>
-      <strong>A note from Michael:</strong><br />
-       I get asked about the stuff I use on a regular basis. To make it easier
-      to share with others, I try to keep the lists below up-to-date. Something
-      missing? Hit me up and let me know.
-    </blockquote>
-
-    {
-      groups.map((group) => (
-        <>
-          <h2 id={group.name.toLowerCase().replace(/\s/g, "-")}>
-            {group.name}
-          </h2>
-          <ul class="cards">
-            {group.gear.map((gear) => (
-              <GearCard {gear} />
-            ))}
-          </ul>
-        </>
-      ))
-    }
-  </main>
-</ArticleLayout>
+<BaseLayout {title} {description} {permalink}>
+	<Mast {image}>
+		<h1>All the Stuff I Use</h1>
+		<p>Hardware, Software, and Beard Oil... maybe not.</p>
+	</Mast>
+	<section>
+		<div class="container">
+			
+			<blockquote>
+				<strong>A note from Michael:</strong><br /><br />
+				 I get asked about the stuff I use on a regular basis. To make it easier
+				to share with others, I try to keep the lists below up-to-date. Something
+				missing? Hit me up and let me know.
+			</blockquote>
+			{
+				categories.map((category) => (
+					<div>
+						<h2>{category}</h2>
+						<div class="cards">
+							{
+								gear
+									.filter((gear) => gear.data.category === category)
+									.map((gear) => (
+										<GearCard {gear}/>
+									))
+							}
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</section>
+</BaseLayout>
 
 <style>
-  ul {
-    @apply grid gap-8 p-0 mt-12;
-    @apply list-none !important;
-    grid-template-columns: 1;
-  }
+	section {
+		margin: 3rem 0;
+		padding: 0 2rem;
+	}
 
-  h2 {
-    @apply mt-24 !important;
-  }
+	.container {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+	}
+	
+	blockquote {
+		border-left: 4px solid var(--blue);
+		padding: 0.5rem 1.5rem;
+		margin: 1rem 0;
+		background: oklch(100% 0 0 / 5%);
+		backdrop-filter: blur(15px);
+		font-size: 0.9rem;
+		line-height: 1.2rem;
+	}
+	blockquote p {
+		margin: 0.5rem 0;
+	}
+	
+	.cards {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+	}
 
-  @screen lg {
-    ul {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @screen xl {
-    ul {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
+	h2 {
+		--bg-size: 400%;
+		background: var(--gradient) 0 0 / var(--bg-size) 100%;
+		color: transparent;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		animation: move-bg 15s infinite linear;
+		margin: 1.5rem 0;
+		padding: 0.2rem 0;
+		font-size: 1.8rem;
+	}
+
+	@media (min-width:640px) /* sm */ {
+		.container {
+			grid-template-columns: 1fr 1fr;
+		}
+		.cards {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (min-width:768px) /* md */ {
+		.container {
+			grid-template-columns: 1fr 1fr;
+		}
+		.cards {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (min-width:1024px) /* lg */ {
+		.container {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+		.cards {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+	}
+
+	@media (min-width:1280px) /* xl */ {
+		.container {
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+		}
+		.cards {
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+		}
+	}
 </style>

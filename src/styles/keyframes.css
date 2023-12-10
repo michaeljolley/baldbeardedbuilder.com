@@ -1,0 +1,33 @@
+@keyframes steam {
+	from {
+		--a: 0deg;
+	}
+
+	to {
+		--a: 360deg;
+	}
+}
+
+@keyframes scroll-x {
+	from {
+		transform: translateX(var(--scroll-start));
+	}
+
+	to {
+		transform: translateX(var(--scroll-end));
+	}
+}
+
+@keyframes move-bg {
+	to {
+		background-position: var(--bg-size) 0;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	@keyframes move-bg {
+		to {
+			background-position: var(--bg-size) 0;
+		}
+	}
+}

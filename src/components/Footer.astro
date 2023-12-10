@@ -3,20 +3,29 @@ import FooterNavigation from "./FooterNavigation.astro";
 import FooterSocials from "./FooterSocials.astro";
 ---
 
-<footer>
+<footer class="glass">
   <div class="container">
-    <FooterNavigation />
+		<FooterNavigation/>
     <FooterSocials />
   </div>
 </footer>
 
 <style>
   footer {
-    @apply p-6;
-    @apply mt-24 mb-12;
+		padding: 4rem 1.5rem;
+		margin-top: 6rem;
+		border: 0;
   }
   .container {
-    @apply text-fadedGray;
-    @apply flex flex-col md:flex-row md:justify-between gap-12;
+		display: flex;
+		flex-direction: column;
+		gap: 3rem;
   }
+		
+	@media (min-width:768px) {
+		.container {
+			flex-direction: row;
+			justify-content: space-between;
+		}
+	}
 </style>

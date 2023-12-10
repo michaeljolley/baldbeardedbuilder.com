@@ -4,70 +4,37 @@ import Card from "./Card.astro";
 
 export interface Props {
   post: CollectionEntry<"blog">;
+	classes?: string | undefined;
 }
 
-const { post } = Astro.props;
-const { title, summary, image } = post.data;
-const bgImage = `url('${image}')`;
+const { post, classes, ...attributes } = Astro.props;
+const { title, summary } = post.data;
+const url = `/blog/${post.slug}/`
 ---
 
-<Card>
-  <a href={`/blog/${post.slug}/`} class="optout">
-    <div class="img"></div>
-    <section>
-      <div class="summary">
-        <h5>{title}</h5>
-        <p>{summary}</p>
-      </div>
-    </section>
-  </a>
-</Card>
+<Card {...attributes} {classes} {url}>
+  <h3>{title}</h3>
+  <p>{summary}</p>
+</a>
 
-<style define:vars={{ bgImage }}>
-  a {
-    @apply text-zinc-400 !important;
-    @apply grid gap-4 m-0;
-    @apply h-full;
-    grid-template-columns: 6rem auto;
-    @apply overflow-hidden;
-  }
+<style>
+	h3 {
+		background: unset;
+		animation: unset;
+		--bg-size: 400%;
+		animation: unset;
+		-webkit-background-clip: unset;
+		-webkit-text-fill-color: unset;
+		color: oklch(100% 0 0);
+		font-weight: bold;
+		font-size: 1.2rem;
+		line-height: 1.4rem;
+		padding: 0.2rem;
+	}
 
-  @screen md {
-    a {
-      grid-template-columns: 10rem auto;
-    }
-  }
-  @screen lg {
-    a {
-      grid-template-columns: 12rem auto;
-    }
-  }
-
-  .img {
-    @apply bg-darkGray;
-    @apply rounded-tl-lg rounded-bl-lg;
-    background-image: var(--bgImage);
-    @apply bg-cover bg-center;
-    @apply bg-blend-luminosity;
-    filter: blur(5px);
-    -webkit-filter: blur(5px);
-  }
-
-  a:hover .img {
-    animation: blur 0.15s ease-in forwards;
-  }
-
-  section {
-    @apply flex p-4 md:p-6;
-  }
-
-  h5 {
-    @apply font-kanit font-semibold text-white;
-    @apply text-xl md:text-2xl;
-    @apply pb-2;
-    @apply m-0 !important;
-  }
-  p {
-    @apply text-sm;
-  }
+	p {
+		font-size: 0.8rem;
+		line-height: 0.9rem;
+		padding: 0.2rem;
+	}
 </style>

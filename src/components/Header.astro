@@ -1,18 +1,25 @@
 ---
 import Navigation from "./Navigation.astro";
-import Socials from "./Socials.astro";
 ---
 
 <header>
   <div class="container">
-    <Socials />
-    <Navigation />
+    <div>
+			<Navigation/>
+		</div>
   </div>
 </header>
 
 <style>
   .container {
-    @apply flex justify-end md:justify-between;
-    @apply py-8 md:py-6;
+		display: flex;
+		justify-content: flex-end;
   }
+	
+	.container div {
+		padding: 0 1rem;
+		display: flex;
+		justify-content: flex-end;
+	}
+
 </style>

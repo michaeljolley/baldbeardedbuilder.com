@@ -1,61 +1,91 @@
 ---
-import { getCollection, type CollectionEntry } from "astro:content";
-import ArticleLayout from "@layouts/article.astro";
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/base.astro";
+import Mast from "@components/Mast.astro";
 import BrainDumpCard from "@components/Cards/BrainDumpCard.astro";
 import BrainDump from "@components/BrainDump.astro";
 
-let brainDumps = await getCollection("brainDumps", ({ data }) => {
-  return data.pubDate < new Date();
-});
-
-brainDumps = brainDumps.sort(
-  (a: CollectionEntry<"brainDumps">, b: CollectionEntry<"brainDumps">) => {
-    return (
-      new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
-    );
-  }
+let posts = await getCollection(
+  "brainDumps",
+  ({ data }) => data.pubDate <= new Date()
 );
 
-const title =
-  "The Brain Dump - A Weekly Newsletter of Things Michael Finds Interesting";
+posts = posts.sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+
+const title = `The Archive of ${posts.length} Brain Dumps | Michael Jolley`;
 const description =
-  "The Brain Dump is a weekly newsletter that covers the latest in tech, gadgets, security, and more.";
+  "An archive of the Brain Dump newsletter by Michael Jolley.";
 const permalink = `https://${import.meta.env.HOST}/brain-dump/`;
-const header = "The Brain Dump";
-const subheader = "Weekly tech news, gadgets, tips & more";
+const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1688239156/website-assets/brain.png"
 ---
 
-<ArticleLayout {title} {description} {permalink} {header} {subheader}>
-  <main>
-    <BrainDump />
-
-    <h2>Previous Brain Dumps</h2>
-    <p>Brain Dumps drop every Monday morning.</p>
-    <ul>
-      {brainDumps.map((brainDump) => <BrainDumpCard {brainDump} />)}
-    </ul>
-  </main>
-</ArticleLayout>
+<BaseLayout {title} {description} {permalink}>
+	<Mast {image}>
+		<h1>The Brain Dump</h1>
+		<p>All the cool stuff I find around the interwebs.</p>
+	</Mast>
+	<BrainDump/>
+	<section>
+		<div class="container">
+			<h2>Past Brain Dumps</h2>
+			<div class="posts">
+				{posts.map((post) => <BrainDumpCard {post} />)}
+			</div>
+		</div>
+	</section>
+</BaseLayout>
 
 <style>
-  ul {
-    @apply grid gap-8 p-0 mt-12;
-    @apply list-none !important;
-    grid-template-columns: 1;
-  }
+	section {
+		margin: 3rem 0;
+		padding: 0 2rem;
+	}
 
-  h2 {
-    @apply mt-24 !important;
-  }
+	.container {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+	}
 
-  @screen lg {
-    ul {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @screen xl {
-    ul {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
+	.posts {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+	}
+
+	h2 {
+		--bg-size: 400%;
+		background: var(--gradient) 0 0 / var(--bg-size) 100%;
+		color: transparent;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		animation: move-bg 15s infinite linear;
+		font-size: 1.8rem;
+	}
+
+	@media (min-width:640px) /* sm */ {
+		.posts {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (min-width:768px) /* md */ {
+		.posts {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (min-width:1024px) /* lg */ {
+		.posts {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+	}
+
+	@media (min-width:1280px) /* xl */ {
+		.posts {
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+		}
+	}
 </style>

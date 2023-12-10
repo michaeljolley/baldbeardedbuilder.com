@@ -1,11 +1,12 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
-import ArticleLayout from "@layouts/article.astro";
+import BaseLayout from "@layouts/base.astro";
 import TableOfContents from "@components/TableOfContents";
+import Mast from "@components/Mast.astro";
 import RelatedPosts from "@components/RelatedPosts.astro";
 
 export async function getStaticPaths() {
-  const blogEntries = await getCollection("blog");
+  const blogEntries = await getCollection("blog", ({ data }) => data.pubDate <= new Date());
 
   return blogEntries.map((entry: CollectionEntry<"blog">) => ({
     params: { slug: entry.slug },
@@ -15,51 +16,64 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const { post } = Astro.props;
-const { title, description, tags, canonicalUrl, snapshot, pubDate } = post.data;
-const header = title;
+const { title, description, tags, canonicalUrl, image, pubDate } = post.data;
 const { Content, headings } = await post.render();
 const permalink = `https://${import.meta.env.HOST}/blog/${slug}/`;
-let options = {
-  month: "long",
-  day: "numeric",
-  weekday: "long",
-  year: "numeric",
-};
+
 ---
 
-<ArticleLayout {title} {description} {permalink} {header} {canonicalUrl}>
-  <main>
-    {pubDate <= new Date() && <Content />}
-    {
-      pubDate > new Date() && (
-        <div class="snapshot">
-          <blockquote>
-            <h4>Coming Soon</h4>
-            <p>
-              This article is scheduled to drop on{" "}
-              <b>{new Intl.DateTimeFormat("en-US", options).format(pubDate)}</b>
-              . In the meantime, here's a snapshot of the article as it will
-              appear when published.
-            </p>
-          </blockquote>
-          <div class="summary" set:html={snapshot} />
-        </div>
-      )
-    }
-  </main>
-  <aside>
-    <TableOfContents {headings} {pubDate} client:load />
-    <RelatedPosts {slug} {tags} />
-  </aside>
+<BaseLayout {title} {description} {permalink} {canonicalUrl}>
+	<header>
+		<Mast {image}>
+			<h1>{title}</h1>
+		</Mast>
+	</header>
+	<article class="container">
+		<main class="content">
+			<Content />
+		</main>
+		<aside>
+			<TableOfContents {headings} {pubDate} client:load />
+			<RelatedPosts {slug} {tags} />
+		</aside>
+	</article>
 </ArticleLayout>
 
 <style>
-  blockquote h4 {
-    margin-top: 0;
+  article aside {
+    display: none;
+		position: -webkit-sticky;
+		position: sticky;
+		top: 5rem;
+		z-index: 1;
   }
-  .summary {
-    background: -webkit-linear-gradient(var(--text), var(--bg));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+
+	main {
+		padding: 0 2rem;
+	}
+	
+	@media (min-width:1024px) /* lg */ {
+		article aside {
+      display: flex;
+			flex-direction: column;
+		}
+	}
+		
+	@media (min-width:1024px) /* lg */ {
+		article {
+			@apply flex;
+		}
+		article {
+			display: grid;
+			grid-template-columns: 70% 1fr;
+			align-items: flex-start;
+			gap: 2rem;
+		}
+	}
+		
+	@media (min-width:1280px) /* xl */ {
+		article:has(aside) {
+			grid-template-columns: 75% 1fr;
+		}
+	}
 </style>

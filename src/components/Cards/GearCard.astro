@@ -1,50 +1,38 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import Card from "./Card.astro";
+
 export interface Props {
   gear: CollectionEntry<"gear">;
 }
 
-const { title, description, link } = Astro.props.gear.data;
+const { gear, ...rest } = Astro.props;
+const { title, description } = gear.data;
 ---
 
-<Card>
-  <div class="deets">
-    <h5>{title}</h5>
-    {description && <p>{description}</p>}
-    {
-      link && (
-        <a href={link} target="_blank" rel="noopener noreferrer">
-          more →
-        </a>
-      )
-    }
-  </div>
-</Card>
+<Card {...rest} url={gear.data.link}>
+  <h3>{title}</h3>
+  <p>{description}</p>
+</a>
 
 <style>
-  .deets {
-    @apply flex h-full flex-col items-start justify-start;
-    @apply p-4 pl-6 border-l-4 border-zinc-300;
-    @apply rounded-lg;
-  }
-  .deets:hover {
-    @apply border-neon;
-  }
-  h5 {
-    @apply font-inter font-normal;
-    @apply text-zinc-300 !important;
-    @apply m-0 p-0;
-    @apply m-0 !important;
-  }
-  p {
-    @apply my-3 !important;
-  }
-  p {
-    @apply text-zinc-500;
-    @apply text-sm xl:text-base;
-  }
-  a {
-    @apply mt-auto;
-  }
+	h3 {
+		background: unset;
+		animation: unset;
+		--bg-size: 400%;
+		animation: unset;
+		-webkit-background-clip: unset;
+		-webkit-text-fill-color: unset;
+		color: oklch(100% 0 0);
+		font-weight: bold;
+		font-size: 1.2rem;
+		line-height: 1.4rem;
+		padding: 0.2rem;
+	}
+
+	p {
+		font-size: 0.8rem;
+		line-height: 0.9rem;
+		padding: 0.2rem;
+	}
 </style>

@@ -1,20 +1,19 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
-import { getAnalytics } from "../scripts/supabase";
+import { getAnalytics } from "@scripts/supabase";
 
 interface Props {
   slug: string | undefined;
-  tags: string[];
+  tags: string[] | undefined;
 }
 
 const { slug: postSlug, tags } = Astro.props;
 
 const analytics = await getAnalytics();
-
-const relatedPosts = await getCollection(
+let relatedPosts = await getCollection(
   "blog",
   ({ slug, data }: CollectionEntry<"blog">) =>
-    data.tags?.some((tag: string) => tags.includes(tag)) && slug !== postSlug
+    tags && data.tags?.some((tag: string) => tags.includes(tag)) && slug !== postSlug
 );
 
 if (relatedPosts.length < 3) {
@@ -46,6 +45,8 @@ if (relatedPosts.length < 3) {
       .slice(0, 3 - relatedPosts.length)
   );
 }
+
+relatedPosts = relatedPosts.slice(0, 5);
 ---
 
 {
@@ -65,22 +66,32 @@ if (relatedPosts.length < 3) {
 
 <style>
   .related {
-    @apply px-4;
-    @apply mt-8;
+		padding: 0 1rem;
+		margin-top: 2rem;
   }
+	.related h5 {
+		font-weight: bold;
+	}
   .related ul {
-    @apply flex flex-col p-0 list-none;
+		display: flex;
+		flex-direction: column;
+		padding: 0;
+		list-style: none;
+		margin-top: 1rem;
   }
   .related li {
-    @apply text-sm p-0 py-2 m-0 !important;
-    @apply border-l-4 border-transparent;
+		border-left: 4px solid transparent;
+		font-size: 0.7rem;
+		margin: 0;
+		padding: 0.5rem 0;
   }
   .related a {
-    @apply p-0 !important;
-    @apply text-zinc-500;
-    @apply no-underline;
+		text-decoration: none;
+		padding: 0;
+		color: var(--light-text);
   }
   .related a:hover {
     @apply text-neon !important;
+		color: var(--blue);
   }
 </style>

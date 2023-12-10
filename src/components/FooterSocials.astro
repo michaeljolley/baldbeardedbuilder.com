@@ -9,10 +9,10 @@ import Icon from "./Icon.astro";
         href="https://twitter.com/michaeljolley"
         rel="me"
         target="_blank"
-        class="optout strobe"
+				class="twitter"
         title="Follow the musings on Twitter"
       >
-        <Icon icon="Twitter" style="height:1rem;" class="icon" />
+        <Icon icon="Twitter" style="height:1rem;" class="icon twitter" />
       </a>
     </li>
     <li>
@@ -20,10 +20,21 @@ import Icon from "./Icon.astro";
         href="https://youtube.com/baldbeardedbuilder"
         rel="me"
         target="_blank"
-        class="optout strobe"
+				class="youtube"
         title="Subscribe, like & comment on YouTube videos"
       >
-        <Icon icon="YouTube" style="height:1rem;" class="icon" />
+        <Icon icon="YouTube" style="height:1rem;" class="icon youtube" />
+      </a>
+    </li>
+    <li>
+      <a
+        href="https://www.tiktok.com/@baldbeardedbuilder"
+        rel="me"
+        target="_blank"
+				class="tiktok"
+        title="Check out TikTok"
+      >
+        <Icon icon="TikTok" style="height:1rem;" class="icon tiktok" />
       </a>
     </li>
     <li>
@@ -31,10 +42,10 @@ import Icon from "./Icon.astro";
         href="https://twitch.tv/baldbeardedbuilder"
         rel="me"
         target="_blank"
-        class="optout strobe"
+				class="twitch"
         title="Check out the live streams on Twitch"
       >
-        <Icon icon="Twitch" style="height:1rem;" class="icon" />
+        <Icon icon="Twitch" style="height:1rem;" class="icon twitch" />
       </a>
     </li>
     <li>
@@ -42,10 +53,10 @@ import Icon from "./Icon.astro";
         href="https://linkedin.com/in/michaelwjolley"
         rel="me"
         target="_blank"
-        class="optout strobe"
+				class="linkedin"
         title="Let's get professional"
       >
-        <Icon icon="LinkedIn" style="height:1rem;" class="icon" />
+        <Icon icon="LinkedIn" style="height:1rem;" class="icon linkedin" />
       </a>
     </li>
     <li>
@@ -53,10 +64,10 @@ import Icon from "./Icon.astro";
         href="https://github.com/michaeljolley"
         rel="me"
         target="_blank"
-        class="optout strobe"
+				class="github"
         title="Yeah. I write code."
       >
-        <Icon icon="GitHub" style="height:1rem;" class="icon" />
+        <Icon icon="GitHub" style="height:1rem;" class="icon github" />
       </a>
     </li>
     <li>
@@ -64,26 +75,58 @@ import Icon from "./Icon.astro";
         href="https://discord.gg/kC8HTrs59R"
         rel="me"
         target="_blank"
-        class="optout strobe"
+				class="discord"
         title="Join the conversation on Discord"
       >
-        <Icon icon="Discord" style="height:1rem;" class="icon" />
+        <Icon icon="Discord" style="height:1rem;" class="icon discord" />
       </a>
     </li>
   </ul>
 </div>
+
 <style>
   div {
-    @apply flex items-end;
+		display: flex;
+		align-items: flex-end;
   }
   ul {
-    @apply flex gap-8 list-none m-0;
+		display: flex;
+		gap: 2rem;
+		list-style: none;
+		margin: 0;
   }
   .icon {
-    @apply text-zinc-400 fill-zinc-400;
+		color: var(--light-text);
+		fill: var(--light-text);
   }
-  .icon:hover,
-  .icon:active {
-    @apply text-neon fill-neon;
-  }
+
+	a.twitter:hover .icon {
+		color: var(--twitter);
+		fill: var(--twitter);
+	}
+	a.linkedin:hover .icon {
+		color: var(--linkedin);
+		fill: var(--linkedin);
+	}
+	a.twitch:hover .icon {
+		color: var(--twitch);
+		fill: var(--twitch);
+	}
+	a.discord:hover .icon {
+		color: var(--discord);
+		fill: var(--discord);
+	}
+	a.tiktok:hover .icon {
+		color: var(--tiktok);
+		fill: var(--tiktok);
+	}
+	a.youtube:hover .icon {
+		color: var(--youtube);
+		fill: var(--youtube);
+	}
+	a.github:hover .icon {
+		color: var(--github);
+		fill: var(--github);
+	}
+	
 </style>

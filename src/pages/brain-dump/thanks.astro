@@ -1,64 +1,106 @@
 ---
-import { getCollection, type CollectionEntry } from "astro:content";
-import ArticleLayout from "@layouts/article.astro";
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/base.astro";
+import Mast from "@components/Mast.astro";
 import BrainDumpCard from "@components/Cards/BrainDumpCard.astro";
 
-let brainDumps = await getCollection("brainDumps", ({ data }) => {
-  return data.pubDate < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-});
+let posts = await getCollection(
+  "brainDumps",
+  ({ data }) => data.pubDate <= new Date()
+);
 
-brainDumps = brainDumps.sort(
-  (a: CollectionEntry<"brainDumps">, b: CollectionEntry<"brainDumps">) => {
-    return (
-      new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
-    );
-  }
+posts = posts.sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
 
 const title = "Thanks for Subscribing to the Brain Dump Newsletter";
 const description = "You successfully registered for the Brain Dump newsletter";
 const permalink = `https://${import.meta.env.HOST}/brain-dump/thanks/`;
-const header = title;
+const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1688239156/website-assets/brain.png"
 ---
 
-<ArticleLayout {title} {description} {permalink} {header}>
-  <main>
-    <blockquote>
-      <strong>A note from Michael:</strong><br />
-       Thanks for subscribing! Curating cool stuff for the Brain Dump is one of
-      my favorite weekly activities. I can't wait to hear what you think!
-    </blockquote>
-
-    <h2 class="center">Previous Brain Dumps</h2>
-    <p class="center">
-      Brain Dumps drop every Monday morning. Past brain dumps can be found below
-      one week after their release date.
-    </p>
-    <ul>
-      {brainDumps.map((brainDump) => <BrainDumpCard {brainDump} />)}
-    </ul>
-  </main>
-</ArticleLayout>
+<BaseLayout {title} {description} {permalink}>
+	<Mast {image}>
+		<h1>Thanks for Subscribing to the Brain Dump Newsletter</h1>
+		<p>&nbsp;</p>
+	</Mast>
+	<section>
+		<div class="container">
+			<blockquote>
+				<strong>A note from Michael:</strong><br /><br />
+				 Thanks for subscribing! Curating cool stuff for the Brain Dump is one of
+				my favorite activities. I can't wait to hear what you think!
+			</blockquote>
+			<h2>Past Brain Dumps</h2>
+			<div class="posts">
+				{posts.map((post) => <BrainDumpCard {post} />)}
+			</div>
+		</div>
+	</section>
+</BaseLayout>
 
 <style>
-  ul {
-    @apply mt-12;
-    @apply grid gap-8;
-    @apply p-0;
-    @apply list-none !important;
-    grid-template-columns: 1;
-  }
-  p {
-    @apply my-10 mx-0;
-  }
-  @screen md {
-    ul {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @screen 2xl {
-    ul {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
+	section {
+		margin: 3rem 0;
+		padding: 0 2rem;
+	}
+
+	.container {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+	}
+
+	.posts {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+	}
+
+	h2 {
+		--bg-size: 400%;
+		background: var(--gradient) 0 0 / var(--bg-size) 100%;
+		color: transparent;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		animation: move-bg 15s infinite linear;
+		font-size: 1.8rem;
+	}
+	
+	blockquote {
+		border-left: 4px solid var(--blue);
+		padding: 0.5rem 1.5rem;
+		margin: 1rem 0;
+		background: oklch(100% 0 0 / 5%);
+		backdrop-filter: blur(15px);
+	}
+	blockquote p {
+		margin: 0.5rem 0;
+		font-size: 0.9rem;
+		line-height: 1.1rem;
+	}
+
+	@media (min-width:640px) /* sm */ {
+		.posts {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (min-width:768px) /* md */ {
+		.posts {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (min-width:1024px) /* lg */ {
+		.posts {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+	}
+
+	@media (min-width:1280px) /* xl */ {
+		.posts {
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+		}
+	}
 </style>

@@ -1,34 +1,38 @@
 nav.toc {
-  @apply py-0 px-4;
+	padding: 0 1rem;
 }
 .toc ul {
-  @apply flex flex-col p-0 list-none;
+	display: flex;
+	flex-direction: column;
+	padding: 0;
+	list-style: none;
 }
 
 .toc li {
-  @apply py-2 m-0 !important;
-  @apply text-sm pl-4;
-  @apply border-l-4 border-transparent;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+	padding-left: 1rem;
+	margin: 0;
+	font-size: 0.7rem;
+	border-left: 4px solid transparent;
 }
 
 .toc a {
-  @apply p-0;
-  @apply text-zinc-500;
-  @apply no-underline;
+	padding: 0;
+	text-decoration: none;
+	color: var(--light-text);
 }
 li:not(.link--active) a:hover {
-  @apply text-neon;
+	color: var(--blue);
 }
 
 li.link--level3 {
-  @apply pl-8;
+	padding-left: 1.5rem;
 }
 li.link--active {
-  @apply text-neon;
-  @apply border-l-neon;
-  @apply bg-darken;
+	font-weight: bold;
+	border-left-color: var(--pink);
 }
 li.link--active a {
-  @apply text-neon;
-  color: var(--toc-link-active);
+	color: var(--light);
 }

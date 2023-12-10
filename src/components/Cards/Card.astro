@@ -1,48 +1,59 @@
 ---
+
 export interface Props {
-  hoverColor?: string;
+	url: string | undefined;
+	classes?: string | undefined;
 }
 
-const { hoverColor = "rgb(103, 229, 101)" } = Astro.props;
+const { url, classes, ...rest } = Astro.props;
 ---
 
-<li>
-  <slot />
-</li>
+<a {...rest} class={classes} href={url}>
+	<slot/>
+</a>
 
-<style define:vars={{ hoverColor }}>
-  li {
-    @apply flex-grow;
-    @apply relative rounded-lg;
-    @apply bg-darken;
-    @apply border border-zinc-800;
-    min-height: 10rem;
-  }
-  li:hover:before,
-  li:hover:after {
+<style>
+
+	@property --a {
+		syntax: "<angle>";
+		inherits: false;
+		initial-value: 90deg;
+	}
+	
+	a {
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		padding: 1rem;
+		text-decoration: none;
+		color: oklch(58.8% 0 234.79);
+		background: var(--bg);
+		border: solid 1px var(--gray-light);
+	}
+
+	a:hover {
+		border-color: transparent;
+	}
+
+  a:hover:before,
+  a:hover:after {
     --a: 0deg;
     content: "";
-    @apply rounded-lg;
-    @apply absolute;
+    position: absolute;
     left: -2px;
     top: -2px;
-    background: conic-gradient(
-      from var(--a) at 50% 50%,
-      rgba(60, 60, 60, 0.45) 30%,
-      var(--hoverColor) 50%,
-      rgba(60, 60, 60, 0.45) 70%
-    );
-    width: calc(100% + 4px);
+    background: conic-gradient( from var(--a) at 50% 50% in srgb, var(--pink), var(--blue), var(--pink));
+		width: calc(100% + 4px);
     height: calc(100% + 4px);
     z-index: -1;
-    animation: steam 5s linear infinite;
-  }
+    animation: steam 10s linear infinite;
+	}
 
-  li:before {
-    z-index: -1;
-  }
+	a:before {
+		z-index: -1;
+	}
 
-  li:after {
-    filter: blur(15px);
-  }
+	a:after {
+		filter: blur(0.5rem);
+	}
 </style>

@@ -84,7 +84,7 @@ const useIntersectionObserver = (setActiveId) => {
         setActiveId(visibleHeadings[0].target.id);
       } else if (visibleHeadings.length > 1) {
         const sortedVisibleHeadings = visibleHeadings.sort(
-          (a, b) => getIndexFromId(a.target.id) > getIndexFromId(b.target.id)
+          (a, b) => getIndexFromId(a.target.id) > getIndexFromId(b.target.id),
         );
         setActiveId(sortedVisibleHeadings[0].target.id);
       }
