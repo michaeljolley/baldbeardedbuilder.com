@@ -74,5 +74,9 @@ article.container {
 	margin: 2rem auto;
 }
 .expressive-code .frame pre {
-	max-height: 20rem;
+	max-height: 24rem;
+}
+
+.expressive-code .copy {
+	margin-right: 8px;
 }
