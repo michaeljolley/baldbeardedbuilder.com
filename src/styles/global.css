@@ -152,7 +152,7 @@ textarea:focus {
 	border-color: var(--pink);
 }
 
-button {
+button:not([data-copied="Copied!"]) {
 	margin-top: 1.5rem;
 	padding: 0.75rem 2rem;
 	text-transform: uppercase;
@@ -163,8 +163,8 @@ button {
 	cursor: pointer;
 }
 
-button:before,
-button:after {
+button:not([data-copied="Copied!"]):before,
+button:not([data-copied="Copied!"]):after {
 	--a: 0deg;
 	content: "";
 	position: absolute;
@@ -181,21 +181,62 @@ button:after {
 	height: calc(100% + 4px);
 	animation: steam 10s linear infinite;
 }
-button:after {
+button:not([data-copied="Copied!"]):after {
 	filter: blur(15px);
 }
-button:hover {
+button:not([data-copied="Copied!"]):hover {
 	color: var(--pink);
 	background-color: var(--gray-dark);
 }
-button:hover:before,
-button:hover:after {
+button:not([data-copied="Copied!"]):hover:before,
+button:not([data-copied="Copied!"]):hover:after {
 	border-color: transparent;
 	background: conic-gradient(
 		from var(--a) at 50% 50% in srgb,
 		var(--pink),
 		var(--blue)
 	);
+}
+
+.visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: auto;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  white-space: nowrap;
+}
+
+.autolink-svg {
+	color: var(--gray-light);
+	fill: var(--gray-light);
+	margin-right: 0.5rem;
+	height: 1rem;
+}
+
+h2, h3, h4 ,h5 ,h6 {
+	display: flex;
+	align-items: baseline;
+}
+.autolink-header {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+}
+
+.tippy-box {
+	padding: 0.5rem 0.5rem;
+	border-radius: 0.25rem;
+	background-color: var(--gray-light)
+}
+.tippy-content {
+	font-size: 0.8rem;
+}
+.tippy-box[data-placement^='right'] > .tippy-arrow::before {
+  border-top-color: var(--gray-light);
 }
 
 @media (min-width: 640px) /* sm */ {

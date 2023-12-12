@@ -42,12 +42,12 @@ function TableOfContents(props: {
                       data-attr-id={header.slug}
                       onClick={scrollToHeading}
                     >
-                      {header.text}
+                      {header.text.replace(" permalink", "")}
                     </a>
                   )}
                   {pubDate && pubDate > new Date() && (
                     <a href="#" data-attr-id={header.slug}>
-                      {header.text}
+                      {header.text.replace(" permalink", "")}
                     </a>
                   )}
                 </li>
