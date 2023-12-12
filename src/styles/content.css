@@ -73,22 +73,6 @@ article.container {
 .expressive-code {
 	margin: 2rem auto;
 }
-.content pre {
-	margin: 2rem auto;
-	padding: 1rem;
+.expressive-code .frame pre {
 	max-height: 20rem;
-	border: 4px solid oklch(70.17% 0.322 328.36 / 30%);
-	border-radius: 0.25rem;
-	font-size: 0.8rem;
-	line-height: 1.2rem;
-	position: relative;
-}
-
-.content p > code {
-	font-size: 0.8rem;
-	font-style: italic;
-	padding: 0.05rem 0.25rem;
-	border-radius: 0.25rem;
-	color: rgba(250, 250, 250, 0.75);
-	background-color: rgba(200, 200, 200, 0.15);
 }

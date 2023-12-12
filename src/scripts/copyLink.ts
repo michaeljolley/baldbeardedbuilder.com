@@ -8,20 +8,19 @@ function copyLink(el: HTMLAnchorElement) {
 
 document.addEventListener("DOMContentLoaded", (event) => {
 	document.querySelectorAll("a.autolink-header").forEach((a) => {
-
-		const t = tippy(a, {
-			arrow: true,
-			placement: "top",
-		});
-
 		a.addEventListener("click", (e: Event) => {
 			e.preventDefault();
-			t.setContent("Copied!");
-			t.show();
 			copyLink(a as HTMLAnchorElement);
+
+			const t = tippy(a, {
+				arrow: true,
+				placement: "top",
+				content: "Copied"
+			});
+			t.show();
 			setTimeout(() => {
-				t.setContent("Copy link");
-			}, 1000);
+				t.hide();
+			}, 1500);
 		});
 	});
 });

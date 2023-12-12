@@ -23,7 +23,7 @@ export default defineConfig({
       behavior: 'prepend',
       properties: {
         class: 'autolink-header',
-        'data-tippy-content': 'Copy link',
+        title: 'Copy link to clipboard',
         ariaHidden: true,
         tabIndex: -1
       },
