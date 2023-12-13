@@ -5,13 +5,14 @@ import HomeMast from "@components/HomeMast.astro";
 import LatestPosts from "@components/LatestPosts.astro";
 import Proof from "@components/Proof.astro";
 
-const title = "Bald Bearded Builder => Michael Jolley";
+const title = "Michael Jolley";
+const subhead = "Bald. Bearded. Builder.";
 const description =
   "Welcome to the home of Michael Jolley, also known as the bald, bearded, builder. Here you'll find all Michael's content curated for easier viewing.";
 const permalink = `https://${import.meta.env.HOST}/`;
 ---
 
-<BaseLayout {title} {description} {permalink}>
+<BaseLayout {title} {description} {permalink} {subhead}>
 	<HomeMast/>
 	<Proof/>
 	<LatestPosts/>
