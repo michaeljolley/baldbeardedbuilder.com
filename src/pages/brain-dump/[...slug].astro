@@ -19,7 +19,7 @@ const { post } = Astro.props ;
 const { title, description, tags, pubDate } = post.data;
 const { Content, headings } = await post.render();
 const permalink = `https://${import.meta.env.HOST}/brain-dump/${slug}/`;
-const subhead = `Brain Dump #${slug * 1}`;
+const subhead = `Brain Dump #${parseInt(slug) * 1}`;
 
 const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1688239156/website-assets/brain.png"
 ---
