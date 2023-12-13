@@ -31,7 +31,7 @@ li.link--level3 {
 }
 li.link--active {
 	font-weight: bold;
-	border-left-color: var(--pink);
+	border-left-color: var(--green);
 }
 li.link--active a {
 	color: var(--light);

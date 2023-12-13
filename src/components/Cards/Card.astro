@@ -1,39 +1,37 @@
 ---
-
 export interface Props {
-	url: string | undefined;
-	classes?: string | undefined;
+  url: string | undefined;
+  classes?: string | undefined;
 }
 
 const { url, classes, ...rest } = Astro.props;
 ---
 
 <a {...rest} class={classes} href={url}>
-	<slot/>
+  <slot />
 </a>
 
 <style>
+  @property --a {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 90deg;
+  }
 
-	@property --a {
-		syntax: "<angle>";
-		inherits: false;
-		initial-value: 90deg;
-	}
-	
-	a {
-		display: flex;
-		flex-direction: column;
-		position: relative;
-		padding: 1rem;
-		text-decoration: none;
-		color: oklch(58.8% 0 234.79);
-		background: var(--bg);
-		border: solid 1px var(--gray-light);
-	}
+  a {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 1rem;
+    text-decoration: none;
+    color: oklch(58.8% 0 234.79);
+    background: var(--bg);
+    border: solid 1px var(--gray-light);
+  }
 
-	a:hover {
-		border-color: transparent;
-	}
+  a:hover {
+    border-color: transparent;
+  }
 
   a:hover:before,
   a:hover:after {
@@ -42,18 +40,23 @@ const { url, classes, ...rest } = Astro.props;
     position: absolute;
     left: -2px;
     top: -2px;
-    background: conic-gradient( from var(--a) at 50% 50% in srgb, var(--pink), var(--blue), var(--pink));
-		width: calc(100% + 4px);
+    background: conic-gradient(
+      from var(--a) at 50% 50% in srgb,
+      var(--green),
+      var(--blue),
+      var(--green)
+    );
+    width: calc(100% + 4px);
     height: calc(100% + 4px);
     z-index: -1;
     animation: steam 10s linear infinite;
-	}
+  }
 
-	a:before {
-		z-index: -1;
-	}
+  a:before {
+    z-index: -1;
+  }
 
-	a:after {
-		filter: blur(0.5rem);
-	}
+  a:after {
+    filter: blur(0.5rem);
+  }
 </style>
