@@ -11,7 +11,9 @@ export async function GET(context) {
 		description: "Blog posts from Michael Jolley, the Bald Bearded Builder.",
 		site: context.site,
 		items: posts.map((post) => ({
-			...post.data,
+			title: post.data.title,
+			description: post.data.description,
+			pubDate: post.data.pubDate,
 			link: `/blog/${post.slug}/`,
 		})),
 	});
