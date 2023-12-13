@@ -1,7 +1,5 @@
 import tippy from "tippy.js";
 
-function copyLink(el: HTMLAnchorElement) {}
-
 document.addEventListener("DOMContentLoaded", () => {
 	document.querySelectorAll("a.autolink-header").forEach((a) => {
 		a.addEventListener("click", (e: Event) => {
