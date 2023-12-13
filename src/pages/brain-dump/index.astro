@@ -14,14 +14,15 @@ posts = posts.sort(
   (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
 
-const title = `The Archive of ${posts.length} Brain Dumps | Michael Jolley`;
+const title = `All ${posts.length} Editions of the Brain Dump`;
 const description =
   "An archive of the Brain Dump newsletter by Michael Jolley.";
+const subhead = "Brain Dump newsletters";
 const permalink = `https://${import.meta.env.HOST}/brain-dump/`;
 const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1688239156/website-assets/brain.png"
 ---
 
-<BaseLayout {title} {description} {permalink}>
+<BaseLayout {title} {description} {permalink} {subhead}>
 	<Mast {image}>
 		<h1>The Brain Dump</h1>
 		<p>All the cool stuff I find around the interwebs.</p>

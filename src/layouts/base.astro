@@ -9,12 +9,12 @@ import "@styles/global.css";
 
 export interface Props extends BaseHeadProps {}
 
-const { title, description, permalink, canonicalUrl } = Astro.props;
+const { title, description, permalink, canonicalUrl, subhead} = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en" data-theme="dark">
-  <BaseHead {title} {description} {permalink} {canonicalUrl} />
+  <BaseHead {title} {description} {permalink} {canonicalUrl} {subhead}/>
   <body>
     <SkipToContent />
     <Header />

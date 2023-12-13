@@ -10,14 +10,15 @@ const categories = gear
 	.map((item) => item.data.category)
 	.filter((value, index, self) => self.indexOf(value) === index);
 
-const title = "Stuff I Use | Michael Jolley";
+const title = "All my Gear, Tools, and Toys";
+const subhead = "Gear to geek out on";
 const description =
   "All the tools Michael Jolley uses to build things on the web.";
 const permalink = `https://${import.meta.env.HOST}/uses/`;
 const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1702169693/website-assets/0_2_irmwvq.webp"
 ---
 
-<BaseLayout {title} {description} {permalink}>
+<BaseLayout {title} {description} {permalink} {subhead}>
 	<Mast {image}>
 		<h1>All the Stuff I Use</h1>
 		<p>Hardware, Software, and Beard Oil... maybe not.</p>

@@ -13,14 +13,15 @@ posts = posts.sort(
   (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
 
-const title = `All ${posts.length} Things I've Written Down | Michael Jolley`;
+const title = `All ${posts.length} Things I've Written Down`;
+const subhead = "Michael's blog posts";
 const description =
   "Blog posts written by Michael Jolley, the bald bearded builder.";
 const permalink = `https://${import.meta.env.HOST}/blog/`;
 const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1688594948/website-assets/neon_robot_with_words_coming_from_its_mouth_ectqfv.png"
 ---
 
-<BaseLayout {title} {description} {permalink}>
+<BaseLayout {title} {description} {permalink} {subhead}>
 	<Mast {image}>
 		<h1>All {posts.length} Things I've Written Down</h1>
 		<p>Learnings I'll find when I try to do them again.</p>
