@@ -45,9 +45,6 @@ export async function GET() {
 		<loc>https://baldbeardedbuilder.com/uses/</loc>
 		<changefreq>monthly</changefreq>
 	</url>
-	<url>
-		<loc>https://baldbeardedbuilder.com/code-of-conduct/</loc>
-	</url>
 	${xmlPosts}
 	${xmlBrainDumps}
 </urlset>`;

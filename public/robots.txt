@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://baldbeardedbuilder.com/sitemap-index.xml  
+Sitemap: https://baldbeardedbuilder.com/sitemap.xml  

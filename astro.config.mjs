@@ -1,5 +1,4 @@
 import { defineConfig } from "astro/config";
-import sitemap from "@astrojs/sitemap";
 import preact from "@astrojs/preact";
 import { h, s } from "hastscript";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
@@ -16,12 +15,6 @@ export default defineConfig({
 		enabled: false,
 	},
 	integrations: [
-		sitemap({
-			filter: (page) =>
-				page !== "https://baldbeardedbuilder.com/brain-dump/thanks/" &&
-				page !== "https://baldbeardedbuilder.com/code-of-conduct/thanks/" &&
-				page !== "https://baldbeardedbuilder.com/404/",
-		}),
 		preact(),
 		expressiveCode({
 			themes: "poimandres",
