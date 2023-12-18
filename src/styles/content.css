@@ -109,3 +109,13 @@ article.container {
 .expressive-code .copy {
 	margin-right: 8px;
 }
+
+.snapshot .summary {
+	background: -webkit-linear-gradient(var(--text), var(--bg));
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+.snapshot blockquote h2 {
+	margin: 0.5rem 0;
+}
