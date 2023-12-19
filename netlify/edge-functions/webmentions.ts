@@ -1,4 +1,4 @@
-import { insertMention } from "./scripts/supabase";
+// import { insertMention } from "./scripts/supabase";
 
 const WEBMENTION_IO_SECRET = Deno.env.get("WEBMENTION_IO_SECRET") as string;
 
