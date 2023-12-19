@@ -61,7 +61,14 @@ article.container {
 }
 .content blockquote p {
 	margin: 0.5rem 0;
+	font-size: 0.8rem;
 }
+
+.content blockquote strong {
+	font-weight: bold;
+	color: var(--light-text);
+}
+
 
 .content p:has(img) {
 	max-width: 80%;
@@ -73,6 +80,20 @@ article.container {
 
 .content img {
 	width: 100%;
+}
+
+.content p code {
+	color: var(--blue);
+	font-style: italic;
+	padding: 0.1rem 0.25rem;
+	border-radius: 0.25rem;
+	font-size: 0.85rem
+}
+.content p code:before {
+	content: "“";
+}
+.content p code:after {
+	content: "”";
 }
 
 .content p:has(img):before,
