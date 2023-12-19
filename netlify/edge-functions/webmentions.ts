@@ -1,8 +1,8 @@
-import { insertMention } from "./scripts/supabase";
+import { insertMention } from "./scripts/supabase.ts";
 
 const WEBMENTION_IO_SECRET = Deno.env.get("WEBMENTION_IO_SECRET") as string;
 
-function verifySignature(body) {
+function verifySignature(body: any) {
     if (body.secret !== WEBMENTION_IO_SECRET) {
         throw new Error("Invalid signature");
     }
