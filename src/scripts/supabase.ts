@@ -32,3 +32,20 @@ export async function getAnalytics() {
 	}
 	return [];
 }
+
+export async function getMentions(target: string) {
+	try {
+		const response = await supabase
+			.from("mentions")
+			.select("*")
+			.eq("target", target)
+			.order("published", { ascending: false });
+
+		if (response.data) {
+			return response.data;
+		}
+	} catch (error) {
+		console.error(error);
+	}
+	return [];
+}

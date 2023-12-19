@@ -1,4 +1,4 @@
-// import { insertMention } from "./scripts/supabase";
+import { insertMention } from "./scripts/supabase";
 
 const WEBMENTION_IO_SECRET = Deno.env.get("WEBMENTION_IO_SECRET") as string;
 
@@ -15,28 +15,14 @@ export default async function handler(req: Request) {
 		verifySignature(body);
 	} catch (err) {
 		return {
-			statusCode: 403,
+			statusCode: 200,
 		};
 	}
-	
-	// Only allow POST
-	if (req.method !== "POST") {
-		return {
-			statusCode: 405,
-			body: "Method Not Allowed",
-			headers: {
-				Allow: "Get",
-			},
-		};
-	}
-	
-	console.log(body);
 
-	// await insertMention(mention);
+	await insertMention(body);
 
 	return new Response(JSON.stringify({}), {
 		status: 200,
-
 		headers: {
 			"Content-Type": "application/json",
 		},
