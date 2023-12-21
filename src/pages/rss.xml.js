@@ -13,46 +13,45 @@ export async function GET() {
 	const posts = [];
 	for (const post of blogPosts) {
 		const { Content } = await post.render();
-		posts.push(`<item>
+		posts.push(`<entry>
 		<id>https://baldbeardedbuilder.com/blog/${post.slug}/</id>
 		<title><![CDATA[${post.data.title}]]></title>
-		<link>https://baldbeardedbuilder.com/blog/${post.slug}/</link>
-		<pubDate>${post.data.pubDate.toISOString()}</pubDate>
-		${post.data.tags.map((tag) => `<category>${tag}</category>`).join("\n")}
-		<description><![CDATA[${post.data.description}]]></description>
-	</item>`);
+		<link href="https://baldbeardedbuilder.com/blog/${post.slug}/"/>
+		<updated>${post.data.pubDate.toISOString()}</updated>
+		${post.data.tags.map((tag) => `		<category term="${tag}"/>`).join("\n")}
+		<summary><![CDATA[${post.data.description}]]></summary>
+	</entry>`);
 	}
 	const xmlPosts = posts.join("\n");
 
 	let dumps = [];
 	for (const post of brainDumps) {
 		const { Content } = await post.render();
-		dumps.push(`<item>
+		dumps.push(`<entry>
 		<id>https://baldbeardedbuilder.com/brain-dump/${post.slug}/</id>
 		<title><![CDATA[${post.data.title}]]></title>
-		<link>https://baldbeardedbuilder.com/brain-dump/${post.slug}/</link>
-		<pubDate>${post.data.pubDate.toISOString()}</pubDate>
-		${post.data.tags.map((tag) => `<category>${tag}</category>`).join("\n")}
-		<description><![CDATA[${post.data.description}]]></description>
-	</item>`);
+		<link href="https://baldbeardedbuilder.com/brain-dump/${post.slug}/"/>
+		<updated>${post.data.pubDate.toISOString()}</updated>
+${post.data.tags.map((tag) => `		<category term="${tag}"/>`).join("\n")}
+		<summary><![CDATA[${post.data.description}</summary>
+	</entry>`);
 	}
 
 	const xmlBrainDumps = dumps.join("\n");
 
-	const rss = `<?xml version="2.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
+	const rss = `<?xml version="1.0" encoding="utf-8"?>
+	<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 		
+		<atom:link href="https://baldbeardedbuilder.com/rss.xml" rel="self" type="application/rss+xml" />
+
 	<title>Michael Jolley is the Bald Bearded Builder</title>
 	<link href="https://baldbeardedbuilder.com/"/>
-	<description>Tutorials, videos, and more related to software development.</description>
-	<language>en-US</language>
-	<pubDate>${new Date().toISOString()}</pubDate>
-	<lastBuildDate>${new Date().toISOString()}</lastBuildDate>
-	<category>dotnet</category>
-	<category>javascript</category>
-	<category>csharp</category>
-	<category>typescript</category>
-	<category>programming</category>
+	<updated>${new Date().toISOString()}</updated>
+	<category term="dotnet"/>
+	<category term="javascript"/>
+	<category term="csharp"/>
+	<category term="typescript"/>
+	<category term="programming"/>
 	<id>https://baldbeardedbuilder.com/</id>
 	<author>
 		<name>Michael Jolley</name>
@@ -61,12 +60,12 @@ export async function GET() {
 	</author>
 	${xmlPosts}
 	${xmlBrainDumps}
-</feed>`;
+</rss>`;
 
 	return new Response(rss, {
 		status: 200,
 		headers: {
-			"Content-Type": "application/xml",
+			"Content-Type": "application/atom+xml",
 		},
 	});
 }
