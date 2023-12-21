@@ -19,7 +19,7 @@ export async function GET() {
 		<link>https://baldbeardedbuilder.com/blog/${post.slug}/</link>
 		<pubDate>${post.data.pubDate.toISOString()}</pubDate>
 		${post.data.tags.map((tag) => `<category>${tag}</category>`).join("\n")}
-		<description>${post.data.description}</description>
+		<description><![CDATA[${post.data.description}]]></description>
 	</item>`);
 	}
 	const xmlPosts = posts.join("\n");
@@ -33,7 +33,7 @@ export async function GET() {
 		<link>https://baldbeardedbuilder.com/brain-dump/${post.slug}/</link>
 		<pubDate>${post.data.pubDate.toISOString()}</pubDate>
 		${post.data.tags.map((tag) => `<category>${tag}</category>`).join("\n")}
-		<description>${post.data.description}</description>
+		<description><![CDATA[${post.data.description}]]></description>
 	</item>`);
 	}
 
