@@ -1,5 +1,6 @@
 # old blog posts
 
+/posts/adding-hateoas-to-an-aspnetcore-rest-api/ /blog/adding-hateoas-to-an-asp-net-core-api/
 /posts/using-automapper-with-dotnetcore-3 /posts/using-auto-mapper-with-asp-net-core-3/
 /posts/2019-year-in-review /posts/cheers-to-2019-bring-on-2020/
 /posts/adding-hateoas-to-an-aspnetcore-rest-api /posts/adding-hateoas-to-an-asp-net-core-api/
@@ -11,12 +12,42 @@
 /posts/stream-setup /posts/current-twitch-live-coding-stream-setup/
 /posts/docker-communication-between-containers /posts/communication-between-containers-using-docker-compose-in-windows/
 /posts/setting-up-raspberry-pi-for-kiosk-mode /posts/setting-up-raspberry-pi-for-use-in-kiosk-mode-with-chromium/
+/posts/using-netlify-functions-to-add-comments-to-gridsome/ /
+/posts/cheers-to-2019-bring-on-2020/ /
 
 # talks
 
-/talks/devfest-auburn /talks/vscode-remote/
-/talks/dotnetconf2019/ /talks/sql-docker/
-/talks/bsides-bhm-2019/ /talks/vscode-remote/
-/talks/devopsdays2019/ /talks/vscode-remote/
-/talks/bhmnet/ /talks/vscode-remote/
-/talks/dnnsummit/ /talks/vscode-remote/
+/talks/ /
+/talks/devfest-auburn /
+/talks/dotnetconf2019/ /
+/talks/bsides-bhm-2019/ /
+/talks/devopsdays2019/ /
+/talks/bhmnet/ /
+/talks/dnnsummit/ /
+/speaking/ /
+/talks/iot-puppet-javascript/ /
+
+# bad old links
+/blog/live-coding-to-learn-share-and-encourage.md/ /blog/live-coding-to-learn-share-and-encourage/
+/blog/adding-hateoas-to-an-asp-net-core-api.md/ /blog/adding-hateoas-to-an-asp-net-core-api/
+/blog/environment-variables-in-azure-functions-with-key-vault.md/ /blog/environment-variables-in-azure-functions-with-key-vault/
+/blog/2018-year-in-review/ /
+/streams/Heroines-of-JavaScript-series-with-Diana-Rodriguez/ /
+/streams/Heroines-of-JavaScript-series-with-Ali-Spittel/ /
+/streams/heroines-of-javascript-interview-with-jen-looper-founder-of-vue-vixens/ /
+/streams/Heroines-of-JavaScript-series-with-Natalia-Tepluhina/ /
+/streams/Heroines-of-JavaScript-series-with-Emma-Wedekind/ /
+/blog/using-netlify-functions-to-add-comments-to-gridsome/ /
+/search /
+/blog/goals-for-2021/ /
+/posts/2018-year-in-review/ /
+/blog/2018-year-in-review.md/ /
+/blog/current-twitch-live-coding-stream-setup.md/ /blog/current-twitch-live-coding-stream-setup/
+
+# old pages
+
+/styles/article-toc/ /
+/styles/article/ /
+/thanks/ /
+/about/ /
+/report/ /
