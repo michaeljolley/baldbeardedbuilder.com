@@ -1,20 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
+import type { Env } from "../types/env.ts";
 
-const SUPABASE_URL = import.meta.env.SUPABASE_URL || process.env.SUPABASE_URL;
-const SUPABASE_ANON_KEY =
-	import.meta.env.SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
-
-const supabase = createClient(
-	SUPABASE_URL as string,
-	SUPABASE_ANON_KEY as string,
-	{
-		auth: {
-			persistSession: false,
-		},
-	},
-);
 
 export async function getAnalytics() {
+	const env = {
+		SUPABASE_URL: import.meta.env.SUPABASE_URL,
+		SUPABASE_ANON_KEY: import.meta.env.SUPABASE_ANON_KEY,
+	};
+	const supabase = createSupabase(env);
 	try {
 		const response = await supabase
 			.from("analytics_path_visits")
@@ -31,4 +24,16 @@ export async function getAnalytics() {
 		console.error(error);
 	}
 	return [];
+}
+
+export function createSupabase(env: Env) {
+	return createClient(
+		env.SUPABASE_URL,
+		env.SUPABASE_ANON_KEY,
+		{
+			auth: {
+				persistSession: false,
+			},
+		},
+	);
 }

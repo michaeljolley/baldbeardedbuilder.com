@@ -12,7 +12,9 @@ export default defineConfig({
 	site: "https://baldbeardedbuilder.com",
 	trailingSlash: "always",
 	output: "hybrid",
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    mode: 'directory',
+  }),
 	devToolbar: {
 		enabled: false,
 	},

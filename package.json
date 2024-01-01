@@ -21,9 +21,11 @@
 		"astro-expressive-code": "^0.29.4",
 		"preact": "^10.19.3",
 		"tippy.js": "^6.3.7",
-		"typescript": "^5.3.3"
+		"typescript": "^5.3.3",
+		"uuid": "^9.0.1"
 	},
 	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20231218.0",
 		"@cloudinary/url-gen": "^1.14.0",
 		"@typescript-eslint/parser": "^6.13.2",
 		"cloudinary": "^1.41.0",

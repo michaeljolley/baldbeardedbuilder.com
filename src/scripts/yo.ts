@@ -1,4 +1,4 @@
-import type { Analytic } from "../../netlify/edge-functions/types/analytic";
+import type { Analytic } from "../types/analytics";
 (function () {
 	function page() {
 		send();
@@ -35,7 +35,7 @@ import type { Analytic } from "../../netlify/edge-functions/types/analytic";
 	}
 
 	function path(): string {
-		return `${window.location.protocol}//${window.location.host}/api/hiya`;
+		return `/hiya`;
 	}
 
 	function session() {
