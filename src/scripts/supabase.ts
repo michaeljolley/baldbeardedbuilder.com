@@ -26,6 +26,30 @@ export async function getAnalytics() {
 	return [];
 }
 
+export async function getShortUrl(slug: string) {
+	const env = {
+		SUPABASE_URL: import.meta.env.SUPABASE_URL,
+		SUPABASE_ANON_KEY: import.meta.env.SUPABASE_ANON_KEY,
+	};
+	const supabase = createSupabase(env);
+	
+	const { data, error } = await supabase
+		.from("shorturls")
+		.select()
+		.eq("slug", slug);
+
+	if (data && data[0] && data[0].target) {
+		return data[0].target;
+	}
+
+	if (error) {
+		console.error(error);
+	}
+
+	return undefined;
+}
+
+
 export function createSupabase(env: Env) {
 	return createClient(
 		env.SUPABASE_URL,
