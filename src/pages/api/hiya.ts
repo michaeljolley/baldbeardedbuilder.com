@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
-import type { Analytic } from "../types/analytics.ts";
-import { createSupabase } from "../scripts/supabase.ts";
+import type { Analytic } from "../../types/analytics.ts";
+import { createSupabase } from "../../scripts/supabase.ts";
 
 export const POST: APIRoute = async ({ request }) => {
 	const env = {

@@ -11,10 +11,10 @@ import expressiveCode from "astro-expressive-code";
 export default defineConfig({
 	site: "https://baldbeardedbuilder.com",
 	trailingSlash: "always",
-	output: "hybrid",
+	output: "server",
   adapter: cloudflare({
-    mode: 'directory',
-  }),
+		runtime: 'local'
+	}),
 	devToolbar: {
 		enabled: false,
 	},

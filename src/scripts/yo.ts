@@ -22,7 +22,7 @@ import type { Analytic } from "../types/analytics";
 		};
 
 		fetch(path(), {
-			method: "post",
+			method: "POST",
 			mode: "no-cors",
 			body: JSON.stringify(param),
 		}).catch((err) => console.log("Error:", err));
@@ -35,7 +35,7 @@ import type { Analytic } from "../types/analytics";
 	}
 
 	function path(): string {
-		return `/hiya`;
+		return `/api/hiya`;
 	}
 
 	function session() {
