@@ -12,7 +12,6 @@ export async function GET() {
 
 	const posts = [];
 	for (const post of blogPosts) {
-		const { Content } = await post.render();
 		posts.push(`<item>
 		<author>mike@baldbeardedbuilder.com (Michael Jolley)</author>
 		<title><![CDATA[${post.data.title}]]></title>
@@ -27,7 +26,6 @@ export async function GET() {
 
 	let dumps = [];
 	for (const post of brainDumps) {
-		const { Content } = await post.render();
 		dumps.push(`<item>
 	<author>mike@baldbeardedbuilder.com (Michael Jolley)</author>
 	<title><![CDATA[${post.data.title}]]></title>
