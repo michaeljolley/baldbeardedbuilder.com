@@ -15,7 +15,7 @@ article.container {
 .content h5,
 .content h6 {
 	--bg-size: 400%;
-	background: var(--gradient) 0 0 / var(--bg-size) 100%;
+		background: var(--gradient) 0 0 / var(--bg-size) 100%;
 	color: transparent;
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -104,7 +104,7 @@ article.container {
 	top: -2px;
 	--a: 0deg;
 	background: conic-gradient(
-		from var(--a) at 50% 50% in srgb,
+		from var(--a) at 50% 50%,
 		var(--green) 15%,
 		var(--blue) 30%,
 		var(--blue) 65%,

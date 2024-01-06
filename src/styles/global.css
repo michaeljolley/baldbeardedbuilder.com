@@ -6,20 +6,23 @@
 :root {
 	--green: oklch(83.66% 0.125 176.45);
 	--blue: oklch(55.6% 0.1195 247.11);
-	/*oklch(83.66% 0.125 176.45);
-	 --green: oklch(70.17% 0.322 328.36);
-	--blue: oklch(90.54% 0.154 194.76); */
+
 	--dark: oklch(14.96% 0 0);
 	--light: oklch(98.51% 0 0);
 
 	--gradient: linear-gradient(
-		to right in srgb,
+		to right,
 		var(--green),
 		var(--blue),
 		var(--green)
 	);
 	--gradient-gray: linear-gradient(
-		to right in srgb,
+		to right,
+		var(--gray-light),
+		var(--gray-dark)
+	);
+	--gradient-gray: linear-gradient(
+		to right,
 		var(--gray-light),
 		var(--gray-dark)
 	);
@@ -194,7 +197,7 @@ button:not([data-copied="Copied!"]):hover:before,
 button:not([data-copied="Copied!"]):hover:after {
 	border-color: transparent;
 	background: conic-gradient(
-		from var(--a) at 50% 50% in srgb,
+		from var(--a) at 50% 50% ,
 		var(--green),
 		var(--blue)
 	);
