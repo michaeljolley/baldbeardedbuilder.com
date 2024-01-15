@@ -28,6 +28,7 @@
 		"@cloudflare/workers-types": "^4.20231218.0",
 		"@cloudinary/url-gen": "^1.14.0",
 		"@typescript-eslint/parser": "^6.13.2",
+		"ap-style-title-case": "^2.0.0",
 		"cloudinary": "^1.41.0",
 		"eslint": "^8.55.0",
 		"eslint-plugin-astro": "^0.30.0",

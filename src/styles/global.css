@@ -197,7 +197,7 @@ button:not([data-copied="Copied!"]):hover:before,
 button:not([data-copied="Copied!"]):hover:after {
 	border-color: transparent;
 	background: conic-gradient(
-		from var(--a) at 50% 50% ,
+		from var(--a) at 50% 50%,
 		var(--green),
 		var(--blue)
 	);

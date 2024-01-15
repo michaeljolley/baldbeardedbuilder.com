@@ -1,0 +1,132 @@
+---
+export const prerender = true;
+
+import { apStyleTitleCase } from 'ap-style-title-case';
+import { getCollection, type CollectionEntry } from "astro:content";
+import BaseLayout from "@layouts/base.astro";
+import Mast from "@components/Mast.astro";
+import ListCard from '@components/Cards/ListCard.astro';
+
+export async function getStaticPaths() {
+
+	const betterNames: Record<string, string> = {
+		"dotnet": ".NET",
+		"appveyor": "AppVeyor",
+		"wasm": "WASM",
+		"vscode": "VS Code",
+		"raspberry-pi": "Raspberry Pi",
+		"openai": "OpenAI",
+		"nuxtjs": "Nuxt.js",
+		"nodejs": "Node.js",
+		"mvc": "MVC",
+		"minimal-api": "Minimal API",
+		"key-vault": "Key Vault",
+		"json": "JSON",
+		"javascript": "JavaScript",
+		"iot": "IoT",
+		"jamstack": "JAMstack",
+		"hateoas": "HATEOAS",
+		"graphql": "GraphQL",
+		"github": "GitHub",
+		"diy": "DIY",
+		"csharp": "C#",
+		"aspnet": "ASP.NET",
+		"aspnetcore": "ASP.NET Core",
+	};
+	
+	const posts = await getCollection(
+		"blog",
+		({ data }) => data.pubDate <= new Date(),
+	);
+	const brainDumps = await getCollection(
+		"brainDumps",
+		({ data }) => data.pubDate <= new Date(),
+	);
+	
+	const tags = [...new Set(
+		posts.flatMap((post) => post.data.tags || [])
+	)];
+	tags.push(...[...new Set(brainDumps.flatMap((post) => post.data.tags || []))]);
+
+	const items = tags.map((tag) => {
+		const tagPosts: CollectionEntry<"blog" | "brainDumps">[] = posts.filter((post) => post.data.tags && 
+			post.data.tags.includes(tag)
+		);
+		tagPosts.push(...brainDumps.filter((post) => post.data.tags && 
+			post.data.tags.includes(tag)
+		));
+
+		return {
+			tag,
+			posts: tagPosts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+		}
+	});
+
+	return tags.map((tag) => ({
+    params: { slug: tag },
+    props: {
+			cleanName: betterNames[tag!] || apStyleTitleCase(tag), 
+			posts: items.find((item) => item.tag === tag)!.posts
+		},
+  }));
+}
+
+const { slug } = Astro.params;
+const { cleanName, posts } = Astro.props;
+
+const title = `All ${posts.length} Things I've Written About ${cleanName}`;
+const subhead = "Michael's blog posts";
+const description =
+  `Blog posts written by Michael Jolley, the bald bearded builder about ${cleanName}`;
+const permalink = `https://${import.meta.env.HOST}/blog/tags/${slug}`;
+const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1688594948/website-assets/neon_robot_with_words_coming_from_its_mouth_ectqfv.png"
+---
+
+<BaseLayout {title} {description} {permalink} {subhead}>
+	<Mast {image}>
+		<h1>All {posts.length} Things I've Written About {cleanName}</h1>
+		<p>Learnings I'll find when I try to do them again.</p>
+	</Mast>
+	<section>
+		<div class="container">
+			{posts.map((post) => <ListCard {post} />)}
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	section {
+		margin: 3rem 0;
+		padding: 0 2rem;
+	}
+
+	.container {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+	}
+
+	@media (min-width:640px) /* sm */ {
+		.container {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (min-width:768px) /* md */ {
+		.container {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (min-width:1024px) /* lg */ {
+		.container {
+			grid-template-columns: 1fr 1fr 1fr;
+		}
+	}
+
+	@media (min-width:1280px) /* xl */ {
+		.container {
+			grid-template-columns: 1fr 1fr 1fr 1fr;
+		}
+	}
+</style>

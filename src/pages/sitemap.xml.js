@@ -10,6 +10,11 @@ export async function GET() {
 		({ data }) => data.pubDate <= new Date(),
 	);
 
+	const tags = [...new Set(posts.flatMap((post) => post.data.tags || []))];
+	tags.push(
+		...[...new Set(brainDumps.flatMap((post) => post.data.tags || []))],
+	);
+
 	const xmlPosts = posts
 		.map((post) => {
 			return `<url>
@@ -24,6 +29,15 @@ export async function GET() {
 			(post) => `<url>
 	<loc>https://baldbeardedbuilder.com/brain-dump/${post.slug}/</loc>
 	<priority>0.8</priority>
+</url>`,
+		)
+		.join("\n");
+
+	const xmlTags = tags
+		.map(
+			(post) => `<url>
+	<loc>https://baldbeardedbuilder.com/blog/tags/${tag}/</loc>
+	<priority>0.6</priority>
 </url>`,
 		)
 		.join("\n");
@@ -47,6 +61,7 @@ export async function GET() {
 	</url>
 	${xmlPosts}
 	${xmlBrainDumps}
+	${xmlTags}
 </urlset>`;
 
 	return new Response(sitemap, {

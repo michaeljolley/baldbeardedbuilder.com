@@ -15,7 +15,7 @@ article.container {
 .content h5,
 .content h6 {
 	--bg-size: 400%;
-		background: var(--gradient) 0 0 / var(--bg-size) 100%;
+	background: var(--gradient) 0 0 / var(--bg-size) 100%;
 	color: transparent;
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -69,7 +69,6 @@ article.container {
 	color: var(--light-text);
 }
 
-
 .content p:has(img) {
 	max-width: 80%;
 	display: inline-flex;
@@ -87,7 +86,7 @@ article.container {
 	font-style: italic;
 	padding: 0.1rem 0.25rem;
 	border-radius: 0.25rem;
-	font-size: 0.85rem
+	font-size: 0.85rem;
 }
 .content p code:before {
 	content: "“";

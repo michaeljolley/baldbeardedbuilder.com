@@ -1,0 +1,20 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BlogCard from "./BlogCard.astro";
+import BrainDumpCard from "./BrainDumpCard.astro";
+
+export interface Props {
+  post: CollectionEntry<"blog" | "brainDumps">;
+}
+
+const { post } = Astro.props;
+const isBlog = (post.data as any).summary !== undefined;
+---
+
+{
+	 isBlog ? (
+		<BlogCard post={post as CollectionEntry<"blog">}/>
+	) : (
+		<BrainDumpCard post={post as CollectionEntry<"brainDumps">}/>
+	)
+}

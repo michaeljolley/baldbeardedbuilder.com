@@ -1,7 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Env } from "../types/env.ts";
 
-
 export async function getAnalytics() {
 	const env = {
 		SUPABASE_URL: import.meta.env.SUPABASE_URL,
@@ -32,7 +31,7 @@ export async function getShortUrl(slug: string) {
 		SUPABASE_ANON_KEY: import.meta.env.SUPABASE_ANON_KEY,
 	};
 	const supabase = createSupabase(env);
-	
+
 	const { data, error } = await supabase
 		.from("shorturls")
 		.select()
@@ -49,15 +48,10 @@ export async function getShortUrl(slug: string) {
 	return undefined;
 }
 
-
 export function createSupabase(env: Env) {
-	return createClient(
-		env.SUPABASE_URL,
-		env.SUPABASE_ANON_KEY,
-		{
-			auth: {
-				persistSession: false,
-			},
+	return createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, {
+		auth: {
+			persistSession: false,
 		},
-	);
+	});
 }
