@@ -1,0 +1,40 @@
+---
+import Icon from '@components/Icon.astro';
+---
+
+<button data-theme-toggle title="Toggle dark & light mode">
+	<Icon icon="Sun" class="sun" />
+	<Icon icon="Moon" class="moon" />
+</button>
+
+<style>
+	button {
+		background-color: transparent;
+		border: 0;
+		cursor: pointer;
+		color: var(--text);
+		fill: var(--text);
+	}
+	button svg {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	html[data-theme="light"]  {
+		.sun {
+			display: none;
+		}
+		.moon {
+			display: block;
+		}
+	}
+
+	html[data-theme="dark"] {
+		.sun {
+			display: block;
+		}
+		.moon {
+			display: none;
+		}
+	}
+</style>

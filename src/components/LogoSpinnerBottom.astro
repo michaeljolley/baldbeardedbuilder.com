@@ -1,0 +1,43 @@
+---
+import Icon from '@components/Icon.astro';
+---
+
+<div class="spinner">
+	<Icon icon="BBB" class="icon" />
+</div>
+
+<style>
+	.spinner {
+		width: 24vw;
+    height: 24vw;
+    position: absolute;
+		bottom: calc(24vw / -3);
+	}
+	
+	.spinner svg.icon {
+		background-color: var(--yellow);
+		padding: 0.5rem;
+		border-radius: 50%;
+		color: var(--dark);
+		animation: rotate 5s infinite linear;
+	}
+
+	@media (min-width: 640px) {
+		.spinner {
+			bottom: calc(24vw / -2);
+		}
+	}
+	
+	@media (min-width: 1536px)  {
+		.spinner {
+			bottom: calc(24vw / -1.75);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.icon {
+			animation: unset;
+			transform: rotate(340deg);
+		}
+	}
+</style>

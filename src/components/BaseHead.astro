@@ -1,16 +1,15 @@
 ---
-import { getOgraphURL } from '@scripts/ograph';
-
 export interface Props {
   title: string;
   description: string;
   permalink: string;
   canonicalUrl?: string;
-	subhead?: string;
 }
 
-const { title, description, permalink, canonicalUrl, subhead} = Astro.props;
-const ograph = getOgraphURL(title, subhead);
+const { title, description, permalink, canonicalUrl } = Astro.props;
+const encodedTitle = encodeURI(title.replaceAll(",", "%2C"));
+
+const ograph = `https://res.cloudinary.com/dk3rdh3yo/image/upload/g_south_west,x_100,y_300,w_1000,c_fit,co_white,l_text:Roboto_64_bold:${encodedTitle}/website-assets/1200x700.png`;
 ---
 
 <!-- Global Metadata -->
@@ -82,7 +81,5 @@ const ograph = getOgraphURL(title, subhead);
 <link rel="prerender" href="https://baldbeardedbuilder.com/blog/" />
 
 <!-- Scripts -->
+<script src="../scripts/mode.ts"></script>
 <script src="../scripts/copyLink.ts"></script>
-
-<!-- Analytics -->
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "1e59208a9f2443b2872583055a5e2d51"}'></script>

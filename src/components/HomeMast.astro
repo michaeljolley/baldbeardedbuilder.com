@@ -1,28 +1,71 @@
----
-import Mast from "./Mast.astro";
 
-const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto,e_grayscale,o_20/v1687460581/website-assets/mast-bbb.png";
 ---
-
-<Mast {image} >
-	<h1 style="margin-top: 5rem;" class="home">Hi! I'm <span>Michael</span>.</h1>
-	<p>A developer who likes to learn & share.</p>
-</Mast>
+import LogoSpinnerTop from '@components/LogoSpinnerTop.astro';
+---
+<section>
+	<LogoSpinnerTop/>
+	<h1>Bald Bearded Builder</h1>
+	<h2>Helping developers do more...<br>and laugh along the way.</h2>
+</section>
 
 <style>
-	h1.home {
-		font-size: 2.5rem;
+	section {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 	}
 
-@media (min-width:768px) /* md */ {
-  h1.home {
-		font-size: 3rem;
+	h1, h2 {
+		text-transform: uppercase;
+		color: var(--text);
+		text-align: center;
 	}
-}
-@media (min-width:1024px) /* lg */ {
-  h1.home {
-		font-size: 3.5rem;
+	
+	h1 {
+		font-family: var(--font-anton);
+		font-size: 9rem;
+		margin-top: 0.5rem;
 	}
-}
 
+	h2 {
+		font-weight: bold;
+		margin-top: 2rem;
+	}
+	
+	@media (min-width: 640px) {
+		h1 {
+			font-size: 12rem;
+			margin-top: 1rem;
+		}
+
+		h2 {
+			margin-top: 4rem;
+		}
+	}
+
+	@media (min-width: 768px) {
+		h1 {
+			font-size: 14rem;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		h1 {
+			font-size: 16rem;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		h1 {
+			font-size: 14rem;
+		}
+	}
+
+	@media (min-width: 1536px) {
+		h1 {
+			font-size: 18rem;
+			margin-top: 3rem;
+		}
+	}
 </style>

@@ -1,0 +1,94 @@
+---
+---
+
+<section>
+	<div class="wrapper">
+		<aside>
+			Live Now
+			<img src="/images/screen.svg" alt="Screen" />
+		</aside>
+	
+		<iframe
+			src="https://clips.twitch.tv/embed?clip=InspiringObservantAardvarkHassaanChop-FAmDDsN5jGnf-mVf&parent=localhost"
+			
+			allowfullscreen>
+		</iframe>
+	</div>
+</section>
+
+<style>
+	section {
+		background-color: var(--yellow);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		margin: 4rem 0;
+	}
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		margin: 2rem 0;
+	}
+	aside {
+		font-family: var(--font-anton);
+		font-size: 10rem;
+		color: var(--dark);
+		text-transform: uppercase;
+		position: relative;
+	}
+	img {
+		position: absolute;
+		top: 0;
+		right: 5vw;
+		height: 70%;
+	}
+	iframe {
+		width: 100%;
+		height: 100%;
+		aspect-ratio: 16 / 9;
+		border: none;
+		z-index: 5;
+		position: relative;
+		border: 10px dashed var(--dark);
+		padding: 0.5rem;
+	}
+
+	@media (min-width: 640px) /* sm */ {
+		img {
+			height: 120%;
+			top: 4vw;
+			right: -5vw;
+		}
+	}
+
+	@media (min-width: 768px) /* md */ {
+		aside {
+		}
+	}
+
+	@media (min-width: 1024px) /* lg */ {
+		.wrapper {
+			flex-direction: row;
+		}
+		img {
+			height: 60%;
+			top: 2vw;
+			right: -4vw;
+		}
+		aside {
+			font-size: 12rem;
+		}
+	}
+
+	@media (min-width: 1280px) /* xl */ {
+		img {
+			height: 70%;
+		}
+	}
+
+	@media (min-width: 1536px) /* 2xl */ {
+	}
+</style>

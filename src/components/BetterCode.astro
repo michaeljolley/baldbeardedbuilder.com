@@ -1,0 +1,59 @@
+---
+---
+
+<section>
+	<div class="wrapper">
+		<aside>
+			<p>Get the most out of Visual Studio Code with these tips, tricks, and extensions.</p>
+			<p><a href="/vscode/">Check out</a></p>
+		</aside>
+		<h2>Better VS Code</h2>
+	</div>
+</section>
+
+<style>
+	section {
+		background: url('/images/code.svg') no-repeat;
+		background-position: 35vw center;
+		background-size: contain;
+		margin: 2rem 0;
+		min-height: 40vh;
+	}
+	.wrapper {
+		display: flex;
+		flex-direction: column-reverse;
+		gap: 1.5rem;
+	}
+	h2 {
+		font-family: var(--font-anton);
+		font-size: 8rem;
+		text-transform: uppercase;
+	}
+
+	@media (min-width: 640px) /* sm */ {
+		section {
+			background-position: 50vw center;
+		}
+	}
+
+	@media (min-width: 768px) /* md */ {
+		section {
+			background-position: 55vw center;
+		}
+		.wrapper {
+			flex-direction: row;
+		}
+	}
+
+	@media (min-width: 1024px) /* lg */ {
+		section {
+			background-position: 75vw center;
+		}
+	}
+
+	@media (min-width: 1280px) /* xl */ {
+	}
+
+	@media (min-width: 1536px) /* 2xl */ {
+	}
+</style>

@@ -3,9 +3,6 @@ export const prerender = true;
 
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "@layouts/base.astro";
-import TableOfContents from "@components/TableOfContents";
-import Mast from "@components/Mast.astro";
-import RelatedPosts from "@components/RelatedPosts.astro";
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection("blog");
@@ -31,9 +28,7 @@ let options = {
 
 <BaseLayout {title} {description} {permalink} {canonicalUrl}>
 	<header>
-		<Mast {image}>
 			<h1>{title}</h1>
-		</Mast>
 	</header>
 	<article class="container">
 		<main class="content">
@@ -57,8 +52,6 @@ let options = {
         }
 		</main>
 		<aside>
-			<TableOfContents {headings} {pubDate} client:load />
-			<RelatedPosts {slug} {tags} />
 		</aside>
 	</article>
 </ArticleLayout>

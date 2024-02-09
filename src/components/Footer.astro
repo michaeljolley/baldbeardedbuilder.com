@@ -1,31 +1,66 @@
 ---
-import FooterNavigation from "./FooterNavigation.astro";
-import FooterSocials from "./FooterSocials.astro";
+import FooterNavigation from '@components/FooterNavigation.astro';
+import Outro from '@components/Outro.astro';
 ---
 
-<footer class="glass">
-  <div class="container">
+<footer>
+	<section>
+		<aside>
+			<strong>About Me</strong>
+			<p>Michael Jolley is the bald, bearded builder. Using 20+ years in the industry, this follicly challenged developer spends his days helping others level up their skills.</p>
+		</aside>
 		<FooterNavigation/>
-    <FooterSocials />
-  </div>
+	</section>
+	<Outro/>
 </footer>
 
 <style>
-  footer {
-		padding: 4rem 1.5rem;
-		margin-top: 6rem;
-		border: 0;
-  }
-  .container {
+	footer {
 		display: flex;
 		flex-direction: column;
-		gap: 3rem;
-  }
-		
-	@media (min-width:768px) {
-		.container {
-			flex-direction: row;
-			justify-content: space-between;
+		overflow: hidden;
+		margin-top: 8rem;
+	}
+	section {
+		display: flex;
+		flex-direction: column;
+	}
+	aside {
+		background-color: var(--bg-2);
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		padding: 2rem;
+	}
+	strong {
+		color: var(--bg);
+		font-family: var(--font-anton);
+		font-size: 6rem;
+		text-transform: uppercase;
+	}
+	p {
+		color: var(--dulled-2);
+	}
+
+	@media (min-width: 768px) /* md */ {
+		section {
+			display: grid;
+			grid-template-columns: 50% 50%;
 		}
+	}
+
+	@media (min-width: 1024px) /* lg */ {
+		aside {
+			padding-left: 6rem;
+		}
+		p {
+			max-width: 30vw;
+		}
+	}
+
+	@media (min-width: 1280px) /* xl */ {
+	}
+
+	@media (min-width: 1536px) /* 2xl */ {
 	}
 </style>

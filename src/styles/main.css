@@ -1,0 +1,74 @@
+@import url("./reset.css");
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Poppins:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+@import url("./keyframes.css");
+
+:root {
+	--light: #ffffe3;
+	--dark: #000000;
+	--yellow: #e7ff00;
+	--pink: #db2e7d;
+	--blue: #1f9cf0;
+
+	--font-anton: "Anton", sans-serif;
+	--font-poppins: "Poppins", sans-serif;
+
+	--discord: #7289da;
+	--facebook: #3b5998;
+	--github: var(--bg);
+	--instagram: #bc2a8d;
+	--linkedin: #0077b5;
+	--twitch: #6441a4;
+	--twitter: #1da1f2;
+	--tiktok: #ff0050;
+	--youtube: #e52d27;
+}
+
+[data-theme="light"] {
+	--bg: var(--light);
+	--bg-2: var(--dark);
+	--text: var(--dark);
+
+	--dulled: #777777;
+	--dulled-2: #aaaaaa;
+	--highlight: #000000;
+	--link-color: var(--blue);
+}
+
+[data-theme="dark"] {
+	--bg: var(--dark);
+	--bg-2: var(--light);
+	--text: var(--light);
+
+	--dulled: #aaaaaa;
+	--dulled-2: #777777;
+	--highlight: #ffffff;
+	--link-color: var(--yellow);
+}
+
+body {
+	font-family: var(--font-poppins);
+	background-color: var(--bg);
+	color: var(--text);
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	min-height: 100vh;
+}
+
+p {
+	margin: 0.75rem 0;
+}
+
+.wrapper {
+	padding: 0 2rem;
+}
+
+a {
+	color: var(--link-color);
+	text-decoration: none;
+	border-bottom: 3px dashed var(--link-color);
+}
+a:hover {
+	color: var(--pink);
+	border-color: var(--pink);
+}
