@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '@layouts/base.astro'
-import HomeMast from '@components/HomeMast.astro'
+import Mast from '@components/Mast.astro'
 import LiveNow from '@components/LiveNow.astro'
 import BetterCode from '@components/BetterCode.astro'
 import Twitch from '@components/Twitch.astro'
@@ -12,7 +12,7 @@ const permalink = `https://${import.meta.env.HOST}/`;
 ---
 
 <BaseLayout {title} {description} {permalink}>
-	<HomeMast/>
+	<Mast title="Bald Bearded Builder" summary="Helping developers do more...<br>and laugh along the way."/>
 	<LiveNow/>
 	<Twitch/>
 	<BetterCode/>

@@ -1,6 +1,7 @@
 @import url("./reset.css");
 @import url("https://fonts.googleapis.com/css2?family=Anton&family=Poppins:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 @import url("./keyframes.css");
+@import url("./content.css");
 
 :root {
 	--light: #ffffe3;
@@ -8,6 +9,7 @@
 	--yellow: #e7ff00;
 	--pink: #db2e7d;
 	--blue: #1f9cf0;
+	--purple: #6441a4;
 
 	--font-anton: "Anton", sans-serif;
 	--font-poppins: "Poppins", sans-serif;
@@ -32,6 +34,7 @@
 	--dulled-2: #aaaaaa;
 	--highlight: #000000;
 	--link-color: var(--blue);
+	--tint: oklch(0 0 0 / 5%)
 }
 
 [data-theme="dark"] {
@@ -43,6 +46,7 @@
 	--dulled-2: #777777;
 	--highlight: #ffffff;
 	--link-color: var(--yellow);
+	--tint: oklch(100% 0 0 / 5%)
 }
 
 body {
@@ -65,11 +69,51 @@ p {
 }
 
 a {
-	color: var(--link-color);
+	color: var(--text);
 	text-decoration: none;
 	border-bottom: 3px dashed var(--link-color);
 }
 a:hover {
-	color: var(--pink);
+	color: var(--text);
 	border-color: var(--pink);
+}
+
+.visually-hidden {
+	border: 0;
+	clip: rect(0 0 0 0);
+	height: auto;
+	margin: 0;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	white-space: nowrap;
+}
+
+.autolink-svg {
+	color: var(--link-color);
+	margin-right: 0.5rem;
+}
+
+.autolink-svg:hover {
+	color: var(--pink);
+	margin-right: 0.5rem;
+}
+
+.autolink-header {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+}
+
+.tippy-box {
+	padding: 0.5rem 0.5rem;
+	border-radius: 0.25rem;
+	background-color: var(--gray-light);
+}
+.tippy-content {
+	font-size: 0.8rem;
+}
+.tippy-box[data-placement^="right"] > .tippy-arrow::before {
+	border-top-color: var(--gray-light);
 }

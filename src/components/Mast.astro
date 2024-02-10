@@ -1,11 +1,20 @@
-
 ---
 import LogoSpinnerTop from '@components/LogoSpinnerTop.astro';
+
+export interface Props {
+	title: string;
+	summary: string | undefined;
+	reduce: boolean;
+}
+
+const { title, summary, reduce = false } = Astro.props;
 ---
-<section>
+<section class={reduce ? "reduce" : ""}>
 	<LogoSpinnerTop/>
-	<h1>Bald Bearded Builder</h1>
-	<h2>Helping developers do more...<br>and laugh along the way.</h2>
+	<h1>{title}</h1>
+	{
+		summary && <h2 set:html={summary}></h2>
+	}
 </section>
 
 <style>
@@ -15,6 +24,7 @@ import LogoSpinnerTop from '@components/LogoSpinnerTop.astro';
 		align-items: center;
 		justify-content: center;
 		margin-bottom: 4rem;
+		padding: 0 2rem;
 	}
 
 	h1, h2 {
@@ -28,6 +38,9 @@ import LogoSpinnerTop from '@components/LogoSpinnerTop.astro';
 		font-size: 8rem;
 		margin-top: 0.5rem;
 	}
+	.reduce h1 {
+		font-size: 6rem;
+	}
 
 	h2 {
 		font-weight: bold;
@@ -39,6 +52,9 @@ import LogoSpinnerTop from '@components/LogoSpinnerTop.astro';
 			font-size: 12rem;
 			margin-top: 1rem;
 		}
+		.reduce h1 {
+			font-size: 7rem;
+		}
 
 		h2 {
 			margin-top: 4rem;
@@ -49,11 +65,17 @@ import LogoSpinnerTop from '@components/LogoSpinnerTop.astro';
 		h1 {
 			font-size: 14rem;
 		}
+		.reduce h1 {
+			font-size: 9rem;
+		}
 	}
 
 	@media (min-width: 1024px) {
 		h1 {
 			font-size: 16rem;
+		}
+		.reduce h1 {
+			font-size: 10rem;
 		}
 	}
 
@@ -61,12 +83,23 @@ import LogoSpinnerTop from '@components/LogoSpinnerTop.astro';
 		h1 {
 			font-size: 14rem;
 		}
+		.reduce h1 {
+			font-size: 9rem;
+			margin-top: 3rem;
+		}
 	}
 
 	@media (min-width: 1536px) {
+		section {
+			padding: 0 4rem;
+		}
 		h1 {
 			font-size: 18rem;
 			margin-top: 3rem;
+		}
+		.reduce h1 {
+			font-size: 12rem;
+			margin-top: 6rem;
 		}
 	}
 </style>

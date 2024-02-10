@@ -1,0 +1,144 @@
+.content {
+	display: flex;
+	flex-direction: column;
+}
+
+.content h2,
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
+	font-family: var(--font-anton);
+	margin: 1.5rem 0;
+	padding: 0.2rem 0;
+	display: flex;
+	align-items: center;
+	text-transform: uppercase;
+}
+.content h2 {
+	font-size: 4rem;
+}
+.content h3 {
+	font-size: 3.5rem;
+}
+.content h4 {
+	font-size: 3rem;
+}
+.content h5,
+.content h6 {
+	font-size: 2.5rem;
+}
+
+.content h2 a,
+.content h3 a,
+.content h4 a,
+.content h5 a,
+.content h6 a {
+	border: 0;
+}
+
+.content p,
+.content li {
+	margin: 0.75rem;
+	font-size: 1rem;
+	line-height: 1.2rem;
+}
+
+.content a {
+	color: var(--green);
+}
+
+.content ul {
+	list-style: disc;
+	margin-left: 1.5rem;
+}
+.content blockquote {
+	border-left: 4px solid var(--blue);
+	padding: 0.5rem 1.5rem;
+	margin: 1rem 0;
+	background: var(--tint);
+	backdrop-filter: blur(15px);
+}
+.content blockquote p {
+	margin: 0.5rem 0;
+	font-size: 0.85rem;
+}
+
+.content blockquote strong {
+	font-weight: bold;
+	color: var(--text);
+}
+
+.content p:has(img) {
+	max-width: 80%;
+	display: inline-flex;
+	margin: 1.5rem auto;
+	background: var(--bg);
+	position: relative;
+}
+
+.content img {
+	width: 100%;
+}
+
+.content p code {
+	color: var(--blue);
+	font-style: italic;
+	padding: 0.1rem 0.25rem;
+	border-radius: 0.25rem;
+	font-size: 0.95rem;
+}
+.content p code:before {
+	content: "“";
+}
+.content p code:after {
+	content: "”";
+}
+
+.content p:has(img):before,
+.content p:has(img):after {
+	content: "";
+	position: absolute;
+	left: -2px;
+	top: -2px;
+	--a: 0deg;
+	background: conic-gradient(
+		from var(--a) at 50% 50%,
+		var(--green) 15%,
+		var(--blue) 30%,
+		var(--blue) 65%,
+		var(--green) 80%
+	);
+	width: calc(100% + 4px);
+	height: calc(100% + 4px);
+	z-index: -1;
+	animation: steam 15s linear infinite;
+}
+.content p:has(img):after {
+	filter: blur(15px);
+}
+
+.expressive-code {
+	margin: 1.5rem auto;
+	width: 100%;
+	border: 5px dashed var(--pink);
+	transform: rotate(-1deg);
+}
+.expressive-code .frame pre {
+	max-height: 24rem;
+}
+
+.expressive-code .copy {
+	margin-right: 8px;
+	transform: rotate(2deg);
+}
+
+.snapshot .summary {
+	background: -webkit-linear-gradient(var(--text), var(--bg));
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+.snapshot blockquote h2 {
+	margin: 0.5rem 0;
+}

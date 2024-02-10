@@ -1,6 +1,9 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "@layouts/base.astro";
+import Mast from "@components/Mast.astro";
+import TableOfContents from "@components/TableOfContents";
+import RelatedPosts from "@components/RelatedPosts.astro";
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection("blog");
@@ -13,7 +16,7 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const { post } = Astro.props;
-const { title, description, tags, canonicalUrl, image, snapshot, pubDate } = post.data;
+const { title, description, tags, canonicalUrl, summary, snapshot, pubDate } = post.data;
 const { Content, headings } = await post.render();
 const permalink = `https://${import.meta.env.HOST}/blog/${slug}/`;
 let options = {
@@ -26,7 +29,7 @@ let options = {
 
 <BaseLayout {title} {description} {permalink} {canonicalUrl}>
 	<header>
-			<h1>{title}</h1>
+			<Mast {title} {summary} reduce={true} />
 	</header>
 	<article class="container">
 		<main class="content">
@@ -50,6 +53,8 @@ let options = {
         }
 		</main>
 		<aside>
+			<TableOfContents {headings} {pubDate} client:load />
+			<RelatedPosts {slug} {tags} />
 		</aside>
 	</article>
 </ArticleLayout>
@@ -72,9 +77,6 @@ let options = {
       display: flex;
 			flex-direction: column;
 		}
-	}
-		
-	@media (min-width:1024px) /* lg */ {
 		article {
 			@apply flex;
 		}
