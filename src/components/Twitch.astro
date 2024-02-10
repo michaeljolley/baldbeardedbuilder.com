@@ -1,0 +1,123 @@
+---
+import Icon from "./Icon.astro";
+
+---
+
+<section>
+	<div class="wrapper">
+		<aside>
+			<Icon icon="Twitch" style="height: 10rem;" />
+			Catch It Live
+		</aside>
+		<div class="p">
+			<p>Q&amp;A's, how-to's, and plenty of shenanigans. Follow Triple B on <a href="https://twitch.tv/baldbeardedbuilder">Twitch</a> to be notified when he's live.</p>
+			<h3>Latest Stream</h3>
+			<div class="player">
+				<iframe
+					src="https://clips.twitch.tv/embed?clip=InspiringObservantAardvarkHassaanChop-FAmDDsN5jGnf-mVf&parent=localhost"
+					allowfullscreen>
+				</iframe>
+			</div>
+		</div>
+		
+	</div>
+</section>
+
+<style>
+	section {
+		background-color: var(--twitch);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 4rem 0;
+		overflow: hidden;
+	}
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		margin: 2rem 0;
+	}
+	aside {
+		font-family: var(--font-anton);
+		font-size: 10rem;
+		color: var(--yellow);
+		text-transform: uppercase;
+		position: relative;
+	}
+	h3 {
+		font-family: var(--font-anton);
+		font-size: 2rem;
+		text-transform: uppercase;
+		margin: 2rem 0;
+		color: var(--light);
+	}
+	svg {
+		color: var(--pink);
+		position: absolute;
+		top: 10vw;
+		right: -10vw;
+		height: 70%;
+		transform: rotate(20deg);
+	}
+	.player {
+		border: 5px dashed var(--yellow);
+		padding: 0.25rem;
+		display: flex;
+	}
+	iframe {
+		aspect-ratio: 16 / 9;
+		position: relative;
+		width: 100%;
+	}
+
+	@media (min-width: 640px) /* sm */ {
+		svg {
+			top: 4vw;
+			right: -5vw;
+		}
+	}
+	
+	@media (min-width: 768px) /* md */ {
+		svg {
+			top: 0vw;
+			right: -5vw;
+		}
+	}
+
+	@media (min-width: 1024px) /* lg */ {
+		.wrapper {
+			flex-direction: row;
+		}
+		svg {
+			top: 10vw;
+			right: 6vw;
+		}
+		aside {
+			font-size: 12rem;
+		}
+		h3 {
+			font-size: 3rem;
+		}
+	}
+
+	@media (min-width: 1280px) /* xl */ {
+		svg {
+			top: 5vw;
+			right: 10vw;
+		}
+	}
+	
+	@media (min-width: 1536px) /* 2xl */ {
+		aside {
+			max-width: 40vw;
+		}
+		svg {
+			top: 5vw;
+			right: 10vw;
+		}
+	}
+
+</style>

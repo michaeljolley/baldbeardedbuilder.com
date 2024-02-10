@@ -14,7 +14,7 @@
 
 	--discord: #7289da;
 	--facebook: #3b5998;
-	--github: var(--bg);
+	--github: var(--text);
 	--instagram: #bc2a8d;
 	--linkedin: #0077b5;
 	--twitch: #6441a4;
@@ -57,6 +57,7 @@ body {
 
 p {
 	margin: 0.75rem 0;
+	line-height: 1.5rem;
 }
 
 .wrapper {
