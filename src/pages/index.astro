@@ -1,9 +1,7 @@
 ---
-import BaseLayout from '@layouts/base.astro'
-import Mast from '@components/Mast.astro'
-import LiveNow from '@components/LiveNow.astro'
-import BetterCode from '@components/BetterCode.astro'
-import Twitch from '@components/Twitch.astro'
+import BaseLayout from "@layouts/base.astro";
+import Mast from "@components/Mast.astro";
+import BetterCode from "@components/BetterCode.astro";
 
 const title = "Bald Bearded Builder => Michael Jolley";
 const description =
@@ -12,8 +10,9 @@ const permalink = `https://${import.meta.env.HOST}/`;
 ---
 
 <BaseLayout {title} {description} {permalink}>
-	<Mast title="Bald Bearded Builder" summary="Helping developers do more...<br>and laugh along the way."/>
-	<LiveNow/>
-	<Twitch/>
-	<BetterCode/>
+  <Mast
+    title="Bald Bearded Builder"
+    summary="Helping developers do more...<br>and laugh along the way."
+  />
+  <BetterCode />
 </BaseLayout>

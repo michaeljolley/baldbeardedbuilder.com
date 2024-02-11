@@ -2,8 +2,6 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "@layouts/base.astro";
 import Mast from "@components/Mast.astro";
-import TableOfContents from "@components/TableOfContents";
-import RelatedPosts from "@components/RelatedPosts.astro";
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection("blog");
@@ -16,7 +14,8 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const { post } = Astro.props;
-const { title, description, tags, canonicalUrl, summary, snapshot, pubDate } = post.data;
+const { title, description, tags, canonicalUrl, summary, snapshot, pubDate } =
+  post.data;
 const { Content, headings } = await post.render();
 const permalink = `https://${import.meta.env.HOST}/blog/${slug}/`;
 let options = {
@@ -28,69 +27,31 @@ let options = {
 ---
 
 <BaseLayout {title} {description} {permalink} {canonicalUrl}>
-	<header>
-			<Mast {title} {summary} reduce={true} />
-	</header>
-	<article class="container">
-		<main class="content">
-			{pubDate <= new Date() && <Content />}
-			{
-				pubDate > new Date() && (
-				<div class="snapshot">
-              <blockquote>
-                <h2>Coming Soon</h2>
-                <p>
-                  This article is scheduled to drop on{" "}
-                  <b>
-                    {new Intl.DateTimeFormat("en-US", options).format(pubDate)}
-                  </b>. In the meantime, here's a snapshot of the article as it will
-                  appear when published.
-                </p>
-              </blockquote>
-              <div class="summary" set:html={snapshot} />
-            </div>
-          )
-        }
-		</main>
-		<aside>
-			<TableOfContents {headings} {pubDate} client:load />
-			<RelatedPosts {slug} {tags} />
-		</aside>
-	</article>
-</ArticleLayout>
+  <header>
+    <Mast {title} {summary} reduce={true} />
+  </header>
+  <article class="content">
+    {pubDate <= new Date() && <Content />}
+    {
+      pubDate > new Date() && (
+        <div class="snapshot">
+          <blockquote>
+            <h2>Coming Soon</h2>
+            <p>
+              This article is scheduled to drop on{" "}
+              <b>{new Intl.DateTimeFormat("en-US", options).format(pubDate)}</b>
+              . In the meantime, here's a snapshot of the article as it will
+              appear when published.
+            </p>
+          </blockquote>
+          <div class="summary" set:html={snapshot} />
+        </div>
+      )
+    }
+  </article>
+</BaseLayout>
 
 <style>
-  article aside {
-    display: none;
-		position: -webkit-sticky;
-		position: sticky;
-		top: 5rem;
-		z-index: 1;
+  main {
   }
-
-	main {
-		padding: 0 2rem;
-	}
-	
-	@media (min-width:1024px) /* lg */ {
-		article aside {
-      display: flex;
-			flex-direction: column;
-		}
-		article {
-			@apply flex;
-		}
-		article {
-			display: grid;
-			grid-template-columns: 70% 1fr;
-			align-items: flex-start;
-			gap: 2rem;
-		}
-	}
-		
-	@media (min-width:1280px) /* xl */ {
-		article:has(aside) {
-			grid-template-columns: 75% 1fr;
-		}
-	}
 </style>

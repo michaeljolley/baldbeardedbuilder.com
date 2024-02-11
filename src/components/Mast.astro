@@ -1,105 +1,106 @@
 ---
-import LogoSpinnerTop from '@components/LogoSpinnerTop.astro';
+import LogoSpinnerTop from "@components/LogoSpinnerTop.astro";
 
 export interface Props {
-	title: string;
-	summary: string | undefined;
-	reduce: boolean;
+  title: string;
+  summary: string | undefined;
+  reduce?: boolean;
 }
 
 const { title, summary, reduce = false } = Astro.props;
 ---
+
 <section class={reduce ? "reduce" : ""}>
-	<LogoSpinnerTop/>
-	<h1>{title}</h1>
-	{
-		summary && <h2 set:html={summary}></h2>
-	}
+  <LogoSpinnerTop />
+  <h1>{title}</h1>
+  {summary && <h2 set:html={summary} />}
 </section>
+<!-- TWITCH_STATUS -->
 
 <style>
-	section {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		margin-bottom: 4rem;
-		padding: 0 2rem;
-	}
+  section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4rem;
+    padding: 0 2rem;
+  }
 
-	h1, h2 {
-		text-transform: uppercase;
-		color: var(--text);
-		text-align: center;
-	}
-	
-	h1 {
-		font-family: var(--font-anton);
-		font-size: 8rem;
-		margin-top: 0.5rem;
-	}
-	.reduce h1 {
-		font-size: 6rem;
-	}
+  h1,
+  h2 {
+    text-transform: uppercase;
+    color: var(--text);
+    text-align: center;
+  }
 
-	h2 {
-		font-weight: bold;
-		margin-top: 2rem;
-	}
-	
-	@media (min-width: 640px) {
-		h1 {
-			font-size: 12rem;
-			margin-top: 1rem;
-		}
-		.reduce h1 {
-			font-size: 7rem;
-		}
+  h1 {
+    font-family: var(--font-anton);
+    font-size: 8rem;
+    margin-top: 0.5rem;
+  }
+  .reduce h1 {
+    font-size: 6rem;
+  }
 
-		h2 {
-			margin-top: 4rem;
-		}
-	}
+  h2 {
+    font-weight: bold;
+    margin-top: 2rem;
+  }
 
-	@media (min-width: 768px) {
-		h1 {
-			font-size: 14rem;
-		}
-		.reduce h1 {
-			font-size: 9rem;
-		}
-	}
+  @media (min-width: 640px) {
+    h1 {
+      font-size: 12rem;
+      margin-top: 1rem;
+    }
+    .reduce h1 {
+      font-size: 7rem;
+    }
 
-	@media (min-width: 1024px) {
-		h1 {
-			font-size: 16rem;
-		}
-		.reduce h1 {
-			font-size: 10rem;
-		}
-	}
+    h2 {
+      margin-top: 4rem;
+    }
+  }
 
-	@media (min-width: 1280px) {
-		h1 {
-			font-size: 14rem;
-		}
-		.reduce h1 {
-			font-size: 9rem;
-			margin-top: 3rem;
-		}
-	}
+  @media (min-width: 768px) {
+    h1 {
+      font-size: 14rem;
+    }
+    .reduce h1 {
+      font-size: 9rem;
+    }
+  }
 
-	@media (min-width: 1536px) {
-		section {
-			padding: 0 4rem;
-		}
-		h1 {
-			font-size: 18rem;
-			margin-top: 3rem;
-		}
-		.reduce h1 {
-			font-size: 12rem;
-			margin-top: 6rem;
-		}
-	}
+  @media (min-width: 1024px) {
+    h1 {
+      font-size: 16rem;
+    }
+    .reduce h1 {
+      font-size: 10rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    h1 {
+      font-size: 14rem;
+    }
+    .reduce h1 {
+      font-size: 9rem;
+      margin-top: 3rem;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    section {
+      padding: 0 4rem;
+    }
+    h1 {
+      font-size: 18rem;
+      margin-top: 3rem;
+    }
+    .reduce h1 {
+      font-size: 12rem;
+      margin-top: 6rem;
+    }
+  }
 </style>

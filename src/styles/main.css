@@ -23,6 +23,8 @@
 	--twitter: #1da1f2;
 	--tiktok: #ff0050;
 	--youtube: #e52d27;
+	--ec-brdRad: 0rem !important;
+	--ec-codeFontSize: 1.1rem !important;
 }
 
 [data-theme="light"] {
@@ -34,7 +36,7 @@
 	--dulled-2: #aaaaaa;
 	--highlight: #000000;
 	--link-color: var(--blue);
-	--tint: oklch(0 0 0 / 5%)
+	--tint: oklch(0 0 0 / 5%);
 }
 
 [data-theme="dark"] {
@@ -46,7 +48,7 @@
 	--dulled-2: #777777;
 	--highlight: #ffffff;
 	--link-color: var(--yellow);
-	--tint: oklch(100% 0 0 / 5%)
+	--tint: oklch(100% 0 0 / 5%);
 }
 
 body {
@@ -107,13 +109,176 @@ a:hover {
 }
 
 .tippy-box {
-	padding: 0.5rem 0.5rem;
+	padding: 1rem;
 	border-radius: 0.25rem;
-	background-color: var(--gray-light);
+	background-color: var(--dark);
+	border: 3px dashed var(--blue);
+	transform: rotate(-6deg);
 }
 .tippy-content {
-	font-size: 0.8rem;
+	font-size: 1.2rem;
+	font-family: var(--font-anton);
+	text-transform: uppercase;
+	color: var(--light);
 }
-.tippy-box[data-placement^="right"] > .tippy-arrow::before {
-	border-top-color: var(--gray-light);
+
+.liveOnTwitch {
+	background-color: var(--yellow);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+.liveOnTwitch .wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	margin: 2rem 0;
+}
+.liveOnTwitch aside {
+	font-family: var(--font-anton);
+	font-size: 10rem;
+	color: var(--dark);
+	text-transform: uppercase;
+	position: relative;
+}
+.liveOnTwitch img {
+	position: absolute;
+	top: 0;
+	right: 5vw;
+	height: 70%;
+}
+.liveOnTwitch iframe {
+	width: 100%;
+	height: 100%;
+	aspect-ratio: 16 / 9;
+	z-index: 5;
+	position: relative;
+	border: 10px dashed var(--dark);
+	padding: 0.5rem;
+}
+
+@media (min-width: 640px) /* sm */ {
+	.liveOnTwitch img {
+		height: 120%;
+		top: 4vw;
+		right: -5vw;
+	}
+}
+@media (min-width: 1024px) /* lg */ {
+	.liveOnTwitch .wrapper {
+		flex-direction: row;
+	}
+	.liveOnTwitch img {
+		height: 60%;
+		top: 2vw;
+		right: -4vw;
+	}
+	.liveOnTwitch aside {
+		font-size: 12rem;
+	}
+}
+
+@media (min-width: 1280px) /* xl */ {
+	.liveOnTwitch img {
+		height: 70%;
+	}
+}
+
+.twitchPanel {
+	background-color: var(--twitch);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 4rem 0;
+	overflow: hidden;
+	color: var(--light);
+}
+.twitchPanel .wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	margin: 2rem 0;
+}
+.twitchPanel aside {
+	font-family: var(--font-anton);
+	font-size: 10rem;
+	color: var(--yellow);
+	text-transform: uppercase;
+	position: relative;
+}
+.twitchPanel h3 {
+	font-family: var(--font-anton);
+	font-size: 2rem;
+	text-transform: uppercase;
+	margin: 2rem 0;
+	color: var(--light);
+}
+.twitchPanel svg {
+	color: var(--pink);
+	position: absolute;
+	top: 10vw;
+	right: -10vw;
+	height: 70%;
+	transform: rotate(20deg);
+}
+.twitchPanel .player {
+	border: 5px dashed var(--yellow);
+	padding: 0.25rem;
+	display: flex;
+}
+.twitchPanel iframe {
+	aspect-ratio: 16 / 9;
+	position: relative;
+	width: 100%;
+}
+
+@media (min-width: 640px) /* sm */ {
+	.twitchPanel svg {
+		top: 4vw;
+		right: -5vw;
+	}
+}
+
+@media (min-width: 768px) /* md */ {
+	.twitchPanel svg {
+		top: 0vw;
+		right: -5vw;
+	}
+}
+
+@media (min-width: 1024px) /* lg */ {
+	.twitchPanel .wrapper {
+		flex-direction: row;
+	}
+	.twitchPanel svg {
+		top: 10vw;
+		right: 6vw;
+	}
+	.twitchPanel aside {
+		font-size: 12rem;
+	}
+	.twitchPanel h3 {
+		font-size: 3rem;
+	}
+}
+
+@media (min-width: 1280px) /* xl */ {
+	.twitchPanel svg {
+		top: 5vw;
+		right: 10vw;
+	}
+}
+
+@media (min-width: 1536px) /* 2xl */ {
+	.twitchPanel aside {
+		max-width: 40vw;
+	}
+	.twitchPanel svg {
+		top: 5vw;
+		right: 10vw;
+	}
 }
