@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '@layouts/base.astro'
 import FourOhFourMast from '@components/404Mast.astro'
-import LiveNow from '@components/LiveNow.astro'
 import BetterCode from '@components/BetterCode.astro'
 import Twitch from '@components/Twitch.astro'
 
@@ -13,7 +12,7 @@ const permalink = `https://${import.meta.env.HOST}/404/`;
 
 <BaseLayout {title} {description} {permalink}>
 	<FourOhFourMast/>
-	<LiveNow/>
-	<BetterCode/>
+	<!-- TWITCH_STATUS -->
 	<Twitch/>
+	<BetterCode/>
 </BaseLayout>

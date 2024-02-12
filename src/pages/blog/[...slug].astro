@@ -16,7 +16,7 @@ const { slug } = Astro.params;
 const { post } = Astro.props;
 const { title, description, tags, canonicalUrl, summary, snapshot, pubDate } =
   post.data;
-const { Content, headings } = await post.render();
+const { Content } = await post.render();
 const permalink = `https://${import.meta.env.HOST}/blog/${slug}/`;
 let options = {
   month: "long",
@@ -50,8 +50,3 @@ let options = {
     }
   </article>
 </BaseLayout>
-
-<style>
-  main {
-  }
-</style>

@@ -31,7 +31,7 @@ export default async (request: Request, context: Context) => {
 				</iframe>
 			</div>
 		</section>`;
-		} else if (new URL(request.url).pathname === "/") {
+		} else if (new URL(request.url).pathname === "/" || new URL(request.url).pathname === "/404/") {
 			twitchEmbed = `<section class="twitchPanel">
 			<div class="wrapper">
 				<aside>
