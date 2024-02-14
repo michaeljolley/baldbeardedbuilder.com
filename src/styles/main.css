@@ -36,7 +36,7 @@
 	--dulled-2: #aaaaaa;
 	--highlight: #000000;
 	--link-color: var(--blue);
-	--tint: oklch(0 0 0 / 5%);
+	--tint: oklch(0 0 0 / 10%);
 }
 
 [data-theme="dark"] {
@@ -48,7 +48,7 @@
 	--dulled-2: #777777;
 	--highlight: #ffffff;
 	--link-color: var(--yellow);
-	--tint: oklch(100% 0 0 / 5%);
+	--tint: oklch(100% 0 0 / 10%);
 }
 
 body {
@@ -229,6 +229,13 @@ a:hover {
 	border: 5px dashed var(--yellow);
 	padding: 0.25rem;
 	display: flex;
+}
+.twitchPanel .p {
+	display: flex;
+	flex-direction: column;
+}
+.twitchPanel .p a {
+	color: var(--light);
 }
 .twitchPanel iframe {
 	aspect-ratio: 16 / 9;
