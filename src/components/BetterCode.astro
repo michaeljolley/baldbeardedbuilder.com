@@ -19,7 +19,9 @@ const latestVSCVideo = videoEntries
 			<p><a href="/vscode/">Check out</a> this archive of posts, videos, shorts, &amp; more.</p>
 			<h3>Latest Tip</h3>
 			<div class="player">
-				<iframe src=`https://www.youtube.com/embed/${latestVSCVideo.data.id}` allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+				<iframe
+				title="Latest VS Code Video"
+				loading="lazy" src=`https://www.youtube.com/embed/${latestVSCVideo.data.id}` allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 			</div>
 		</aside>
 		<h2>Better <span>VS Code</span></h2>
@@ -28,9 +30,6 @@ const latestVSCVideo = videoEntries
 
 <style>
 	section {
-		background: url('/images/code.svg') no-repeat;
-		background-position: 20vw center;
-		background-size: contain;
 		padding: 4rem 0;
 		min-height: 40vh;
 	}
@@ -38,6 +37,10 @@ const latestVSCVideo = videoEntries
 		display: flex;
 		flex-direction: column-reverse;
 		gap: 1.5rem;
+		background: url('/images/code.svg') no-repeat;
+		background-position: 100% center;
+		background-size: contain;
+		
 	}
 	h2 {
 		font-family: var(--font-anton);

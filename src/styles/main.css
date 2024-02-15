@@ -201,6 +201,7 @@ a:hover {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	gap: 1.5rem;
 	margin: 2rem 0;
 }
 .twitchPanel aside {
@@ -241,6 +242,54 @@ a:hover {
 	aspect-ratio: 16 / 9;
 	position: relative;
 	width: 100%;
+}
+
+
+form label {
+	display: inline-block;
+	color: var(--dark);
+	font-size: 1.25rem;
+	font-family: var(--font-anton);
+	text-transform: uppercase;
+}
+
+form input,
+form textarea {
+	border: 3px dashed var(--yellow);
+	padding: 0.5rem;
+	width: 75%;
+	background-color: var(--tint);
+	color: var(--text);
+	text-transform: uppercase;
+}
+form input::placeholder,
+form textarea::placeholder {
+	color: var(--pink);
+}
+form input:focus,
+form textarea:focus,
+form button:not([data-copied="Copied!"]) {
+	outline: none;
+	border-color: var(--light);
+}
+
+form button:not([data-copied="Copied!"]) {
+	border: 3px dashed var(--yellow);
+	padding: 0.5rem 1rem;
+	background-color: var(--twitch);
+	color: var(--light);
+	font-family: var(--font-anton);
+	font-size: 1.25rem;
+	text-transform: uppercase;
+	cursor: pointer;
+	transform: rotate(-3deg);
+}
+form button:not([data-copied="Copied!"]):active,
+form button:not([data-copied="Copied!"]):hover {
+	border: 3px dashed var(--yellow);
+	background-color: var(--pink);
+	color: var(--light);
+	transform: rotate(1deg) scale(1.1);
 }
 
 @media (min-width: 640px) /* sm */ {
@@ -287,5 +336,12 @@ a:hover {
 	.twitchPanel svg {
 		top: 5vw;
 		right: 10vw;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	button:not([data-copied="Copied!"]):active,
+	button:not([data-copied="Copied!"]):hover {
+		transform: rotate(-3deg);
 	}
 }

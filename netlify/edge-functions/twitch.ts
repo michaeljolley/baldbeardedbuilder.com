@@ -24,9 +24,11 @@ export default async (request: Request, context: Context) => {
 					<img src="/images/screen.svg" alt="Screen" />
 				</aside>
 				<iframe
+					title="Streaming live on Twitch"
 						src="https://player.twitch.tv/?channel=baldbeardedbuilder&parent=${Deno.env.get("HOST")}"
 						height="<height>"
 						width="<width>"
+						loading="lazy"
 						allowfullscreen>
 				</iframe>
 			</div>
@@ -54,6 +56,8 @@ export default async (request: Request, context: Context) => {
 					<h3>Latest Stream</h3>
 					<div class="player">
 						<iframe
+							title="Latest Stream"
+							loading="lazy"
 							src="https://clips.twitch.tv/embed?clip=InspiringObservantAardvarkHassaanChop-FAmDDsN5jGnf-mVf&parent=${Deno.env.get("HOST")}"
 							allowfullscreen>
 						</iframe>

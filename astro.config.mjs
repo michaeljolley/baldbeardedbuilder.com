@@ -9,9 +9,9 @@ import expressiveCode from "astro-expressive-code";
 export default defineConfig({
 	site: "https://baldbeardedbuilder.com",
 	trailingSlash: "always",
-	devToolbar: {
-		enabled: false,
-	},
+	// devToolbar: {
+	// 	enabled: false,
+	// },
 	integrations: [
 		preact(),
 		expressiveCode({

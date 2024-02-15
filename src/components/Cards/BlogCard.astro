@@ -13,7 +13,7 @@ const url = `/blog/${post.slug}/`;
 ---
 
 <BaseCard {...rest} {classes} {url}>
-  <img src={image} alt={image_alt} />
+  <img src={image} alt={image_alt} loading="lazy"/>
   <div>
     <h3>{title}</h3>
     <p>{summary}</p>
