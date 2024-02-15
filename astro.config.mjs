@@ -3,7 +3,7 @@ import preact from "@astrojs/preact";
 import { h, s } from "hastscript";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
-import netlify from "@astrojs/netlify/edge-functions";
+import netlify from '@astrojs/netlify/functions';
 
 import expressiveCode from "astro-expressive-code";
 
