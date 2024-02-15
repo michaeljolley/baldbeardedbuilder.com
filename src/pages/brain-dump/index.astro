@@ -26,11 +26,11 @@ const permalink = `https://${import.meta.env.HOST}/brain-dump/`;
     title=`The Brain Dump`
     summary="Cool stuff I've found and want to share."
   />
-	<BrainDumpForm/>
+  <BrainDumpForm />
   <section>
-		<div class="wrapper">
-			<h2>Past Brain Dumps</h2>
-		</div>
+    <div class="wrapper">
+      <h2>Past Brain Dumps</h2>
+    </div>
     <div class="container">
       <BrainDumpList {dumps} />
     </div>
@@ -40,29 +40,36 @@ const permalink = `https://${import.meta.env.HOST}/brain-dump/`;
 <style>
   .container {
     display: flex;
-		flex-direction: column;
+    flex-direction: column;
   }
-	h2 {
-		font-family: var(--font-anton);
-		text-transform: uppercase;
-		font-size: 8rem;
-		margin: 4rem 0;
-	}
-	@media (min-width: 640px) /* sm */ {
-		h2 {
-			font-size: 9rem;
-		}
-	}
 
-	@media (min-width: 768px) /* md */ {
-		h2 {
-			font-size: 12rem;
-		}
-	}
+  h2 {
+    font-family: var(--font-anton);
+    text-transform: uppercase;
+    font-size: 8rem;
+    margin: 4rem 0;
+  }
+  @media (min-width: 640px) /* sm */ {
+    h2 {
+      font-size: 9rem;
+    }
+  }
 
-	@media (min-width: 1024px) /* lg */ {
-		h2 {
-			font-size: 13rem;
-		}
-	}
+  @media (min-width: 768px) /* md */ {
+    h2 {
+      font-size: 12rem;
+    }
+  }
+
+  @media (min-width: 1024px) /* lg */ {
+    h2 {
+      font-size: 13rem;
+    }
+    .container {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-evenly;
+      gap: 2rem;
+    }
+  }
 </style>

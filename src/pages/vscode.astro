@@ -1,0 +1,78 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@layouts/base.astro";
+import Mast from "@components/Mast.astro";
+import BlogCard from "@components/Cards/BlogCard.astro";
+import VideoCard from "@components/Cards/VideoCard.astro";
+import BrainDumpForm from "@components/BrainDumpForm.astro";
+
+let posts = await getCollection(
+  "blog",
+  ({ data }) => data.pubDate <= new Date() && data.tags?.includes("vscode")
+);
+
+let videos = await getCollection(
+  "videos",
+  ({ data }) => data.date <= new Date() && data.tags?.includes("vscode")
+);
+
+let items = posts.map((post) => ({
+  type: "post",
+  post,
+  pubDate: new Date(post.data.pubDate),
+}));
+items.push(
+  ...videos.map((video) => ({
+    type: "video",
+    video: video,
+    pubDate: new Date(video.data.date),
+  }))
+);
+
+let lastStyle = 0;
+
+const nextStyle = () => {
+  let style = lastStyle;
+
+  while (style === lastStyle) {
+    style = Math.floor(Math.random() * (6 - 1 + 1)) + 1;
+  }
+
+  lastStyle = style;
+  return style;
+};
+
+items = items.sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime());
+
+const title =
+  "Get Better at VS Code with Michael Jolley, the Bald Bearded Builder";
+const description =
+  "Become a pro at using Visual Studio Code with tips, videos, and courses from Michael Jolley, the Bald Bearded Builder.";
+const permalink = `https://${import.meta.env.HOST}/vscode/`;
+---
+
+<BaseLayout {title} {description} {permalink}>
+  <Mast
+    title="Better VS Code"
+    summary="Get the most out of Visual Studio Code with these tips, tricks, and extensions."
+  />
+  <div class="container">
+    {
+      items.map((item) => {
+        return item.type === "post" ? (
+          <BlogCard post={item.post} classes={`blog blog${nextStyle()}`} />
+        ) : (
+          <VideoCard video={item.video} classes={`video video${nextStyle()}`} />
+        );
+      })
+    }
+  </div>
+  <BrainDumpForm />
+</BaseLayout>
+
+<style>
+  .container {
+    display: flex;
+    flex-direction: column;
+  }
+</style>

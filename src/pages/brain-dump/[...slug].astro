@@ -1,0 +1,38 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import BaseLayout from "@layouts/base.astro";
+import Mast from "@components/Mast.astro";
+
+export async function getStaticPaths() {
+  const entries = await getCollection(
+    "brainDumps",
+    ({ data }) => data.pubDate <= new Date()
+  );
+
+  return entries.map((entry: CollectionEntry<"brainDumps">) => ({
+    params: { slug: entry.slug },
+    props: { post: entry },
+  }));
+}
+
+const { slug } = Astro.params;
+const { post } = Astro.props;
+const { title, description, tags, pubDate } = post.data;
+const { Content } = await post.render();
+const permalink = `https://${import.meta.env.HOST}/brain-dump/${slug}/`;
+let options = {
+  month: "long",
+  day: "numeric",
+  weekday: "long",
+  year: "numeric",
+} as Intl.DateTimeFormatOptions;
+---
+
+<BaseLayout {title} {description} {permalink}>
+  <header>
+    <Mast {title} summary={description} reduce={true} />
+  </header>
+  <article class="content">
+    <Content />
+  </article>
+</BaseLayout>

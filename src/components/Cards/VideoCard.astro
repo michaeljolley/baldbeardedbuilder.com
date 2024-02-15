@@ -3,53 +3,37 @@ import type { CollectionEntry } from "astro:content";
 import BaseCard from "@components/Cards/BaseCard.astro";
 
 export interface Props {
-  dump: CollectionEntry<"brainDumps">;
+  video: CollectionEntry<"videos">;
   classes?: string | undefined;
 }
 
-const { dump, classes, ...rest } = Astro.props;
-const { title, description, pubDate } = dump.data;
-const url = `/brain-dump/${dump.slug}/`;
-const dumpDate = new Date(pubDate)
-  .toISOString()
-  .split("T")[0]
-  .replaceAll("-", ".");
+const { video, classes, ...rest } = Astro.props;
+const { title, summary, thumbnail, link } = video.data;
 ---
 
-<BaseCard {...rest} {classes} {url}>
-  <main>
+<BaseCard {...rest} {classes} url={link}>
+  <img src={thumbnail} loading="lazy" />
+  <div>
     <h3>{title}</h3>
-    <p>{description}</p>
-  </main>
-  <footer>
-    <p>Vol. {dump.slug * 1}</p>
-    <p>{dumpDate}</p>
-  </footer>
+  </div>
 </BaseCard>
 
 <style>
-  .dump {
+  .video {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    width: 100vw;
     border: 0;
-    padding: 1.5rem 2rem;
   }
-
-  .dump footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: auto;
+  .video img {
+    display: none;
   }
-  .dump footer p {
-    font-family: var(--font-anton);
-    text-transform: uppercase;
-    font-size: 1.25rem;
-    margin: 0;
+  .video:nth-of-type(even) {
+    flex-direction: row-reverse;
   }
-  .dump footer p:nth-of-type(even) {
-    text-align: right;
+  .video div {
+    padding: 2.5rem;
   }
-
   h3 {
     font-family: var(--font-anton);
     text-transform: uppercase;
@@ -62,64 +46,58 @@ const dumpDate = new Date(pubDate)
     width: 80%;
   }
 
-  .dump1 {
+  .video1 {
     background-color: var(--blue);
   }
-  .dump1 h3,
-  .dump1 footer p {
+  .video1 h3 {
     color: var(--light);
   }
-  .dump1 p {
+  .video1 p {
     color: var(--dark);
   }
-  .dump2 {
+  .video2 {
     background-color: var(--pink);
   }
-  .dump2 h3,
-  .dump2 footer p {
+  .video2 h3 {
     color: var(--yellow);
   }
-  .dump2 p {
+  .video2 p {
     color: var(--light);
   }
-  .dump3 {
+  .video3 {
     background-color: var(--bg-2);
   }
-  .dump3 h3,
-  .dump3 footer p {
+  .video3 h3 {
     color: var(--pink);
   }
-  .dump3 p {
+  .video3 p {
     color: var(--bg);
   }
-  .dump4 {
+  .video4 {
     background-color: var(--purple);
   }
-  .dump4 h3,
-  .dump4 footer p {
+  .video4 h3 {
     color: var(--blue);
   }
-  .dump4 p {
+  .video4 p {
     color: var(--light);
   }
-  .dump5 {
+  .video5 {
     background-color: var(--yellow);
   }
-  .dump5 h3,
-  .dump5 footer p {
+  .video5 h3 {
     color: var(--purple);
   }
-  .dump5 p {
+  .video5 p {
     color: var(--dark);
   }
-  .dump6 {
+  .video6 {
     background-color: var(--bg);
   }
-  .dump6 h3,
-  .dump6 footer p {
+  .video6 h3 {
     color: var(--pink);
   }
-  .dump6 p {
+  .video6 p {
     color: var(--text);
   }
 
@@ -136,8 +114,8 @@ const dumpDate = new Date(pubDate)
   }
 
   @media (min-width: 1024px) /* lg */ {
-    .dump {
-      width: 40vw;
+    .video img {
+      display: block;
     }
   }
 </style>
