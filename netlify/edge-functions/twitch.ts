@@ -25,7 +25,7 @@ export default async (request: Request, context: Context) => {
 				</aside>
 				<iframe
 					title="Streaming live on Twitch"
-						src="https://player.twitch.tv/?channel=baldbeardedbuilder&parent=${Deno.env.get("HOST")}"
+						src="https://player.twitch.tv/?channel=baldbeardedbuilder&parent=${Netlify.env.get("HOST")}"
 						height="<height>"
 						width="<width>"
 						loading="lazy"
@@ -58,7 +58,7 @@ export default async (request: Request, context: Context) => {
 						<iframe
 							title="Latest Stream"
 							loading="lazy"
-							src="https://clips.twitch.tv/embed?clip=InspiringObservantAardvarkHassaanChop-FAmDDsN5jGnf-mVf&parent=${Deno.env.get("HOST")}"
+							src="https://clips.twitch.tv/embed?clip=InspiringObservantAardvarkHassaanChop-FAmDDsN5jGnf-mVf&parent=${Netlify.env.get("HOST")}"
 							allowfullscreen>
 						</iframe>
 					</div>
