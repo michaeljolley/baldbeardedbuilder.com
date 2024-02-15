@@ -3,15 +3,14 @@ import preact from "@astrojs/preact";
 import { h, s } from "hastscript";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
+import netlify from "@astrojs/netlify/edge-functions";
 
 import expressiveCode from "astro-expressive-code";
 
 export default defineConfig({
 	site: "https://baldbeardedbuilder.com",
 	trailingSlash: "always",
-	// devToolbar: {
-	// 	enabled: false,
-	// },
+  adapter: netlify(),
 	integrations: [
 		preact(),
 		expressiveCode({
