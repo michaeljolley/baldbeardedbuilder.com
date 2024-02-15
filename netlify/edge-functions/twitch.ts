@@ -76,8 +76,8 @@ export default async (request: Request, context: Context) => {
 
 const isLiveOnTwitch = async (): Promise<boolean> => {
 	const opts = {
-		client_id: Deno.env.get("TWITCH_CLIENT_ID"),
-		client_secret: Deno.env.get("TWITCH_CLIENT_SECRET"),
+		client_id: Netlify.env.get("TWITCH_CLIENT_ID"),
+		client_secret: Netlify.env.get("TWITCH_CLIENT_SECRET"),
 		grant_type: "client_credentials",
 		scopes: "",
 	};
@@ -96,7 +96,7 @@ const isLiveOnTwitch = async (): Promise<boolean> => {
 		`https://api.twitch.tv/helix/streams?user_login=baldbeardedbuilder`,
 		{
 			headers: {
-				"Client-ID": Deno.env.get("TWITCH_CLIENT_ID") as string,
+				"Client-ID": Netlify.env.get("TWITCH_CLIENT_ID") as string,
 				Authorization: `Bearer ${authData.access_token}`,
 			},
 		},
