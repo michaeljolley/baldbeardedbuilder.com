@@ -122,6 +122,25 @@ a:hover {
 	color: var(--light);
 }
 
+.expressive-code .copy .feedback {
+	border-radius: 0.25rem;
+	background-color: var(--dark) !important;
+	border: 3px dashed var(--blue);
+	font-size: 0.9rem;
+	font-family: var(--font-anton);
+	text-transform: uppercase;
+	color: var(--light);
+}
+.expressive-code .copy .feedback:after {
+	content: '';
+	display: none;
+	pointer-events: none;
+	top: unset;
+	inset-inline-end: unset;
+	border: unset;
+	border-inline-start-color: unset;
+}
+
 .liveOnTwitch {
 	background-color: var(--yellow);
 	display: flex;
@@ -259,12 +278,12 @@ form textarea {
 	padding: 0.5rem;
 	width: 75%;
 	background-color: var(--tint);
-	color: var(--text);
+	color: var(--dark);
 	text-transform: uppercase;
 }
 form input::placeholder,
 form textarea::placeholder {
-	color: var(--pink);
+	color: var(--light);
 }
 form input:focus,
 form textarea:focus,

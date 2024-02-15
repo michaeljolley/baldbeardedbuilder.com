@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BrainDumpCard from "@components/Cards/BrainDumpCard.astro";
+
+export interface Props {
+  dumps: CollectionEntry<"brainDumps">[];
+}
+const { dumps, ...rest } = Astro.props;
+let lastStyle = 0;
+
+const nextStyle = () => {
+	let style = lastStyle
+	
+	while (style === lastStyle) {
+		style = Math.floor(Math.random() * (6 - 1 + 1)) + 1;
+	}
+
+	lastStyle = style;
+	return style;
+};
+---
+
+{dumps.map((dump) => {
+	const style = nextStyle();
+	return <BrainDumpCard {dump} classes={`dump dump${style}`} {...rest}/>
+})}

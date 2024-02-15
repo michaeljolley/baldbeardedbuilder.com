@@ -1,7 +1,7 @@
 ---
 ---
 
-<section class="brainDumpForm">
+<section>
 	<div class="wrapper">
 		<aside>
 			<h2>
@@ -19,12 +19,16 @@
 			<p><a href="/brain-dump/">Check out the archive for previous dumps.</a></p>
 		  <form
         name="brain-dump"
-        method="post"
-        action="/api/dump"
+        method="POST"
+        action="/brain-dump/thanks/"
+				netlify-honeypot="bot-field"
+				data-netlify="true"
       >
-        <p hidden>
-          <label> Don't fill this out: <input name="bot-field" /></label>
-        </p>
+				<p class="hidden">
+					<label>
+						Don't fill this out if you're human: <input name="bot-field" />
+					</label>
+				</p>
 
         <p>
           <label for="firstName">Your First Name</label><br />
@@ -33,7 +37,6 @@
             type="text"
             name="firstName"
             placeholder="Dwight"
-            class="strobe"
             required
           />
         </p>
@@ -44,7 +47,6 @@
             type="text"
             name="email"
             placeholder="dschrutt@dundermifflin.com"
-            class="strobe"
             required
           />
         </p>
@@ -61,7 +63,7 @@
 
 <style>
 
-.brainDumpForm {
+section {
 	background-color: var(--blue);
 	display: flex;
 	flex-direction: column;
@@ -71,7 +73,7 @@
 	overflow: hidden;
 	color: var(--light);
 }
-.brainDumpForm .wrapper {
+.wrapper {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -79,92 +81,102 @@
 	margin: 2rem 0;
 	gap: 2rem;
 }
-.brainDumpForm aside {
+aside {
 	position: relative;
 	min-width: 40vw;
   z-index: 3;
 }
-.brainDumpForm h2 {
+h2 {
 	font-family: var(--font-anton);
 	font-size: 10rem;
 	color: var(--yellow);
 	text-transform: uppercase;
 }
-.brainDumpForm h2 span {
+h2 span {
 	position: relative;
 	z-index: 5;
 }
-.brainDumpForm svg {
+svg {
 	color: var(--dark);
 	position: absolute;
 	top: -20vw;
 	right: -12vw;
 	z-index: 2;
 }
-.brainDumpForm .p {
+.p {
 	position: relative;
   z-index: 4;
 	display: flex;
 	flex-direction: column;
 }
+.p a {
+	color: var(--light);
+	border-color: var(--pink);
+}
+.p a:hover {
+	border-color: var(--yellow);
+}
 
-.brainDumpForm .small {
+.small {
 	font-size: 0.7rem;
 	color: var(--purple);
 	margin: 0;
 	padding: 0;
 }
+.hidden {
+	display: none;
+}
 
 @media (min-width: 640px) /* sm */ {
-	.brainDumpForm .wrapper {
+	.wrapper {
 		flex-direction: row;
 	}
-	.brainDumpForm svg {
+	svg {
 		top: -18vw;
 		right: -7vw;
 		width: 15rem;
 	}
-	.brainDumpForm h2 {
+	h2 {
 		font-size: 7rem;
 	}
 }
 
 @media (min-width: 768px) /* md */ {
-	.brainDumpForm svg {
+	svg {
 		top: -12vw;
 		right: -4vw;
 		width: 20rem;
 	}
-	.brainDumpForm h2 {
+	h2 {
 		font-size: 9rem;
 	}
 }
 
 @media (min-width: 1024px) /* lg */ {
-	.brainDumpForm svg {
+	svg {
 		top: -10vw;
 		right: -8vw;
 	}
-	.brainDumpForm h2 {
+	h2 {
 		font-size: 12rem;
 	}
 }
 
 @media (min-width: 1280px) /* xl */ {
-	.brainDumpForm svg {
+	svg {
 		top: -9vw;
 		right: 0vw;
 	}
-	.brainDumpForm h2 {
+	h2 {
 		font-size: 14rem;
 	}
 }
 
 @media (min-width: 1536px) /* 2xl */ {
-	.brainDumpForm aside {
+	aside {
 		max-width: 40vw;
 	}
-	.brainDumpForm svg {
+	svg {
 		top: -10vw;
 		right: 8vw;
 	}

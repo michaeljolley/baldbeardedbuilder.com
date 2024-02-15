@@ -126,6 +126,10 @@
 	transform: rotate(3deg);
 }
 
+.copy .feedback.show {
+	
+}
+
 .snapshot blockquote h2 {
 	margin: 0.5rem 0;
 }
