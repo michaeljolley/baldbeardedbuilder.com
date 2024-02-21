@@ -4,15 +4,20 @@ import BaseCard from "@components/Cards/BaseCard.astro";
 
 export interface Props {
   gear: CollectionEntry<"gear">;
+  classes?: string | undefined;
 }
 
-const { gear, ...rest } = Astro.props;
+let { gear, classes, ...rest } = Astro.props;
 const { title, description } = gear.data;
+
+classes = description ? `${classes} desc` : classes;
 ---
 
-<BaseCard {...rest} url={gear.data.link}>
+<BaseCard {...rest} {classes} url={gear.data.link}>
   <h3>{title}</h3>
-  <p>{description}</p>
+  {
+		description && <p>{description}</p>
+	}
 </BaseCard>
 
 <style>
@@ -23,16 +28,83 @@ const { title, description } = gear.data;
 		animation: unset;
 		-webkit-background-clip: unset;
 		-webkit-text-fill-color: unset;
-		color: oklch(100% 0 0);
+		color: var(--text)
 		font-weight: bold;
 		font-size: 1.2rem;
 		line-height: 1.4rem;
-		padding: 0.2rem;
+		padding: 0;
+		margin: 0;
+	}
+
+	.gear.desc h3 {
+		margin: 0 0 .5rem 0;
 	}
 
 	p {
 		font-size: 0.8rem;
 		line-height: 0.9rem;
-		padding: 0.2rem;
+		padding: 0;
+		margin: 0;
 	}
+
+	.gear {
+		padding: 1.5rem;
+		border: 0;		
+	}
+
+  .gear1 {
+    background-color: var(--blue);
+  }
+  .gear1 h3 {
+    color: var(--light);
+  }
+  .gear1 p {
+    color: var(--dark);
+  }
+  .gear2 {
+    background-color: var(--pink);
+  }
+  .gear2 h3 {
+    color: var(--yellow);
+  }
+  .gear2 p {
+    color: var(--light);
+  }
+  .gear3 {
+    background-color: var(--bg-2);
+  }
+  .gear3 h3 {
+    color: var(--pink);
+  }
+  .gear3 p {
+    color: var(--bg);
+  }
+  .gear4 {
+    background-color: var(--purple);
+  }
+  .gear4 h3 {
+    color: var(--blue);
+  }
+  .gear4 p {
+    color: var(--light);
+  }
+  .gear5 {
+    background-color: var(--yellow);
+  }
+  .gear5 h3 {
+    color: var(--purple);
+  }
+  .gear5 p {
+    color: var(--dark);
+  }
+  .gear6 {
+    background-color: var(--bg);
+		border: 3px dashed var(--text);
+  }
+  .gear6 h3 {
+    color: var(--pink);
+  }
+  .gear6 p {
+    color: var(--text);
+  }
 </style>

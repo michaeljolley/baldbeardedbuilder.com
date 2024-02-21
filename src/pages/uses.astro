@@ -10,6 +10,19 @@ const categories = gear
 	.map((item) => item.data.category)
 	.filter((value, index, self) => self.indexOf(value) === index);
 
+let lastStyle = 0;
+
+const nextStyle = () => {
+	let style = lastStyle
+	
+	while (style === lastStyle) {
+		style = Math.floor(Math.random() * (6 - 1 + 1)) + 1;
+	}
+
+	lastStyle = style;
+	return style;
+};
+
 const title = "All my Gear, Tools, and Toys";
 const subhead = "Gear to geek out on";
 const description =
@@ -22,7 +35,7 @@ const permalink = `https://${import.meta.env.HOST}/uses/`;
     title=`All Meh Gear`
     summary="Hardware, Software, and Tools I use to build things."
   />
-  <article class="content">
+  <div class="container content">
 			<blockquote>
 				<strong>A note from Michael:</strong><br /><br />
 				 I get asked about the stuff I use on a regular basis. To make it easier
@@ -37,15 +50,16 @@ const permalink = `https://${import.meta.env.HOST}/uses/`;
 							{
 								gear
 									.filter((gear) => gear.data.category === category)
-									.map((gear) => (
-										<GearCard {gear}/>
-									))
+									.map((gear) => {
+										const style = nextStyle();
+										return <GearCard classes={`gear gear${style}`} {gear}/>
+								})
 							}
 						</div>
 					</div>
 				))
 			}
-  </article>
+  </div>
 </BaseLayout>
 
 <style>
@@ -53,4 +67,26 @@ const permalink = `https://${import.meta.env.HOST}/uses/`;
     display: flex;
     flex-direction: column;
   }
+	.cards {
+		display: grid;
+		gap: 2rem;
+	}
+
+	@media (min-width: 768px) /* md */ {
+		.cards {
+			grid-template-columns: 50% 1fr;
+		}
+	}
+		
+	@media (min-width: 1280px) /* xl */ {
+		.cards {
+				grid-template-columns: 33% 33% 1fr;
+			}
+		}
+
+	@media (min-width: 1536px) /* 2xl */ {
+		.cards {
+				grid-template-columns: 33% 33% 1fr;
+			}
+	}
 </style>
