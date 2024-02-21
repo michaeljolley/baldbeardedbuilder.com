@@ -1,10 +1,8 @@
 ---
-export const prerender = true;
-
 import { getCollection } from "astro:content";
 import BaseLayout from "@layouts/base.astro";
+import BlogList from "@components/BlogList.astro";
 import Mast from "@components/Mast.astro";
-import BlogCard from "@components/Cards/BlogCard.astro";
 
 let posts = await getCollection(
   "blog",
@@ -20,54 +18,23 @@ const subhead = "Michael's blog posts";
 const description =
   "Blog posts written by Michael Jolley, the bald bearded builder.";
 const permalink = `https://${import.meta.env.HOST}/blog/`;
-const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1688594948/website-assets/neon_robot_with_words_coming_from_its_mouth_ectqfv.png"
 ---
 
-<BaseLayout {title} {description} {permalink} {subhead}>
-	<Mast {image}>
-		<h1>All {posts.length} Things I've Written Down</h1>
-		<p>Learnings I'll find when I try to do them again.</p>
-	</Mast>
-	<section>
-		<div class="container">
-			{posts.map((post) => <BlogCard {post} />)}
-		</div>
-	</section>
+<BaseLayout {title} {description} {permalink}>
+  <Mast
+    title=`All ${posts.length} Things I've Written Down`
+    summary="Learnings I'll find when I try to do them again."
+  />
+  <section>
+    <div class="container">
+      <BlogList {posts} />
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-	section {
-		margin: 3rem 0;
-		padding: 0 2rem;
-	}
-
-	.container {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 1.5rem;
-	}
-
-	@media (min-width:640px) /* sm */ {
-		.container {
-			grid-template-columns: 1fr 1fr;
-		}
-	}
-
-	@media (min-width:768px) /* md */ {
-		.container {
-			grid-template-columns: 1fr 1fr;
-		}
-	}
-
-	@media (min-width:1024px) /* lg */ {
-		.container {
-			grid-template-columns: 1fr 1fr 1fr;
-		}
-	}
-
-	@media (min-width:1280px) /* xl */ {
-		.container {
-			grid-template-columns: 1fr 1fr 1fr 1fr;
-		}
-	}
+  .container {
+    display: flex;
+    flex-direction: column;
+  }
 </style>

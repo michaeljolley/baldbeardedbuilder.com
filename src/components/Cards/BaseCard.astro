@@ -1,0 +1,11 @@
+---
+export interface Props {
+  url: string | undefined;
+  classes?: string | undefined;
+}
+const { url, classes, ...rest } = Astro.props;
+---
+
+<a {...rest} class={classes} href={url}>
+  <slot />
+</a>

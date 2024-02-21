@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BlogCard from "@components/Cards/BlogCard.astro";
+
+export interface Props {
+  posts: CollectionEntry<"blog">[];
+}
+const { posts, ...rest } = Astro.props;
+let lastStyle = 0;
+
+const nextStyle = () => {
+	let style = lastStyle
+	
+	while (style === lastStyle) {
+		style = Math.floor(Math.random() * (6 - 1 + 1)) + 1;
+	}
+
+	lastStyle = style;
+	return style;
+};
+---
+
+{posts.map((post) => {
+	const style = nextStyle();
+	return <BlogCard {post} classes={`blog blog${style}`} {...rest}/>
+})}

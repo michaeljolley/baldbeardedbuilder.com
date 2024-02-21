@@ -1,0 +1,139 @@
+---
+import Icon from "@components/Icon.astro"
+---
+
+<ul>
+	<li>
+		<a
+			href="https://twitter.com/michaeljolley"
+			rel="me"
+			target="_blank"
+			class="twitter"
+			aria-label="Follow the musings on Twitter"
+			title="Follow the musings on Twitter"
+		>
+			<Icon icon="Twitter" style="height:1rem;" class="icon twitter" />
+		</a>
+	</li>
+	<li>
+		<a
+			href="https://youtube.com/baldbeardedbuilder"
+			rel="me"
+			target="_blank"
+			class="youtube"
+			aria-label="Subscribe, like & comment on YouTube videos"
+			title="Subscribe, like & comment on YouTube videos"
+		>
+			<Icon icon="YouTube" style="height:1rem;" class="icon youtube" />
+		</a>
+	</li>
+	<li>
+		<a
+			href="https://www.tiktok.com/@baldbeardedbuilder"
+			rel="me"
+			target="_blank"
+			class="tiktok"
+			aria-label="Check out TikTok"
+			title="Check out TikTok"
+		>
+			<Icon icon="TikTok" style="height:1rem;" class="icon tiktok" />
+		</a>
+	</li>
+	<li>
+		<a
+			href="https://twitch.tv/baldbeardedbuilder"
+			rel="me"
+			target="_blank"
+			class="twitch"
+			aria-label="Check out the live streams on Twitch"
+			title="Check out the live streams on Twitch"
+		>
+			<Icon icon="Twitch" style="height:1rem;" class="icon twitch" />
+		</a>
+	</li>
+	<li>
+		<a
+			href="https://linkedin.com/in/michaelwjolley"
+			rel="me"
+			target="_blank"
+			class="linkedin"
+			aria-label="Let's get professional on LinkedIn"
+			title="Let's get professional on LinkedIn"
+		>
+			<Icon icon="LinkedIn" style="height:1rem;" class="icon linkedin" />
+		</a>
+	</li>
+	<li>
+		<a
+			href="https://github.com/michaeljolley"
+			rel="me"
+			target="_blank"
+			class="github"
+			aria-label="Yeah. I write code. View my GitHub profile."
+			title="Yeah. I write code."
+		>
+			<Icon icon="GitHub" style="height:1rem;" class="icon github" />
+		</a>
+	</li>
+	<!-- <li>
+		<a
+			href="https://discord.gg/kC8HTrs59R"
+			rel="me"
+			target="_blank"
+			class="discord"
+			title="Join the conversation on Discord"
+		>
+			<Icon icon="Discord" style="height:1rem;" class="icon discord" />
+		</a>
+	</li> -->
+</ul>
+
+
+<style>
+  ul {
+		display: flex;
+		gap: 0.5rem;
+		list-style: none;
+		margin: 0;
+  }
+  .icon {
+		color: var(--bg);
+		fill: var(--bg);
+  }
+
+	a {
+		background-color: var(--pink);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 1rem;
+		border: 0;
+	}
+
+	a:hover {
+		background-color: var(--bg-2);
+	}
+
+	a.twitter:hover {
+		background-color: var(--twitter);
+	}
+	a.linkedin:hover {
+		background-color: var(--linkedin);
+	}
+	a.twitch:hover {
+		background-color: var(--twitch);
+	}
+	a.discord:hover {
+		background-color: var(--discord);
+	}
+	a.tiktok:hover {
+		background-color: var(--tiktok);
+	}
+	a.youtube:hover {
+		background-color: var(--youtube);
+	}
+	a.github:hover {
+		background-color: var(--github);
+	}
+	
+</style>

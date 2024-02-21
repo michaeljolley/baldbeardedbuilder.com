@@ -1,22 +1,20 @@
 ---
-export const prerender = true;
-
 import BaseLayout from "@layouts/base.astro";
-import BrainDumpAd from "@components/BrainDumpAd.astro";
-import HomeMast from "@components/HomeMast.astro";
-import LatestPosts from "@components/LatestPosts.astro";
-import Proof from "@components/Proof.astro";
+import Mast from "@components/Mast.astro";
+import BetterCode from "@components/BetterCode.astro";
+import BrainDumpForm from "@components/BrainDumpForm.astro";
 
-const title = "Michael Jolley";
-const subhead = "Bald. Bearded. Builder.";
+const title = "Michael Jolley is the Bald Bearded Builder";
 const description =
   "Welcome to the home of Michael Jolley, also known as the bald, bearded, builder. Here you'll find all Michael's content curated for easier viewing.";
 const permalink = `https://${import.meta.env.HOST}/`;
 ---
 
-<BaseLayout {title} {description} {permalink} {subhead}>
-	<HomeMast/>
-	<Proof/>
-	<LatestPosts/>
-	<BrainDumpAd/>
+<BaseLayout {title} {description} {permalink}>
+  <Mast
+    title="Bald Bearded Builder"
+    summary="Helping developers do more...<br>and laugh along the way."
+  />
+  <BetterCode />
+  <BrainDumpForm />
 </BaseLayout>

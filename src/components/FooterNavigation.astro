@@ -1,76 +1,47 @@
 ---
-
+import Socials from "@components/Socials.astro";
 ---
 
-<nav>
-  <section>
-    <uL>
-      <li>
-        <a href="/">Home</a>
-      </li>
-      <li>
-        <a href="/uses/">What I Use</a>
-      </li>
-    </uL>
-  </section>
-  <section>
-    <uL>
-      <li>
-        <a href="https://youtube.com/c/baldbeardedbuilder">Videos</a>
-      </li>
-      <li>
-        <a href="/blog/">Blog</a>
-      </li>
-      <li>
-        <a href="https://twitch.tv/baldbeardedbuilder">Live Streams</a>
-      </li>
-    </uL>
-  </section>
-  <section>
-    <uL>
-      <li>
-        <a href="/brain-dump/">Brain Dump</a>
-      </li>
-      <li>
-        <a href="https://discord.gg/kC8HTrs59R">Build With Me</a>
-      </li>
-    </uL>
-  </section>
-</nav>
+<aside>
+  <div>
+    <div>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/uses/">What I Use</a></li>
+      </ul>
+      <ul>
+        <li><a href="/vscode/">Better VS Code</a></li>
+        <li><a href="/blog/">All Blog Posts</a></li>
+        <li><a href="/brain-dump/">The Brain Dump</a></li>
+      </ul>
+    </div>
+    <Socials />
+  </div>
+</aside>
 
 <style>
-  nav {
-		display: grid;
-		gap: 2rem;
-		justify-content: space-between;
-    grid-template-columns: repeat(3, 1fr);
+  aside {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem;
+    justify-content: center;
+    align-items: center;
   }
-  section {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
+  aside > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
   }
-  p {
-		font-weight: bold;
-		padding: 0;
-		margin: 0;
-		font-size: 0.8rem;
+  div > div {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
   }
-  ul {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		padding: 0;
-		margin: 0;
-		margin-top: 1rem;
-		list-style: none;
-		font-size: 0.9rem;
+  li {
+    margin-top: 1rem;
   }
   a {
-		text-decoration: none;
-		color: var(--light-text);
+    font-size: 0.9rem;
   }
-	a:hover {
-		color: var(--nav-link-hover);
-	}
 </style>

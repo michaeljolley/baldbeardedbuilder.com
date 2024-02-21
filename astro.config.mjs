@@ -1,23 +1,16 @@
 import { defineConfig } from "astro/config";
-import cloudflare from "@astrojs/cloudflare";
 import preact from "@astrojs/preact";
 import { h, s } from "hastscript";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
+import netlify from '@astrojs/netlify';
 
 import expressiveCode from "astro-expressive-code";
 
-// https://astro.build/config
 export default defineConfig({
 	site: "https://baldbeardedbuilder.com",
 	trailingSlash: "always",
-	output: "server",
-	adapter: cloudflare({
-		runtime: "local",
-	}),
-	devToolbar: {
-		enabled: false,
-	},
+  adapter: netlify(),
 	integrations: [
 		preact(),
 		expressiveCode({

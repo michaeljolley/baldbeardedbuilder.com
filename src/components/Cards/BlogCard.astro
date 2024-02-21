@@ -1,40 +1,123 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import Card from "./Card.astro";
+import BaseCard from "@components/Cards/BaseCard.astro";
 
 export interface Props {
   post: CollectionEntry<"blog">;
-	classes?: string | undefined;
+  classes?: string | undefined;
 }
 
-const { post, classes, ...attributes } = Astro.props;
-const { title, summary } = post.data;
-const url = `/blog/${post.slug}/`
+const { post, classes, ...rest } = Astro.props;
+const { title, summary, image, image_alt } = post.data;
+const url = `/blog/${post.slug}/`;
 ---
 
-<Card {...attributes} {classes} {url}>
-  <h3>{title}</h3>
-  <p>{summary}</p>
-</a>
+<BaseCard {...rest} {classes} {url}>
+  <img src={image} alt={image_alt} loading="lazy"/>
+  <div>
+    <h3>{title}</h3>
+    <p>{summary}</p>
+  </div>
+</BaseCard>
 
 <style>
-	h3 {
-		background: unset;
-		animation: unset;
-		--bg-size: 400%;
-		animation: unset;
-		-webkit-background-clip: unset;
-		-webkit-text-fill-color: unset;
-		color: oklch(100% 0 0);
-		font-weight: bold;
-		font-size: 1.2rem;
-		line-height: 1.4rem;
-		padding: 0.2rem;
-	}
+  .blog {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    border: 0;
+  }
+  .blog img {
+    display: none;
+  }
+  .blog:nth-of-type(even) {
+    flex-direction: row-reverse;
+  }
+  .blog div {
+    padding: 2.5rem;
+  }
+  h3 {
+    font-family: var(--font-anton);
+    text-transform: uppercase;
+    font-size: 3rem;
+    line-height: 95%;
+  }
+  p {
+    color: var(--text);
+    line-height: 1.5rem;
+    width: 80%;
+  }
 
-	p {
-		font-size: 0.8rem;
-		line-height: 0.9rem;
-		padding: 0.2rem;
-	}
+  .blog1 {
+    background-color: var(--blue);
+  }
+  .blog1 h3 {
+    color: var(--light);
+  }
+  .blog1 p {
+    color: var(--dark);
+  }
+  .blog2 {
+    background-color: var(--pink);
+  }
+  .blog2 h3 {
+    color: var(--yellow);
+  }
+  .blog2 p {
+    color: var(--light);
+  }
+  .blog3 {
+    background-color: var(--bg-2);
+  }
+  .blog3 h3 {
+    color: var(--pink);
+  }
+  .blog3 p {
+    color: var(--bg);
+  }
+  .blog4 {
+    background-color: var(--purple);
+  }
+  .blog4 h3 {
+    color: var(--blue);
+  }
+  .blog4 p {
+    color: var(--light);
+  }
+  .blog5 {
+    background-color: var(--yellow);
+  }
+  .blog5 h3 {
+    color: var(--purple);
+  }
+  .blog5 p {
+    color: var(--dark);
+  }
+  .blog6 {
+    background-color: var(--bg);
+  }
+  .blog6 h3 {
+    color: var(--pink);
+  }
+  .blog6 p {
+    color: var(--text);
+  }
+
+  @media (min-width: 640px) /* sm */ {
+    h3 {
+      font-size: 4rem;
+    }
+  }
+
+  @media (min-width: 768px) /* md */ {
+    h3 {
+      font-size: 5rem;
+    }
+  }
+
+  @media (min-width: 1024px) /* lg */ {
+    .blog img {
+      display: block;
+    }
+  }
 </style>

@@ -1,0 +1,123 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+
+const videoEntries = await getCollection("videos");
+
+const latestVSCVideo = videoEntries
+												.filter((entry: CollectionEntry<"videos">) => {
+													return entry.data.tags?.includes("vscode");
+												})
+												.sort((a: CollectionEntry<"videos">, b: CollectionEntry<"videos">) => {
+													return b.data.date.getTime() - a.data.date.getTime();
+												})[0];
+---
+
+<section>
+	<div class="wrapper">
+		<aside>
+			<p>Get the most out of Visual Studio Code with these tips, tricks, and extensions.</p>
+			<p><a href="/vscode/">Check out</a> this archive of posts, videos, shorts, &amp; more.</p>
+			<h3>Latest Tip</h3>
+			<div class="player">
+				<iframe
+				title="Latest VS Code Video"
+				loading="lazy" src=`https://www.youtube.com/embed/${latestVSCVideo.data.id}` allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+			</div>
+		</aside>
+		<h2>Better <span>VS Code</span></h2>
+	</div>
+</section>
+
+<style>
+	section {
+		padding: 4rem 0;
+		min-height: 40vh;
+	}
+	.wrapper {
+		display: flex;
+		flex-direction: column-reverse;
+		gap: 1.5rem;
+		background: url('/images/code.svg') no-repeat;
+		background-position: 100% center;
+		background-size: contain;
+		
+	}
+	h2 {
+		font-family: var(--font-anton);
+		font-size: 8rem;
+		text-transform: uppercase;
+	}
+	h2 span {
+		text-wrap: nowrap;
+	}
+	h3 {
+		font-family: var(--font-anton);
+		font-size: 2rem;
+		text-transform: uppercase;
+		margin: 2rem 0;
+		color: var(--blue);
+	}
+	.player {
+		border: 5px dashed var(--blue);
+		padding: 0.25rem;
+		display: flex;
+	}
+	iframe {
+		aspect-ratio: 16 / 9;
+		position: relative;
+		width: 100%;
+	}
+
+	@media (min-width: 640px) /* sm */ {
+	}
+
+	@media (min-width: 768px) /* md */ {
+		section {
+			background-position: 55vw center;
+		}
+		.wrapper {
+			flex-direction: row;
+		}
+		h2 {
+			font-size: 9rem;
+		}
+	}
+
+	@media (min-width: 1024px) /* lg */ {
+		section {
+			background-position: 60vw center;
+		}
+		h2 {
+			font-size: 12rem;
+		}
+		h3 {
+			font-size: 3rem;
+		}
+	}
+
+	@media (min-width: 1280px) /* xl */ {
+		section {
+			background-position: 65vw center;
+		}
+		h2 {
+			font-size: 14rem;
+		}
+		.wrapper {
+			max-width: 90vw;
+			margin: auto;
+		}
+	}
+
+	@media (min-width: 1536px) /* 2xl */ {
+		section {
+			background-position: 77vw center;
+		}
+		h2 {
+			font-size: 16rem;
+			margin-left: 10vw;
+		}
+		.wrapper {			
+			max-width: 90vw;
+		}
+	}
+</style>

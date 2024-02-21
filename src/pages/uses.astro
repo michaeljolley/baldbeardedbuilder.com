@@ -1,6 +1,4 @@
 ---
-export const prerender = true;
-
 import { getCollection } from "astro:content";
 import BaseLayout from "@layouts/base.astro";
 import Mast from "@components/Mast.astro";
@@ -12,22 +10,32 @@ const categories = gear
 	.map((item) => item.data.category)
 	.filter((value, index, self) => self.indexOf(value) === index);
 
+let lastStyle = 0;
+
+const nextStyle = () => {
+	let style = lastStyle
+	
+	while (style === lastStyle) {
+		style = Math.floor(Math.random() * (6 - 1 + 1)) + 1;
+	}
+
+	lastStyle = style;
+	return style;
+};
+
 const title = "All my Gear, Tools, and Toys";
 const subhead = "Gear to geek out on";
 const description =
   "All the tools Michael Jolley uses to build things on the web.";
 const permalink = `https://${import.meta.env.HOST}/uses/`;
-const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/v1702169693/website-assets/0_2_irmwvq.webp"
 ---
 
-<BaseLayout {title} {description} {permalink} {subhead}>
-	<Mast {image}>
-		<h1>All the Stuff I Use</h1>
-		<p>Hardware, Software, and Beard Oil... maybe not.</p>
-	</Mast>
-	<section>
-		<div class="container">
-			
+<BaseLayout {title} {description} {permalink}>
+  <Mast
+    title=`All Meh Gear`
+    summary="Hardware, Software, and Tools I use to build things."
+  />
+  <div class="container content">
 			<blockquote>
 				<strong>A note from Michael:</strong><br /><br />
 				 I get asked about the stuff I use on a regular basis. To make it easier
@@ -42,94 +50,43 @@ const image = "https://res.cloudinary.com/dk3rdh3yo/image/upload/c_scale,f_auto/
 							{
 								gear
 									.filter((gear) => gear.data.category === category)
-									.map((gear) => (
-										<GearCard {gear}/>
-									))
+									.map((gear) => {
+										const style = nextStyle();
+										return <GearCard classes={`gear gear${style}`} {gear}/>
+								})
 							}
 						</div>
 					</div>
 				))
 			}
-		</div>
-	</section>
+  </div>
 </BaseLayout>
 
 <style>
-	section {
-		margin: 3rem 0;
-		padding: 0 2rem;
-	}
-
-	.container {
-		display: flex;
-		flex-direction: column;
-		gap: 2rem;
-	}
-	
-	blockquote {
-		border-left: 4px solid var(--blue);
-		padding: 0.5rem 1.5rem;
-		margin: 1rem 0;
-		background: oklch(100% 0 0 / 5%);
-		backdrop-filter: blur(15px);
-		font-size: 0.9rem;
-		line-height: 1.2rem;
-	}
-	blockquote p {
-		margin: 0.5rem 0;
-	}
-	
+  .container {
+    display: flex;
+    flex-direction: column;
+  }
 	.cards {
 		display: grid;
-		grid-template-columns: 1fr;
-		gap: 1.5rem;
+		gap: 2rem;
 	}
 
-	h2 {
-		--bg-size: 400%;
-		background: var(--gradient) 0 0 / var(--bg-size) 100%;
-		color: transparent;
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		animation: move-bg 15s infinite linear;
-		margin: 1.5rem 0;
-		padding: 0.2rem 0;
-		font-size: 1.8rem;
-	}
-
-	@media (min-width:640px) /* sm */ {
-		.container {
-			grid-template-columns: 1fr 1fr;
-		}
+	@media (min-width: 768px) /* md */ {
 		.cards {
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: 50% 1fr;
 		}
 	}
-
-	@media (min-width:768px) /* md */ {
-		.container {
-			grid-template-columns: 1fr 1fr;
-		}
+		
+	@media (min-width: 1280px) /* xl */ {
 		.cards {
-			grid-template-columns: 1fr 1fr;
+				grid-template-columns: 33% 33% 1fr;
+			}
 		}
-	}
 
-	@media (min-width:1024px) /* lg */ {
-		.container {
-			grid-template-columns: 1fr 1fr 1fr;
-		}
+	@media (min-width: 1536px) /* 2xl */ {
 		.cards {
-			grid-template-columns: 1fr 1fr 1fr;
-		}
-	}
-
-	@media (min-width:1280px) /* xl */ {
-		.container {
-			grid-template-columns: 1fr 1fr 1fr 1fr;
-		}
-		.cards {
-			grid-template-columns: 1fr 1fr 1fr 1fr;
-		}
+				grid-template-columns: 33% 33% 1fr;
+			}
 	}
 </style>
