@@ -58,7 +58,7 @@ export default async (request: Request, context: Context) => {
 						<iframe
 							title="Latest Stream"
 							loading="lazy"
-							src="https://clips.twitch.tv/embed?clip=InspiringObservantAardvarkHassaanChop-FAmDDsN5jGnf-mVf&parent=${Netlify.env.get("HOST")}"
+							src="https://player.twitch.tv/?channel=baldbeardedbuilder&parent=${Netlify.env.get("HOST")}"
 							allowfullscreen>
 						</iframe>
 					</div>
