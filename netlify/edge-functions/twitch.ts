@@ -14,7 +14,7 @@ export default async (request: Request, context: Context) => {
 		// Replace the content
 		let twitchEmbed = "";
 
-		const isLive = await isLiveOnTwitch();
+		const { isLive, videoId } = await getTwitchData();
 
 		if (isLive) {
 			twitchEmbed = `<section class="liveOnTwitch">
@@ -58,7 +58,7 @@ export default async (request: Request, context: Context) => {
 						<iframe
 							title="Latest Stream"
 							loading="lazy"
-							src="https://player.twitch.tv/?channel=baldbeardedbuilder&parent=${Netlify.env.get("HOST")}"
+							src="https://player.twitch.tv/?video=${videoId}&parent=${Netlify.env.get("HOST")}&autoplay=false"
 							allowfullscreen>
 						</iframe>
 					</div>
@@ -74,7 +74,7 @@ export default async (request: Request, context: Context) => {
 	return new Response(updatedPage, response);
 };
 
-const isLiveOnTwitch = async (): Promise<boolean> => {
+const getTwitchData = async (): Promise<{isLive: boolean, videoId: string}> => {
 	const opts = {
 		client_id: Netlify.env.get("TWITCH_CLIENT_ID"),
 		client_secret: Netlify.env.get("TWITCH_CLIENT_SECRET"),
@@ -104,8 +104,24 @@ const isLiveOnTwitch = async (): Promise<boolean> => {
 	const body = await response.text();
 
 	const { data: streams } = JSON.parse(body);
+	
+	const vidResponse = await fetch(
+		`https://api.twitch.tv/helix/videos?user_id=279965339&sort=time`,
+		{
+			headers: {
+				"Client-ID": Netlify.env.get("TWITCH_CLIENT_ID") as string,
+				Authorization: `Bearer ${authData.access_token}`,
+			},
+		},
+	);
+	const vidBody = await vidResponse.text();
 
-	return streams && streams.length > 0;
+	const { data: videos } = JSON.parse(vidBody);
+
+	return {
+		isLive: streams && streams.length > 0,
+		videoId: videos && videos.length > 0 ? videos[0].id : "",
+	}
 };
 
 export const config: Config = {
@@ -126,5 +142,7 @@ export const config: Config = {
 		"/*.astro",
 		"/fonts/*",
 		"/images/*",
+		"/node_modules/*",
+		"/@id/*",
 	],
 };
