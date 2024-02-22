@@ -59,10 +59,9 @@
 }
 .content blockquote {
 	border: 8px dotted var(--purple);
-	border-left: 0;
-	border-right: 0;
 	padding: 1rem 1.5rem;
-	margin: 1.5rem 0;
+	margin: 1.5rem auto;
+	width: 85%;
 	background: var(--tint);
 	transform: rotate(1deg);
 }
@@ -110,11 +109,9 @@
 }
 
 .expressive-code {
-	width: 100%;
+	width: 95%;
 	margin: 1.5rem auto;
 	border: 5px dashed var(--pink);
-	border-left: 0;
-	border-right: 0;
 	transform: rotate(-1deg);
 }
 .expressive-code .frame pre {
@@ -126,10 +123,13 @@
 	transform: rotate(3deg);
 }
 
-.copy .feedback.show {
-	
-}
-
 .snapshot blockquote h2 {
 	margin: 0.5rem 0;
 }
+
+@media (min-width: 768px) /* md */ {
+	.content blockquote {
+		width: 90%;
+	}
+}
+	
