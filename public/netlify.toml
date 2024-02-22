@@ -9,3 +9,15 @@
   to = "/blog/:splat"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/blog/tags/"
+  to = "/blog/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/tags/*"
+  to = "/blog/tags/:splat"
+  status = 301
+  force = true
