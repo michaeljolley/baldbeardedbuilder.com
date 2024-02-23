@@ -6,7 +6,8 @@
 			"@components/*": ["src/components/*"],
 			"@layouts/*": ["src/layouts/*"],
 			"@styles/*": ["src/styles/*"],
-			"@scripts/*": ["src/scripts/*"]
+			"@scripts/*": ["src/scripts/*"],
+			"@types/*": ["netlify/edge-functions/types/*"]
 		},
 		"jsx": "react-jsx",
 		"jsxImportSource": "preact"
