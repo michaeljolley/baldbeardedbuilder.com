@@ -10,7 +10,7 @@ export default async (request: Request, context: Context) => {
 
 	const analytic = await insertAnalytic({
 		session: sessionId,
-		referrer: request.referrer,
+		referrer: request.headers.get("referer") || undefined,
 		latitude: context.geo.latitude,
 		longitude: context.geo.longitude,
 		country_code: context.geo.country.code,
