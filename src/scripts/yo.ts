@@ -1,4 +1,12 @@
 import type { Analytic } from "netlify/edge-functions/types/analytic";
+
+declare global {
+	interface Window {
+		bwm: string;
+	}
+}
+
+
 (function () {
 	function page() {
 		send();
@@ -40,9 +48,3 @@ import type { Analytic } from "netlify/edge-functions/types/analytic";
 
 	page();
 })();
-
-declare global {
-	interface Window {
-		bwm: string;
-	}
-}

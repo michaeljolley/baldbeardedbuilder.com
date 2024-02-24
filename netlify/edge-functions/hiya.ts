@@ -1,6 +1,5 @@
 import type { Config, Context } from "https://edge.netlify.com/";
 import { type Cookie } from "https://deno.land/std@0.148.0/http/cookie.ts";
-import { format } from "https://deno.land/std@0.217.0/datetime/format.ts";
 import { insertAnalytic } from "./scripts/supabase.ts";
 
 export default async (request: Request, context: Context) => {
@@ -16,8 +15,6 @@ export default async (request: Request, context: Context) => {
 		longitude: context.geo.longitude,
 		country_code: context.geo.country.code,
 	});
-
-	console.log(analytic);
 
 	const regex = /<!-- ANALYTIC -->/i;
 	let updatedPage = page.replace(regex, analytic.id);
@@ -37,7 +34,7 @@ function getSessionId(context: Context): string {
 
 		return sessionId;
 	}
-	return cookie.value;
+	return cookie;
 }
 
 function uuidv4(): string {

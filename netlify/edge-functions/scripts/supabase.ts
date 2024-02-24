@@ -12,7 +12,6 @@ const supabase = createClient(
 );
 
 export async function insertAnalytic(analytic: Analytic) {
-	console.log(analytic);
 	const { data, error } = await supabase
 		.from("analytics")
 		.insert(analytic)
