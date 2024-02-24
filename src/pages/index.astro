@@ -3,6 +3,7 @@ import BaseLayout from "@layouts/base.astro";
 import Mast from "@components/Mast.astro";
 import BetterCode from "@components/BetterCode.astro";
 import BrainDumpForm from "@components/BrainDumpForm.astro";
+import Twitch from "@components/Twitch.astro";
 
 const title = "Michael Jolley is the Bald Bearded Builder";
 const description =
@@ -15,6 +16,7 @@ const permalink = `https://${import.meta.env.HOST}/`;
     title="Bald Bearded Builder"
     summary="Helping developers do more...<br>and laugh along the way."
   />
+	<Twitch/>
   <BetterCode />
   <BrainDumpForm />
 </BaseLayout>

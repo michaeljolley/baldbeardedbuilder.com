@@ -1,0 +1,25 @@
+---
+import { isOnline } from '@scripts/twitch';
+
+const isLive = await isOnline();
+const HOST = import.meta.env.HOST;
+const videoSource = `https://player.twitch.tv/?channel=baldbeardedbuilder&parent=${HOST}`
+---
+{
+	isLive && (
+		<section class="liveOnTwitch">
+			<div class="wrapper">
+				<aside>
+					Live Now
+					<img src="/images/screen.svg" alt="Screen" />
+				</aside>
+				<iframe
+					title="Streaming live on Twitch"
+						src={videoSource}
+						loading="lazy"
+						allowfullscreen>
+				</iframe>
+			</div>
+		</section>
+	)
+}

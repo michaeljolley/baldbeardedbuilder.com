@@ -1,5 +1,6 @@
 ---
 import LogoSpinnerTop from "@components/LogoSpinnerTop.astro";
+import TwitchLive from "@components/TwitchLive.astro";
 
 export interface Props {
   title: string;
@@ -15,7 +16,7 @@ const { title, summary, reduce = false } = Astro.props;
   <h1>{title}</h1>
   {summary && <h2 set:html={summary} />}
 </section>
-<!-- TWITCH_STATUS -->
+<TwitchLive/>
 
 <style>
   section {
