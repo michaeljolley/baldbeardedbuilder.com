@@ -1,6 +1,6 @@
 import type { Config } from "https://edge.netlify.com/";
 import type { Analytic } from "./types/analytic.ts";
-import { insertAnalytic } from "./scripts/supabase.ts";
+import { updateAnalytic } from "./scripts/supabase.ts";
 
 export default async function handler(req: Request) {
 	const analytic: Analytic = await req.json();
@@ -15,7 +15,7 @@ export default async function handler(req: Request) {
 		});
 	}
 
-	await insertAnalytic(analytic);
+	await updateAnalytic(analytic);
 
 	return new Response(JSON.stringify({}), {
 		status: 200,
