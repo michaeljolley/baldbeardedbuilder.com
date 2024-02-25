@@ -3,18 +3,25 @@ import preact from "@astrojs/preact";
 import { h, s } from "hastscript";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
-import netlify from '@astrojs/netlify';
+import netlify from "@astrojs/netlify";
+import astroCompress from "astro-compress";
 
 import expressiveCode from "astro-expressive-code";
 
 export default defineConfig({
 	site: "https://baldbeardedbuilder.com",
 	trailingSlash: "always",
-  adapter: netlify(),
+	adapter: netlify(),
+	compressHTML: false,
 	integrations: [
 		preact(),
 		expressiveCode({
 			themes: "poimandres",
+		}),
+		astroCompress({
+			html: {
+				removeComments: false,
+			},
 		}),
 	],
 	markdown: {
