@@ -310,6 +310,57 @@ form button:not([data-copied="Copied!"]):hover {
 	transform: rotate(1deg) scale(1.1);
 }
 
+.astroed {
+	background-color: var(--text);
+	color: var(--bg);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+.astroed .wrapper {
+	display: flex;
+	gap: 2rem;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	margin: 2rem 0;
+}
+.astroed aside {
+	font-family: var(--font-anton);
+	font-size: 9rem;
+	color: var(--bg);
+	text-transform: uppercase;
+	position: relative;
+	z-index: 1;
+}
+.astroed aside span {
+	position: relative;
+	z-index: 4;
+}
+.astroed img {
+	position: absolute;
+	z-index: 2;
+	bottom: -4rem;
+	right: 0;
+	height: 110%;
+	transform: rotate(-5deg);
+}
+.astroed .wrapper div {
+	position: relative;
+	z-index: 3;
+}
+
+.astroed a {
+	color: var(--bg);
+	border-color: var(--blue);
+}
+.astroed a:hover {
+	color: var(--pink);
+	border-color: var(--pink);
+}
+
 @media (min-width: 640px) /* sm */ {
 	.twitchPanel svg {
 		top: 4vw;
@@ -321,6 +372,12 @@ form button:not([data-copied="Copied!"]):hover {
 	.twitchPanel svg {
 		top: 0vw;
 		right: -5vw;
+	}
+	.astroed aside {
+		font-size: 10rem;
+	}
+	.astroed .wrapper {
+		flex-direction: row;
 	}
 }
 
@@ -338,12 +395,28 @@ form button:not([data-copied="Copied!"]):hover {
 	.twitchPanel h3 {
 		font-size: 3rem;
 	}
+	.astroed aside {
+		font-size: 11rem;
+	}
+	.astroed .wrapper {
+		display: grid;
+		grid-template-columns: 50% 1fr;
+	}
+	.astroed img {
+		right: 5rem;
+	}
 }
 
 @media (min-width: 1280px) /* xl */ {
 	.twitchPanel svg {
 		top: 5vw;
 		right: 10vw;
+	}
+	.astroed img {
+		right: 10rem;
+	}
+	.astroed aside {
+		font-size: 12rem;
 	}
 }
 
@@ -354,6 +427,9 @@ form button:not([data-copied="Copied!"]):hover {
 	.twitchPanel svg {
 		top: 5vw;
 		right: 10vw;
+	}
+	.astroed img {
+		right: 15rem;
 	}
 }
 

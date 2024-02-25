@@ -1,0 +1,121 @@
+---
+
+---
+
+<section class="astroed">
+  <div class="wrapper">
+    <aside>
+      <span>Astro<br />FTW!</span>
+      <img src="/images/astro.svg" alt="Astro logo" />
+    </aside>
+    <div>
+      <p>
+        Heyo friendo! Looks like you got here from <a
+          href="https://astro.build?ref=baldbeardedbuilder">astro.build</a
+        >. In that case, I've got some Astro goodness you might enjoy.
+      </p>
+      <p>
+        First up, the code for this site is open-sourced on
+        <a href="https://github.com/michaeljolley/baldbeardedbuilder.com"
+          >GitHub</a
+        >. Take a look at the repository and feel free to shoot me any questions
+        on <a href="https://twitter.com/michaeljolley">Twitter</a>.
+      </p>
+      <p>
+        Next, I've got a few blog posts about Astro that you might find
+        interesting. You can check out all the <a href="/blog/tags/astro"
+          >`astro` tagged posts here</a
+        >.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .astroed {
+    background-color: var(--text);
+    color: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .astroed .wrapper {
+    display: flex;
+    gap: 2rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem 0;
+  }
+  .astroed aside {
+    font-family: var(--font-anton);
+    font-size: 9rem;
+    color: var(--bg);
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+  }
+  .astroed aside span {
+    position: relative;
+    z-index: 4;
+  }
+  .astroed img {
+    position: absolute;
+    z-index: 2;
+    bottom: -4rem;
+    right: 0;
+    height: 110%;
+    transform: rotate(-5deg);
+  }
+  .astroed .wrapper div {
+    position: relative;
+    z-index: 3;
+  }
+
+  .astroed a {
+    color: var(--bg);
+    border-color: var(--blue);
+  }
+  .astroed a:hover {
+    color: var(--pink);
+    border-color: var(--pink);
+  }
+
+  @media (min-width: 768px) /* md */ {
+    .astroed aside {
+      font-size: 10rem;
+    }
+    .astroed .wrapper {
+      flex-direction: row;
+    }
+  }
+  @media (min-width: 1024px) /* lg */ {
+    .astroed aside {
+      font-size: 11rem;
+    }
+    .astroed .wrapper {
+      display: grid;
+      grid-template-columns: 50% 1fr;
+    }
+    .astroed img {
+      right: 5rem;
+    }
+  }
+
+  @media (min-width: 1280px) /* xl */ {
+    .astroed img {
+      right: 10rem;
+    }
+    .astroed aside {
+      font-size: 12rem;
+    }
+  }
+
+  @media (min-width: 1536px) /* 2xl */ {
+    .astroed img {
+      right: 15rem;
+    }
+  }
+</style>

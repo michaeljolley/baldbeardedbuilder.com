@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import type { Analytic } from "netlify/edge-functions/types/analytic";
+import type { Analytic } from "../types/analytic";
 
 const supabase = createClient(
 	Netlify.env.get("SUPABASE_URL") as string,
