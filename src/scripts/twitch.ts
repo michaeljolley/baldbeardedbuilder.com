@@ -29,7 +29,7 @@ const getHeaders = async (): Promise<Headers> => {
 	}
 }
 
-export async function getLastStream(): Promise<string> {
+export async function getLastStream(): Promise<{lastStreamUrl: string, lastThumbnail: string}> {
 	const headers = await getHeaders();
 	const vidResponse = await fetch(
 		`https://api.twitch.tv/helix/videos?user_id=279965339&sort=time`,
@@ -39,10 +39,21 @@ export async function getLastStream(): Promise<string> {
 	);
 	const vidBody = await vidResponse.text();
 	const { data: videos } = JSON.parse(vidBody);
-	return videos && videos.length > 0 ? videos[0].id : "";
+
+	let lastThumbnail = videos && videos.length > 0 ? 
+	videos[0].thumbnail_url : 
+	"";
+	lastThumbnail = lastThumbnail.replace("%{width}", "960").replace("%{height}", "540");
+
+	const lastStreamUrl = `https://www.twitch.tv/videos/${videos[0].id}`;
+
+	return {
+		lastStreamUrl,
+		lastThumbnail
+	};
 }
 
-export async function isOnline(): Promise<{isLive: boolean, videoId: string}> {
+export async function isOnline(): Promise<string> {
 	const headers = await getHeaders();
 	const response = await fetch(
 		`https://api.twitch.tv/helix/streams?user_login=baldbeardedbuilder`,
@@ -52,5 +63,13 @@ export async function isOnline(): Promise<{isLive: boolean, videoId: string}> {
 	);
 	const body = await response.text();
 	const { data: streams } = JSON.parse(body);
-	return streams && streams.length > 0;
+	
+	let thumbnail = streams && streams.length > 0 ? 
+									streams[0].thumbnail_url : 
+									undefined;
+	if (thumbnail) {
+		thumbnail = thumbnail.replace("%{width}", "960").replace("%{height}", "540");
+	}
+
+	return thumbnail;
 };

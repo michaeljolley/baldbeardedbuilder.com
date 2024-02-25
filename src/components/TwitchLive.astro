@@ -1,25 +1,104 @@
 ---
 import { isOnline } from '@scripts/twitch';
 
-const isLive = await isOnline();
-const HOST = import.meta.env.HOST;
-const videoSource = `https://player.twitch.tv/?channel=baldbeardedbuilder&parent=${HOST}`
+const liveThumbnail = await isOnline();
 ---
+
 {
-	isLive && (
+	liveThumbnail && (
 		<section class="liveOnTwitch">
 			<div class="wrapper">
 				<aside>
 					Live Now
 					<img src="/images/screen.svg" alt="Screen" />
 				</aside>
-				<iframe
-					title="Streaming live on Twitch"
-						src={videoSource}
-						loading="lazy"
-						allowfullscreen>
-				</iframe>
+				<a
+					title="Watch the stream live now!"
+					href="https://www.twitch.tv/baldbeardedbuilder"
+				>
+					<img src={liveThumbnail} loading="lazy"/>
+				</a>
 			</div>
 		</section>
 	)
 }
+
+<style>
+	
+section {
+	background-color: var(--yellow);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 3rem 0;
+}
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	align-items: center;
+	justify-content: center;
+	margin: 2rem 0;
+}
+aside {
+	font-family: var(--font-anton);
+	font-size: 10rem;
+	color: var(--dark);
+	text-transform: uppercase;
+	position: relative;
+}
+aside img {
+	position: absolute;
+	top: 0;
+	right: 5vw;
+	height: 70%;
+}
+a, a:hover {
+	border: 10px dashed var(--dark);
+	padding: 0.5rem;
+	transform: rotate(2deg);
+}
+a:hover {
+	border-color: var(--pink);
+	transform: rotate(-2deg);
+}
+a img {
+	aspect-ratio: 16 / 9;
+	width: 100%;
+	max-width: 690px;
+}
+
+@media (min-width: 640px) /* sm */ {
+	img {
+		height: 120%;
+		top: 4vw;
+		right: -5vw;
+	}
+}
+@media (min-width: 1024px) /* lg */ {
+	.wrapper {
+		flex-direction: row;
+	}
+	img {
+		height: 60%;
+		top: 2vw;
+		right: -4vw;
+	}
+	aside {
+		font-size: 12rem;
+	}
+}
+
+@media (min-width: 1280px) /* xl */ {
+	img {
+		height: 70%;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	a:hover {
+		transform: rotate(2deg);
+	}
+}
+
+</style>
