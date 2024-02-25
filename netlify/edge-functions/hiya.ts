@@ -3,33 +3,33 @@ import { type Cookie } from "https://deno.land/std@0.148.0/http/cookie.ts";
 import { insertAnalytic } from "./scripts/supabase.ts";
 
 const astroed = `<section class="astroed">
-<div class="wrapper">
-	<aside>
-		<span>Astro<br />FTW!</span>
-		<img src="/images/astro.svg" alt="Astro logo" />
-	</aside>
-	<div>
-		<p>
-			Heyo friendo! Looks like you got here from <a
-				href="https://astro.build?ref=baldbeardedbuilder">astro.build</a
-			>. In that case, I've got some Astro goodness you might enjoy.
-		</p>
-		<p>
-			First up, the code for this site is open-sourced on
-			<a href="https://github.com/michaeljolley/baldbeardedbuilder.com"
-				>GitHub</a
-			>. Take a look at the repository and feel free to shoot me any questions
-			on <a href="https://twitter.com/michaeljolley">Twitter</a>.
-		</p>
-		<p>
-			Next, I've got a few blog posts about Astro that you might find
-			interesting. You can check out all the <a href="/blog/tags/astro"
-				>'astro' tagged posts here</a
-			>.
-		</p>
-	</div>
-</div>
-</section>`;
+		<div class="wrapper">
+			<aside>
+				<span>Astro<br />FTW!</span>
+				<img src="/images/astro.svg" alt="Astro logo" />
+			</aside>
+			<div>
+				<p>
+					Heyo friendo! Looks like you got here from <a
+						href="https://astro.build?ref=baldbeardedbuilder">astro.build</a
+					>. In that case, I've got some Astro goodness you might enjoy.
+				</p>
+				<p>
+					First up, the code for this site is open-sourced on
+					<a href="https://github.com/michaeljolley/baldbeardedbuilder.com"
+						>GitHub</a
+					>. Take a look at the repository and feel free to shoot me any questions
+					on <a href="https://twitter.com/michaeljolley">Twitter</a>.
+				</p>
+				<p>
+					Next, I've got a few blog posts about Astro that you might find
+					interesting. You can check out all the <a href="/blog/tags/astro"
+						>\`astro\` tagged posts here</a
+					>.
+				</p>
+			</div>
+		</div>
+		</section>`;
 
 export default async (request: Request, context: Context) => {
 	const response = await context.next();
@@ -49,11 +49,11 @@ export default async (request: Request, context: Context) => {
 
 	if (analytic.referrer === "https://astro.build/") {
 		const astroRegex = /<!-- ASTROED -->/i;
-		updatedPage = page.replace(astroRegex, astroed);
+		updatedPage = updatedPage.replace(astroRegex, astroed);
 	}
 
 	const regex = /<!-- ANALYTIC -->/i;
-	updatedPage = page.replace(regex, analytic.id);
+	updatedPage = updatedPage.replace(regex, analytic.id);
 	return new Response(updatedPage, response);
 };
 
