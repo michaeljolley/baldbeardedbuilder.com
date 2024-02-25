@@ -47,10 +47,10 @@ export default async (request: Request, context: Context) => {
 
 	let updatedPage = page;
 
-	if (analytic.referrer === "https://astro.build/") {
-		const astroRegex = /<!-- ASTROED -->/i;
-		updatedPage = updatedPage.replace(astroRegex, astroed);
-	}
+	let astroReplace =
+		analytic.referrer === "https://astro.build/" ? astroed : "";
+	const astroRegex = /||ASTROED||/i;
+	updatedPage = updatedPage.replace(astroRegex, astroReplace);
 
 	const regex = /<!-- ANALYTIC -->/i;
 	updatedPage = updatedPage.replace(regex, analytic.id);
