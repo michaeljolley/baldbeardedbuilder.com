@@ -43,7 +43,7 @@ export async function getLastStream(): Promise<{lastStreamUrl: string, lastThumb
 	let lastThumbnail = videos && videos.length > 0 ? 
 	videos[0].thumbnail_url : 
 	"";
-	lastThumbnail = lastThumbnail.replace("%{width}", "960").replace("%{height}", "540");
+	lastThumbnail = lastThumbnail.replace("{width}", "960").replace("height}", "540");
 
 	const lastStreamUrl = `https://www.twitch.tv/videos/${videos[0].id}`;
 
