@@ -7,17 +7,17 @@ import Twitch from "@components/Twitch.astro";
 
 const title = "Michael Jolley is the Bald Bearded Builder";
 const description =
-  "Welcome to the home of Michael Jolley, also known as the bald, bearded, builder. Here you'll find all Michael's content curated for easier viewing.";
+	"Welcome to the home of Michael Jolley, also known as the bald, bearded, builder. Here you'll find all Michael's content curated for easier viewing.";
 const permalink = `https://${import.meta.env.HOST}/`;
 ---
 
 <BaseLayout {title} {description} {permalink}>
-  <Mast
-    title="Bald Bearded Builder"
-    summary="Helping developers do more...<br>and laugh along the way."
-  />
-  <!-- ASTROED -->
-  <Twitch />
-  <BetterCode />
-  <BrainDumpForm />
+	<Mast
+		title="Bald Bearded Builder"
+		summary="Helping developers do more...<br>and laugh along the way."
+	/>
+	**ASTROED**
+	<Twitch />
+	<BetterCode />
+	<BrainDumpForm />
 </BaseLayout>
