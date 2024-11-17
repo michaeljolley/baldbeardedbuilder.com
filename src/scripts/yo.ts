@@ -6,7 +6,6 @@ declare global {
 	}
 }
 
-
 (function () {
 	function page() {
 		send();

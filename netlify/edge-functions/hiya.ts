@@ -48,7 +48,9 @@ export default async (request: Request, context: Context) => {
 	let updatedPage = page;
 
 	let astroReplace =
-		analytic.referrer && analytic.referrer.indexOf("astro.build") >= 0 ? astroed : "";
+		analytic.referrer && analytic.referrer.indexOf("astro.build") >= 0
+			? astroed
+			: "";
 	const astroRegex = /\**ASTROED\**/i;
 	updatedPage = updatedPage.replace(astroRegex, astroReplace);
 
