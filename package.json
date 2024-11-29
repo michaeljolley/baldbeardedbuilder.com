@@ -12,11 +12,12 @@
 		"lint": "eslint --ext .astro,.js,.ts"
 	},
 	"dependencies": {
-		"@astrojs/check": "^0.5.1",
-		"@astrojs/netlify": "^5.1.2",
-		"@astrojs/preact": "^3.1.0",
-		"@astrojs/rss": "^4.0.5",
-		"astro": "^4.4.0",
+		"@astrojs/check": "^0.7.0",
+		"@astrojs/netlify": "^5.3.5",
+		"@astrojs/preact": "^3.5.0",
+		"@astrojs/rss": "^4.0.7",
+		"@supabase/supabase-js": "^2.46.2",
+		"astro": "^4.11.4",
 		"astro-expressive-code": "^0.32.4",
 		"preact": "^10.19.4",
 		"tippy.js": "^6.3.7",

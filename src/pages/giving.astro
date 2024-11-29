@@ -1,0 +1,64 @@
+---
+export const prerender = false;
+import { supabase } from "../lib/supabase";
+import BaseLayout from "@layouts/base.astro";
+import Mast from "@components/Mast.astro";
+import SeasonOfGiving from "@components/giving/SeasonOfGiving.astro";
+import Leaderboard from "@components/giving/Leaderboard.astro";
+import Twitch from "@components/Twitch.astro";
+
+const title = "BBB's Season of Gifting";
+const description =
+	"Join in on the fun and help us give back to the community this holiday season!";
+const permalink = `https://${import.meta.env.HOST}/`;
+
+const accessToken = Astro.cookies.get("sb-access-token");
+const refreshToken = Astro.cookies.get("sb-refresh-token");
+
+if (!accessToken || !refreshToken) {
+  return Astro.redirect("/signin");
+}
+
+let session;
+try {
+  session = await supabase.auth.setSession({
+    refresh_token: refreshToken.value,
+    access_token: accessToken.value,
+  });
+  if (session.error) {
+    Astro.cookies.delete("sb-access-token", {
+      path: "/",
+    });
+    Astro.cookies.delete("sb-refresh-token", {
+      path: "/",
+    });
+    return Astro.redirect("/signin");
+  }
+} catch (error) {
+  Astro.cookies.delete("sb-access-token", {
+    path: "/",
+  });
+  Astro.cookies.delete("sb-refresh-token", {
+    path: "/",
+  });
+  return Astro.redirect("/signin");
+}
+
+const nickname = session.data.user?.user_metadata.nickname;
+---
+
+<BaseLayout {title} {description} {permalink}>
+	<Mast
+		title="Season of Gifting"
+		summary=""
+	/>
+
+	<SeasonOfGiving />
+
+	<h1>Welcome {nickname}</h1>
+
+	<Leaderboard />
+
+	<Twitch />
+
+</BaseLayout>

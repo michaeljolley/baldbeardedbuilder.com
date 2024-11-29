@@ -1,5 +1,4 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import type { Analytic } from "../types/analytic";
 
 const supabase = createClient(
 	Netlify.env.get("SUPABASE_URL") as string,
@@ -10,30 +9,6 @@ const supabase = createClient(
 		},
 	},
 );
-
-export async function insertAnalytic(analytic: Analytic) {
-	const { data, error } = await supabase
-		.from("analytics")
-		.insert(analytic)
-		.select();
-
-	if (error) {
-		console.error(error);
-		return undefined;
-	} else {
-		return data[0];
-	}
-}
-
-export async function updateAnalytic(analytic: Analytic) {
-	const { error } = await supabase
-		.from("analytics")
-		.update(analytic)
-		.eq("id", analytic.id);
-	if (error) {
-		console.error(error);
-	}
-}
 
 export async function getShortUrl(slug: string) {
 	const { data, error } = await supabase

@@ -10,6 +10,7 @@ import expressiveCode from "astro-expressive-code";
 export default defineConfig({
 	site: "https://baldbeardedbuilder.com",
 	trailingSlash: "always",
+	output: "hybrid",
 	adapter: netlify(),
 	compressHTML: false,
 	integrations: [
