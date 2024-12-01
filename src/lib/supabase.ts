@@ -10,7 +10,6 @@ export const supabase = createClient(
   },
 );
 
-
 const supabaseDb = createClient(
   import.meta.env.SUPABASE_URL,
   import.meta.env.SUPABASE_ANON_KEY
@@ -22,6 +21,28 @@ export const getGifters = async () => {
 		.select("*")
 		.order("total_gifts", { ascending: false })
 		.limit(5);
+	if (error) {
+		throw error;
+	}
+	return data;
+}
+
+export const registerSub = async (user: any) => {
+	const { data, error } = await supabaseDb
+		.from("registrations")
+		.insert(user);
+	if (error) {
+		throw error;
+	}
+	return data;
+}
+
+export const getSub = async (userId: string) => {
+	const { data, error } = await supabaseDb
+		.from("registrations")
+		.select("*")
+		.filter("userId", "eq", userId)
+		.maybeSingle();
 	if (error) {
 		throw error;
 	}

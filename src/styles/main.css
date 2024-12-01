@@ -150,7 +150,8 @@ form label {
 }
 
 form input,
-form textarea {
+form textarea,
+form select {
 	border: 3px dashed var(--yellow);
 	padding: 0.5rem;
 	width: 75%;
@@ -159,11 +160,13 @@ form textarea {
 	text-transform: uppercase;
 }
 form input::placeholder,
-form textarea::placeholder {
+form textarea::placeholder,
+form select::placeholder  {
 	color: var(--light);
 }
 form input:focus,
 form textarea:focus,
+form select:focus,
 form button:not([data-copied="Copied!"]) {
 	outline: none;
 	border-color: var(--light);
@@ -186,6 +189,12 @@ form button:not([data-copied="Copied!"]):hover {
 	background-color: var(--pink);
 	color: var(--light);
 	transform: rotate(1deg) scale(1.1);
+}
+
+img.profile {
+	border-radius: 50%;
+	height: 2rem;
+	border: 3px solid var(--purple);
 }
 
 .astroed {

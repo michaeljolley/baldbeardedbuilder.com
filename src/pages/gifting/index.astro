@@ -1,0 +1,37 @@
+---
+export const prerender = false;
+import { supabase } from "../../lib/supabase";
+import { authData } from "../../lib/auth";
+import BaseLayout from "@layouts/base.astro";
+import Mast from "@components/Mast.astro";
+import SeasonOfGiving from "@components/giving/SeasonOfGiving.astro";
+import Giving from "@components/giving/Giving.astro";
+import Leaderboard from "@components/giving/Leaderboard.astro";
+import Gifts from "@components/giving/Gifts.astro";
+import Twitch from "@components/Twitch.astro";
+
+const title = "BBB's Season of Gifting";
+const description =
+	"Join in on the fun and help us give back to the community this holiday season!";
+const permalink = `https://${import.meta.env.HOST}/gifting/`;
+
+const user = await authData(Astro.cookies);
+---
+
+<BaseLayout {title} {description} {permalink}>
+	<Mast
+		title="Season of Gifting"
+		summary=""
+	/>
+
+	<SeasonOfGiving />
+
+	<Giving user={user}/>
+
+	<Leaderboard />
+
+	<Gifts />
+
+	<Twitch />
+
+</BaseLayout>

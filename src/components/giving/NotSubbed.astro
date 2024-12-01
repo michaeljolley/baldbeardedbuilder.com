@@ -1,0 +1,75 @@
+---
+
+export interface Props {
+  user: {
+		id: string;
+		nickname: string;
+		profileImg: string;
+	};
+}
+const { user } = Astro.props;
+
+---
+
+	<h3>
+		Heyo 
+		<img src={user.profileImg} alt={`${user.nickname}'s Twitch profile picture'`} class="profile" />
+		{user.nickname}!
+	</h3>
+	<p>
+		We looked at the current subscriber list and couldn't find your name.
+	</p>
+	<p>
+		Don't worry, you have until December 19th, 2024 to subscribe or
+		possibly receive a gifted sub. Once you have a subscription, be sure
+		to come back and register to receive your Season of Gifting gifts. 🎁
+	</p>
+	<p>
+		Heck, we may even be online now. <a href="#twitch-live">Check below</a>
+		to join in!
+	</p>
+
+<style>
+
+h3 {
+	font-family: var(--font-anton);
+	font-size: 2rem;
+	text-transform: uppercase;
+	margin: 1rem 0;
+	color: var(--text);
+	display: flex;
+	gap: 0.4rem;
+	align-items: center;
+}
+p {
+	color: var(--text);
+}
+strong {
+	font-weight:bold;
+}
+
+@media (min-width: 640px) /* sm */ {
+	h2 {
+		font-size: 7rem;
+	}
+}
+
+@media (min-width: 768px) /* md */ {
+	h2 {
+		font-size: 9rem;
+	}
+}
+
+@media (min-width: 1024px) /* lg */ {
+	h2 {
+		font-size: 12rem;
+	}
+}
+
+@media (min-width: 1280px) /* xl */ {
+	h2 {
+		font-size: 14rem;
+	}
+}
+
+</style>

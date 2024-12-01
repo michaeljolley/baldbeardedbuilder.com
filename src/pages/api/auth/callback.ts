@@ -24,5 +24,5 @@ export const GET: APIRoute = async ({ request, cookies, redirect }) => {
     path: "/",
   });
 
-  return redirect("/giving/");
+  return redirect("/gifting/#gift-me");
 };

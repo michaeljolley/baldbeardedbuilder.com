@@ -1,0 +1,92 @@
+---
+import Icon from "@components/Icon.astro"
+export interface Props {
+  user: {
+		id: string;
+		nickname: string;
+		profileImg: string;
+	};
+}
+const { user } = Astro.props;
+
+---
+
+	<h3>Get in on the fun!</h3>
+	<p>
+		Want to join in and get your gift this season? Sign in with Twitch to get
+		started!
+	</p>
+	<p>
+		<a href="/api/auth/signin/">
+			Sign in with Twitch
+			<Icon icon="Twitch" style="height:1rem;" class="icon twitch" />
+		</a>
+	</p>
+
+<style>
+
+h3 {
+	font-family: var(--font-anton);
+	font-size: 2rem;
+	text-transform: uppercase;
+	margin: 1rem 0;
+	color: var(--text);
+}
+p {
+	color: var(--text);
+}
+strong {
+	font-weight:bold;
+}
+
+a {
+	border: 3px dashed var(--yellow);
+	padding: 0.5rem 1rem;
+	background-color: var(--twitch);
+	color: var(--light);
+	font-family: var(--font-anton);
+	font-size: 1.25rem;
+	text-transform: uppercase;
+	cursor: pointer;
+	transform: rotate(-3deg);
+	display: inline-block;
+}
+a:active,
+a:hover {
+	border: 3px dashed var(--yellow);
+	background-color: var(--pink);
+	color: var(--light);
+	transform: rotate(1deg) scale(1.1);
+}
+
+@media (min-width: 640px) /* sm */ {
+	h2 {
+		font-size: 7rem;
+	}
+}
+
+@media (min-width: 768px) /* md */ {
+	h2 {
+		font-size: 9rem;
+	}
+}
+
+@media (min-width: 1024px) /* lg */ {
+	h2 {
+		font-size: 12rem;
+	}
+}
+
+@media (min-width: 1280px) /* xl */ {
+	h2 {
+		font-size: 14rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	a:active,
+	a:hover {
+		transform: rotate(-3deg);
+	}
+}
+</style>

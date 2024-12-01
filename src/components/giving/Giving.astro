@@ -1,0 +1,168 @@
+---
+import GivingForm from './GivingForm.astro';
+import NotSubbed from './NotSubbed.astro';
+import Registered from './Registered.astro';
+import SignIn from './SignIn.astro';
+import { getSub } from '@lib/supabase';
+import { isSub } from '@scripts/twitch';
+
+export interface Props {
+  user: {
+		id: string;
+		user_id: string;
+		nickname: string;
+		profileImg: string;
+	};
+}
+const { user } = Astro.props;
+const isSubscriber = user ? await isSub(user.user_id) : null;
+const registered = user ? await getSub(user.id) : null;
+
+---
+
+<section id="gift-me">
+	<div class="wrapper">
+		<div class="p">
+			{!user &&
+				<SignIn />
+			}
+			{user && !isSubscriber &&
+				<NotSubbed user={user} />
+			}
+			{user && isSubscriber && !registered &&
+				<GivingForm user={user} />
+			}
+			{user && registered &&
+				<Registered user={user} />
+			}
+		</div>
+		<aside>
+			<h2>
+				<span>Sign Me Up!</span>
+				<img src="/images/stickers.png" alt="Stickers" />
+			</h2>
+		</aside>
+	</div>
+</section>
+
+<style>
+
+section {
+	/* background-color: var(--dark); */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 4rem 0;
+	overflow: hidden;
+	color: var(--light);
+}
+.wrapper {
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: center;
+	justify-content: center;
+	margin: 2rem 0;
+	gap: 2rem;
+}
+aside {
+	position: relative;
+	min-width: 40vw;
+  z-index: 3;
+}
+h2 {
+	font-family: var(--font-anton);
+	font-size: 10rem;
+	color: var(--blue);
+	text-transform: uppercase;
+}
+h2 span {
+	position: relative;
+	z-index: 5;
+}
+img {
+	position: absolute;
+	height: 16rem;
+	width: auto;
+	top: -15vw;
+	right: -5vw;
+	z-index: 2;
+	width: auto;
+}
+h3 {
+	font-family: var(--font-anton);
+	font-size: 2rem;
+	text-transform: uppercase;
+	margin: 1rem 0;
+	color: var(--light);
+}
+strong {
+	font-weight:bold;
+}
+
+@media (min-width: 640px) /* sm */ {
+	img {
+		top: -10vw;
+		right: 0vw;
+		height: 12rem;
+		width: auto;
+	}
+	h2 {
+		font-size: 7rem;
+	}
+}
+
+@media (min-width: 768px) /* md */ {
+	.wrapper {
+		flex-direction: row;
+	}
+	img {
+		top: -12vw;
+		right: -4vw;
+		height: 15rem;
+		width: auto;
+	}
+	h2 {
+		font-size: 8rem;
+	}
+}
+
+@media (min-width: 1024px) /* lg */ {
+	img {
+		height: 20rem;
+		width: auto;
+		top: -10vw;
+		right: 0vw;
+	}
+	h2 {
+		font-size: 10rem;
+	}
+}
+
+@media (min-width: 1280px) /* xl */ {
+	img {
+		height: 25rem;
+		width: auto;
+		top: 8vw;
+		right: 5vw;
+	}
+	h2 {
+		font-size: 14rem;
+	}
+}
+
+@media (min-width: 1536px) /* 2xl */ {
+	aside {
+		max-width: 40vw;
+	}
+	img {
+		height: 25rem;
+		width: auto;
+		top: 8vw;
+		right: 5vw;
+		transform: rotate(20deg);
+	}
+}
+
+
+</style>

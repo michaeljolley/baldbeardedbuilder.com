@@ -2,9 +2,6 @@
 import { getGifters } from "../../lib/supabase";
 
 const leaders = await getGifters();
-
-console.log(leaders);
-
 ---
 
 <section>
@@ -77,7 +74,7 @@ console.log(leaders);
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		margin: 2rem 0;
+		margin: 0;
 		gap: 2rem;
 	}
 	aside {
@@ -112,7 +109,7 @@ console.log(leaders);
 		color: var(--light);
 	}
 	table {
-		border: 1px solid var(--darkpink);
+		border: 3px dashed var(--darkpink);
 		width: 100%;
 	}
 	td, th {
@@ -124,7 +121,7 @@ console.log(leaders);
 		background-color: var(--darkpink);
 	}
 	tr {
-		border-bottom: 1px solid var(--darkpink);
+		border-bottom: 3px dashed var(--darkpink);
 	}
 	tr:nth-child(even) {
 		background-color: var(--lightpink);
@@ -152,10 +149,6 @@ console.log(leaders);
 	}
 	.hidden {
 		display: none;
-	}
-	
-	@media (min-width: 640px) /* sm */ {
-		
 	}
 	
 	@media (min-width: 768px) /* md */ {
