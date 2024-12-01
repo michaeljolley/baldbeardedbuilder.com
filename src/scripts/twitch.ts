@@ -29,15 +29,6 @@ const getHeaders = async (): Promise<Headers> => {
 	};
 };
 
-const getATHeaders = async (): Promise<Headers> => {
-	const accessToken = await getAccessToken();
-
-	return {
-		"Client-ID": import.meta.env.TWITCH_CLIENT_ID,
-		Authorization: `Bearer ${import.meta.env.TWITCH_ACCESS_TOKEN}`,
-	};
-};
-
 export async function getLastStream(): Promise<{
 	lastStreamUrl: string;
 	lastThumbnail: string;
@@ -86,28 +77,3 @@ export async function isOnline(): Promise<string> {
 	return thumbnail;
 }
 
-export async function subCheck(userId: string): Promise<{isSub: boolean, err: any}> {
-	const headers = await getATHeaders();
-	const response = await fetch(
-		`https://api.twitch.tv/helix/subscriptions?broadcaster_id=${import.meta.env.TWITCH_CHANNEL_ID}&user_id=${userId}`,
-		{
-			headers,
-		},
-	);
-
-	
-	const body = await response.text();
-	const { data: subscribers } = JSON.parse(body);
-
-	if (subscribers && subscribers.length > 0) {
-		return {
-			isSub: true,
-			err: null
-		};
-	}
-
-	return {
-		isSub: false,
-		err: {status: response.status, message: response.statusText}
-	};
-}
