@@ -10,7 +10,7 @@ export const GET: APIRoute = async ({ request, cookies, redirect }) => {
 	const { data, error } = await supabase.auth.signInWithOAuth({
 		provider: 'twitch',
 		options: {
-			redirectTo: `http://${host}/api/auth/callback/`
+			redirectTo: `https://baldbeardedbuilder.com/api/auth/callback/`
 		},
 	});
 
