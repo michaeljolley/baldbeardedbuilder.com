@@ -1,10 +1,11 @@
 ---
+export const prerender = false;
 import GivingForm from './GivingForm.astro';
 import NotSubbed from './NotSubbed.astro';
 import Registered from './Registered.astro';
 import SignIn from './SignIn.astro';
 import { getSub } from '@lib/supabase';
-import { isSub } from '@scripts/twitch';
+import { subCheck } from '@scripts/twitch';
 
 export interface Props {
   user: {
@@ -15,7 +16,7 @@ export interface Props {
 	};
 }
 const { user } = Astro.props;
-const isSubscriber = user ? await isSub(user.user_id) : null;
+const check = user ? await subCheck(user.user_id) : null;
 const registered = user ? await getSub(user.id) : null;
 
 ---
@@ -26,10 +27,11 @@ const registered = user ? await getSub(user.id) : null;
 			{!user &&
 				<SignIn />
 			}
-			{user && !isSubscriber &&
+			{user && !check?.isSub &&
 				<NotSubbed user={user} />
+				<!-- ({check.status} {check.message}) -->
 			}
-			{user && isSubscriber && !registered &&
+			{user && check?.isSub && !registered &&
 				<GivingForm user={user} />
 			}
 			{user && registered &&

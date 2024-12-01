@@ -86,7 +86,7 @@ export async function isOnline(): Promise<string> {
 	return thumbnail;
 }
 
-export async function isSub(userId: string): Promise<boolean> {
+export async function subCheck(userId: string): Promise<{isSub: boolean, err: any}> {
 	const headers = await getATHeaders();
 	const response = await fetch(
 		`https://api.twitch.tv/helix/subscriptions?broadcaster_id=${import.meta.env.TWITCH_CHANNEL_ID}&user_id=${userId}`,
@@ -94,12 +94,20 @@ export async function isSub(userId: string): Promise<boolean> {
 			headers,
 		},
 	);
+
+	
 	const body = await response.text();
 	const { data: subscribers } = JSON.parse(body);
 
 	if (subscribers && subscribers.length > 0) {
-		return true;
+		return {
+			isSub: true,
+			err: null
+		};
 	}
 
-	return false;
+	return {
+		isSub: false,
+		err: {status: response.status, message: response.statusText}
+	};
 }
