@@ -44,8 +44,8 @@
 		flex-direction: column-reverse;
 		gap: 1.5rem;
 		background: url('/images/party.svg') no-repeat;
-		background-position: 100% 0;
-		background-size: 60%;
+		background-position: top right;
+		background-size: 60vw;
 	}
 	h2 {
 		position: relative;
@@ -75,65 +75,71 @@ a:hover {
 	border-color: var(--pink);
 }
 
-	@media (min-width: 640px) /* sm */ {
+@media (min-width: 640px) /* sm */ {
+	.wrapper {
+		background-position: top right;
+		background-size: 50vw;
 	}
+}
 
-	@media (min-width: 768px) /* md */ {
-		.wrapper {
-			background-position: 100% 0;
-			background-size: contain;
-		}
-		h2 {
-			font-size: 9rem;
-		}
-		h2 img {
-			top: 0vw;
-			right: -5vw;
-		}
+@media (min-width: 768px) /* md */ {
+	.wrapper {
+		background-position: top center;
+		background-size: 40vw;
 	}
+	h2 {
+		font-size: 9rem;
+	}
+	h2 img {
+		top: 0vw;
+		right: -5vw;
+	}
+}
 
-	@media (min-width: 1024px) /* lg */ {
-		.wrapper {
-			flex-direction: row;
-			background-position: 60vw center;
-		}
-		aside {
-		}
-		h2 {
-			font-size: 10rem;
-		}
-		h2 img {
-			top: 10vw;
-			right: 6vw;
-		}
-		h3 {
-			font-size: 3rem;
-		}
+@media (min-width: 1024px) /* lg */ {
+	.wrapper {
+		flex-direction: row;
+		background-position: 100% center;
+		background-size: contain;
+		gap: 5rem;
 	}
+	aside {
+	}
+	h2 {
+		font-size: 10rem;
+	}
+	h2 img {
+		top: 10vw;
+		right: 6vw;
+	}
+	h3 {
+		font-size: 3rem;
+	}
+}
 
-	@media (min-width: 1280px) /* xl */ {
-		.wrapper {
-			background-position: 60vw center;
-			max-width: 90vw;
-			margin: auto;
-		}
-		h2 {
-			font-size: 12rem;
-		}
-		h2 img {
-			top: 5vw;
-			right: 10vw;
-		}
+@media (min-width: 1280px) /* xl */ {
+	.wrapper {
+		background-position: top right;
+		background-size: contain;
+		max-width: 75vw;
+		margin: auto;
 	}
+	h2 {
+		font-size: 12rem;
+	}
+	h2 img {
+		top: 5vw;
+		right: 10vw;
+	}
+}
 
-	@media (min-width: 1536px) /* 2xl */ {
-		h2 {
-			font-size: 12rem;
-			margin-left: 10vw;
-		}
-		h2 img {
-			top: 5vw;
-			right: 10vw;
-		}
+@media (min-width: 1536px) /* 2xl */ {
+	h2 {
+		font-size: 12rem;
 	}
+	h2 img {
+		top: 5vw;
+		right: 10vw;
+	}
+}
 </style>

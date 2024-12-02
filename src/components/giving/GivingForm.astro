@@ -44,7 +44,6 @@ const { user } = Astro.props;
 			</label><br />
 			<input name="user" value={user?.nickname}/>
 		</p>
-
 		<p>
 			<label for="firstName">First Name</label><br />
 			<input
@@ -185,6 +184,9 @@ input, select {
 }
 select option {
 	color: var(--dark);
+}
+button {
+	margin: 1rem 0;
 }
 
 @media (min-width: 640px) /* sm */ {
