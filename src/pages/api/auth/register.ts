@@ -28,6 +28,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 	const city = form.get("city");
 	const state = form.get("state");
 	const zip = form.get("zip");
+	const country = form.get("country");
 	const tshirt = form.get("tshirt");
 
 	await registerSub({
@@ -40,6 +41,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 		city,
 		state,
 		zip,
+		country,
 		tshirt,
 	});
 
