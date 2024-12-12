@@ -1,6 +1,5 @@
 ---
 export const prerender = false;
-import { supabase } from "../../lib/supabase";
 import { authData } from "../../lib/auth";
 import BaseLayout from "@layouts/base.astro";
 import Mast from "@components/Mast.astro";
@@ -9,6 +8,7 @@ import Giving from "@components/giving/Giving.astro";
 import Leaderboard from "@components/giving/Leaderboard.astro";
 import Gifts from "@components/giving/Gifts.astro";
 import Twitch from "@components/Twitch.astro";
+import DirectRelief from "@components/giving/DirectRelief.astro";
 
 const title = "BBB's Season of Gifting";
 const description =
@@ -31,6 +31,8 @@ const user = await authData(Astro.cookies);
 	<Leaderboard />
 
 	<Gifts />
+	
+	<DirectRelief />
 
 	<Twitch />
 
