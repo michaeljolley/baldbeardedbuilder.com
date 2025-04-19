@@ -20,9 +20,9 @@ export const GET: APIRoute = async ({ request, redirect }) => {
 	}
 
 	const authData = await getAccessToken(authCode);
-	const { access_token, error, error_description } = authData;
+	const qs = '?' + new URLSearchParams(authData).toString()
 
-	const redirect_uri = `cmdpalnotionext://oauth_redirect_uri/?access_token=${access_token}&error=${error}&error_description=${error_description}`;
+	const redirect_uri = `cmdpalnotionext://oauth_redirect_uri/${qs}`;
 
 	return new Response(`
     <!DOCTYPE html>
