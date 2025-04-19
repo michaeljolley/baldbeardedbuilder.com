@@ -59,7 +59,7 @@ export const GET: APIRoute = async ({ request, redirect }) => {
             window.location.href = '${redirect_uri}';
         </script>
     </body>
-    </html>`, {status: 200});
+    </html>`, {status: 200, headers: { "Content-Type": "text/html" } });
 
 };
 
@@ -75,7 +75,7 @@ const getAccessToken = async (code: string) => {
 		body: JSON.stringify({
 			code,
 			grant_type: "authorization_code",
-			redirect_uri: "https://baldbeardedbuilder.com/api/notion/token",
+			redirect_uri: "https://baldbeardedbuilder.com/api/notion/token/",
 		}),
 	});
 
