@@ -35,7 +35,7 @@ export const GET: APIRoute = async ({ request, redirect }) => {
             html, body {
                 display: flex;
                 flex-direction: column;
-                gap: 2rem;
+                gap: 0.8rem;
                 justify-content: center;
                 align-items: center;
                 height: 100vh;
