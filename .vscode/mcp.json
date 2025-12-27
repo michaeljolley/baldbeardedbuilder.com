@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"Astro Docs": {
+			"url": "https://mcp.docs.astro.build/mcp",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}

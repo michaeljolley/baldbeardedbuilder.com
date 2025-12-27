@@ -1,28 +1,26 @@
-import { defineConfig } from "astro/config";
-import preact from "@astrojs/preact";
-import { h, s } from "hastscript";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypeSlug from "rehype-slug";
+// @ts-check
+import { defineConfig } from 'astro/config';
 import netlify from "@astrojs/netlify";
-
+import { h, s } from "hastscript";
+import tailwindcss from '@tailwindcss/vite';
 import expressiveCode from "astro-expressive-code";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 export default defineConfig({
-	site: "https://baldbeardedbuilder.com",
-	trailingSlash: "always",
-	output: "hybrid",
-	adapter: netlify(),
-	compressHTML: false,
-	integrations: [
-		preact(),
-		expressiveCode({
-			themes: "poimandres",
-		}),
-	],
-	markdown: {
-		rehypePlugins: [
-			rehypeSlug,
-			[
+    site: "https://baldbeardedbuilder.com",
+    trailingSlash: "always",
+    adapter: netlify(),
+    compressHTML: false,
+    integrations: [
+			expressiveCode({
+				themes: ['poimandres']
+			})
+		],
+  markdown: {
+    rehypePlugins: [
+      rehypeSlug,
+      [
 				rehypeAutolinkHeadings,
 				{
 					behavior: "prepend",
@@ -50,6 +48,9 @@ export default defineConfig({
 					],
 				},
 			],
-		],
-	},
+    ]
+  },
+  vite: {
+    plugins: [tailwindcss()]
+  }
 });

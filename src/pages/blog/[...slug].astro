@@ -1,7 +1,6 @@
 ---
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "@layouts/base.astro";
-import Mast from "@components/Mast.astro";
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection("blog");
@@ -28,7 +27,6 @@ let options = {
 
 <BaseLayout {title} {description} {permalink} {canonicalUrl}>
   <header>
-    <Mast {title} {summary} reduce={true} />
   </header>
   <article class="content">
     {pubDate <= new Date() && <Content />}

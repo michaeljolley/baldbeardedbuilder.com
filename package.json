@@ -1,43 +1,34 @@
 {
 	"name": "baldbeardedbuilder",
-	"type": "module",
-	"version": "9.0.0",
-	"scripts": {
-		"dev": "astro dev",
-		"start": "astro dev",
-		"build": "astro build",
-		"preview": "astro preview",
-		"astro": "astro",
-		"format": "prettier --write .",
-		"lint": "eslint"
-	},
-	"dependencies": {
-		"@astrojs/check": "^0.7.0",
-		"@astrojs/netlify": "^5.3.5",
-		"@astrojs/preact": "^3.5.0",
-		"@astrojs/rss": "^4.0.7",
-		"@supabase/supabase-js": "^2.46.2",
-		"astro": "^4.11.4",
-		"astro-expressive-code": "^0.32.4",
-		"preact": "^10.19.4",
-		"tippy.js": "^6.3.7",
-		"typescript": "^5.6.3"
-	},
-	"devDependencies": {
-		"@eslint/eslintrc": "^3.2.0",
-		"@eslint/js": "^9.15.0",
-		"@types/qs": "^6.9.17",
-		"@typescript-eslint/parser": "^8.14.0",
-		"ap-style-title-case": "^2.0.0",
-		"eslint": "^9.15.0",
-		"eslint-plugin-astro": "^1.3.1",
-		"eslint-plugin-jsx-a11y": "^6.10.2",
-		"hastscript": "^9.0.0",
-		"node-html-parser": "^6.1.13",
-		"prettier": "^3.3.3",
-		"prettier-plugin-astro": "^0.14.1",
-		"qs": "^6.13.0",
-		"rehype-autolink-headings": "^7.1.0",
-		"rehype-slug": "^6.0.0"
-	}
+  "type": "module",
+  "version": "10.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "format": "prettier --write .",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@astrojs/netlify": "^6.6.3",
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^5.16.6",
+    "astro-expressive-code": "^0.41.5",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
+    "@typescript-eslint/parser": "^8.50.1",
+    "ap-style-title-case": "^2.0.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-astro": "^1.5.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "hastscript": "^9.0.1",
+    "prettier": "^3.7.4",
+    "prettier-plugin-astro": "^0.14.1",
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-slug": "^6.0.0"
+  }
 }

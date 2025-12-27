@@ -1,8 +1,6 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "@layouts/base.astro";
-import BlogList from "@components/BlogList.astro";
-import Mast from "@components/Mast.astro";
 
 let posts = await getCollection(
   "blog",
@@ -21,13 +19,11 @@ const permalink = `https://${import.meta.env.HOST}/blog/`;
 ---
 
 <BaseLayout {title} {description} {permalink}>
-  <Mast
-    title=`All ${posts.length} Things I've Written Down`
-    summary="Learnings I'll find when I try to do them again."
-  />
   <section>
     <div class="container">
-      <BlogList {posts} />
+      
+{posts.map((post) => <p><a href={`/blog/${post.slug}/`}>{post.data.title}</a></p>)}
+
     </div>
   </section>
 </BaseLayout>

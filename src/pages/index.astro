@@ -1,22 +1,16 @@
 ---
-import BaseLayout from "@layouts/base.astro";
-import Mast from "@components/Mast.astro";
-import BetterCode from "@components/BetterCode.astro";
-import BrainDumpForm from "@components/BrainDumpForm.astro";
-import Twitch from "@components/Twitch.astro";
 
-const title = "Michael Jolley is the Bald Bearded Builder";
-const description =
-	"Welcome to the home of Michael Jolley, also known as the bald, bearded, builder. Here you'll find all Michael's content curated for easier viewing.";
-const permalink = `https://${import.meta.env.HOST}/`;
 ---
 
-<BaseLayout {title} {description} {permalink}>
-	<Mast
-		title="Bald Bearded Builder"
-		summary="Helping developers do more...<br>and laugh along the way."
-	/>
-	<Twitch />
-	<BetterCode />
-	<BrainDumpForm />
-</BaseLayout>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+	</head>
+	<body>
+		<h1>Astro</h1>
+	</body>
+</html>
