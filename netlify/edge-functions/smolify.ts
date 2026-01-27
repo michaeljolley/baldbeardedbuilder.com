@@ -1,4 +1,4 @@
-import type { Config } from "https://edge.netlify.com/";
+import type { Config } from "@netlify/edge-functions";
 import { getShortUrl } from "./scripts/supabase.ts";
 
 export default async function handler(req: Request) {
