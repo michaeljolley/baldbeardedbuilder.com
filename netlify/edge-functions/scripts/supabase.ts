@@ -19,6 +19,9 @@ export async function getShortUrl(slug: string) {
 		.select()
 		.eq("slug", slug);
 
+		
+	console.error(data);
+
 	if (data && data[0] && data[0].target) {
 		return data[0].target;
 	}
