@@ -5,6 +5,7 @@ import Head, {
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import SkipToContent from '../components/SkipToContent.astro';
+import '../styles/global.css';
 
 interface Props {
   title: string;
@@ -58,42 +59,7 @@ const { title, description, permalink, canonicalUrl } = Astro.props;
 </html>
 
 <style>
-  :root {
-    --bg-color: #ffffff;
-    --text-color: #1a1a2e;
-    --orb-1: rgba(147, 51, 234, 0.5);
-    --orb-2: rgba(59, 130, 246, 0.5);
-    --orb-3: rgba(236, 72, 153, 0.5);
-  }
-
-  :global(html.dark) {
-    --bg-color: #0f0f1a;
-    --text-color: #f1f5f9;
-    --orb-1: rgba(147, 51, 234, 0.3);
-    --orb-2: rgba(59, 130, 246, 0.3);
-    --orb-3: rgba(236, 72, 153, 0.3);
-  }
-
-  :global(*) {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  :global(html) {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    scroll-behavior: smooth;
-  }
-
-  :global(body) {
-    min-height: 100vh;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: background-color 0.3s ease, color 0.3s ease;
-    overflow-x: hidden;
-    position: relative;
-  }
-
+  /* Custom grid pattern with SVG - unique to this site */
   .grid-pattern {
     position: fixed;
     top: 0;
@@ -112,38 +78,18 @@ const { title, description, permalink, canonicalUrl } = Astro.props;
   }
 
   .orb {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(80px);
-    pointer-events: none;
-    z-index: 0;
     animation: float 20s ease-in-out infinite;
   }
 
   .orb-1 {
-    width: 400px;
-    height: 400px;
-    background: var(--orb-1);
-    top: -100px;
-    left: -100px;
     animation-delay: 0s;
   }
 
   .orb-2 {
-    width: 350px;
-    height: 350px;
-    background: var(--orb-2);
-    top: 50%;
-    right: -100px;
     animation-delay: -7s;
   }
 
   .orb-3 {
-    width: 300px;
-    height: 300px;
-    background: var(--orb-3);
-    bottom: -50px;
-    left: 30%;
     animation-delay: -14s;
   }
 
@@ -169,6 +115,7 @@ const { title, description, permalink, canonicalUrl } = Astro.props;
     padding-top: 5rem;
   }
 
+  /* Expressive Code Customizations */
   :global(.expressive-code .copy button) {
     background: transparent !important;
     border: none !important;

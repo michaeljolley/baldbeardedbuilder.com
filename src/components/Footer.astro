@@ -1,4 +1,6 @@
 ---
+import bbbLogo from '../assets/icons/bbb.svg?raw';
+
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/blog/', label: 'Blog' },
@@ -20,8 +22,11 @@ const currentYear = new Date().getFullYear();
   <div class="footer-inner">
     <div class="footer-nav">
       <div class="footer-brand">
-        <a href="/" class="logo">BBB</a>
-        <p class="tagline">Building things for the web, one line at a time.</p>
+        <a href="/" class="logo" aria-label="Home">
+          <Fragment set:html={bbbLogo} />
+          <span class="brand-name">Bald Bearded Builder</span>
+        </a>
+        <p class="tagline">Bringing smiles to the syntax — because laughter is the best error handler.</p>
       </div>
       
       <nav class="footer-links">
@@ -82,7 +87,7 @@ const currentYear = new Date().getFullYear();
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid rgba(128, 128, 128, 0.1);
-    margin-top: 4rem;
+    margin-top: 0;
     padding: 3rem 2rem 0;
   }
 
@@ -107,10 +112,21 @@ const currentYear = new Date().getFullYear();
   }
 
   .footer-brand .logo {
-    font-size: 1.5rem;
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
     text-decoration: none;
     color: var(--text-color);
+  }
+
+  .footer-brand .logo :global(svg) {
+    width: 48px;
+    height: 48px;
+  }
+
+  .footer-brand .brand-name {
+    font-size: 1.25rem;
+    font-weight: 700;
   }
 
   .tagline {
@@ -180,20 +196,23 @@ const currentYear = new Date().getFullYear();
     margin-left: -2rem;
     margin-right: -2rem;
     padding: 1.25rem 2rem;
-    background: rgba(0, 0, 0, 0.15);
+    background: rgba(147, 51, 234, 0.08);
     text-align: center;
+    color: #4a1d7a;
   }
 
   :global(html.dark) .footer-bottom {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(5, 5, 8, 0.9);
+    color: white;
   }
 
   .footer-bottom p {
     font-size: 0.875rem;
-    opacity: 0.6;
+    opacity: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: inherit;
   }
 
   .footer-bottom .icon {

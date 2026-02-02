@@ -6,6 +6,8 @@ const navLinks = [
   { href: '/videos/', label: 'Videos' },
   { href: '/uses/', label: 'Uses' },
 ];
+
+const currentPath = Astro.url.pathname;
 ---
 
 <header>
@@ -17,7 +19,7 @@ const navLinks = [
     
     <nav>
       {navLinks.map(link => (
-        <a href={link.href}>{link.label}</a>
+        <a href={link.href} class={currentPath.startsWith(link.href) ? 'active' : ''}>{link.label}</a>
       ))}
     </nav>
 
@@ -157,7 +159,15 @@ const navLinks = [
     color: #9333ea;
   }
 
+  nav a.active {
+    color: #9333ea;
+  }
+
   :global(html.dark) nav a:hover {
+    color: #c084fc;
+  }
+
+  :global(html.dark) nav a.active {
     color: #c084fc;
   }
 

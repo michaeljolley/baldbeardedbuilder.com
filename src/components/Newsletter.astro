@@ -1,7 +1,7 @@
 ---
 ---
 
-<section class="newsletter">
+<section class="newsletter" id="newsletter">
   <div class="section-inner">
     <div class="newsletter-card">
       <div class="newsletter-left">
@@ -11,10 +11,27 @@
         <div class="newsletter-badge">Every Mon · Wed · Fri</div>
         <h2>The .NET Drip</h2>
         <p>Pure .NET and C# delivered to your inbox three times a week. Tips, tutorials, and insights to keep your skills sharp.</p>
-        <form class="newsletter-form">
-          <input type="email" placeholder="developer@example.com" required />
-          <button type="submit" class="newsletter-btn">Subscribe</button>
-        </form>
+				<div id="subscribe-form-container" >
+					<form class="newsletter-form" action="/?subscribed=true#newsletter" name="net-drip" data-netlify="true" netlify-honeypot="bot-field" method="POST">
+						<p class="hidden">
+							<label>Don't fill this out if you're human: <input name="bot-field" /></label>
+						</p>
+						<input type="hidden" name="utm_source" id="utm_source" value="baldbeardedbuilder" />
+						<input 
+							placeholder="developer@example.com" 
+							type="email"
+							id="email"
+							name="email"
+							required
+							aria-describedby="email-error"
+							aria-invalid="false" />
+						<button type="submit" class="newsletter-btn">Subscribe</button>
+					</form>
+        	<p id="email-error" role="alert"></p>
+				</div>
+				<div id="subscribe-success" class="hidden">
+					<p>👍 Thank you for subscribing to The .NET Drip! Be sure to add drip@dotnetdrip.com to your contacts or safe senders list.</p>
+				</div>
         <p class="newsletter-link">Browse the archive and learn more at <a href="https://dotnetdrip.com" target="_blank" rel="noopener">dotnetdrip.com</a></p>
       </div>
     </div>
@@ -26,11 +43,9 @@
     text-align: center;
   }
 
-  .section-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 4rem 2rem;
-  }
+	.hidden {
+		display: none;
+	}
 
   .newsletter-card {
     display: grid;
@@ -124,6 +139,7 @@
 
   .newsletter-link {
     margin-top: 1rem;
+    margin-bottom: 0;
     font-size: 0.85rem;
     opacity: 0.7;
   }
@@ -183,3 +199,74 @@
     }
   }
 </style>
+
+
+<script is:inline>
+  // Check for success query param on page load and capture utm_source
+  (function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.get('subscribed') === 'true') {
+      const formContainer = document.getElementById('subscribe-form-container');
+      const successContainer = document.getElementById('subscribe-success');
+      if (formContainer && successContainer) {
+        formContainer.classList.add('hidden');
+        successContainer.classList.remove('hidden');
+      }
+    }
+  })();
+
+  const subscribeForm = document.getElementById("subscribe-form");
+  const subscribeEmailInput = document.getElementById("email");
+  const subscribeEmailError = document.getElementById("email-error");
+  
+  function showSubscribeError(message) {
+    if (subscribeEmailError) {
+      subscribeEmailError.textContent = message;
+      subscribeEmailError.classList.remove("hidden");
+    }
+    if (subscribeEmailInput) {
+      subscribeEmailInput.setAttribute("aria-invalid", "true");
+    }
+  }
+  
+  function clearSubscribeError() {
+    if (subscribeEmailError) {
+      subscribeEmailError.textContent = "";
+      subscribeEmailError.classList.add("hidden");
+    }
+    if (subscribeEmailInput) {
+      subscribeEmailInput.setAttribute("aria-invalid", "false");
+    }
+  }
+  
+  function validateSubscribeEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+  
+  subscribeEmailInput?.addEventListener("input", () => {
+    clearSubscribeError();
+  });
+  
+  subscribeForm?.addEventListener("submit", (e) => {
+    clearSubscribeError();
+    
+    const email = subscribeEmailInput?.value?.trim();
+    
+    // Validate email
+    if (!email) {
+      e.preventDefault();
+      showSubscribeError("Email is required");
+      return;
+    }
+    
+    if (!validateSubscribeEmail(email)) {
+      e.preventDefault();
+      showSubscribeError("Please enter a valid email address");
+      return;
+    }
+    
+    // Validation passed - allow form to submit naturally
+  });
+</script>
