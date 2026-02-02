@@ -80,7 +80,12 @@ const formatDate = (date: Date) => {
 };
 ---
 
-<Layout title={entry.data.title}>
+<Layout 
+  title={entry.data.title}
+  description={entry.data.description}
+  permalink={`https://baldbeardedbuilder.com/blog/${entry.id}/`}
+  canonicalUrl={entry.data.canonical_url}
+>
   <article class="post">
     <header class="post-header">
       <div class="post-meta">
