@@ -1,0 +1,83 @@
+---
+import { getCollection } from 'astro:content';
+import VideoCard from './VideoCard.astro';
+
+const videoEntries = await getCollection('videos');
+const filteredVideos = videoEntries.filter(video => !video.data.link.includes('shorts'));
+const sortedEntries = filteredVideos.sort((a, b) => 
+  b.data.date.getTime() - a.data.date.getTime()
+);
+const latestVideos = sortedEntries.slice(0, 3);
+---
+
+<section class="videos">
+  <div class="section-inner">
+    <h2>Latest Videos</h2>
+    <p class="section-desc">Tutorials, live coding, and tech discussions on YouTube</p>
+    <ul class="video-grid">
+      {latestVideos.map(video => (
+        <li class="video-item">
+          <VideoCard video={video} showBadge={false} showTags={false} />
+        </li>
+      ))}
+    </ul>
+    <a href="/videos/" class="section-link">View all videos →</a>
+  </div>
+</section>
+
+<style>
+  .videos {
+    background: rgba(147, 51, 234, 0.05);
+  }
+
+  :global(html.dark) .videos {
+    background: rgba(128, 128, 128, 0.03);
+  }
+
+  .section-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-desc {
+    opacity: 0.7;
+    margin-bottom: 2rem;
+  }
+
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .video-item {
+    margin: 0;
+  }
+
+  .section-link {
+    display: inline-block;
+    margin-top: 2rem;
+    color: #9333ea;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .section-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 900px) {
+    .video-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

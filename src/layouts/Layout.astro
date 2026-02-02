@@ -1,0 +1,344 @@
+---
+import Head, {
+  type Props as BaseHeadProps,
+} from "../components/Head.astro";
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SkipToContent from '../components/SkipToContent.astro';
+
+interface Props {
+  title: string;
+}
+
+export interface Props extends BaseHeadProps {}
+
+const { title, description, permalink, canonicalUrl } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+  	<Head {title} {description} {permalink} {canonicalUrl} />
+    
+    <script is:inline>
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        return 'dark';
+      })();
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
+  </head>
+  <body>
+    <SkipToContent />
+    <div class="grid-pattern"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    
+    <Header />
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.expressive-code .copy button, .expressive-code button.copy').forEach(btn => {
+          btn.removeAttribute('title');
+        });
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  :root {
+    --bg-color: #ffffff;
+    --text-color: #1a1a2e;
+    --orb-1: rgba(147, 51, 234, 0.5);
+    --orb-2: rgba(59, 130, 246, 0.5);
+    --orb-3: rgba(236, 72, 153, 0.5);
+  }
+
+  :global(html.dark) {
+    --bg-color: #0f0f1a;
+    --text-color: #f1f5f9;
+    --orb-1: rgba(147, 51, 234, 0.3);
+    --orb-2: rgba(59, 130, 246, 0.3);
+    --orb-3: rgba(236, 72, 153, 0.3);
+  }
+
+  :global(*) {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :global(html) {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  :global(body) {
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  .grid-pattern {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 100 100'%3E%3Cpath d='M0 50h40v-10h10v20h-10v10h-10v-10h-30zM60 50h40v10h-10v10h-10v-10h-10v-20h10zM50 0v40h10v10h-20v-10h10v-30h-10v-10zM50 60v40h-10v-10h-10v-10h10v-10h20v10h-10z' fill='none' stroke='%239333ea' stroke-opacity='0.04' stroke-width='1'/%3E%3Ccircle cx='50' cy='50' r='3' fill='%239333ea' fill-opacity='0.05'/%3E%3Ccircle cx='0' cy='50' r='2' fill='%239333ea' fill-opacity='0.04'/%3E%3Ccircle cx='100' cy='50' r='2' fill='%239333ea' fill-opacity='0.04'/%3E%3Ccircle cx='50' cy='0' r='2' fill='%239333ea' fill-opacity='0.04'/%3E%3Ccircle cx='50' cy='100' r='2' fill='%239333ea' fill-opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 1;
+  }
+
+  :global(html.dark) .grid-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 100 100'%3E%3Cpath d='M0 50h40v-10h10v20h-10v10h-10v-10h-30zM60 50h40v10h-10v10h-10v-10h-10v-20h10zM50 0v40h10v10h-20v-10h10v-30h-10v-10zM50 60v40h-10v-10h-10v-10h10v-10h20v10h-10z' fill='none' stroke='%239333ea' stroke-opacity='0.08' stroke-width='1'/%3E%3Ccircle cx='50' cy='50' r='3' fill='%239333ea' fill-opacity='0.1'/%3E%3Ccircle cx='0' cy='50' r='2' fill='%239333ea' fill-opacity='0.08'/%3E%3Ccircle cx='100' cy='50' r='2' fill='%239333ea' fill-opacity='0.08'/%3E%3Ccircle cx='50' cy='0' r='2' fill='%239333ea' fill-opacity='0.08'/%3E%3Ccircle cx='50' cy='100' r='2' fill='%239333ea' fill-opacity='0.08'/%3E%3C/svg%3E");
+    opacity: 0.8;
+  }
+
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    animation: float 20s ease-in-out infinite;
+  }
+
+  .orb-1 {
+    width: 400px;
+    height: 400px;
+    background: var(--orb-1);
+    top: -100px;
+    left: -100px;
+    animation-delay: 0s;
+  }
+
+  .orb-2 {
+    width: 350px;
+    height: 350px;
+    background: var(--orb-2);
+    top: 50%;
+    right: -100px;
+    animation-delay: -7s;
+  }
+
+  .orb-3 {
+    width: 300px;
+    height: 300px;
+    background: var(--orb-3);
+    bottom: -50px;
+    left: 30%;
+    animation-delay: -14s;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    25% {
+      transform: translate(30px, -30px) scale(1.05);
+    }
+    50% {
+      transform: translate(-20px, 20px) scale(0.95);
+    }
+    75% {
+      transform: translate(20px, 10px) scale(1.02);
+    }
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    padding-top: 5rem;
+  }
+
+  :global(.expressive-code .copy button) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    padding: 0 !important;
+    width: 28px !important;
+    height: 28px !important;
+    cursor: pointer !important;
+  }
+
+  :global(.expressive-code .copy button:hover),
+  :global(.expressive-code .copy button:focus),
+  :global(.expressive-code .copy button:active) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  :global(.expressive-code .copy button::before),
+  :global(.expressive-code button.copy::before) {
+    width: 20px !important;
+    height: 20px !important;
+    border: none !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+  }
+
+  :global(.expressive-code .copy button::after),
+  :global(.expressive-code button.copy::after) {
+    width: 20px !important;
+    height: 20px !important;
+    border: none !important;
+    box-shadow: none !important;
+    transition: background-color 0.2s ease !important;
+  }
+
+  :global(.expressive-code .copy button:hover::before),
+  :global(.expressive-code button.copy:hover::before) {
+    background-color: transparent !important;
+  }
+
+  :global(.expressive-code .copy button:hover::after),
+  :global(.expressive-code button.copy:hover::after) {
+    background-color: white !important;
+  }
+
+  :global(.expressive-code .copy),
+  :global(.expressive-code button.copy),
+  :global(.expressive-code div.copy),
+  :global(.expressive-code .copy button div),
+  :global(.expressive-code button.copy div) {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    margin-right: 0.5rem !important;
+  }
+
+  :global(.expressive-code .copy:hover),
+  :global(.expressive-code button.copy:hover),
+  :global(.expressive-code div.copy:hover),
+  :global(.expressive-code .copy button:hover div),
+  :global(.expressive-code button.copy:hover div),
+  :global(.expressive-code .copy button div:hover),
+  :global(.expressive-code button.copy div:hover) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  :global(.expressive-code) {
+    background: rgba(30, 30, 50, 0.95) !important;
+    border-radius: 0.75rem;
+    border: none !important;
+    margin: 1.5rem 0 !important;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  :global(.expressive-code .frame) {
+    background: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100%;
+  }
+
+  :global(.expressive-code pre) {
+    background: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  :global(.expressive-code pre code) {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  :global(.expressive-code figure) {
+    background: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+    max-width: 100%;
+  }
+
+  :global(.expressive-code .copy) {
+    position: relative;
+  }
+
+  :global(.expressive-code .copy::before) {
+    content: 'Copy this snippet';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #9333ea, #3b82f6);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.65rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    margin-right: 0.6rem;
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
+  }
+
+  :global(.expressive-code .copy::after) {
+    content: '';
+    position: absolute;
+    right: calc(100% + 0.1rem);
+    top: 50%;
+    transform: translateY(-50%);
+    border: 4px solid transparent;
+    border-left-color: #3b82f6;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  :global(.expressive-code .copy:hover::before),
+  :global(.expressive-code .copy:hover::after) {
+    opacity: 1;
+  }
+
+  :global(.expressive-code .copy .feedback),
+  :global(.expressive-code .copy [data-tooltip]),
+  :global(.expressive-code .copy button[title]),
+  :global(.expressive-code button.copy[title]) {
+    title: none;
+  }
+
+  :global(.expressive-code .copy button),
+  :global(.expressive-code button.copy) {
+    title: none !important;
+  }
+
+  :global(.expressive-code [data-code]) {
+    position: relative;
+  }
+
+  :global(.expressive-code .copy .tooltip),
+  :global(.expressive-code .feedback) {
+    display: none !important;
+  }
+</style>

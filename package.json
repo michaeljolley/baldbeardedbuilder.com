@@ -1,34 +1,18 @@
 {
-	"name": "baldbeardedbuilder",
+  "name": "baldbeardedbuilder.com",
   "type": "module",
-  "version": "10.0.0",
+  "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "format": "prettier --write .",
-    "lint": "eslint"
+    "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/netlify": "^6.6.3",
-    "@tailwindcss/vite": "^4.1.18",
-    "astro": "^5.16.6",
-    "astro-expressive-code": "^0.41.5",
-    "tailwindcss": "^4.1.18"
-  },
-  "devDependencies": {
-    "@eslint/eslintrc": "^3.3.3",
-    "@eslint/js": "^9.39.2",
-    "@typescript-eslint/parser": "^8.50.1",
-    "ap-style-title-case": "^2.0.0",
-    "eslint": "^9.39.2",
-    "eslint-plugin-astro": "^1.5.0",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "hastscript": "^9.0.1",
-    "prettier": "^3.7.4",
-    "prettier-plugin-astro": "^0.14.1",
-    "rehype-autolink-headings": "^7.1.0",
-    "rehype-slug": "^6.0.0"
+    "@astrojs/rss": "^4.0.15",
+    "@astrojs/sitemap": "^3.7.0",
+    "astro": "^5.17.1",
+    "astro-expressive-code": "^0.41.6",
+    "marked": "^17.0.1"
   }
 }

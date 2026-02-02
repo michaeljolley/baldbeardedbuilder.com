@@ -1,4 +1,0 @@
-[build]
-  edge_functions = "netlify/edge-functions"
-  command = "pnpm run build"
-  publish = "dist"

@@ -1,0 +1,176 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths({ paginate }) {
+  const blogEntries = await getCollection('blog');
+  const now = new Date();
+  
+  // Get all published entries (before or on today)
+  const publishedEntries = blogEntries.filter(entry => entry.data.pubDate <= now);
+  
+  // Get the next upcoming post (first one after today)
+  const futureEntries = blogEntries
+    .filter(entry => entry.data.pubDate > now)
+    .sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime());
+  const nextPost = futureEntries.length > 0 ? [futureEntries[0]] : [];
+  
+  // Combine and sort all entries
+  const allEntries = [...publishedEntries, ...nextPost];
+  const sortedEntries = allEntries.sort((a, b) => 
+    b.data.pubDate.getTime() - a.data.pubDate.getTime()
+  );
+  return paginate(sortedEntries, { pageSize: 12 });
+}
+
+const { page } = Astro.props;
+const now = new Date();
+const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+const isNew = (date: Date) => date >= sevenDaysAgo && date <= now;
+---
+
+<Layout title="Blog">
+  <div class="blog-index">
+    <header class="blog-header">
+      <h1>The {page.total} Things I've Written Down</h1>
+      <p>Learnings about .NET, JavaScript, Cloud, AI, and family.</p>
+    </header>
+
+    <ul class="post-list">
+      {page.data.map(post => {
+        const isFuturePost = post.data.pubDate > now;
+        const isNewPost = isNew(post.data.pubDate);
+        return (
+        <li class={`post-item ${isFuturePost ? 'coming-soon' : ''}`}>
+          <BlogCard 
+            post={post} 
+            showTags={true} 
+            isNew={isNewPost} 
+            isComingSoon={isFuturePost} 
+          />
+        </li>
+        );
+      })}
+    </ul>
+
+    <nav class="pagination">
+      {page.url.prev && (
+        <a href={page.url.prev} class="pagination-link prev">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Previous
+        </a>
+      )}
+      
+      <span class="pagination-info">
+        Page {page.currentPage} of {page.lastPage}
+      </span>
+      
+      {page.url.next && (
+        <a href={page.url.next} class="pagination-link next">
+          Next
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </a>
+      )}
+    </nav>
+  </div>
+</Layout>
+
+<style>
+  .blog-index {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .blog-header {
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  .blog-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #9333ea, #3b82f6, #ec4899, #9333ea);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .blog-header p {
+    opacity: 0.7;
+    font-size: 1.1rem;
+  }
+
+  .post-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .post-item {
+    margin: 0;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(128, 128, 128, 0.2);
+  }
+
+  .pagination-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background: rgba(128, 128, 128, 0.1);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .pagination-link:hover {
+    background: rgba(147, 51, 234, 0.2);
+    color: #9333ea;
+  }
+
+  :global(html.dark) .pagination-link:hover {
+    color: #c084fc;
+  }
+
+  .pagination-info {
+    font-size: 0.9rem;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 640px) {
+    .blog-header h1 {
+      font-size: 1.75rem;
+    }
+
+    .pagination {
+      flex-wrap: wrap;
+    }
+  }
+</style>

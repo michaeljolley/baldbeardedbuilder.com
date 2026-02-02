@@ -1,16 +1,170 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
+import Newsletter from '../components/Newsletter.astro';
+import VideoSection from '../components/VideoSection.astro';
+import BlogSection from '../components/BlogSection.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Bald Bearded Builder | Michael Jolley">
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>Michael Jolley</h1>
+        <p class="aka">aka The Bald Bearded Builder</p>
+        <p class="tagline">Bringing smiles to the syntax — because laughter is the best error handler.</p>
+        <div class="hero-cta">
+          <a href="/blog/" class="btn btn-primary">Read the Blog</a>
+          <a href="https://youtube.com" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="https://avatars.githubusercontent.com/u/1228996?v=4" alt="Michael Jolley - Bald Bearded Builder" />
+      </div>
+    </div>
+  </section>
+
+  <BlogSection />
+
+  <VideoSection />
+
+  <Newsletter />
+</Layout>
+
+<style>
+  .hero {
+    padding: 4rem 2rem;
+  }
+
+  .hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .hero-text h1 {
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #9333ea, #3b82f6, #ec4899);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .aka {
+    font-size: 1.25rem;
+    opacity: 0.7;
+    margin-bottom: 1rem;
+  }
+
+  .tagline {
+    font-size: 1.5rem;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #9333ea, #3b82f6);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4);
+  }
+
+  .btn-secondary {
+    background: rgba(128, 128, 128, 0.15);
+    color: var(--text-color);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(128, 128, 128, 0.25);
+  }
+
+  .hero-image img {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 50%;
+    border: 4px solid rgba(147, 51, 234, 0.3);
+    box-shadow: 0 20px 60px rgba(147, 51, 234, 0.2);
+  }
+
+  .section-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+
+  section h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-desc {
+    opacity: 0.7;
+    margin-bottom: 2rem;
+  }
+
+  .section-link {
+    display: inline-block;
+    margin-top: 2rem;
+    color: #9333ea;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  :global(html.dark) .section-link {
+    color: #c084fc;
+  }
+
+  .section-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 900px) {
+    .hero-content {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .hero-image {
+      order: -1;
+    }
+
+    .hero-image img {
+      max-width: 250px;
+    }
+
+    .hero-cta {
+      justify-content: center;
+    }
+  }
+</style>
