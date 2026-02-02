@@ -1,0 +1,33 @@
+[[redirects]]
+  from = "https://bbb.dev/*"
+  to = "https://baldbeardedbuilder.com/api/smolify?path=:splat"
+  status = 301
+  force = true
+  
+[[redirects]]
+  from = "/posts/*"
+  to = "/blog/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog/tags/"
+  to = "/blog/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/tags/*"
+  to = "/blog/tags/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/.well-known/host-meta*"
+  to = "https://fed.brid.gy/.well-known/host-meta:splat"
+  status = 302
+  
+[[redirects]]
+  from = "/.well-known/webfinger*"
+  to = "https://fed.brid.gy/.well-known/webfinger"
+  status = 302
