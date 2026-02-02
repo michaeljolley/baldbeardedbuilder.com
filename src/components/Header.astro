@@ -1,5 +1,8 @@
 ---
-import bbbLogo from '../assets/icons/bbb.svg?raw';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const bbbLogo = fs.readFileSync(path.join(process.cwd(), 'public/images/icons/bbb.svg'), 'utf-8');
 
 const navLinks = [
   { href: '/blog/', label: 'Blog' },
