@@ -1,0 +1,83 @@
+---
+import { getCollection } from 'astro:content';
+import BlogCard from './BlogCard.astro';
+
+const blogEntries = await getCollection('blog');
+const now = new Date();
+const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+const publishedEntries = blogEntries.filter(entry => entry.data.pubDate <= now);
+const sortedEntries = publishedEntries.sort((a, b) => 
+  b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+const latestPosts = sortedEntries.slice(0, 3);
+
+const isNew = (date: Date) => date >= sevenDaysAgo && date <= now;
+---
+
+<section class="blog">
+  <div class="section-inner">
+    <h2>Things I've Written Down</h2>
+    <p class="section-desc">Learnings about .NET, JavaScript, Cloud, AI, and family.</p>
+    <ul class="blog-grid">
+      {latestPosts.map(post => (
+        <li class="blog-item">
+          <BlogCard post={post} isNew={isNew(post.data.pubDate)} />
+        </li>
+      ))}
+    </ul>
+    <a href="/blog/" class="section-link">Read all posts →</a>
+  </div>
+</section>
+
+<style>
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .blog {
+    background: rgba(147, 51, 234, 0.05);
+  }
+
+  :global(html.dark) .blog {
+    background: rgba(128, 128, 128, 0.03);
+  }
+
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .blog-grid li {
+    list-style: none;
+  }
+
+  .blog-item {
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .blog-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .blog-item:nth-child(3) {
+      display: none;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .blog-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .blog-item:nth-child(3) {
+      display: block;
+    }
+  }
+</style>

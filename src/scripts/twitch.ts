@@ -76,4 +76,3 @@ export async function isOnline(): Promise<string> {
 
 	return thumbnail;
 }
-

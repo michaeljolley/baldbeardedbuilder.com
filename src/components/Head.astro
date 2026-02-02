@@ -1,0 +1,79 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  permalink: string;
+  canonicalUrl?: string;
+}
+
+const { title, description, permalink, canonicalUrl } = Astro.props;
+const encodedTitle = encodeURI(title.replaceAll(",", "%2C"));
+
+const ograph = `https://res.cloudinary.com/dk3rdh3yo/image/upload/g_south_west,x_100,y_300,w_1000,c_fit,co_white,l_text:Roboto_64_bold:${encodedTitle}/website-assets/1200x700.png`;
+---
+
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta
+  http-equiv="delegate-ch"
+  content="sec-ch-width https://res.cloudinary.com; sec-ch-dpr https://res.cloudinary.com; sec-ch-viewport-width https://res.cloudinary.com;"
+/>
+
+<link rel="icon" type="image/x-icon" href="/images/favicon/favicon.ico" />
+<link
+  rel="icon"
+  type="image/png"
+  href="/images/favicon/favicon-16x16.png"
+  sizes="16x16"
+/>
+<link
+  rel="icon"
+  type="image/png"
+  href="/images/favicon/favicon-32x32.png"
+  sizes="32x32"
+/>
+<link
+  rel="apple-touch-icon"
+  href="/images/favicon/apple-touch-icon.png"
+  sizes="180x180"
+/>
+<meta name="theme-color" content="#ffffff" />
+<meta name="robots" content="index, follow" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+<link rel="manifest" href="/site.webmanifest" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  href="https://baldeardedbuilder.com/rss.xml"
+/>
+<meta
+  name="google-site-verification"
+  content="tVxgKEIfMonxcyLLkr0zFTdU7fHI4aeskXgtc0wE-zg"
+/>
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+{canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={permalink} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ograph} />
+
+<!-- X -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:site" content="@michaeljolley" />
+<meta property="twitter:creator" content="@michaeljolley" />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={ograph} />
+
+<!-- Fonts & Images -->
+<link rel="dns-prefetch" href="//res.cloudinary.com" />
+<link rel="preconnect" href="https://res.cloudinary.com" />
+<link rel="prerender" href="https://baldbeardedbuilder.com/blog/" />

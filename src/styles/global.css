@@ -1,0 +1,427 @@
+/* ==========================================================================
+   Global Styles - Consolidated CSS
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   CSS Variables
+   -------------------------------------------------------------------------- */
+:root {
+  --text-color: #1a1a1a;
+  --bg-color: #ffffff;
+  --header-bg-rgb: 255, 255, 255;
+  --orb-1: rgba(147, 51, 234, 0.15);
+  --orb-2: rgba(59, 130, 246, 0.12);
+  --orb-3: rgba(236, 72, 153, 0.1);
+}
+
+html.dark {
+  --text-color: #f5f5f5;
+  --bg-color: #0a0a0a;
+  --header-bg-rgb: 10, 10, 10;
+  --orb-1: rgba(147, 51, 234, 0.2);
+  --orb-2: rgba(59, 130, 246, 0.15);
+  --orb-3: rgba(236, 72, 153, 0.12);
+}
+
+/* --------------------------------------------------------------------------
+   Base Styles
+   -------------------------------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.6;
+  position: relative;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Layout Components
+   -------------------------------------------------------------------------- */
+.section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+.section-title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.section-desc {
+  opacity: 0.7;
+  margin-bottom: 2rem;
+}
+
+.section-link {
+  display: inline-block;
+  margin-top: 2rem;
+  color: #9333ea;
+  text-decoration: none;
+  font-weight: 500;
+  transition: text-decoration 0.2s ease;
+}
+
+.section-link:hover {
+  text-decoration: underline;
+}
+
+html.dark .section-link {
+  color: #c084fc;
+}
+
+/* --------------------------------------------------------------------------
+   Button Styles
+   -------------------------------------------------------------------------- */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #9333ea, #3b82f6);
+  color: white;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4);
+}
+
+.btn-secondary {
+  background: rgba(128, 128, 128, 0.15);
+  color: var(--text-color);
+}
+
+.btn-secondary:hover {
+  background: rgba(128, 128, 128, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   Card System
+   -------------------------------------------------------------------------- */
+.card-border {
+  padding: 2px;
+  border-radius: 1rem;
+  background: rgba(128, 128, 128, 0.15);
+  height: 100%;
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  background-size: 200% 200%;
+}
+
+.card-border:hover {
+  background: linear-gradient(135deg, #9333ea, #3b82f6, #ec4899, #9333ea);
+  background-size: 200% 200%;
+  animation: border-spin 3s linear infinite;
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(147, 51, 234, 0.15);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: calc(1rem - 2px);
+  background: var(--bg-color);
+  overflow: hidden;
+  position: relative;
+}
+
+.card-image {
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease, filter 0.3s ease;
+}
+
+.card-content {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  position: relative;
+}
+
+.card-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 1rem;
+  right: 1rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(147, 51, 234, 0.3), rgba(59, 130, 246, 0.3), transparent);
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.card-title a {
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.card-title a:hover {
+  color: #9333ea;
+}
+
+html.dark .card-title a:hover {
+  color: #c084fc;
+}
+
+.card-meta {
+  font-size: 0.8rem;
+  opacity: 0.6;
+  margin-bottom: 0.75rem;
+}
+
+.card-excerpt {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  line-height: 1.6;
+  flex-grow: 1;
+  margin-bottom: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Tag Styles
+   -------------------------------------------------------------------------- */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: auto;
+}
+
+.tag {
+  font-size: 0.65rem;
+  padding: 0.2rem 0.5rem;
+  background: rgba(128, 128, 128, 0.1);
+  border-radius: 9999px;
+  text-decoration: none;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.tag:hover {
+  opacity: 1;
+  background: rgba(147, 51, 234, 0.15);
+}
+
+/* --------------------------------------------------------------------------
+   Badge Styles
+   -------------------------------------------------------------------------- */
+.badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.badge-new {
+  background: linear-gradient(135deg, #9333ea, #3b82f6, #ec4899);
+  background-size: 200% 200%;
+  animation: badge-gradient 3s ease infinite;
+  color: white;
+}
+
+.badge-upcoming {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: white;
+}
+
+/* --------------------------------------------------------------------------
+   Keyframe Animations
+   -------------------------------------------------------------------------- */
+@keyframes border-spin {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes badge-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes wiggle {
+  0%, 6%, 100% {
+    transform: rotate(0deg);
+  }
+  1% {
+    transform: rotate(-1.5deg);
+  }
+  2% {
+    transform: rotate(1.5deg);
+  }
+  3% {
+    transform: rotate(-1deg);
+  }
+  4% {
+    transform: rotate(1deg);
+  }
+  5% {
+    transform: rotate(-0.5deg);
+  }
+}
+
+.is-new .card-border {
+  animation: wiggle 10s ease-in-out infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Grid Layout for Cards
+   -------------------------------------------------------------------------- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Background Effects
+   -------------------------------------------------------------------------- */
+.grid-pattern {
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(128, 128, 128, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(128, 128, 128, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.orb-1 {
+  width: 600px;
+  height: 600px;
+  background: var(--orb-1);
+  top: -100px;
+  left: -150px;
+}
+
+.orb-2 {
+  width: 500px;
+  height: 500px;
+  background: var(--orb-2);
+  top: 40%;
+  right: -200px;
+}
+
+.orb-3 {
+  width: 400px;
+  height: 400px;
+  background: var(--orb-3);
+  bottom: -100px;
+  left: 30%;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Utilities
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .section-inner {
+    padding: 3rem 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .section-inner {
+    padding: 2rem 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+}

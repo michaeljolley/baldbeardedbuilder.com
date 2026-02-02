@@ -1,13 +1,27 @@
-<a href="#content">Skip to content</a>
+---
+---
+
+<a href="#main-content" class="skip-to-content">Skip to content</a>
 
 <style>
-  a {
-    clip: rect(0 0 0 0);
-    clip-path: inset(50%);
-    height: 1px;
-    overflow: hidden;
+  .skip-to-content {
     position: absolute;
-    white-space: nowrap;
-    width: 1px;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #9333ea, #3b82f6);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0 0 0.5rem 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    z-index: 10000;
+    transition: top 0.2s ease;
+  }
+
+  .skip-to-content:focus {
+    top: 0;
+    outline: 2px solid white;
+    outline-offset: 2px;
   }
 </style>

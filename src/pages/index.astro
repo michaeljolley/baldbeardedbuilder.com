@@ -1,22 +1,115 @@
 ---
-import BaseLayout from "@layouts/base.astro";
-import Mast from "@components/Mast.astro";
-import BetterCode from "@components/BetterCode.astro";
-import BrainDumpForm from "@components/BrainDumpForm.astro";
-import Twitch from "@components/Twitch.astro";
+import Layout from '../layouts/Layout.astro';
+import Newsletter from '../components/Newsletter.astro';
+import VideoSection from '../components/VideoSection.astro';
+import BlogSection from '../components/BlogSection.astro';
+import TwitchSection from '../components/TwitchSection.astro';
+import { getCollection } from 'astro:content';
 
-const title = "Michael Jolley is the Bald Bearded Builder";
-const description =
-	"Welcome to the home of Michael Jolley, also known as the bald, bearded, builder. Here you'll find all Michael's content curated for easier viewing.";
-const permalink = `https://${import.meta.env.HOST}/`;
+const blogEntries = await getCollection('blog');
+const now = new Date();
+const publishedEntries = blogEntries.filter(entry => entry.data.pubDate <= now);
+const sortedEntries = publishedEntries.sort((a, b) => 
+  b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+const latestPost = sortedEntries[0];
 ---
 
-<BaseLayout {title} {description} {permalink}>
-	<Mast
-		title="Bald Bearded Builder"
-		summary="Helping developers do more...<br>and laugh along the way."
-	/>
-	<Twitch />
-	<BetterCode />
-	<BrainDumpForm />
-</BaseLayout>
+<Layout title="Bald Bearded Builder | Michael Jolley">
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>Michael Jolley</h1>
+        <p class="aka">aka The Bald Bearded Builder</p>
+        <p class="tagline">Bringing smiles to the syntax — because laughter is the best error handler.</p>
+        <div class="hero-cta">
+          <a href={`/blog/${latestPost.id}/`} class="btn btn-primary">Read the Latest</a>
+          <a href="https://youtube.com/baldbeardedbuilder" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+          <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Watch on Twitch</a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="https://avatars.githubusercontent.com/u/1228996?v=4" alt="Michael Jolley - Bald Bearded Builder" />
+      </div>
+    </div>
+  </section>
+
+  <BlogSection />
+
+  <TwitchSection />
+
+  <VideoSection />
+
+  <Newsletter />
+</Layout>
+
+<style>
+  .hero {
+    padding: 4rem 2rem;
+  }
+
+  .hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .hero-text h1 {
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #9333ea, #3b82f6, #ec4899);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  .aka {
+    font-size: 1.25rem;
+    opacity: 0.7;
+    margin-bottom: 1rem;
+  }
+
+  .tagline {
+    font-size: 1.5rem;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-image img {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 50%;
+    border: 4px solid rgba(147, 51, 234, 0.3);
+    box-shadow: 0 20px 60px rgba(147, 51, 234, 0.2);
+  }
+
+  @media (max-width: 900px) {
+    .hero-content {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .hero-image {
+      order: -1;
+    }
+
+    .hero-image img {
+      max-width: 250px;
+    }
+
+    .hero-cta {
+      justify-content: center;
+    }
+  }
+</style>
