@@ -1,9 +1,9 @@
 ---
-import Layout from '@layouts/Layout.astro';
-import Newsletter from '@components/Newsletter.astro';
-import VideoSection from '@components/VideoSection.astro';
-import BlogSection from '@components/BlogSection.astro';
-import TwitchSection from '@components/TwitchSection.astro';
+import Layout from '../layouts/Layout.astro';
+import Newsletter from '../components/Newsletter.astro';
+import VideoSection from '../components/VideoSection.astro';
+import BlogSection from '../components/BlogSection.astro';
+import TwitchSection from '../components/TwitchSection.astro';
 import { getCollection } from 'astro:content';
 
 const blogEntries = await getCollection('blog');
