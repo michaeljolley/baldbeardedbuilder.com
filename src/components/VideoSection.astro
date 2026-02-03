@@ -3,8 +3,8 @@ import { getCollection } from 'astro:content';
 import VideoCard from './VideoCard.astro';
 
 const videoEntries = await getCollection('videos');
-const filteredVideos = videoEntries.filter(video => !video.data.link.includes('shorts'));
-const sortedEntries = filteredVideos.sort((a, b) => 
+const filteredVideos = videoEntries.filter(video => !video.data.short);
+const sortedEntries = filteredVideos.sort((a, b) =>
   b.data.date.getTime() - a.data.date.getTime()
 );
 const latestVideos = sortedEntries.slice(0, 3);

@@ -8,13 +8,17 @@ interface Props {
       thumbnail: string;
       date: Date;
       tags?: string[];
+      views?: number;
+      likes?: number;
+      comments?: number;
     };
   };
   showBadge?: boolean;
   showTags?: boolean;
+  showStats?: boolean;
 }
 
-const { video, showBadge = false, showTags = true } = Astro.props;
+const { video, showBadge = false, showTags = true, showStats = true } = Astro.props;
 
 const now = new Date();
 const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -26,6 +30,16 @@ const formatDate = (date: Date) => {
     day: 'numeric',
     year: 'numeric'
   });
+};
+
+const formatNumber = (num: number) => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+  }
+  return num.toString();
 };
 ---
 
@@ -42,6 +56,35 @@ const formatDate = (date: Date) => {
       <div class="card-content">
         <time datetime={video.data.date.toISOString()}>{formatDate(video.data.date)}</time>
         <h2>{video.data.title}</h2>
+        {showStats && (
+          <div class="video-stats">
+            {video.data.views !== undefined && (
+              <span class="stat">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                {formatNumber(video.data.views)}
+              </span>
+            )}
+            {video.data.likes !== undefined && (
+              <span class="stat">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                </svg>
+                {formatNumber(video.data.likes)}
+              </span>
+            )}
+            {video.data.comments !== undefined && (
+              <span class="stat">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                {formatNumber(video.data.comments)}
+              </span>
+            )}
+          </div>
+        )}
         {showTags && video.data.tags && video.data.tags.length > 0 && (
           <div class="card-tags">
             {video.data.tags.slice(0, 3).map((tag: string) => (
@@ -235,6 +278,25 @@ const formatDate = (date: Date) => {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .video-stats {
+    display: flex;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 0.75rem;
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .stat svg {
+    opacity: 0.8;
   }
 
   .card-tags {

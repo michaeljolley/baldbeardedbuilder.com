@@ -5,8 +5,8 @@ import { getCollection } from 'astro:content';
 
 export async function getStaticPaths({ paginate }) {
   const videoEntries = await getCollection('videos');
-  const filteredVideos = videoEntries.filter(video => !video.data.link.includes('shorts'));
-  const sortedEntries = filteredVideos.sort((a, b) => 
+  const filteredVideos = videoEntries.filter(video => !video.data.short);
+  const sortedEntries = filteredVideos.sort((a, b) =>
     b.data.date.getTime() - a.data.date.getTime()
   );
   return paginate(sortedEntries, { pageSize: 12 });
