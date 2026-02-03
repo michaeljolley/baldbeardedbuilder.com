@@ -1,11 +1,70 @@
 ---
+import { isOnline, getLastStream } from '../scripts/twitch';
+
+const { isLive, liveThumbnail, liveTitle } = await isOnline();
+const { lastStreamUrl, lastThumbnail, lastStreamTitle, lastStreamDuration, lastStreamDate } = await getLastStream();
+
+const formatDuration = (duration: string) => {
+  // Twitch duration format is like "3h24m12s"
+  const hours = duration.match(/(\d+)h/);
+  const minutes = duration.match(/(\d+)m/);
+  const h = hours ? parseInt(hours[1]) : 0;
+  const m = minutes ? parseInt(minutes[1]) : 0;
+  if (h > 0) {
+    return `${h}h ${m}m`;
+  }
+  return `${m}m`;
+};
+
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric',
+    year: 'numeric'
+  });
+};
 ---
 
+{isLive ? (
+<section class="twitch twitch-live">
+  <div class="section-inner">
+    <div class="twitch-content">
+      <div class="twitch-info">
+        <h1>🔴 I'm Live Right Now!</h1>
+        <p>Come hang out! I'm currently streaming and would love for you to join the conversation.</p>
+        <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Watch Live</a>
+      </div>
+      <div class="twitch-embed">
+        <a href="https://twitch.tv/baldbeardedbuilder" class="stream-card-link" target="_blank" rel="noopener noreferrer">
+          <div class="card-border live-border">
+            <div class="stream-card">
+              <span class="live-badge">🔴 Live Now</span>
+              <div class="stream-thumbnail">
+                <img src={liveThumbnail} alt={liveTitle} loading="lazy"/>
+                <div class="play-overlay live-overlay">
+                  <div class="play-icon"></div>
+                </div>
+              </div>
+              <div class="stream-info">
+                <h3>{liveTitle}</h3>
+                <div class="stream-meta">
+                  <span class="stream-date">Streaming now on Twitch</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+) : (
 <section class="twitch">
   <div class="section-inner">
     <div class="twitch-content">
       <div class="twitch-info">
-        <h1>Live on Twitch</h1>
+        <h1>Let's Build Together</h1>
         <p>Join me for live coding sessions where I'm building Microsoft PowerToys. We laugh, we learn, and occasionally we break things spectacularly.</p>
         <ul class="stream-schedule">
           <li><strong>Monday - Thursday</strong> (US time)</li>
@@ -13,17 +72,37 @@
         <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Follow on Twitch</a>
       </div>
       <div class="twitch-embed">
-        <div class="stream-placeholder">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 2H3v16h5v4l4-4h5l4-4V2zm-10 9V7m5 4V7"></path>
-          </svg>
-          <p>Currently Offline</p>
-          <span>Next stream: Monday</span>
-        </div>
+        <a href={lastStreamUrl} class="stream-card-link" target="_blank" rel="noopener noreferrer">
+          <div class="card-border">
+            <div class="stream-card">
+              <span class="latest-badge">Latest Stream</span>
+              <div class="stream-thumbnail">
+                <img src={lastThumbnail} alt={lastStreamTitle} loading="lazy"/>
+                <div class="play-overlay">
+                  <div class="play-icon"></div>
+                </div>
+              </div>
+              <div class="stream-info">
+                <h3>{lastStreamTitle}</h3>
+                <div class="stream-meta">
+                  <span class="stream-date">{formatDate(lastStreamDate)}</span>
+                  <span class="stream-duration">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    {formatDuration(lastStreamDuration)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
       </div>
     </div>
   </div>
 </section>
+)}
 
 <style>
   .twitch-content {
@@ -54,28 +133,193 @@
     border-bottom: 1px solid rgba(128, 128, 128, 0.1);
   }
 
-  .stream-placeholder {
-    background: rgba(128, 128, 128, 0.1);
-    border-radius: 0.75rem;
-    padding: 4rem 2rem;
-    text-align: center;
-    color: var(--text-color);
+  .stream-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .card-border {
+    padding: 2px;
+    border-radius: 1rem;
+    background: rgba(128, 128, 128, 0.15);
+    transition: background 0.3s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .stream-card-link:hover .card-border {
+    background: linear-gradient(135deg, #9333ea, #3b82f6, #ec4899, #9333ea);
+    background-size: 300% 300%;
+    animation: border-spin 3s linear infinite;
+    transform: translateY(-8px);
+  }
+
+  @keyframes border-spin {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .stream-card {
+    background: var(--bg-color);
+    border-radius: calc(1rem - 2px);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .latest-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: linear-gradient(135deg, #9333ea, #3b82f6);
+    color: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .live-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    animation: pulse-live 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-live {
+    0%, 100% { 
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    }
+    50% { 
+      box-shadow: 0 2px 20px rgba(239, 68, 68, 0.8);
+    }
+  }
+
+  .live-border {
+    background: linear-gradient(135deg, #ef4444, #f97316, #ef4444);
+    background-size: 300% 300%;
+    animation: border-spin 3s linear infinite;
+  }
+
+  .live-overlay {
     opacity: 0.7;
+    background: rgba(239, 68, 68, 0.2);
   }
 
-  .stream-placeholder svg {
-    margin-bottom: 1rem;
-    opacity: 0.5;
+  .stream-card-link:hover .live-overlay {
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.4);
   }
 
-  .stream-placeholder p {
-    font-size: 1.25rem;
+  .stream-thumbnail {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+  }
+
+  .stream-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease, filter 0.3s ease;
+    filter: saturate(0.8);
+  }
+
+  .stream-card-link:hover .stream-thumbnail img {
+    transform: scale(1.08);
+    filter: saturate(1.1) brightness(0.5);
+  }
+
+  .play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0);
+    opacity: 0;
+    transition: opacity 0.3s ease, background 0.3s ease;
+  }
+
+  .stream-card-link:hover .play-overlay {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .play-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #9333ea, #3b82f6, #ec4899, #9333ea);
+    background-size: 300% 300%;
+    animation: border-spin 3s linear infinite;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/contain no-repeat;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+  }
+
+  .stream-card-link:hover .play-icon {
+    transform: scale(1);
+  }
+
+  .stream-info {
+    padding: 1.25rem;
+    position: relative;
+  }
+
+  .stream-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 1.25rem;
+    right: 1.25rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(147, 51, 234, 0.3), rgba(59, 130, 246, 0.3), transparent);
+  }
+
+  .stream-info h3 {
+    font-size: 1rem;
+    line-height: 1.4;
     margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.3s ease;
   }
 
-  .stream-placeholder span {
-    font-size: 0.875rem;
+  .stream-card-link:hover .stream-info h3 {
+    background: linear-gradient(135deg, #9333ea, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stream-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
     opacity: 0.6;
+  }
+
+  .stream-duration {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .stream-duration svg {
+    opacity: 0.8;
   }
 
   @media (max-width: 900px) {

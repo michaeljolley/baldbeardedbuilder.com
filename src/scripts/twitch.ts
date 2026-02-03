@@ -1,4 +1,4 @@
-import queryString from "qs";
+import { URLSearchParams } from "url";
 
 const getAccessToken = async (): Promise<string> => {
 	const opts = {
@@ -7,7 +7,8 @@ const getAccessToken = async (): Promise<string> => {
 		grant_type: "client_credentials",
 		scopes: "",
 	};
-	const params = queryString.stringify(opts);
+
+	const params = new URLSearchParams(opts).toString();
 
 	const authResponse = await fetch(
 		`https://id.twitch.tv/oauth2/token?${params}`,
@@ -32,6 +33,9 @@ const getHeaders = async (): Promise<Headers> => {
 export async function getLastStream(): Promise<{
 	lastStreamUrl: string;
 	lastThumbnail: string;
+	lastStreamTitle: string;
+	lastStreamDuration: string;
+	lastStreamDate: string;
 }> {
 	const headers = await getHeaders();
 	const vidResponse = await fetch(
@@ -50,14 +54,24 @@ export async function getLastStream(): Promise<{
 		.replace("%{height}", "540");
 
 	const lastStreamUrl = `https://www.twitch.tv/videos/${videos[0].id}`;
+	const lastStreamTitle = videos && videos.length > 0 ? videos[0].title : "";
+	const lastStreamDuration = videos && videos.length > 0 ? videos[0].duration : "";
+	const lastStreamDate = videos && videos.length > 0 ? videos[0].created_at : "";
 
 	return {
 		lastStreamUrl,
 		lastThumbnail,
+		lastStreamTitle,
+		lastStreamDuration,
+		lastStreamDate,
 	};
 }
 
-export async function isOnline(): Promise<string> {
+export async function isOnline(): Promise<{
+	isLive: boolean;
+	liveThumbnail?: string;
+	liveTitle?: string;
+}> {
 	const headers = await getHeaders();
 	const response = await fetch(
 		`https://api.twitch.tv/helix/streams?user_login=baldbeardedbuilder`,
@@ -68,11 +82,16 @@ export async function isOnline(): Promise<string> {
 	const body = await response.text();
 	const { data: streams } = JSON.parse(body);
 
-	let thumbnail =
-		streams && streams.length > 0 ? streams[0].thumbnail_url : undefined;
-	if (thumbnail) {
-		thumbnail = thumbnail.replace("{width}", "960").replace("{height}", "540");
+	const isLive = streams && streams.length > 0;
+	let liveThumbnail = isLive ? streams[0].thumbnail_url : undefined;
+	if (liveThumbnail) {
+		liveThumbnail = liveThumbnail.replace("{width}", "960").replace("{height}", "540");
 	}
+	const liveTitle = isLive ? streams[0].title : undefined;
 
-	return thumbnail;
+	return {
+		isLive,
+		liveThumbnail,
+		liveTitle,
+	};
 }

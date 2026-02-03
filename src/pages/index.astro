@@ -5,14 +5,19 @@ import VideoSection from '../components/VideoSection.astro';
 import BlogSection from '../components/BlogSection.astro';
 import TwitchSection from '../components/TwitchSection.astro';
 import { getCollection } from 'astro:content';
+import { isOnline } from '../scripts/twitch';
 
 const blogEntries = await getCollection('blog');
 const now = new Date();
+const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 const publishedEntries = blogEntries.filter(entry => entry.data.pubDate <= now);
 const sortedEntries = publishedEntries.sort((a, b) => 
   b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
 const latestPost = sortedEntries[0];
+const hasRecentPost = latestPost && latestPost.data.pubDate >= sevenDaysAgo;
+
+const { isLive } = await isOnline();
 ---
 
 <Layout title="Bald Bearded Builder | Michael Jolley">
@@ -23,9 +28,25 @@ const latestPost = sortedEntries[0];
         <p class="aka">aka The Bald Bearded Builder</p>
         <p class="tagline">Bringing smiles to the syntax — because laughter is the best error handler.</p>
         <div class="hero-cta">
-          <a href={`/blog/${latestPost.id}/`} class="btn btn-primary">Read the Latest</a>
-          <a href="https://youtube.com/baldbeardedbuilder" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
-          <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Watch on Twitch</a>
+          {isLive ? (
+            <>
+              <a href={`/blog/${latestPost.id}/`} class="btn btn-muted">Read the Latest</a>
+              <a href="https://youtube.com/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+              <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-live" target="_blank" rel="noopener noreferrer">🔴 Live on Twitch Now</a>
+            </>
+          ) : hasRecentPost ? (
+            <>
+              <a href={`/blog/${latestPost.id}/`} class="btn btn-highlight">Read the Latest</a>
+              <a href="https://youtube.com/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+              <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on Twitch</a>
+            </>
+          ) : (
+            <>
+              <a href={`/blog/${latestPost.id}/`} class="btn btn-muted">Read the Latest</a>
+              <a href="https://youtube.com/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+              <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on Twitch</a>
+            </>
+          )}
         </div>
       </div>
       <div class="hero-image">
@@ -84,6 +105,55 @@ const latestPost = sortedEntries[0];
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+  }
+
+  .btn-muted {
+    background: rgba(128, 128, 128, 0.1);
+    color: var(--text-color);
+    opacity: 0.6;
+  }
+
+  .btn-muted:hover {
+    opacity: 1;
+    background: rgba(128, 128, 128, 0.2);
+  }
+
+  .btn-highlight {
+    background: linear-gradient(135deg, #9333ea, #3b82f6);
+    color: white;
+    box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4);
+    animation: wiggle 10s ease-in-out infinite;
+  }
+
+  .btn-highlight:hover {
+    box-shadow: 0 6px 30px rgba(147, 51, 234, 0.6);
+  }
+
+  .btn-live {
+    background: linear-gradient(135deg, #ef4444, #f97316, #ef4444);
+    background-size: 300% 300%;
+    animation: gradient-pulse 2s ease infinite, wiggle 10s ease-in-out infinite;
+    color: white;
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5);
+  }
+
+  .btn-live:hover {
+    box-shadow: 0 6px 30px rgba(239, 68, 68, 0.7);
+  }
+
+  @keyframes gradient-pulse {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  @keyframes wiggle {
+    0% { transform: rotate(0deg) translateY(0); }
+    1% { transform: rotate(-1.5deg) translateY(-2px); }
+    2% { transform: rotate(1.5deg) translateY(-2px); }
+    3% { transform: rotate(-1deg) translateY(-1px); }
+    4% { transform: rotate(1deg) translateY(-1px); }
+    5% { transform: rotate(-0.5deg) translateY(0); }
+    6%, 100% { transform: rotate(0deg) translateY(0); }
   }
 
   .hero-image img {
