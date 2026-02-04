@@ -31,9 +31,9 @@ const formatDate = (dateStr: string) => {
   <div class="section-inner">
     <div class="twitch-content">
       <div class="twitch-info">
-        <h1>🔴 I'm Live Right Now!</h1>
-        <p>Come hang out! I'm currently streaming and would love for you to join the conversation.</p>
-        <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Watch Live</a>
+        <h1>Let's Code Together</h1>
+        <p>Come hang out. I'm currently streaming and building Microsoft PowerToys. Join the conversation and let's build together!</p>
+        <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Watch Now</a>
       </div>
       <div class="twitch-embed">
         <a href="https://twitch.tv/baldbeardedbuilder" class="stream-card-link" target="_blank" rel="noopener noreferrer">
@@ -186,23 +186,19 @@ const formatDate = (dateStr: string) => {
     right: 1rem;
     background: linear-gradient(135deg, #9333ea, #3b82f6, #ec4899);
     background-size: 200% 200%;
-    animation: pulse-live 2s ease-in-out infinite;
+    animation: badge-gradient 3s ease-in-out infinite;
     color: white;
     padding: 0.35rem 0.75rem;
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 600;
     z-index: 10;
-    box-shadow: 0 2px 8px rgba(147, 51, 234, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
-  @keyframes pulse-live {
-    0%, 100% { 
-      box-shadow: 0 2px 8px rgba(147, 51, 234, 0.4);
-    }
-    50% { 
-      box-shadow: 0 2px 20px rgba(147, 51, 234, 0.8);
-    }
+  @keyframes badge-gradient {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
   }
 
   .live-border {
