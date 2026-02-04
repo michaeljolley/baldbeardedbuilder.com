@@ -32,7 +32,7 @@ const { isLive } = await isOnline();
             <>
               <a href={`/blog/${latestPost.id}/`} class="btn btn-muted">Read the Latest</a>
               <a href="https://youtube.com/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
-              <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-live" target="_blank" rel="noopener noreferrer">🔴 Live on Twitch Now</a>
+              <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-live" target="_blank" rel="noopener noreferrer">Live on Twitch Now</a>
             </>
           ) : hasRecentPost ? (
             <>
@@ -130,15 +130,15 @@ const { isLive } = await isOnline();
   }
 
   .btn-live {
-    background: linear-gradient(135deg, #ef4444, #f97316, #ef4444);
+    background: linear-gradient(135deg, #9333ea, #3b82f6, #ec4899, #9333ea);
     background-size: 300% 300%;
     animation: gradient-pulse 2s ease infinite, wiggle 10s ease-in-out infinite;
     color: white;
-    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5);
+    box-shadow: 0 4px 20px rgba(147, 51, 234, 0.5);
   }
 
   .btn-live:hover {
-    box-shadow: 0 6px 30px rgba(239, 68, 68, 0.7);
+    box-shadow: 0 6px 30px rgba(147, 51, 234, 0.7);
   }
 
   @keyframes gradient-pulse {
