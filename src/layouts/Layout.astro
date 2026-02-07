@@ -7,10 +7,6 @@ import Footer from '../components/Footer.astro';
 import SkipToContent from '../components/SkipToContent.astro';
 import '../styles/global.css';
 
-interface Props {
-  title: string;
-}
-
 export interface Props extends BaseHeadProps {}
 
 const { title, description, permalink, canonicalUrl } = Astro.props;
