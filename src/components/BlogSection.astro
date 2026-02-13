@@ -5,8 +5,19 @@ import BlogCard from './BlogCard.astro';
 const blogEntries = await getCollection('blog');
 const now = new Date();
 const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+// Get published entries
 const publishedEntries = blogEntries.filter(entry => entry.data.pubDate <= now);
-const sortedEntries = publishedEntries.sort((a, b) => 
+
+// Get upcoming posts within the next 7 days
+const upcomingEntries = blogEntries
+  .filter(entry => entry.data.pubDate > now && entry.data.pubDate <= sevenDaysFromNow)
+  .sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime());
+
+// Combine and sort all entries
+const allEntries = [...publishedEntries, ...upcomingEntries];
+const sortedEntries = allEntries.sort((a, b) => 
   b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
 const latestPosts = sortedEntries.slice(0, 3);
@@ -19,11 +30,18 @@ const isNew = (date: Date) => date >= sevenDaysAgo && date <= now;
     <h2>Things I've Written Down</h2>
     <p class="section-desc">Learnings about .NET, JavaScript, Cloud, AI, and family.</p>
     <ul class="blog-grid">
-      {latestPosts.map(post => (
-        <li class="blog-item">
-          <BlogCard post={post} isNew={isNew(post.data.pubDate)} />
-        </li>
-      ))}
+      {latestPosts.map(post => {
+        const isFuturePost = post.data.pubDate > now;
+        return (
+          <li class="blog-item">
+            <BlogCard 
+              post={post} 
+              isNew={isNew(post.data.pubDate)} 
+              isComingSoon={isFuturePost}
+            />
+          </li>
+        );
+      })}
     </ul>
     <a href="/blog/" class="section-link">Read all posts →</a>
   </div>
