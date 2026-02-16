@@ -21,8 +21,9 @@
           name="email"
           required
         />
-        <button type="submit">Subscribe to .NET Drip</button>
+        <button type="submit">.NET Drip</button>
       </form>
+      <a href="https://dotnetdrip.com" target="_blank" rel="noopener" class="learn-more">Learn more →</a>
     </div>
     <div id="drip-inline-success" class="hidden">
       <p class="success-message">🎉 You're in! Check your inbox for a confirmation.</p>
@@ -121,6 +122,29 @@
     transform: translateY(-1px);
   }
 
+  .learn-more {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .learn-more:hover {
+    color: #9333ea;
+    text-decoration: underline;
+  }
+
+  :global(html.dark) .learn-more {
+    color: #a5b4fc;
+  }
+
+  :global(html.dark) .learn-more:hover {
+    color: #c4b5fd;
+  }
+
   .success-message {
     color: #10b981;
     font-weight: 500;
@@ -160,6 +184,23 @@
         formContainer.classList.add('hidden');
         successContainer.classList.remove('hidden');
       }
+    }
+    
+    // Move the form to midway through the content
+    const dripInline = document.querySelector('.dotnet-drip-inline');
+    const postContent = document.querySelector('.post-content');
+    
+    if (dripInline && postContent) {
+      // Get all h2 headings in the post content
+      const headings = postContent.querySelectorAll('h2');
+      
+      if (headings.length >= 3) {
+        // Insert before the heading that's roughly in the middle
+        const midIndex = Math.floor(headings.length / 2);
+        const targetHeading = headings[midIndex];
+        targetHeading.parentNode.insertBefore(dripInline, targetHeading);
+      }
+      // If less than 3 headings, leave it at the end
     }
   })();
 </script>
