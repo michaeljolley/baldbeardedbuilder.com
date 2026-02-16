@@ -1,0 +1,165 @@
+---
+// Inline .NET Drip subscription component for blog posts with .NET/C# tags
+---
+
+<aside class="dotnet-drip-inline">
+  <div class="drip-icon">
+    <img src="/images/dotnetdrip.svg" alt=".NET Drip" />
+  </div>
+  <div class="drip-content">
+    <h3>Want more .NET & C# content?</h3>
+    <p>Get tips, tutorials, and insights delivered to your inbox every Mon · Wed · Fri</p>
+    <div id="drip-inline-form-container">
+      <form class="drip-form" action="/?subscribed=true" name="net-drip" data-netlify="true" netlify-honeypot="bot-field" method="POST">
+        <p class="hidden">
+          <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+        </p>
+        <input type="hidden" name="utm_source" value="baldbeardedbuilder-blog" />
+        <input 
+          placeholder="developer@example.com" 
+          type="email"
+          name="email"
+          required
+        />
+        <button type="submit">Subscribe to .NET Drip</button>
+      </form>
+    </div>
+    <div id="drip-inline-success" class="hidden">
+      <p class="success-message">🎉 You're in! Check your inbox for a confirmation.</p>
+    </div>
+  </div>
+</aside>
+
+<style>
+  .dotnet-drip-inline {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    padding: 1.5rem;
+    margin: 2.5rem 0;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(147, 51, 234, 0.08));
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 0.75rem;
+  }
+
+  .drip-icon {
+    flex-shrink: 0;
+  }
+
+  .drip-icon img {
+    width: 60px;
+    height: auto;
+  }
+
+  .drip-content {
+    flex: 1;
+  }
+
+  .drip-content h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    background: linear-gradient(135deg, #6366f1, #9333ea);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .drip-content p {
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+    opacity: 0.8;
+    line-height: 1.5;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .drip-form {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .drip-form input[type="email"] {
+    padding: 0.65rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(128, 128, 128, 0.25);
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--text-color);
+    font-size: 0.95rem;
+    flex: 1;
+    min-width: 200px;
+    max-width: 280px;
+  }
+
+  :global(html.dark) .drip-form input[type="email"] {
+    background: rgba(30, 30, 40, 0.8);
+  }
+
+  .drip-form input[type="email"]:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  }
+
+  .drip-form button {
+    padding: 0.65rem 1.25rem;
+    border-radius: 0.5rem;
+    border: none;
+    background: linear-gradient(135deg, #6366f1, #9333ea);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .drip-form button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .success-message {
+    color: #10b981;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  @media (max-width: 600px) {
+    .dotnet-drip-inline {
+      flex-direction: column;
+      text-align: center;
+      align-items: center;
+    }
+
+    .drip-form {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .drip-form input[type="email"] {
+      max-width: 100%;
+      width: 100%;
+    }
+
+    .drip-form button {
+      width: 100%;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    // Check for success query param
+    if (window.location.search.includes('subscribed=true')) {
+      const formContainer = document.getElementById('drip-inline-form-container');
+      const successContainer = document.getElementById('drip-inline-success');
+      if (formContainer && successContainer) {
+        formContainer.classList.add('hidden');
+        successContainer.classList.remove('hidden');
+      }
+    }
+  })();
+</script>

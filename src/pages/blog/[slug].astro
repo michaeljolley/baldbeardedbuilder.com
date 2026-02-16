@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import { getCollection, render } from 'astro:content';
 import { marked } from 'marked';
 import { isPostPublished } from '../../scripts/publish';
+import DotNetDripInline from '../../components/DotNetDripInline.astro';
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection('blog');
@@ -27,6 +28,15 @@ export async function getStaticPaths() {
 
 const { entry, isFuturePost } = Astro.props;
 const { Content, headings, remarkPluginFrontmatter } = await render(entry);
+
+// Check if post has .NET or C# tags
+const tags = entry.data.tags || [];
+const isDotNetPost = tags.some((tag: string) => 
+  tag.toLowerCase() === 'dotnet' || 
+  tag.toLowerCase() === '.net' ||
+  tag.toLowerCase() === 'csharp' || 
+  tag.toLowerCase() === 'c#'
+);
 
 // For future posts, extract intro content plus a bit more after the first heading
 let introContent = '';
@@ -149,6 +159,7 @@ const formatDate = (date: Date) => {
         <div class="post-layout">
           <div class="post-content">
             <Content />
+            {isDotNetPost && <DotNetDripInline />}
           </div>
 
           <div class="sidebar">
@@ -410,7 +421,6 @@ const formatDate = (date: Date) => {
     border: none;
     border-top: 1px solid rgba(128, 128, 128, 0.2);
     margin: 2rem 0;
-  }
   }
 
   .post-image {
