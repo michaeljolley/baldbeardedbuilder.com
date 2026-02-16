@@ -32,7 +32,7 @@ const isNew = (date: Date) => date >= sevenDaysAgo && isPostPublished(date);
     <p class="section-desc">Learnings about .NET, JavaScript, Cloud, AI, and family.</p>
     <ul class="blog-grid">
       {latestPosts.map(post => {
-        const isFuturePost = post.data.pubDate > now;
+        const isFuturePost = !isPostPublished(post.data.pubDate);
         return (
           <li class="blog-item">
             <BlogCard 
