@@ -2,18 +2,19 @@
 import Layout from '../../layouts/Layout.astro';
 import BlogCard from '../../components/BlogCard.astro';
 import { getCollection } from 'astro:content';
+import { isPostPublished } from '../../scripts/publish';
 
 export async function getStaticPaths({ paginate }) {
   const blogEntries = await getCollection('blog');
   const now = new Date();
   const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   
-  // Get all published entries (before or on today)
-  const publishedEntries = blogEntries.filter(entry => entry.data.pubDate <= now);
+  // Get all published entries
+  const publishedEntries = blogEntries.filter(entry => isPostPublished(entry.data.pubDate));
   
-  // Get upcoming posts within the next 7 days
+  // Get upcoming posts within the next 7 days (not yet published)
   const upcomingEntries = blogEntries
-    .filter(entry => entry.data.pubDate > now && entry.data.pubDate <= sevenDaysFromNow)
+    .filter(entry => !isPostPublished(entry.data.pubDate) && entry.data.pubDate <= sevenDaysFromNow)
     .sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime());
   
   // Combine and sort all entries

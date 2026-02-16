@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BlogCard from './BlogCard.astro';
+import { isPostPublished } from '../scripts/publish';
 
 const blogEntries = await getCollection('blog');
 const now = new Date();
@@ -8,11 +9,11 @@ const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
 // Get published entries
-const publishedEntries = blogEntries.filter(entry => entry.data.pubDate <= now);
+const publishedEntries = blogEntries.filter(entry => isPostPublished(entry.data.pubDate));
 
-// Get upcoming posts within the next 7 days
+// Get upcoming posts within the next 7 days (not yet published)
 const upcomingEntries = blogEntries
-  .filter(entry => entry.data.pubDate > now && entry.data.pubDate <= sevenDaysFromNow)
+  .filter(entry => !isPostPublished(entry.data.pubDate) && entry.data.pubDate <= sevenDaysFromNow)
   .sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime());
 
 // Combine and sort all entries
@@ -22,7 +23,7 @@ const sortedEntries = allEntries.sort((a, b) =>
 );
 const latestPosts = sortedEntries.slice(0, 3);
 
-const isNew = (date: Date) => date >= sevenDaysAgo && date <= now;
+const isNew = (date: Date) => date >= sevenDaysAgo && isPostPublished(date);
 ---
 
 <section class="blog">

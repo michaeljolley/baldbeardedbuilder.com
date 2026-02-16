@@ -2,17 +2,17 @@
 import Layout from '../../layouts/Layout.astro';
 import { getCollection, render } from 'astro:content';
 import { marked } from 'marked';
+import { isPostPublished } from '../../scripts/publish';
 
 export async function getStaticPaths() {
   const blogEntries = await getCollection('blog');
-  const now = new Date();
   
   // Get published entries
-  const publishedEntries = blogEntries.filter(entry => entry.data.pubDate <= now);
+  const publishedEntries = blogEntries.filter(entry => isPostPublished(entry.data.pubDate));
   
   // Get the next upcoming post only
   const futureEntries = blogEntries
-    .filter(entry => entry.data.pubDate > now)
+    .filter(entry => !isPostPublished(entry.data.pubDate))
     .sort((a, b) => a.data.pubDate.getTime() - b.data.pubDate.getTime());
   const nextPost = futureEntries.length > 0 ? [futureEntries[0]] : [];
   
@@ -21,7 +21,7 @@ export async function getStaticPaths() {
   
   return allEntries.map(entry => ({
     params: { slug: entry.id },
-    props: { entry, isFuturePost: entry.data.pubDate > now },
+    props: { entry, isFuturePost: !isPostPublished(entry.data.pubDate) },
   }));
 }
 

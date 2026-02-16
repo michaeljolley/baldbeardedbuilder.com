@@ -1,0 +1,246 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { isOnline } from '../scripts/twitch';
+
+const { isLive } = await isOnline();
+---
+
+<Layout title="404 - Page Not Found | Bald Bearded Builder">
+  <section class="error-page">
+    <div class="error-content">
+      <div class="error-code">
+        <span class="digit">4</span>
+        <span class="digit zero">0</span>
+        <span class="digit">4</span>
+      </div>
+      <h1>Oops! This page got lost in the codebase</h1>
+      <p class="error-message">
+        Looks like this route threw an unhandled exception. 
+        Don't worry, even the best developers hit a <code>404</code> sometimes.
+      </p>
+      <div class="error-actions">
+        <a href="/" class="btn btn-secondary">Back to Home</a>
+        <a href="/blog/" class="btn btn-secondary">Read the Blog</a>
+        {isLive && (
+          <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-live" target="_blank" rel="noopener noreferrer">
+            Live on Twitch Now!
+          </a>
+        )}
+      </div>
+      <div class="error-joke">
+        <p>// TODO: Find this page</p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .error-page {
+    min-height: calc(100vh - 10rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .error-content {
+    max-width: 600px;
+  }
+
+  .error-code {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .digit {
+    font-size: 8rem;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, #9333ea, #3b82f6, #ec4899);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  .digit.zero {
+    animation: gradient-shift 8s ease infinite, spin 4s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  @keyframes spin {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(10deg) scale(1.05); }
+    75% { transform: rotate(-10deg) scale(1.05); }
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color: #1f2937;
+  }
+
+  :global(html.dark) h1 {
+    color: #f3f4f6;
+  }
+
+  .error-message {
+    font-size: 1.125rem;
+    color: #6b7280;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  :global(html.dark) .error-message {
+    color: #9ca3af;
+  }
+
+  .error-message code {
+    background: rgba(147, 51, 234, 0.15);
+    color: #9333ea;
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-family: 'Fira Code', 'Monaco', monospace;
+    font-size: 0.9em;
+  }
+
+  :global(html.dark) .error-message code {
+    background: rgba(147, 51, 234, 0.25);
+    color: #c084fc;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #9333ea, #3b82f6);
+    color: white;
+    box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 6px 30px rgba(147, 51, 234, 0.6);
+    transform: translateY(-2px);
+  }
+
+  .btn-live {
+    position: relative;
+    background: #1e1b4b;
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    animation: wiggle 10s ease-in-out infinite;
+    z-index: 0;
+    overflow: hidden;
+    font-weight: 600;
+  }
+
+  .btn-live::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    height: 500%;
+    background: conic-gradient(from 0deg, #9333ea, #3b82f6, #ec4899, #9333ea);
+    animation: border-rotate 2s linear infinite;
+    z-index: -2;
+  }
+
+  .btn-live::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: #1e1b4b;
+    border-radius: 9999px;
+    z-index: -1;
+  }
+
+  .btn-live:hover {
+    box-shadow: 0 0 25px rgba(147, 51, 234, 0.6), 0 0 50px rgba(147, 51, 234, 0.3);
+  }
+
+  .btn-live:hover::after {
+    background: #2e2a5e;
+  }
+
+  @keyframes border-rotate {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  @keyframes wiggle {
+    0% { transform: rotate(0deg) translateY(0); }
+    1% { transform: rotate(-1.5deg) translateY(-2px); }
+    2% { transform: rotate(1.5deg) translateY(-2px); }
+    3% { transform: rotate(-1deg) translateY(-1px); }
+    4% { transform: rotate(1deg) translateY(-1px); }
+    5% { transform: rotate(-0.5deg) translateY(0); }
+    6%, 100% { transform: rotate(0deg) translateY(0); }
+  }
+
+  .btn-secondary {
+    background: rgba(107, 114, 128, 0.2);
+    color: #374151;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(107, 114, 128, 0.3);
+  }
+
+  :global(html.dark) .btn-secondary {
+    background: rgba(156, 163, 175, 0.2);
+    color: #e5e7eb;
+  }
+
+  :global(html.dark) .btn-secondary:hover {
+    background: rgba(156, 163, 175, 0.3);
+  }
+
+  .error-joke {
+    font-family: 'Fira Code', 'Monaco', monospace;
+    font-size: 0.875rem;
+    color: #9ca3af;
+    opacity: 0.7;
+  }
+
+  :global(html.dark) .error-joke {
+    color: #6b7280;
+  }
+
+  @media (max-width: 600px) {
+    .digit {
+      font-size: 5rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    .error-message {
+      font-size: 1rem;
+    }
+  }
+</style>
