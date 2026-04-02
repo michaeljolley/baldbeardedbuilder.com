@@ -235,10 +235,15 @@ const formatDate = (date: Date) => {
 
   .post-layout {
     display: grid;
-    grid-template-columns: 1fr 250px;
+    grid-template-columns: minmax(0, 1fr) 250px;
     gap: 3rem;
     max-width: 100%;
     align-items: start;
+  }
+
+  .post-content {
+    min-width: 0;
+    overflow-wrap: break-word;
   }
 
   .sidebar {
@@ -254,8 +259,7 @@ const formatDate = (date: Date) => {
     background: rgba(128, 128, 128, 0.05);
     border-radius: 0.75rem;
     border: 1px solid rgba(128, 128, 128, 0.1);
-    max-height: calc(100vh - 10rem);
-    overflow-y: auto;
+
   }
 
   .toc h4 {
