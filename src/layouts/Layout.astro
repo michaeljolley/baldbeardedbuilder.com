@@ -195,6 +195,10 @@ const { title, description, permalink, canonicalUrl } = Astro.props;
     overflow-x: auto;
   }
 
+  :global(.expressive-code)::-webkit-scrollbar-corner {
+    background: rgba(30, 30, 50, 0.95);
+  }
+
   :global(.expressive-code .frame) {
     background: transparent !important;
     border: none !important;
