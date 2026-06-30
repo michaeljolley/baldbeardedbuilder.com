@@ -7,7 +7,12 @@ export interface Props {
 }
 
 const { title, description, permalink, canonicalUrl } = Astro.props;
-const encodedTitle = encodeURIComponent(title);
+// Double-encode Cloudinary-problematic characters (%, #, comma, /, &, ?) so they
+// survive Cloudinary's single decode of the l_text overlay value.
+const encodedTitle = encodeURIComponent(title).replace(
+  /%(25|23|2C|2F|26|3F)/g,
+  "%25$1"
+);
 
 const ograph = `https://res.cloudinary.com/dk3rdh3yo/image/upload/g_south_west,x_60,y_60,w_1000,c_fit,co_white,l_text:Roboto_64_bold:${encodedTitle}/website-assets/1200x700.png`;
 ---
