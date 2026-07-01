@@ -7,13 +7,14 @@ export interface Props {
 }
 
 const { title, description, permalink, canonicalUrl } = Astro.props;
+
 // Encode the title for the Cloudinary l_text overlay. encodeURIComponent handles
 // URL-syntax characters (e.g. "#" -> %23, "&" -> %26), which Cloudinary decodes once
-// and renders correctly. Commas and slashes are Cloudinary transformation separators,
-// so they must be double-encoded (%2C -> %252C, %2F -> %252F) to render as literal
-// text instead of splitting the transformation URL.
+// and renders correctly. Commas, slashes, and colons are Cloudinary transformation
+// separators, so they must be double-encoded (%2C -> %252C, %2F -> %252F,
+// %3A -> %253A) to render as literal text instead of splitting the transformation URL.
 const encodedTitle = encodeURIComponent(title).replace(
-  /%(2C|2F)/g,
+  /%(2C|2F|3A)/g,
   "%25$1"
 );
 
