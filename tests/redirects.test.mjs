@@ -163,3 +163,97 @@ test('no two items resolve to the same URL', () => {
   }
   assert.deepEqual(dupes, [], `duplicate URLs:\n  ${dupes.join('\n  ')}`);
 });
+
+/*
+  The netlify.toml probe.
+
+  scripts/verify-deploy.mjs asks a running deploy for one path and treats a 301 as proof
+  that the root netlify.toml was read. That proof only holds while the path exists in
+  exactly one place. If somebody adds it to _redirects, or a page appears at it, the probe
+  starts passing for the wrong reason and stops being able to fail, which is worse than
+  not having it: it would report the bbb.dev rule as loaded on a deploy where the file is
+  being ignored.
+*/
+const toml = fs.readFileSync(path.join(ROOT, 'netlify.toml'), 'utf8');
+const PROBE = '/_netlify-toml-is-read/';
+
+test('the probe path is declared in netlify.toml', () => {
+  assert.ok(
+    toml.includes(`from = "${PROBE}"`),
+    `${PROBE} is gone from netlify.toml. verify-deploy.mjs asserts it, and without the ` +
+      'rule there is no way to tell a deploy that ignores netlify.toml from one that reads it.'
+  );
+});
+
+test('the probe path is declared nowhere else, so a 301 can only mean netlify.toml', () => {
+  assert.equal(
+    parsed.some((r) => r.from === PROBE),
+    false,
+    `${PROBE} is in _redirects. That makes the probe self satisfying: it would 301 even ` +
+      'on a deploy that never read netlify.toml, which is the exact failure it exists to catch.'
+  );
+  assert.equal(
+    pages.has(PROBE),
+    false,
+    `${PROBE} is a real page now, so it would 200 rather than 301 and the probe would ` +
+      'fail for a reason that has nothing to do with netlify.toml. Move the probe.'
+  );
+});
+
+test('the probe lands on a page that exists', () => {
+  const to = toml.match(/from = "\/_netlify-toml-is-read\/"\s*\n\s*to = "([^"]+)"/)?.[1];
+  assert.ok(to, 'could not read the probe destination out of netlify.toml');
+  assert.ok(
+    pages.has(to),
+    `the probe redirects to ${to}, which is not a page v2 serves. verify-deploy checks ` +
+      'the landing page is a 200, so a missing destination fails the whole run.'
+  );
+});
+
+/*
+  The build settings netlify.toml now declares.
+
+  These were inert while the file lived in public/, because a build cannot be configured
+  by a file the build produces. At the repository root they are live, and netlify.toml
+  wins over the Netlify UI for every key it declares. So the same versions are now pinned
+  in two files, and the failure when they drift is a production build that runs on a
+  different toolchain from every local run and every CI run, with nothing saying so.
+*/
+const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+
+test('the Node version netlify builds with satisfies what package.json requires', () => {
+  const declared = Number(toml.match(/NODE_VERSION = "(\d+)/)?.[1]);
+  const required = Number(pkg.engines?.node?.match(/(\d+)/)?.[1]);
+
+  assert.ok(declared, 'NODE_VERSION is gone from netlify.toml, so production picks its own');
+  assert.ok(required, 'engines.node is gone from package.json');
+  assert.ok(
+    declared >= required,
+    `netlify.toml builds on Node ${declared} and package.json needs at least ${required}`
+  );
+});
+
+test('the pnpm version netlify builds with matches the one package.json pins', () => {
+  /* packageManager is exact and PNPM_VERSION is a major. Both are honoured, so the only
+     safe relationship is that the major agrees. Bumping one and not the other is the
+     drift this catches. */
+  const declared = toml.match(/PNPM_VERSION = "(\d+)/)?.[1];
+  const pinned = pkg.packageManager?.match(/^pnpm@(\d+)/)?.[1];
+
+  assert.ok(declared, 'PNPM_VERSION is gone from netlify.toml');
+  assert.ok(pinned, 'packageManager is gone from package.json');
+  assert.equal(
+    declared,
+    pinned,
+    `netlify.toml says pnpm ${declared} and package.json pins ${pkg.packageManager}`
+  );
+});
+
+test('the build command netlify runs is a script that exists', () => {
+  const command = toml.match(/command = "pnpm ([\w:]+)"/)?.[1];
+  assert.ok(command, 'no build command in netlify.toml, so production falls back to the UI');
+  assert.ok(
+    pkg.scripts?.[command],
+    `netlify.toml runs "pnpm ${command}" and package.json has no ${command} script`
+  );
+});

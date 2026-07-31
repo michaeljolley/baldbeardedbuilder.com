@@ -29,6 +29,22 @@
   read only and safe to run at any time. Run it before the merge and again after. If the
   after run differs, the merge broke 1,627 links and the answer is to roll back rather
   than to debug forwards.
+
+  What it can do, and what makes that residual small, is split the question in two.
+  "Does bbb.dev still work after the move" is really two facts:
+
+    A. Is netlify.toml at the repository root read and parsed on this site? NEW in this
+       branch, and the entire behavioural change. Nothing to do with hostnames, so a
+       branch deploy proves it. That is the probe check below.
+
+    B. Is the host rule syntax valid and does bbb.dev route here? UNCHANGED. The same
+       rule text is serving production right now, and nothing in this branch touches
+       DNS or the domain binding.
+
+  B is already true and is not being modified, so proving A proves the conjunction. What
+  is left over is whether Netlify applies host matching identically from the new location
+  on the production hostname, which is a mechanism this branch does not touch. Small, but
+  not zero, which is why the post merge --shortlinks run stays.
 */
 
 import fs from 'node:fs';
@@ -57,6 +73,13 @@ if (!base && !shortlinksOnly) {
 const SHORTLINKS = ['gh', 'yt', 'twitch'];
 
 const SHORTLINK_TARGET = /^https:\/\/[a-z0-9]+\.supabase\.co\/functions\/v1\/redirect\?path=/;
+
+/*
+  The one path that exists only in netlify.toml. See the comment above the rule there for
+  why it is permanent. A 301 here is proof the root netlify.toml was read and its redirect
+  table parsed, on any deploy, without needing the production hostname.
+*/
+const PROBE = '/_netlify-toml-is-read/';
 
 function rules() {
   const lines = fs
@@ -144,6 +167,24 @@ async function checkShortlinks() {
   });
 }
 
+async function checkProbe() {
+  const from = base + PROBE;
+  const res = await hop(from);
+
+  if (res.status !== 301) {
+    fail(
+      from,
+      `expected 301, got ${res.status}. This path exists only in netlify.toml, so this ` +
+        `says the root netlify.toml is not being read on this deploy. Every rule in it ` +
+        `is therefore off, including the bbb.dev rule carrying 1,627 short links. Check ` +
+        `the base directory setting before checking anything else.`
+    );
+    return;
+  }
+
+  console.log(`  ok  ${PROBE} -> ${res.location}, so netlify.toml is read and parsed here`);
+}
+
 async function checkContent() {
   const { explicit, wildcards } = rules();
   console.log(`${explicit.length} explicit rules${all ? '' : ' sampled'} and ${wildcards.length} wildcards against ${base}`);
@@ -163,6 +204,7 @@ async function checkContent() {
 if (shortlinksOnly) {
   await checkShortlinks();
 } else {
+  await checkProbe();
   await checkContent();
   console.log('\nshort links not checked. They are host matched on bbb.dev, which never');
   console.log('reaches a branch deploy. Run with --shortlinks to check them on production.');
