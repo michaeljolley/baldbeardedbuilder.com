@@ -12,6 +12,7 @@ import assert from 'node:assert/strict';
 import {
   order,
   initials,
+  hasBody,
   withinEditWindow,
   AUTO_HIDE_REPORTS,
   BODY_MAX,
@@ -117,4 +118,35 @@ test('the settled moderation numbers are the settled moderation numbers', () => 
 test('the hourly limit is under the daily one, so the daily one is reachable', () => {
   assert.ok(COMMENTS_PER_HOUR < COMMENTS_PER_DAY);
   assert.ok(COMMENTS_PER_DAY < COMMENTS_PER_HOUR * 24);
+});
+
+test('a reader counts exactly the rows they can read', () => {
+  /* The rail count and the row branch both come from hasBody. They used to be written
+     out separately and drifted, which showed up as the author of a held comment reading
+     six bodies under a rail that said five. */
+  const rows = [
+    { status: 'visible', mine: false },
+    { status: 'visible', mine: true },
+    { status: 'hidden', mine: false },
+    { status: 'deleted', mine: false },
+    { status: 'held', mine: false },
+    { status: 'held', mine: true }
+  ];
+
+  assert.equal(rows.filter(hasBody).length, 3);
+});
+
+test('a held comment is a reply to its author and nothing to anybody else', () => {
+  const held = { status: 'held', mine: true };
+  assert.equal(hasBody(held), true);
+  assert.equal(hasBody({ ...held, mine: false }), false);
+});
+
+test('a tombstone is never a reply, whichever kind it is', () => {
+  /* It holds its slot so the thread keeps its shape, but nobody scrolling past would
+     count it, so nothing that prints a number may either. */
+  assert.equal(hasBody({ status: 'hidden', mine: false }), false);
+  assert.equal(hasBody({ status: 'hidden', mine: true }), false);
+  assert.equal(hasBody({ status: 'deleted', mine: false }), false);
+  assert.equal(hasBody({ status: 'deleted', mine: true }), false);
 });

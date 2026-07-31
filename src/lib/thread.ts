@@ -64,6 +64,23 @@ export interface Thread {
   total: number;
 }
 
+/**
+ * Whether a comment renders a body, which is the same thing as whether a reader would
+ * count it as a reply.
+ *
+ * Tombstones hold their slot in the thread but they are not replies, and a held comment
+ * is visible to exactly one person, its author.
+ *
+ * This is one function rather than a condition written out wherever it is needed. The
+ * rail count and the row branch have to agree about what a reply is, and when they were
+ * written separately they drifted: the author of a held comment saw six bodies under a
+ * rail that said five, because the server counts visible rows and cannot know that one
+ * particular reader has something in the queue.
+ */
+export function hasBody(c: Pick<CommentView, 'status' | 'mine'>): boolean {
+  return c.status === 'visible' || (c.status === 'held' && c.mine);
+}
+
 export function initials(name: string | null, handle: string | null): string {
   const source = (name || handle || '').trim();
   if (!source) return '?';

@@ -554,6 +554,18 @@ html:not(.js) .themer { display: none; }
 .composer-foot { display: flex; gap: .75rem; align-items: center; margin-top: .7rem; font-family: var(--mono); font-size: .75rem; color: var(--fg-dim); flex-wrap: wrap; }
 .composer-foot .btn { margin-left: auto; }
 
+/*
+  One divider token for the whole thread. Every rule between comments is var(--line),
+  including the one above a nested reply, and the only coloured borders inside a thread
+  are the host avatar and a primary button, both of which are meant to be seen.
+
+  The rule above a reply is inset because a reply is indented and the rule marks the top
+  edge of that reply's own box. It is the only thing showing where nesting starts once
+  the avatar column is too narrow to read as a step. In a calm palette the inset is
+  barely visible; in Hot Dog Stand it is obvious. Both are correct. Do not "fix" it by
+  giving replies a different colour, and do not straighten it to full width without
+  putting something else in its place.
+*/
 .comment { display: grid; grid-template-columns: 2rem 1fr; gap: .9rem; padding: 1.25rem 0; border-top: 1px solid var(--line); }
 .comment.reply { margin-left: 2.9rem; }
 .av {

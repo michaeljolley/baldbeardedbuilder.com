@@ -15,24 +15,7 @@
 
 import { useEffect, useRef, useState } from 'preact/hooks';
 import LikeButton from './LikeButton';
-
-type Status = 'visible' | 'held' | 'hidden' | 'deleted';
-
-interface CommentView {
-  id: string;
-  parentId: string | null;
-  createdAt: string;
-  editedAt: string | null;
-  status: Status;
-  html: string | null;
-  tombstone: string | null;
-  authorHandle: string | null;
-  authorName: string | null;
-  authorAvatar: string | null;
-  likes: number;
-  mine: boolean;
-  held: boolean;
-}
+import { hasBody, initials, type CommentView } from '../../lib/thread';
 
 interface Viewer {
   id: string;
@@ -43,6 +26,8 @@ interface Viewer {
 
 interface Thread {
   comments: CommentView[];
+  /** Visible rows as the server counts them. The rail uses hasBody instead, because the
+      server cannot know that this reader has a held comment of their own on screen. */
   total: number;
   viewer: Viewer | null;
   limits: { bodyMax: number; editWindowMinutes: number };
@@ -58,14 +43,6 @@ interface Props {
 }
 
 const HOST = 'michaeljolley';
-
-function initials(name: string | null, handle: string | null): string {
-  const source = (name || handle || '').trim();
-  if (!source) return '?';
-  const parts = source.split(/[\s._-]+/).filter(Boolean);
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-  return source.slice(0, 2).toUpperCase();
-}
 
 /* Relative for the first week, then a date. "312 days ago" is not a thing anybody reads. */
 function when(iso: string): string {
@@ -113,7 +90,11 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
     load();
   }, [kind, targetKey]);
 
-  const total = thread ? thread.total : initial;
+  /*
+    Counted from what is actually on screen for this reader, not from the server total.
+    The build time number is the fallback until live data lands.
+  */
+  const total = thread ? thread.comments.filter(hasBody).length : initial;
   const viewer = thread?.viewer ?? null;
   const bodyMax = thread?.limits.bodyMax ?? 10_000;
 
@@ -261,37 +242,61 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
           <p class="note c-empty">No replies yet. Yours would be the first.</p>
         )}
 
-        {thread?.comments.map((c) => (
+        {thread?.comments.map((c) => {
+          const body = hasBody(c);
+
+          /*
+            A row with no body carries no name and no initials, whatever put it in that
+            state. Naming somebody whose comment was removed leaves a permanent public
+            marker saying this specific person had something taken down, which every
+            reader scrolls past, on a site whose whole posture is that nobody gets dunked
+            on. Note the asymmetry it fixes: deleting your own account is a choice you
+            made and was already anonymised, while having a comment removed is done to
+            you and was not.
+
+            Same predicate as the rail count on purpose. If a reader can read it, its
+            author is named and it counts as a reply. If they cannot, neither.
+
+            The timestamp stays so the thread keeps its shape and any reply still sits
+            visibly under something.
+          */
+          const named = body ? c.authorHandle : null;
+
+          return (
           <article
             key={c.id}
             class={c.parentId ? 'comment reply' : 'comment'}
             id={`c-${c.id}`}
           >
-            <div class={c.authorHandle === HOST ? 'av host' : 'av'} aria-hidden="true">
+            <div class={named === HOST ? 'av host' : 'av'} aria-hidden="true">
               {c.authorAvatar && c.status === 'visible' ? (
                 <img src={c.authorAvatar} alt="" width="36" height="36" loading="lazy" />
-              ) : (
+              ) : body ? (
                 initials(c.authorName, c.authorHandle)
+              ) : (
+                '?'
               )}
             </div>
 
             <div>
               <div class="chead">
-                <span class="who">
-                  {c.authorHandle ? (
-                    <a href={`/builders/${c.authorHandle}/`} rel="nofollow">
-                      {c.authorHandle}
-                    </a>
-                  ) : (
-                    <span>somebody</span>
-                  )}
-                </span>
+                {body && (
+                  <span class="who">
+                    {c.authorHandle ? (
+                      <a href={`/builders/${c.authorHandle}/`} rel="nofollow">
+                        {c.authorHandle}
+                      </a>
+                    ) : (
+                      <span>somebody</span>
+                    )}
+                  </span>
+                )}
                 <span>{when(c.createdAt)}</span>
                 {c.editedAt && <span class="c-edited">edited</span>}
                 {c.held && <span class="badge">waiting on a look</span>}
               </div>
 
-              {c.status === 'visible' || (c.status === 'held' && c.mine) ? (
+              {body ? (
                 <>
                   {/* Server rendered from markdown at write time through the allow list in
                       src/lib/markdown.ts. Nothing a browser sent ever reaches here. */}
@@ -320,12 +325,16 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
                         Reply
                       </button>
                     )}
-                    <a
-                      class="rep"
-                      href={`/report/?type=comment&ref=${c.id}&target=${encodeURIComponent(`${pageUrl}#c-${c.id}`)}`}
-                    >
-                      Report
-                    </a>
+                    {/* Nothing useful happens when you report yourself, and the flow ends
+                        on the conduct page. Delete is the control you wanted. */}
+                    {!c.mine && (
+                      <a
+                        class="rep"
+                        href={`/report/?type=comment&ref=${c.id}&target=${encodeURIComponent(`${pageUrl}#c-${c.id}`)}`}
+                      >
+                        Report
+                      </a>
+                    )}
                   </div>
                 </>
               ) : (
@@ -350,7 +359,8 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
               )}
             </div>
           </article>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
