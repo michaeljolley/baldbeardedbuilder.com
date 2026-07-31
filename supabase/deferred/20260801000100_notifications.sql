@@ -161,18 +161,15 @@ begin
       'story_featured:' || new.id::text,
       jsonb_build_object('disaster_id', new.id, 'slug', new.slug, 'title', new.title, 'line', new.line)
     );
-
-    /*
-      The Featured badge is seeded as manual because there was no rule that could grant
-      it. Featuring a story is that rule, so the grant is recorded as manual: a person
-      decided, the database only wrote it down.
-    */
-    if new.author_id is not null then
-      insert into public.badge_grants (profile_id, badge_id, source, note)
-      values (new.author_id, 'featured', 'manual', 'Story ' || new.id::text || ' went on the front page')
-      on conflict (profile_id, badge_id) do nothing;
-    end if;
   end if;
+
+  /*
+    The Featured badge grant used to sit here, in this branch. It moved to
+    20260801000000_featured.sql as its own trigger, because deferring the email deferred
+    the badge with it and left a badge nobody could earn. Do not put it back: applying
+    this file with the grant restored would double up on a story featured after the split,
+    and the on conflict clause would hide that rather than tell you.
+  */
 
   return new;
 end;

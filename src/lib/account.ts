@@ -10,6 +10,7 @@
 
 import type { APIContext } from 'astro';
 import { serviceClient, supabaseWritable } from './supabase';
+import type { Submission, SubmissionStatus } from './submissions';
 
 export interface AccountView {
   id: string;
@@ -70,6 +71,49 @@ export async function readAccount(profileId: string): Promise<AccountView | null
     githubLogin: profile.github_login,
     twitchLogin: profile.twitch_login
   };
+}
+
+/*
+  Your own submissions, newest first, every status.
+
+  This is the whole feedback loop for a submitted story, because v1 sends no email.
+  disasters_own_read in the RLS already allows a person to see their own rows in any
+  state, and its comment already says "so the submit flow can say so", so this needed no
+  migration and no policy change. disasters_author_idx already covers the filter.
+
+  What a person is told about each row lives in submissions.ts, which imports nothing so
+  the copy can be tested without a database.
+*/
+export async function readOwnSubmissions(profileId: string): Promise<Submission[]> {
+  if (!supabaseWritable) return [];
+
+  const { data } = await serviceClient()
+    .from('disasters')
+    .select('id, title, slug, status, is_anonymous, submitted_at, published_at, moderation_note')
+    .eq('author_id', profileId)
+    .order('submitted_at', { ascending: false });
+
+  const rows = (data ?? []) as unknown as {
+    id: string;
+    title: string | null;
+    slug: string | null;
+    status: string;
+    is_anonymous: boolean;
+    submitted_at: string;
+    published_at: string | null;
+    moderation_note: string | null;
+  }[];
+
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    slug: r.slug,
+    status: r.status as SubmissionStatus,
+    isAnonymous: r.is_anonymous,
+    submittedAt: new Date(r.submitted_at),
+    publishedAt: r.published_at ? new Date(r.published_at) : null,
+    note: r.moderation_note
+  }));
 }
 
 export interface SaveResult {

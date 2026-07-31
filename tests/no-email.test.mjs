@@ -70,14 +70,42 @@ test('the queue migration is still parked rather than deleted', () => {
 
 test('featuring did not go with the email that used to key off it', () => {
   const dir = path.join(ROOT, 'supabase', 'migrations');
-  const found = fs
+  const sql = fs
     .readdirSync(dir)
     .filter((f) => f.endsWith('.sql'))
-    .some((f) => /add column featured_at/i.test(fs.readFileSync(path.join(dir, f), 'utf8')));
+    .map((f) => fs.readFileSync(path.join(dir, f), 'utf8'))
+    .join('\n');
 
   assert.ok(
-    found,
+    /add column featured_at/i.test(sql),
     'disasters.featured_at is not in the applied chain. leadDisaster() reads it, so the front page lead goes with it.'
+  );
+
+  /*
+    The column on its own is not enough. The Featured badge grant used to live inside the
+    same trigger branch that enqueued the story_featured email, so deferring the email
+    deferred the badge and left one on the shelf that no action could ever earn. That is
+    the same shape as a preference for an event with no cause, which is the bug this whole
+    file exists downstream of.
+  */
+  assert.ok(
+    /badge_grants[\s\S]{0,200}'featured'/i.test(sql),
+    "nothing in the applied chain grants the Featured badge. It is seeded in 20260710000200_v2_seed.sql, so without a grant path it is a badge on the shelf that cannot be earned."
+  );
+});
+
+test('the featured badge is granted once, and not by the email trigger', () => {
+  const featured = read('supabase', 'migrations', '20260801000000_featured.sql');
+  const deferred = read('supabase', 'deferred', '20260801000100_notifications.sql');
+
+  assert.ok(
+    featured.includes('grant_featured_badge'),
+    'the featured migration no longer carries the badge trigger.'
+  );
+  assert.equal(
+    /insert into public\.badge_grants/i.test(deferred),
+    false,
+    'the deferred notifications migration grants the badge again. Applying it would double up with the trigger in the chain, and on conflict do nothing would hide that rather than report it.'
   );
 });
 

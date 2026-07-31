@@ -1101,6 +1101,70 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
 .pick:has(input:checked) { border-color: var(--accent); color: var(--accent); }
 .pick input { accent-color: var(--accent); margin: 0; }
 
+/* ---------- your own submissions ---------- */
+
+/*
+  The whole feedback loop for a submitted story, because v1 sends no email. Deliberately
+  a list rather than cards: a person with one story in the queue should not be looking at
+  a grid with one thing in it, and a person with nine should be able to scan the markers
+  down the left without reading a word.
+
+  The marker takes its colour from tokens that already exist and are already contrast
+  guarded in all sixteen themes. Nothing here invents one, and in particular there is no
+  success green, because the token contract has no --sev-ok and adding one would mean
+  regenerating every theme.
+
+  Published is FILLED rather than outlined, and that is load bearing rather than
+  decorative. Measured across all sixteen generated themes, --accent and --sev-warn are
+  only deltaE 6.9 apart in bbb-light and 10.0 in vitesse-dark, close enough that Published
+  and Not running would have read as the same marker in the site's own light theme. Colour
+  cannot separate those two, so fill does, and no palette can collapse a solid block into
+  an outline.
+
+  The two outlined markers are separated by colour alone, so that pair does have to hold
+  up: --fg-dim against --sev-warn never drops below deltaE 35 in any theme. There is a
+  test for both halves of this in contrast.test.mjs.
+
+  The label text is the real carrier in any case. Waiting, Published and Not running say
+  what they are, and the colour is reinforcement, which is what 1.4.1 asks for.
+
+  The first pass had Published and Waiting both resolving to --sev-info, which drew two
+  different states identically in every theme rather than in two.
+*/
+.submissions { list-style: none; margin: 1rem 0 0; padding: 0; }
+.submission { padding: .9rem 0; border-top: 1px solid var(--line); }
+.submission:first-child { border-top: 0; }
+.submission-head {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem;
+  margin: 0; font-weight: 700;
+}
+.submission .fine { margin: .3rem 0 0; }
+
+/*
+  The title keeps its link chrome, which is a deliberate departure from .wq-line a and
+  .chead .who a. Both of those strip colour and underline off a link, and both can afford
+  to: the wall card makes the entire card the click target, and a comment handle has no
+  identically drawn sibling to be confused with.
+
+  Neither holds here. A published story with a slug is a link and a published story
+  waiting on its slug is not, and they sit in the same list one row apart. Stripped, they
+  were drawn identically and the only way to tell which one you could open was to read the
+  fine print underneath. So the link looks like a link.
+*/
+.submission-head a { color: var(--accent); text-underline-offset: 3px; }
+.submission-head a:hover { text-decoration-thickness: 2px; }
+.marker {
+  font-family: var(--mono); font-size: .625rem; letter-spacing: .06em;
+  text-transform: uppercase; white-space: nowrap;
+  border: 1px solid currentColor; border-radius: 2px; padding: .1rem .35rem;
+  font-weight: 400;
+}
+.marker.waiting { color: var(--fg-dim); }
+.marker.closed  { color: var(--sev-warn); }
+.marker.live {
+  background: var(--accent); border-color: var(--accent); color: var(--bg);
+}
+
 /* ---------- responsive ---------- */
 
 @media (max-width: 1180px) {

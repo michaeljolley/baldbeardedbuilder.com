@@ -11,7 +11,8 @@
   "here is the button" belong on the same screen.
 */
 import Base from '../layouts/Base.astro';
-import { readAccount, saveAccount, deleteAccount, clearSession, BIO_MAX, LINKS_MAX } from '../lib/account';
+import { readAccount, saveAccount, deleteAccount, clearSession, readOwnSubmissions, BIO_MAX, LINKS_MAX } from '../lib/account';
+import SubmissionList from '../components/SubmissionList.astro';
 import { supabaseWritable } from '../lib/supabase';
 
 export const prerender = false;
@@ -42,6 +43,7 @@ if (Astro.request.method === 'POST' && profile) {
 }
 
 const account = profile ? await readAccount(profile.id) : null;
+const submissions = profile ? await readOwnSubmissions(profile.id) : [];
 const saved = Astro.url.searchParams.has('saved');
 const linkRows = Array.from({ length: LINKS_MAX }, (_, i) => account?.links[i] ?? { label: '', url: '' });
 ---
@@ -132,6 +134,8 @@ const linkRows = Array.from({ length: LINKS_MAX }, (_, i) => account?.links[i] ?
 
             <p><button class="btn primary" type="submit">Save</button></p>
           </form>
+
+          <SubmissionList submissions={submissions} />
 
           <h2>Connected accounts</h2>
           <ul class="plain">

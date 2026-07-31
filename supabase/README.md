@@ -56,7 +56,7 @@ Both tables arrive empty. Michael loads them. `docs/backfill.md` is the spec.
 | `20260710001100_badge_backfill_indexes` | `lower(login)` indexes. Turns the sweep from a sequential scan into milliseconds |
 | `20260710001200_badge_backfill_schedule` | Nightly `pg_cron` sweep at 01:30 UTC |
 | `20260710001300_video_transcripts` | Transcripts and chapters, read at build time |
-| `20260801000000_featured` | `disasters.featured_at` and its index. What the front page lead reads |
+| `20260801000000_featured` | `disasters.featured_at`, its index, and the trigger that grants the Featured badge |
 
 `supabase/reversal/` is not part of the chain and `db push` never sees it. That is
 deliberate: a file that drops the whole v2 schema must not be able to run against the new
