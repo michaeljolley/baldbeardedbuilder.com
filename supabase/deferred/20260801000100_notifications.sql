@@ -1,6 +1,17 @@
 /*
   Email notifications. Decision 15.
 
+  DELIBERATELY HELD OUT OF THE APPLIED CHAIN. This file is in supabase/deferred/ rather
+  than supabase/migrations/ so that db push cannot pick it up, the same reason the
+  reversal lives in supabase/reversal/. v1 sends no email of any kind. Read
+  docs/notifications.md before applying this, because turning the schema on without the
+  copy changes leaves the site promising email it does not send.
+
+  What is NOT in here any more: the disasters.featured_at column and its index, which
+  moved to supabase/migrations/20260801000000_featured.sql. Featuring is what the front
+  page reads, not an email feature, and it was the one thing in this file that would have
+  broken the site by being held back.
+
   Three types, opt out per type, one click unsubscribe. This migration adds the queue and
   the triggers that fill it. Rendering and sending live in the site, in
   src/lib/notifications.ts, because an email template written in SQL is a template nobody
@@ -18,22 +29,6 @@
   emailed by a row that outlived it, which is precisely the promise decision 17 makes and
   precisely the way that promise gets broken by accident.
 */
-
--- Featured is a real act, not a side effect ----------------------------------------------
-
-/*
-  There was no way to feature a story before this column, which meant the story_featured
-  preference switched something that could never happen. The front page lead was simply
-  the newest published row, so nobody was ever chosen and nobody could be told they were.
-
-  Setting this in Studio is the whole mechanism, which is the correct amount of admin
-  tooling for v1: one column, one timestamp, and the front page and the badge and the
-  email all key off it.
-*/
-alter table public.disasters add column featured_at timestamptz;
-
-create index disasters_featured_idx on public.disasters (featured_at desc)
-  where featured_at is not null and status = 'published';
 
 -- The queue ------------------------------------------------------------------------------
 

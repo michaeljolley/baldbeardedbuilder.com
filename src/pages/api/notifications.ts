@@ -1,4 +1,15 @@
 /*
+  DELIBERATELY NOT WIRED FOR V1. This route exists but cannot do anything. NOTIFY_SECRET
+  is not set, so authorised() returns false for every request and the route 404s. The
+  table it would drain is not in the applied chain either: the migration is held in
+  supabase/deferred/. Read docs/notifications.md before setting the secret, because the
+  copy on submit, terms, privacy and account all say plainly that nothing is sent.
+
+  It stays as a route rather than moving under an underscore, unlike the unsubscribe
+  page, because nobody can browse into it and be misled. A person landing on a page that
+  says "that is switched off" for a thing that never sends is a control that appears to
+  work. A machine endpoint that refuses everything is just closed.
+
   Draining the email queue.
 
   Nothing on the site calls this. It is called on a timer, by pg_cron through net.http_post

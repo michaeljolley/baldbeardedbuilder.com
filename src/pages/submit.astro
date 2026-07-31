@@ -33,7 +33,7 @@ const signedIn = Astro.locals.profile !== null;
 const SENT: Record<string, { tone: 'ok' | 'bad'; text: string }> = {
   '1': {
     tone: 'ok',
-    text: "Got it. It's in the queue with a title drafted for it, and you'll get an email either way."
+    text: "Got it. It's in the queue with a title drafted for it. I read everything that comes in."
   },
   signin: { tone: 'bad', text: 'That needs a sign in. Sign in and send it again, the box will still be there.' },
   consent: { tone: 'bad', text: 'Both boxes at the bottom need ticking before I can run it.' },
@@ -89,7 +89,8 @@ const sent = SENT[params.get('sent') ?? ''] ?? null;
               <p class="notice submit-signin">
                 <a href="/auth/signin/?next=%2Fsubmit%2F">Sign in with GitHub</a> before you
                 send it. Not so I know who you are on the page, because you can still publish
-                anonymously, but so I can email you when it runs and hand you the badge.
+                anonymously, but so the story is attached to an account and the badge has
+                somewhere to land. Nothing gets sent to your inbox.
               </p>
             )
           }
@@ -115,8 +116,8 @@ const sent = SENT[params.get('sent') ?? ''] ?? null;
             <div>
               <label class="switch-label" for="anon">Publish anonymously</label>
               <span class="switch-help">
-                Your name and handle stay off the page. You still get the badge, and I can
-                still email you if the story becomes a video.
+                Your name and handle stay off the page. The badge still lands on your
+                profile, because that follows the account rather than the byline.
               </span>
             </div>
           </div>
@@ -145,9 +146,9 @@ const sent = SENT[params.get('sent') ?? ''] ?? null;
             Here's what happens next. It lands in a queue only I can see, with a title and
             a web address drafted for it automatically. I read it, fix the title if the
             machine got it wrong, check it for anything that identifies somebody, and file
-            it under a severity. You get an email when it goes live, and another one if it
-            turns into a video. If I decide not to run it, you get that email too, with the
-            reason.
+            it under a severity. This site does not send email, so nothing about any of
+            that arrives in your inbox. If you want to know whether it ran, come back and
+            look.
           </p>
 
           <div class="form-foot">

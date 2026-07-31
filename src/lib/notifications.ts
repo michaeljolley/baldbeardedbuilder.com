@@ -1,7 +1,13 @@
 /*
+  DELIBERATELY NOT WIRED FOR V1. Nothing calls drain(). This site sends no email of any
+  kind, and the migration that creates the table this file reads is held out of the
+  applied chain in supabase/deferred/. Read docs/notifications.md before changing that:
+  turning the schema on without the copy changes leaves the site promising email it does
+  not send.
+
   Draining the email queue.
 
-  The queue is filled by triggers in supabase/migrations/20260801000000_notifications.sql
+  The queue is filled by triggers in supabase/deferred/20260801000100_notifications.sql
   and emptied here. What the emails say lives in notify-templates.ts, which is pure and
   tested. This file is the part that talks to the database and to the mail provider, and
   it is careful in three specific ways, all of them the same worry from different angles:

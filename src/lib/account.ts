@@ -20,11 +20,6 @@ export interface AccountView {
   isPrivate: boolean;
   githubLogin: string | null;
   twitchLogin: string | null;
-  prefs: {
-    storyPublished: boolean;
-    storyFeatured: boolean;
-    commentReply: boolean;
-  };
 }
 
 export const HANDLE_RE = /^[a-z0-9][a-z0-9-]{1,30}[a-z0-9]$/;
@@ -51,18 +46,11 @@ export async function readAccount(profileId: string): Promise<AccountView | null
 
   const db = serviceClient();
 
-  const [{ data: profile }, { data: prefs }] = await Promise.all([
-    db
-      .from('profiles')
-      .select('id, handle, display_name, bio, links, is_private, github_login, twitch_login')
-      .eq('id', profileId)
-      .maybeSingle(),
-    db
-      .from('notification_prefs')
-      .select('story_published, story_featured, comment_reply')
-      .eq('profile_id', profileId)
-      .maybeSingle()
-  ]);
+  const { data: profile } = await db
+    .from('profiles')
+    .select('id, handle, display_name, bio, links, is_private, github_login, twitch_login')
+    .eq('id', profileId)
+    .maybeSingle();
 
   if (!profile) return null;
 
@@ -80,12 +68,7 @@ export async function readAccount(profileId: string): Promise<AccountView | null
     links,
     isPrivate: profile.is_private,
     githubLogin: profile.github_login,
-    twitchLogin: profile.twitch_login,
-    prefs: {
-      storyPublished: prefs?.story_published ?? true,
-      storyFeatured: prefs?.story_featured ?? true,
-      commentReply: prefs?.comment_reply ?? true
-    }
+    twitchLogin: profile.twitch_login
   };
 }
 
@@ -146,18 +129,16 @@ export async function saveAccount(profileId: string, form: FormData): Promise<Sa
 
   if (profileError) return { ok: false, error: 'Could not save that. Try again in a moment.' };
 
-  const { error: prefsError } = await db.from('notification_prefs').upsert(
-    {
-      profile_id: profileId,
-      story_published: form.get('story_published') === 'on',
-      story_featured: form.get('story_featured') === 'on',
-      comment_reply: form.get('comment_reply') === 'on',
-      updated_at: new Date().toISOString()
-    },
-    { onConflict: 'profile_id' }
-  );
+  /*
+    notification_prefs is deliberately not written here. v1 sends no email, so the
+    settings form has no switches, and a form with no switches posts no fields. Reading
+    them anyway would turn every ordinary save into "off, off, off", because a missing
+    checkbox and an unticked one are the same absence in form data.
 
-  if (prefsError) return { ok: false, error: 'Your details saved but your email settings did not.' };
+    The row still exists, created with every column defaulting to true by the profile
+    trigger, so whoever turns notifications back on starts from the state that was
+    designed rather than from three falses nobody chose. See src/lib/notifications.ts.
+  */
 
   return { ok: true };
 }

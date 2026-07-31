@@ -53,13 +53,13 @@ const ON_DEMAND = [
   ['report refused', '/report/?sent=slow'],
   ['submit', '/submit/'],
   ['submit sent', '/submit/?sent=1'],
-  ['submit refused', '/submit/?sent=consent'],
+  ['submit refused', '/submit/?sent=consent']
   /*
-    Both halves. Unsubscribe is on demand because it does its work on the request, and the
-    missing token branch is the one nobody will ever click through to check by hand.
+    Unsubscribe used to sit here, both halves of it. v1 sends no email, so the page is not
+    a route: it lives at src/pages/_unwired/unsubscribe.astro and Astro will not build it.
+    Auditing a 404 would pass and prove nothing. Put both entries back when the page comes
+    back, per docs/notifications.md.
   */
-  ['unsubscribe', '/unsubscribe/?token=11111111-2222-3333-4444-555555555555&kind=comment_reply'],
-  ['unsubscribe no token', '/unsubscribe/']
 ];
 
 const VIEWPORTS = [

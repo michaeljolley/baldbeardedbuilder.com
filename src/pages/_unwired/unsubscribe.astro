@@ -1,5 +1,16 @@
 ---
 /*
+  DELIBERATELY NOT A ROUTE FOR V1. This file sits under src/pages/_unwired/, and Astro
+  excludes anything below an underscore prefixed directory from routing, so /unsubscribe/
+  is a 404. That is on purpose twice over: this site sends no email, so there is nothing
+  to unsubscribe from, and the RPC it calls lives in a migration held out of the applied
+  chain in supabase/deferred/. A page that says "that is switched off" for a thing that
+  never sends is a control that appears to work.
+
+  Read docs/notifications.md to turn it back on. Moving this file back to
+  src/pages/unsubscribe.astro is step three, and its two entries have to go back into
+  ON_DEMAND in scripts/a11y.mjs at the same time.
+
   Unsubscribe.
 
   Two callers, one URL. A person clicking a link in an email arrives with GET. A mail
@@ -17,9 +28,9 @@
   Nothing here says whether the token was real. A page that renders differently for a
   valid token turns this URL into an oracle for guessing them.
 */
-import Base from '../layouts/Base.astro';
-import { serviceClient, supabaseWritable } from '../lib/supabase';
-import type { PendingDatabase } from '../lib/supabase/pending.types';
+import Base from '../../layouts/Base.astro';
+import { serviceClient, supabaseWritable } from '../../lib/supabase';
+import type { PendingDatabase } from '../../lib/supabase/pending.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const prerender = false;

@@ -130,20 +130,6 @@ const linkRows = Array.from({ length: LINKS_MAX }, (_, i) => account?.links[i] ?
               </label>
             </div>
 
-            <h2>Email</h2>
-            <div class="check">
-              <input id="story_published" name="story_published" type="checkbox" checked={account.prefs.storyPublished} />
-              <label for="story_published">When a story I sent in gets published</label>
-            </div>
-            <div class="check">
-              <input id="story_featured" name="story_featured" type="checkbox" checked={account.prefs.storyFeatured} />
-              <label for="story_featured">When a story of mine gets featured</label>
-            </div>
-            <div class="check">
-              <input id="comment_reply" name="comment_reply" type="checkbox" checked={account.prefs.commentReply} />
-              <label for="comment_reply">When somebody replies to my comment</label>
-            </div>
-
             <p><button class="btn primary" type="submit">Save</button></p>
           </form>
 
@@ -164,8 +150,8 @@ const linkRows = Array.from({ length: LINKS_MAX }, (_, i) => account?.links[i] ?
 
           <div class="rule"><h2>Delete your account</h2></div>
           <p>
-            This removes your account, your handle, your badges and your email settings,
-            and it cannot be undone. Stories you have already had published stay published
+            This removes your account, your handle, your badges and any Twitch link, and it
+            cannot be undone. Stories you have already had published stay published
             with your name taken off them. Comments become tombstones so the threads other
             people are in still read properly.
           </p>

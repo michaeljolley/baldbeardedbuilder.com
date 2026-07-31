@@ -1,4 +1,9 @@
 /*
+  DELIBERATELY NOT WIRED FOR V1. Nothing renders these. This site sends no email of any
+  kind. The file stays because it is pure and its tests still run, so the copy cannot rot
+  while it waits. Note that unsubscribeUrl() builds a path that is not currently a route:
+  src/pages/unsubscribe.astro moved to src/pages/_unwired/. Read docs/notifications.md.
+
   What the three notification emails say.
 
   Separate from the drain on purpose. Everything here is pure: a kind, a payload and a

@@ -1,4 +1,10 @@
 /*
+  DELIBERATELY NOT WIRED FOR V1. Nothing calls send(). There is no sender, no from
+  address and no API key, so mailConfigured is false and the log provider is the only one
+  that can be reached. Read docs/notifications.md before wiring it up, because the copy on
+  submit, terms, privacy and account all say plainly that nothing is sent, and all of it
+  has to change back in the same commit.
+
   Sending mail.
 
   One interface, two providers, and the second one does not send anything.

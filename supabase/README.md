@@ -56,11 +56,19 @@ Both tables arrive empty. Michael loads them. `docs/backfill.md` is the spec.
 | `20260710001100_badge_backfill_indexes` | `lower(login)` indexes. Turns the sweep from a sequential scan into milliseconds |
 | `20260710001200_badge_backfill_schedule` | Nightly `pg_cron` sweep at 01:30 UTC |
 | `20260710001300_video_transcripts` | Transcripts and chapters, read at build time |
-| `20260801000000_notifications` | `disasters.featured_at`, the `email_outbox` queue, the three enqueue triggers and one click unsubscribe |
+| `20260801000000_featured` | `disasters.featured_at` and its index. What the front page lead reads |
 
 `supabase/reversal/` is not part of the chain and `db push` never sees it. That is
 deliberate: a file that drops the whole v2 schema must not be able to run against the new
 project by accident.
+
+`supabase/deferred/` is not part of the chain either, for the same mechanical reason and a
+different one. `20260801000100_notifications.sql` creates the `email_outbox` queue and the
+triggers that fill it, and v1 sends no email of any kind. Applying it would give the site
+a queue nothing drains while the copy on submit, terms and privacy says plainly that
+nothing is sent. `docs/notifications.md` is the instruction sheet for turning it on, copy
+included. Note that `disasters.featured_at` was split out of it and stays in the chain,
+because featuring is what the front page reads rather than an email feature.
 
 `pnpm check:migrations` proves the chain is self contained, which matters now that the
 baseline no longer carries the rest of the legacy schema.
@@ -100,9 +108,10 @@ The build and the routes need these. Never commit them.
 | `LIKE_IP_SECRET` | Netlify only | HMAC key for `likes.ip_hash` |
 | `SUPABASE_AUTH_GITHUB_CLIENT_ID` / `_SECRET` | Supabase dashboard | Sign in |
 | `SUPABASE_AUTH_TWITCH_CLIENT_ID` / `_SECRET` | Supabase dashboard | Link only identity |
-| `RESEND_API_KEY` | Netlify only | Sends the three notification emails |
-| `MAIL_FROM` | Netlify only | From address, on a domain the provider has verified |
-| `NOTIFY_SECRET` | Netlify only, and in the scheduler | Bearer token the queue drain demands |
+
+Three more exist in the code and are deliberately unset for v1, because this site sends no
+email: `RESEND_API_KEY`, `MAIL_FROM` and `NOTIFY_SECRET`. Setting any of them is step one
+of `docs/notifications.md` and must not be done on its own.
 
 `LIKE_IP_SECRET` is rotatable. Rotating it does not lose any likes, it just means the
 people who already liked something could like it once more. That is the intended
@@ -110,7 +119,12 @@ tradeoff: the column is a dedupe token with a shelf life, not a stored IP addres
 
 ## Draining the email queue
 
-`20260801000000_notifications.sql` fills `email_outbox` from triggers. It does not empty
+Not in v1. This site sends no email, `supabase/deferred/20260801000100_notifications.sql`
+is held out of the chain, so `email_outbox` does not exist and there is nothing to drain.
+The rest of this section describes how it works when it comes back. See
+`docs/notifications.md`.
+
+`20260801000100_notifications.sql` fills `email_outbox` from triggers. It does not empty
 it, and it deliberately does not schedule anything.
 
 The drain is `POST /api/notifications/` on the site, guarded by `NOTIFY_SECRET` as a

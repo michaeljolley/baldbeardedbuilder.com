@@ -57,10 +57,10 @@ const held = [
   },
   {
     tag: 'Email',
-    what: 'Your email address',
-    when: 'You turn on a notification or join the Drip',
-    why: 'To send the thing you asked for',
-    gone: 'Turn the notification off, or unsubscribe in one click'
+    what: 'Your email address, as GitHub supplied it',
+    when: 'You sign in',
+    why: 'Because sign in comes with one. Nothing is sent to it',
+    gone: 'Delete your account and it goes with it'
   },
   {
     tag: 'Twitch',
@@ -83,6 +83,7 @@ const held = [
           <div><dt>Who runs this</dt><dd><a href="/about/">Michael Jolley</a></dd></div>
           <div><dt>Ad trackers</dt><dd>None</dd></div>
           <div><dt>Analytics</dt><dd>None on this site</dd></div>
+          <div><dt>Email sent</dt><dd>None</dd></div>
           <div><dt>Last changed</dt><dd>{lastChanged}</dd></div>
         </dl>
         <a class="btn" href={`mailto:${SITE.contactEmail}`}>Ask me about your data</a>
@@ -179,7 +180,7 @@ const held = [
           <p>
             It is a button on <a href="/account/">your account page</a>, it works
             immediately, and it does not route through me. It removes your account, your
-            handle, your badges, your email settings and any Twitch link.
+            handle, your badges, your address and any Twitch link.
           </p>
           <p>
             Two things survive it, and you should know which before you press it. Comments
@@ -192,9 +193,14 @@ const held = [
 
           <h2>Email</h2>
           <p>
-            Notifications are per type and each has its own switch. Every message has a one
-            click unsubscribe that works without signing in. I do not send anything you did
-            not ask for, and there is no promotional list you get added to by commenting.
+            This site does not send email. Not a notification, not a digest, not a reply
+            alert, not a welcome. Your address is here because GitHub hands one over when
+            you sign in, and it sits in the account table and does nothing. There is no
+            list to be on and nothing to unsubscribe from.
+          </p>
+          <p>
+            The Drip is a separate thing on a separate site with its own sign up. Nothing
+            you do here puts you on it.
           </p>
 
           <h2>Where you live</h2>

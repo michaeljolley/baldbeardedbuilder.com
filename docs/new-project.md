@@ -65,16 +65,21 @@ leaves those tables missing and every badge migration lands on nothing.
 Both tables arrive empty. `docs/backfill.md` is the spec for filling them, and it is worth
 reading before the load rather than during it.
 
-**Check it worked:** the dashboard table editor should show sixteen tables, and seventeen
+**Check it worked:** the dashboard table editor should show fifteen tables, and seventeen
 migrations applied.
 
 ```
 badges            badge_rules       badge_grants      bans
-comments          disasters         email_outbox      likes
+comments          disasters         likes
 notification_prefs                  profiles          reports
 reserved_handles  streamEvents      streamUsers
 video_pages       video_transcripts
 ```
+
+No `email_outbox`, and that is correct. v1 sends no email, so
+`supabase/deferred/20260801000100_notifications.sql` is held out of the chain. See
+`docs/notifications.md`. `notification_prefs` is in the base schema and does arrive: it
+gets a row per profile and nothing reads or writes it.
 
 `streamEvents` and `streamUsers` keep their camel case quoting from the legacy schema.
 That is not a slip, it is what the columns the badge engine queries are actually called.
@@ -197,9 +202,6 @@ posted on the branch deploy is a real comment on the real site. Test with that i
 | `PUBLIC_SUPABASE_ANON_KEY` | the `anon` key from step 3 | No |
 | `SUPABASE_SERVICE_ROLE_KEY` | the `service_role` key from step 3 | **Yes** |
 | `LIKE_IP_SECRET` | any long random string you generate | **Yes** |
-| `RESEND_API_KEY` | from Resend | **Yes** |
-| `MAIL_FROM` | a from address on a domain Resend has verified | No |
-| `NOTIFY_SECRET` | any long random string you generate | **Yes** |
 
 Mark the secret ones as secret in Netlify so their values are hidden after saving.
 
@@ -207,13 +209,11 @@ Mark the secret ones as secret in Netlify so their values are hidden after savin
 loses nothing: it just means somebody who already liked a thing could like it once more.
 The column is a dedupe token with a shelf life, not a stored IP address.
 
-`NOTIFY_SECRET` is the bearer token on `POST /api/notifications/`, which drains the email
-queue. Whatever ends up calling that endpoint every few minutes needs the same value.
-
-With no `RESEND_API_KEY` set the queue still fills and the drain logs what it would have
-sent rather than failing, so the site works without it. That is deliberate: the reply that
-triggers an email happens on the same request as the comment that caused it, and a missing
-key must never turn somebody's comment into a 500.
+`NOTIFY_SECRET`, `RESEND_API_KEY` and `MAIL_FROM` are deliberately not on this list. v1
+sends no email of any kind, so there is nothing to configure and nothing for you to
+choose a sender for. Setting any of them on its own turns on half a feature whose other
+half is the copy on submit, terms and privacy saying plainly that nothing is sent.
+`docs/notifications.md` is the whole procedure if that ever changes.
 
 ---
 
