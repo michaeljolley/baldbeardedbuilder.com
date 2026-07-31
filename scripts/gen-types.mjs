@@ -6,15 +6,38 @@
   reviewable diff rather than as a type error somebody discovers at runtime.
 
   Needs a logged in Supabase CLI: npx supabase login
+
+  The project ref is not hard coded any more, and that is deliberate. v2 is moving to a
+  brand new project. The old ref, bvyerlczpakdlfvybkev, still serves the live site and
+  bbb.dev, and it is scheduled to have the v2 schema removed from it entirely. A hard
+  coded ref here would keep pointing at it, and the failure would be quiet: types
+  regenerate cleanly, every v2 table disappears from them, and the first sign of trouble
+  is a wall of type errors that look like somebody deleted the schema.
+
+  So it comes from the environment and there is no default.
 */
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const out = path.join(root, 'src', 'lib', 'supabase', 'database.types.ts');
-const projectId = 'bvyerlczpakdlfvybkev';
+
+const projectId = process.env.SUPABASE_PROJECT_REF;
+
+if (!projectId) {
+  console.error('types: set SUPABASE_PROJECT_REF to the v2 project ref first.');
+  console.error('types: it is not defaulted, because the old ref still serves the live site.');
+  process.exit(1);
+}
+
+if (projectId === 'bvyerlczpakdlfvybkev') {
+  console.error('types: that is the legacy project, which v2 no longer uses.');
+  console.error('types: see the header of supabase/migrations/20260101000000_baseline.sql.');
+  process.exit(1);
+}
 
 const header = `/*
   GENERATED FILE. Do not edit by hand.

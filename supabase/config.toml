@@ -1,11 +1,19 @@
 # Supabase CLI config for baldbeardedbuilder.com.
 #
-# The linked project is bvyerlczpakdlfvybkev. Link with:
-#   supabase link --project-ref bvyerlczpakdlfvybkev
+# THE PROJECT REF IS NOT SET YET. v2 gets a brand new project and the ref has not been
+# handed over. Do not put the old one back. bvyerlczpakdlfvybkev serves the live site and
+# bbb.dev, it is not v2's, and the v2 schema is scheduled to be removed from it. See
+# supabase/reversal/ and the header of supabase/migrations/20260101000000_baseline.sql.
 #
-# The baseline migration is already applied on production and must never be pushed
-# there. Right after linking, run:
-#   supabase migration repair --status applied 20260101000000
+# Once the new ref exists:
+#   supabase link --project-ref <new-ref>
+#   supabase db push
+#
+# Push the whole chain, baseline included. The baseline is no longer a copy of a schema
+# that already exists somewhere. It is trimmed down to the two legacy tables v2 actually
+# reads and it has to run. Do NOT run `migration repair` against the new project: marking
+# the baseline applied without executing it leaves streamEvents and streamUsers missing
+# and the badge migrations fail on top of nothing.
 #
 # See supabase/README.md.
 

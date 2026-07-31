@@ -1,6 +1,17 @@
-# Netlify only reads this file from the repository root or the configured base
-# directory. It used to live in public/, where it was copied into dist/ and never
-# read, so none of these rules were running.
+# Netlify reads this file from the repository root or the configured base directory,
+# and it also reads it from the publish directory. It used to live in public/, which
+# is copied to dist/, so every rule in it was live in production. That was measured
+# against the running site before the file moved, not assumed:
+#
+#   /posts/totally-made-up-slug/  301 to /blog/totally-made-up-slug/
+#   /brain-dump/made-up/          301 to /
+#   https://bbb.dev/gh            301 to the redirect function
+#
+# Root is the correct final home, and the move is behaviour preserving rather than a
+# fix. Nothing here was ever dead, so nothing here should be pruned on the theory
+# that it was. The bbb.dev rule below carries 1,627 short links and is the highest
+# risk line in this repository. A branch deploy has to prove it still resolves before
+# this branch merges.
 #
 # Content redirects are not written here. They are generated into public/_redirects
 # by scripts/gen-redirects.mjs, because netlify.toml rules are evaluated before

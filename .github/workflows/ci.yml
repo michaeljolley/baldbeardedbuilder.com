@@ -40,6 +40,12 @@ jobs:
       - name: Unit and redirect tests
         run: pnpm test
 
+      # The baseline was trimmed to the two legacy tables v2 actually reads, so a
+      # migration leaning on something that went would only fail on a db push against
+      # a fresh project, which is the worst place to find out.
+      - name: Migration chain is self contained
+        run: pnpm check:migrations
+
       # Catches the class of mistake that a build will happily ship: a Supabase column
       # that changed shape under a query, a nullable view column read as if it were not.
       - name: Types

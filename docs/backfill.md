@@ -10,6 +10,27 @@ Treat it the way you would treat a migration. A wrong column type found halfway 
 **No import script ships with this repo, by decision.** Loads happen outside it. What ships
 is the schema, the constraints, and this document.
 
+## The badge tiers assume the whole history lands
+
+Read this before deciding to load part of it.
+
+`20260710000900_badge_thresholds_real_history.sql` did not pick round numbers. It measured
+the real distribution and picked thresholds that land people on the tiers: 1,854 people, 113
+distinct stream days, a maximum attendance of 68. Front Row became 5, 15, 30 and 50 because
+125 people clear 5, 38 clear 15, 19 clear 30, 6 clear 50, and nobody at all clears 100, so a
+top tier of 100 was a plaque that could never light up.
+
+**None of that data exists in the new project until it is loaded.** A partial load makes
+every tier wrong, and wrong in the direction that is hardest to notice: the badges still
+grant, the shelves still render, the progress bars still fill. They are just measuring
+somebody against a scale built for a history that is not there. Nothing in the code can flag
+this, because a smaller history is indistinguishable from a quieter channel.
+
+So there are two honest options. Load the full history, and the thresholds mean what they
+were measured to mean. Or load part of it, and rerun the distribution query in the
+"Verifying a load" section at the bottom of this file, then move the thresholds to match
+what actually landed. What does not work is loading half and leaving the numbers alone.
+
 ## Read this before anything else
 
 1. **Two identity columns will bite you.** `streamEvents.id` and `disasters.id` are
@@ -33,7 +54,7 @@ is the schema, the constraints, and this document.
    editor. An anon key will silently insert nothing.
 
 4. **Badges are never granted by a load.** Grants are computed. Load the source rows, then
-   run the sweep in step 6 of the load order.
+   run the sweep in step 5 of the load order.
 
 5. **Filling `streamUsers.twitch_user_id` disables the login fallback for those rows.** This
    is the single most likely way to make a correct looking load produce empty badge shelves,
@@ -57,7 +78,7 @@ is the schema, the constraints, and this document.
     where "streamDate" !~ '^\d{4}-\d{2}-\d{2}$' group by 1;
    ```
 
-   That query should return nothing. If it returns rows, fix them before step 6.
+   That query should return nothing. If it returns rows, fix them before step 5.
 
 ## Load order
 
@@ -67,15 +88,17 @@ Later steps read earlier ones. Nothing else depends on order.
 | --- | --- | --- |
 | 1 | `streamUsers` | nothing |
 | 2 | `streamEvents` | 1, on `login` |
-| 3 | `streams` | nothing |
-| 4 | `profiles.twitch_user_id` and `twitch_login` | 1. **Required, not optional, if step 1 filled any `twitch_user_id`.** See warning 5 |
-| 5 | `video_transcripts` | nothing |
-| 6 | `select public.backfill_badges();` | 1, 2, 4 |
-| 7 | `disasters` | optional, `profiles` if attributed |
+| 3 | `profiles.twitch_user_id` and `twitch_login` | 1. **Required, not optional, if step 1 filled any `twitch_user_id`.** See warning 5 |
+| 4 | `video_transcripts` | nothing |
+| 5 | `select public.backfill_badges();` | 1, 2, 3 |
+| 6 | `disasters` | optional, `profiles` if attributed |
 
-Steps 1, 2, 3, 5 and 7 are independent of each other and can run in any order or at once.
-Steps 1 and 4 are one unit if ids are involved, and should land in the same transaction if
+Steps 1, 2, 4 and 6 are independent of each other and can run in any order or at once.
+Steps 1 and 3 are one unit if ids are involved, and should land in the same transaction if
 that is practical.
+
+There is no `streams` step. That table is not in this project. See the header of
+`supabase/migrations/20260101000000_baseline.sql` for what stayed behind and why.
 
 ---
 
@@ -181,15 +204,10 @@ values ('twitch:cheer', 'someviewer', '2025-08-14', 'cheer100 nice save', 100, '
 Volume note: the counter is indexed on `lower(login)` for this table
 (`streamevents_login_lower_idx`). Loading with the indexes in place is fine at this size. If a
 load runs to hundreds of thousands of rows, dropping and recreating that index around it is
-faster, but the index must exist before step 6 or the sweep degrades to a sequential scan per
+faster, but the index must exist before step 5 or the sweep degrades to a sequential scan per
 profile.
 
-## 3. `streams`
-
-Per stream rollups. Nothing in v2 reads it yet. It is listed because it is part of the same
-history and loading it alongside keeps the picture whole. No badge depends on it.
-
-## 4. `profiles`, Twitch identity only
+## 3. `profiles`, Twitch identity only
 
 Do not load `profiles` rows. Every row is created by the sign in trigger against
 `auth.users`, and `profiles.id` is a foreign key onto it. A hand inserted profile with no
@@ -218,7 +236,7 @@ Two constraints worth knowing before a bulk update: `handle` matches
 Twitch account. That is intentional. It is the thing stopping a second account inheriting
 somebody else's history.
 
-## 5. `video_transcripts`
+## 4. `video_transcripts`
 
 Read at build time. Per decision 22 a long form video with no clean transcript gets no page,
 so the size of this table is the size of the video catalogue at launch.
@@ -257,9 +275,9 @@ on conflict (video_id) do update
                                        public.video_transcripts.transcript_updated_at);
 ```
 
-## 6. Run the badge sweep
+## 5. Run the badge sweep
 
-After steps 1, 2 and 4:
+After steps 1, 2 and 3:
 
 ```sql
 select public.backfill_badges();
@@ -280,7 +298,7 @@ thresholds are worth rechecking against it. They live in
 `supabase/migrations/20260710000900_badge_thresholds_real_history.sql` with the measured
 numbers written into the header comment, so the reasoning is there to argue with.
 
-## 7. `disasters`
+## 6. `disasters`
 
 Only relevant if historical disasters exist to load. Everything new arrives through `/submit/`.
 
@@ -330,10 +348,10 @@ values
 
 - **`likes`, `comments`, `reports`.** No legacy equivalent exists. They start empty and that
   is correct.
-- **`badge_grants`.** Computed, never loaded. See step 6.
+- **`badge_grants`.** Computed, never loaded. See step 5.
 - **`badges`.** Seeded by migration, so it is code and not data. Editing rows by hand puts the
   database out of step with the migrations.
-- **The Drip archive.** The `drips` table already holds it. Nothing in v2 writes to it.
+- **The Drip archive.** The `drips` table stayed in the legacy project and the site renders drips from the content submodule, so there is nothing here to fill.
 
 ## Verifying a load
 

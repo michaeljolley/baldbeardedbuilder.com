@@ -1,28 +1,41 @@
 # Supabase
 
-The database behind the site. Project ref `bvyerlczpakdlfvybkev`.
+The database behind the v2 site. **It is a brand new project and the ref has not been
+handed over yet.**
+
+Do not point any of this at `bvyerlczpakdlfvybkev`. That project serves the current live
+site and `bbb.dev`, it holds 24,574 rows of stream history, and the v2 schema is scheduled
+to be removed from it. Fourteen v2 migrations were applied there by mistake;
+`supabase/reversal/20260731000000_remove_v2_from_legacy.sql` undoes that and is committed
+unrun, because Michael decides when it executes.
 
 ## First run
 
 ```
-supabase link --project-ref bvyerlczpakdlfvybkev
-supabase migration repair --status applied 20260101000000
+supabase link --project-ref <the-new-ref>
+supabase db push
 ```
 
-That second line matters. `20260101000000_baseline.sql` is the schema as it already
-exists on production, reconstructed from the catalog because it was originally built
-through Studio and through six migrations that were never checked in anywhere. Pushing
-it would try to create tables that are already there. Repairing it marks it applied and
-lets everything after it line up.
+That is the whole thing. Push the entire chain, baseline included.
 
-After that, `supabase db reset` gives you a local database that looks like the real one,
-and `supabase db push` sends only what is genuinely new.
+**Do not run `supabase migration repair`.** The old instructions said to, because the
+baseline used to be a copy of a schema that already existed on production. It is not that
+any more. It is trimmed down to the two legacy tables v2 genuinely reads, `streamEvents`
+and `streamUsers`, and it has to actually run. Marking it applied without executing it
+leaves those tables missing and every badge migration lands on top of nothing.
+
+Everything else from the legacy schema was deliberately left out. An empty `shorturls` in
+the new project is a live trap: repoint the redirect function at it and 1,627 short links
+404 with no error anywhere, because the table exists and is simply empty. The full list of
+what stayed behind, and why, is in the header of `20260101000000_baseline.sql`.
+
+Both tables arrive empty. Michael loads them. `docs/backfill.md` is the spec.
 
 ## What is here
 
 | Migration | What it does |
 |---|---|
-| `20260101000000_baseline` | The pre existing schema. Already applied. Do not push, do not edit |
+| `20260101000000_baseline` | `streamEvents` and `streamUsers` only. The rest of the legacy schema stays in the old project |
 | `20260710000000_v2_schema` | Profiles, bans, disasters, comments, likes, reports, badges, notification preferences |
 | `20260710000100_v2_rls` | Row level security. Deny by default, reads added back one at a time |
 | `20260710000200_v2_seed` | Reserved handles, and a starting set of badges and thresholds |
@@ -30,12 +43,27 @@ and `supabase db push` sends only what is genuinely new.
 | `20260710000400_badge_tiers` | Badge families and tiers, so a shelf can show "Front Row III" and a locked IV |
 | `20260710000500_streams_watched` | `streams_watched` and `twitch_first_seen`, the two numbers a profile cannot get from PostgREST |
 | `20260710000600_comment_cascade_fix` | Stops one account deletion hard deleting other people's replies |
+| `20260710000700_comment_bodies_and_likes` | Comment HTML rendered on write, and likes widened to cover comments |
+| `20260710000800_report_rate_limit_hash` | Hashes the reporter token so a report cannot be traced back to a browser |
+| `20260710000900_badge_thresholds_real_history` | Rescales every tier against the measured distribution, adds Cheerer |
+| `20260710001000_badge_engine` | `badge_counts`, `grant_badges`, `badge_progress`, `backfill_badges` and the triggers |
+| `20260710001100_badge_backfill_indexes` | `lower(login)` indexes. Turns the sweep from a sequential scan into milliseconds |
+| `20260710001200_badge_backfill_schedule` | Nightly `pg_cron` sweep at 01:30 UTC |
+| `20260710001300_video_transcripts` | Transcripts and chapters, read at build time |
+
+`supabase/reversal/` is not part of the chain and `db push` never sees it. That is
+deliberate: a file that drops the whole v2 schema must not be able to run against the new
+project by accident.
+
+`pnpm check:migrations` proves the chain is self contained, which matters now that the
+baseline no longer carries the rest of the legacy schema.
 
 ## Regenerating types
 
-`pnpm types` rewrites `src/lib/supabase/database.types.ts` from the live schema. Run it
-after every migration and commit the result, so CI and a fresh clone never need a Supabase
-login. `pnpm check` is what catches you if you forget.
+`pnpm types` rewrites `src/lib/supabase/database.types.ts` from the live schema. It needs
+`SUPABASE_PROJECT_REF` set and refuses to run against the legacy ref. Run it after every
+migration and commit the result, so CI and a fresh clone never need a Supabase login.
+`pnpm check` is what catches you if you forget.
 
 ## How writes work
 
