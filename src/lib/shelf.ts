@@ -9,11 +9,16 @@
 
   1. A numeral only appears on a family with more than one step. "Confessor I" on a badge
      with no second tier reads as a bug.
-  2. Progress only appears on the lowest unearned tier in a family. Showing "62 of 1000"
-     under a badge two steps away is discouragement dressed as information.
-  3. Progress never appears on a badge with a threshold of one, because "0 of 1" tells
-     somebody nothing they did not already work out from the badge being dark.
-  4. Earned badges sort first. The shelf is a record of what somebody did, not a to do list.
+  2. Every earned badge is shown, plus the next unearned step in each family, and nothing
+     beyond that. Somebody who has not earned Front Row I has no business being shown
+     Front Row II, III and IV, and a brand new profile that renders the entire catalogue in
+     grey is a to do list nobody asked for. It also happens to be what makes the empty
+     shelf look deliberate: one plaque per family rather than seventeen dark ones.
+  3. Progress only appears on that next step, and never on a threshold of one, because
+     "0 of 1" tells somebody nothing the dark plaque did not already. It also never appears
+     at zero: an empty bar under a badge nobody has started is decoration, and on a day one
+     shelf it would be decoration ten times over.
+  4. Earned badges sort first. The shelf is a record of what somebody did, not a checklist.
 */
 
 import type { SeverityId } from '../config/site';
@@ -92,10 +97,15 @@ export function shapeShelf(shelf: ShelfRow[], progress: ProgressRow[]): ShelfBad
   */
   return shelf
     .filter((row) => row.badge_id && row.name && row.description)
+    /*
+      Earned badges, plus the next step in each family. A locked tier further out is
+      dropped rather than dimmed, which is rule 2 above.
+    */
+    .filter((row) => earned.has(row.badge_id!) || next.has(row.badge_id!))
     .map((row) => {
       const id = row.badge_id!;
       const p = byBadge.get(id);
-      const show = Boolean(p && !p.earned && next.has(id) && p.threshold > 1);
+      const show = Boolean(p && !p.earned && next.has(id) && p.threshold > 1 && p.n > 0);
 
       return {
         id,

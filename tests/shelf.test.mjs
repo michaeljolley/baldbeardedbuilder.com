@@ -68,12 +68,57 @@ test('progress appears only on the lowest unearned tier in a family', () => {
 
   assert.equal(by['front-row'].progress, null, 'an earned badge shows no progress');
   assert.deepEqual(by['front-row-2'].progress, { n: 12, threshold: 15 });
-  assert.equal(by['front-row-3'].progress, null, 'a tier further out shows no progress');
+  assert.equal(by['front-row-3'], undefined, 'a tier further out is not shown at all');
+});
+
+/* Which badges are shown at all ------------------------------------------------------ */
+
+test('a locked tier beyond the next one is dropped rather than dimmed', () => {
+  const shelf = [
+    row('fr', 'front-row', 1),
+    row('fr2', 'front-row', 2),
+    row('fr3', 'front-row', 3),
+    row('fr4', 'front-row', 4)
+  ];
+
+  const out = shapeShelf(shelf, [prog('fr', 6, 5, true), prog('fr2', 6, 15, false)]);
+  assert.deepEqual(out.map((b) => b.id), ['fr', 'fr2']);
+});
+
+test('an empty shelf shows one plaque per family, not the whole catalogue', () => {
+  const shelf = [
+    row('fr', 'front-row', 1),
+    row('fr2', 'front-row', 2),
+    row('fr3', 'front-row', 3),
+    row('t', 'talker', 1),
+    row('t2', 'talker', 2),
+    row('raider', 'raider', 1)
+  ];
+
+  const out = shapeShelf(shelf, []);
+  assert.deepEqual(out.map((b) => b.id), ['fr', 't', 'raider']);
+  assert.ok(out.every((b) => !b.earned));
+});
+
+test('a fully earned family still shows every step it earned', () => {
+  const shelf = [row('a', 'f', 1), row('a2', 'f', 2)];
+  const out = shapeShelf(shelf, [prog('a', 9, 1, true), prog('a2', 9, 5, true)]);
+  assert.deepEqual(out.map((b) => b.id), ['a', 'a2']);
 });
 
 test('a threshold of one shows no progress bar', () => {
   const out = shapeShelf([row('raider', 'raider', 1)], [prog('raider', 0, 1, false)]);
   assert.equal(out[0].progress, null);
+});
+
+test('a badge nobody has started shows no progress bar', () => {
+  const out = shapeShelf([row('talker', 'talker', 1)], [prog('talker', 0, 50, false)]);
+  assert.equal(out[0].progress, null, 'an empty bar is decoration');
+});
+
+test('one step in is enough to show a bar', () => {
+  const out = shapeShelf([row('talker', 'talker', 1)], [prog('talker', 1, 50, false)]);
+  assert.deepEqual(out[0].progress, { n: 1, threshold: 50 });
 });
 
 test('an untiered badge is its own family and still gets progress', () => {
@@ -135,11 +180,13 @@ test('a fully earned family shows no progress anywhere', () => {
   assert.ok(out.every((b) => b.earned));
 });
 
-test('numerals come from family size, not from how many are earned', () => {
+test('numerals come from family size, not from how many are shown', () => {
   const shelf = [row('f', 'f', 1), row('f2', 'f', 2), row('f3', 'f', 3)];
-  const out = shapeShelf(shelf, [prog('f', 5, 5, true)]);
+  const out = shapeShelf(shelf, [prog('f', 5, 5, true), prog('f2', 5, 20, false)]);
   const by = Object.fromEntries(out.map((b) => [b.id, b]));
 
+  /* f3 is dropped as a tier too far out, but it still counts towards the numerals. */
   assert.equal(by.f.numeral, 'I');
-  assert.equal(by.f3.numeral, 'III');
+  assert.equal(by.f2.numeral, 'II');
+  assert.equal(by.f3, undefined);
 });

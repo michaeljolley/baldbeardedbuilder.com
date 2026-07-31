@@ -94,9 +94,11 @@ const n = (v: number) => v.toLocaleString('en-GB');
       <div class="shelf">
         <div class="rule"><h2>Badge shelf</h2></div>
         <p class="shelf-note">
-          {profile.twitchLinked
-            ? 'Some of these came from Twitch, from the stream history we have on record.'
-            : 'Some of these live on Twitch. Link your Twitch account and the old ones show up on their own.'}
+          {earned.length === 0
+            ? 'Nothing on the shelf yet. These are the ones within reach.'
+            : profile.twitchLinked
+              ? 'Some of these came from Twitch, from the stream history we have on record.'
+              : 'Some of these live on Twitch. Link your Twitch account and the old ones show up on their own.'}
         </p>
         <div class="plaques">
           {earned.map((b) => (
@@ -125,6 +127,19 @@ const n = (v: number) => v.toLocaleString('en-GB');
             </div>
           ))}
         </div>
+
+        {/*
+          The shelf is empty on day one for everybody, so the empty state is the state that
+          ships. It says what fills it rather than leaving a grid of grey boxes to be read
+          as a broken feature.
+        */}
+        {earned.length === 0 && (
+          <p class="shelf-empty">
+            Badges come from turning up. Watch a stream, say something in chat, file a dev
+            disaster, answer somebody in the comments.
+            {!profile.twitchLinked && ' Linking Twitch brings the older ones across.'}
+          </p>
+        )}
       </div>
 
       <div class="rule" style="margin-top:1rem;"><h2>Activity</h2></div>

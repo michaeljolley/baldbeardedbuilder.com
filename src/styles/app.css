@@ -943,13 +943,30 @@ html:not(.js) .themer { display: none; }
   Progress under the next badge in a family. The bar is decoration and the figure beside it
   is the real answer, which is why the bar is aria-hidden and the text is not: a screen
   reader gets "12 of 30" and skips the box.
+
+  The track is a surface colour rather than --line. Hot Dog Stand is the reason: its --line
+  is the same saturated red as its --accent, so a track drawn in --line was indistinguishable
+  from a full fill, and an empty bar read as a finished one. A background token can never
+  collide with the fill, because the contrast guard in the theme generator pushes every
+  accent away from all three surfaces by construction.
 */
 .plaque .prog { display: flex; align-items: center; gap: .5rem; margin-top: .15rem; }
 .plaque .prog-bar {
-  flex: 1; height: 3px; border-radius: 2px; background: var(--line); overflow: hidden;
+  flex: 1; height: 4px; border-radius: 2px;
+  background: var(--bg-inset); border: 1px solid var(--line);
+  overflow: hidden;
 }
 .plaque .prog-fill { display: block; height: 100%; background: var(--accent); }
 .plaque .prog-n { font-family: var(--mono); font-size: .625rem; color: var(--fg-dim); white-space: nowrap; }
+
+/*
+  The empty shelf. Sits under the plaques rather than replacing them, because the plaques
+  are the answer to "what is there to get" and this is the answer to "how".
+*/
+.shelf-empty {
+  font-family: var(--mono); font-size: .75rem; line-height: 1.7;
+  color: var(--fg-dim); margin: 1rem 0 0; max-width: 46rem;
+}
 
 .tabs {
   display: flex; gap: 1.5rem; border-bottom: 1px solid var(--line);
