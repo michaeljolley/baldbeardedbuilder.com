@@ -8,7 +8,6 @@
       "title": "The raccoon in the server room was not a metaphor",
       "line": "The ticket said intermittent packet loss on rack four. The cause was a raccoon, and so was the fix.",
       "teller": "dana-codes",
-      "likes": 3088,
       "replies": 214,
       "published": "2025-02-11",
       "body": [
@@ -24,7 +23,6 @@
       "title": "I demoed to the CEO with the wrong monitor shared",
       "line": "He was very polite about the browser tab titled \"how to leave a job without burning bridges\".",
       "teller": null,
-      "likes": 2640,
       "replies": 141,
       "published": "2025-01-28",
       "body": [
@@ -40,7 +38,6 @@
       "title": "The intern deleted the resource group. We thanked him later.",
       "line": "Everything was gone in ninety seconds. What we found out over the next nine hours was that almost none of it had ever been in source control.",
       "teller": null,
-      "likes": 2431,
       "replies": 156,
       "published": "2025-03-04",
       "body": [
@@ -57,7 +54,6 @@
       "title": "I spent two days debugging a trailing space in a config key",
       "line": "Two days. The diff, when I finally found it, was one character wide and invisible in every tool I own.",
       "teller": "sbrennan",
-      "likes": 1977,
       "replies": 88,
       "published": "2025-02-02",
       "body": [
@@ -74,7 +70,6 @@
       "title": "The backup job had been failing silently since March",
       "line": "It emailed a mailbox that got deleted when the guy who set it up left. Six months of green dashboards and zero backups.",
       "teller": null,
-      "likes": 1845,
       "replies": 102,
       "published": "2024-12-19",
       "body": [
@@ -91,7 +86,6 @@
       "title": "A regex ate the payroll run",
       "line": "One unescaped dot. Eleven hundred people got paid an amount that was technically a number.",
       "teller": "m-santos",
-      "likes": 1510,
       "replies": 94,
       "published": "2025-03-18",
       "body": [
@@ -108,7 +102,6 @@
       "title": "My \"temporary\" console app ran in production for six years",
       "line": "I named it temp-fix. It outlived two rewrites, one acquisition, and my entire tenure at the company.",
       "teller": "chrisd-dev",
-      "likes": 1333,
       "replies": 67,
       "published": "2024-11-30",
       "body": [
@@ -125,7 +118,6 @@
       "title": "I ran the migration on prod. Then I ran it again.",
       "line": "Idempotent is a word I now understand at a cellular level. Four million rows backfilled twice, and two dashboards that finally agreed with each other.",
       "teller": "chrisd-dev",
-      "likes": 1204,
       "replies": 87,
       "published": "2025-03-22",
       "body": [
@@ -144,7 +136,6 @@
       "title": "DateTime.Now took down a hospital scheduling system",
       "line": "Every appointment moved by an hour on a Sunday morning in March. The nurses noticed before the monitoring did.",
       "teller": "rtorres",
-      "likes": 1102,
       "replies": 73,
       "published": "2025-03-10",
       "body": [
@@ -161,7 +152,6 @@
       "title": "A rounding error paid one customer $1.4 million",
       "line": "Banker's rounding is a real thing with a real name, and I learned both of them on a Saturday.",
       "teller": "a-okoro",
-      "likes": 966,
       "replies": 44,
       "published": "2025-01-14",
       "body": [
@@ -178,7 +168,6 @@
       "title": "Our load test ran against production for eleven minutes",
       "line": "The staging connection string was right there in the config. The one we shipped read an environment variable nobody had touched since 2021.",
       "teller": null,
-      "likes": 892,
       "replies": 61,
       "published": "2025-04-02",
       "body": [
@@ -195,7 +184,6 @@
       "title": "I opened a PR titled \"fix\" that changed 412 files",
       "line": "My editor had been quietly reformatting on save for a month. The one real change was on line 8,214.",
       "teller": null,
-      "likes": 840,
       "replies": 39,
       "published": "2024-10-08",
       "body": [
@@ -212,7 +200,6 @@
       "title": "Our retry policy retried the delete",
       "line": "Three attempts, exponential backoff, and a delete that had been succeeding all along. We removed the same records four times.",
       "teller": "k-nakamura",
-      "likes": 774,
       "replies": 52,
       "published": "2025-02-24",
       "body": [
@@ -229,7 +216,6 @@
       "title": "It's always DNS. Except the one time it was a leap second.",
       "line": "We spent six hours proving it was DNS. It was not DNS. It has never been so satisfying to be so completely wrong.",
       "teller": "jenwrites",
-      "likes": 641,
       "replies": 38,
       "published": "2025-04-09",
       "body": [
@@ -246,7 +232,6 @@
       "title": "Our cache warmed itself into an outage every morning at 6:02",
       "line": "The warmer was scheduled for 6:00. It took two minutes to bring the site down, every day, for five weeks.",
       "teller": null,
-      "likes": 588,
       "replies": 31,
       "published": "2024-09-16",
       "body": [
@@ -263,7 +248,6 @@
       "title": "We shipped a feature flag that defaulted to on",
       "line": "The flag existed so we could turn it on carefully. It arrived on. There was nothing left to turn.",
       "teller": null,
-      "likes": 410,
       "replies": 27,
       "published": "2024-08-21",
       "body": [

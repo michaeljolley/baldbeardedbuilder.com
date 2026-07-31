@@ -11,6 +11,7 @@
 
 import seed from '../config/disasters.seed.json';
 import { SEVERITIES, type SeverityId } from '../config/site';
+import { bakedLikes } from './likes';
 
 export interface Disaster {
   /** Sequential, shown as the diagnostic code. Stable, never reused. */
@@ -38,13 +39,23 @@ interface SeedRow {
   title: string;
   line: string;
   teller: string | null;
-  likes: number;
   replies: number;
   published: string;
   body: string[];
 }
 
 const SEVERITY_IDS = SEVERITIES.map((s) => s.id) as readonly string[];
+
+/*
+  Like counts are read once here, at module load, rather than per page.
+
+  Top level await so that allDisasters stays synchronous. Every page on the site calls it,
+  several of them inside getStaticPaths, and turning it async would push the await into a
+  dozen call sites for no gain. The count is real in both places it appears, which is the
+  point: a card on the wall saying eleven and its own detail page saying nothing would
+  read as a broken site.
+*/
+const likesById = await bakedLikes('disaster');
 
 let cache: Disaster[] | null = null;
 
@@ -63,7 +74,7 @@ export function allDisasters(): Disaster[] {
       title: r.title,
       line: r.line,
       teller: r.teller,
-      likes: r.likes,
+      likes: likesById.get(String(r.id)) ?? 0,
       replies: r.replies,
       date: new Date(r.published),
       body: r.body

@@ -17,14 +17,16 @@ import lighthouse from 'lighthouse';
 import { serveDist } from './lib/serve-dist.mjs';
 
 /* A smaller list than the accessibility gate because each run takes several seconds.
-   These four cover the shapes that differ: a heavy homepage, a paginated index, a code
-   heavy article, and a page carrying a third party embed. */
+   These cover the shapes that differ: a heavy homepage, a paginated index, a code heavy
+   article, a page carrying a third party embed, an archive, and one detail page that
+   carries an island. */
 const PAGES = [
   ['home', '/'],
   ['topic index', '/csharp/'],
   ['article', '/csharp/the-traps-of-nullable-in-c-sharp/'],
   ['video', '/windows/keep-track-of-vs-code-windows-with-peacock/'],
-  ['disaster archive', '/dev-disasters/']
+  ['disaster archive', '/dev-disasters/'],
+  ['disaster', '/dev-disasters/the-raccoon-in-the-server-room-was-not-a-metaphor/']
 ];
 
 /* Accessibility is deliberately absent. axe already runs across fifteen archetypes under
@@ -36,14 +38,22 @@ const THRESHOLDS = {
   seo: 1
 };
 
-/* The one number that matters most on a content page, stated separately so a regression
-   reads as "the homepage now ships 40 KB of script" rather than as a score drop. */
+/*
+  The one number that matters most on a content page, stated separately so a regression
+  reads as "the homepage now ships 40 KB of script" rather than as a score drop.
+
+  Two budgets, not one. Decision 32 says zero JavaScript by default on content pages, and
+  a single shared ceiling would quietly let an island land on the homepage and still pass.
+  The listing pages get a budget small enough that anything hydrating there fails, and the
+  detail pages get room for the one island they are allowed to carry.
+*/
 const MAX_SCRIPT_BYTES = {
-  '/': 30_000,
-  '/csharp/': 30_000,
+  '/': 1_000,
+  '/csharp/': 1_000,
+  '/dev-disasters/': 1_000,
   '/csharp/the-traps-of-nullable-in-c-sharp/': 30_000,
   '/windows/keep-track-of-vs-code-windows-with-peacock/': 30_000,
-  '/dev-disasters/': 30_000
+  '/dev-disasters/the-raccoon-in-the-server-room-was-not-a-metaphor/': 30_000
 };
 
 const { server, base } = await serveDist();

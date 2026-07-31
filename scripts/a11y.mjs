@@ -65,6 +65,12 @@ for (const [vpName, viewport] of VIEWPORTS) {
        honest fix. Racing the page is how a gate produces failures nobody can reproduce. */
     await page.waitForTimeout(600);
 
+    /* Same reasoning, different race. target-size measures rendered boxes, and a nav link
+       in a fallback font is a different size from the same link in the real one. Without
+       this the gate fails a handful of runs in a hundred with a wall of target-size
+       violations nobody changed anything to cause. */
+    await page.evaluate(() => document.fonts.ready);
+
     for (const theme of THEMES) {
       await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
       /* The theme picker island writes on idle and would otherwise put the theme back. */

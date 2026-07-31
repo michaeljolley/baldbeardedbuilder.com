@@ -11,6 +11,8 @@ import Base from '../../layouts/Base.astro';
 import VideoEmbed from '../../components/VideoEmbed.astro';
 import { topicBySlug } from '../../config/site';
 import { allItems, type Item } from '../../lib/content';
+import LikeButton from '../../components/islands/LikeButton';
+import { bakedLike } from '../../lib/likes';
 
 export async function getStaticPaths() {
   const [items, blog] = await Promise.all([allItems(), getCollection('blog')]);
@@ -34,6 +36,10 @@ const dateLabel = item.date.toLocaleDateString('en-US', {
 });
 
 const alsoFiled = item.alsoFiled.map((slug) => topicBySlug(slug)).filter(Boolean);
+
+/* Baked at build time and honestly a little stale, per conflict 6. The island reconciles
+   it against the live count the moment it hydrates. */
+const likes = await bakedLike('content', item.key);
 ---
 
 <Base
@@ -92,6 +98,19 @@ const alsoFiled = item.alsoFiled.map((slug) => topicBySlug(slug)).filter(Boolean
             </div>
           )
         }
+
+        <div class="rail-acts article-acts">
+          <LikeButton
+            client:visible
+            kind="content"
+            targetKey={item.key}
+            initial={likes}
+            label="this piece"
+          />
+          <a class="fine" href={`/report/?type=${item.kind}&target=${encodeURIComponent(item.url)}`}>
+            Report a problem with this page
+          </a>
+        </div>
 
         {
           alsoFiled.length > 0 && (

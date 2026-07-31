@@ -8,6 +8,7 @@
 */
 import Base from '../../layouts/Base.astro';
 import { sevClass, sevLabel } from '../../config/site';
+import LikeButton from '../../components/islands/LikeButton';
 import { allDisasters, disasterBySlug, disasterCode, countsBySeverity } from '../../lib/disasters';
 
 export function getStaticPaths() {
@@ -45,6 +46,15 @@ const filed = d.date.toLocaleDateString('en-GB', {
             <dd>{filed}</dd>
           </div>
         </dl>
+        <div class="rail-acts">
+          <LikeButton
+            client:visible
+            kind="disaster"
+            targetKey={String(d.id)}
+            initial={d.likes}
+            label="this story"
+          />
+        </div>
         <a
           class="fine"
           href={`/report/?type=disaster&target=${encodeURIComponent(d.url)}`}

@@ -178,6 +178,11 @@ h1, h2, h3, h4 {
   text-decoration: none;
   padding: .3rem 0;
   border-bottom: 1.5px solid transparent;
+  /* WCAG 2.2 wants a 24px target. Padding alone gets there by about half a pixel, which
+     means the metrics of whichever font actually loaded decide whether the site passes.
+     A floor takes the font out of the argument and changes nothing visually. */
+  display: inline-block;
+  min-height: 24px;
 }
 .nav a:hover { color: var(--fg); }
 .nav a.on { color: var(--fg); border-bottom-color: var(--accent); }
@@ -402,6 +407,11 @@ html:not(.js) .themer { display: none; }
   color: var(--fg); padding: .5rem .8rem; cursor: pointer;
 }
 .like:hover { border-color: var(--sev-error); color: var(--sev-error); }
+/* Before the island wakes up, and forever for anybody with JavaScript off. The count is
+   content and stays on screen, but nothing about it should invite a press it cannot
+   answer. */
+.like-idle { cursor: default; color: var(--fg-dim); }
+.like-idle:hover { border-color: var(--line); color: var(--fg-dim); }
 /* The like is a control and the reply count is navigation, so they sit on the same row
    but only one of them is a button. // is how a C# reader already spells "comment". */
 .rail-acts { display: grid; gap: .5rem; margin-top: 1.75rem; }
