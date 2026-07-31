@@ -25,7 +25,8 @@
     "a11y": "node scripts/a11y.mjs",
     "perf": "node scripts/lighthouse.mjs",
     "video:meta": "node --env-file-if-exists=.env scripts/gen-video-meta.mjs",
-    "check:migrations": "node scripts/check-migrations.mjs"
+    "check:migrations": "node scripts/check-migrations.mjs",
+    "verify:deploy": "node scripts/verify-deploy.mjs"
   },
   "dependencies": {
     "@astrojs/netlify": "^6.6.5",

@@ -155,6 +155,13 @@ const lines = [
   '#',
   '# Netlify takes the first match in file order, so specific rules sort before the',
   '# wildcards at the bottom.',
+  '#',
+  '# Legacy /posts/ aliases resolve through the content id rather than through the old',
+  '# rule they replace, which is deliberate. The hand maintained file this replaces had',
+  '# rotted in one place: /posts/code-of-conduct-and-contributions-in-public-repositories',
+  '# pointed at a blog slug that was renamed years ago and 404s on production today.',
+  '# Resolving from the id fixes it and stops the same rot recurring, because a',
+  '# destination that stops existing now fails the build test instead of the visitor.',
   '',
   `# ${sorted.length} explicit rules`,
   ''
