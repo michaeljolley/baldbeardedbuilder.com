@@ -243,7 +243,8 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
 
         {loadFailed && (
           <p class="note" role="status">
-            The replies did not load. <button class="linkish" type="button" onClick={load}>Try again</button>
+            The live replies did not load, so that count is from the last build.{' '}
+            <button class="linkish" type="button" onClick={load}>Try again</button>
           </p>
         )}
 
