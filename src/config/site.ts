@@ -147,6 +147,27 @@ export const SEVERITIES = [
 
 export type SeverityId = (typeof SEVERITIES)[number]['id'];
 
+/**
+ * The severity id and the severity CSS class are not the same word. The design system
+ * writes `sev-warn` and `wq-warn`, the id is `warning`, and every template that forgets
+ * that renders an unstyled chip that still looks almost right. One map, used everywhere.
+ */
+const SEV_CLASS: Record<SeverityId, string> = {
+  error: 'error',
+  warning: 'warn',
+  info: 'info',
+  hint: 'hint'
+};
+
+/** `sev-error`, `sev-warn`, `sev-info`, `sev-hint`. */
+export const sevClass = (id: SeverityId) => `sev-${SEV_CLASS[id]}`;
+
+/** `wq-error`, `wq-warn`, `wq-info`, `wq-hint`, the wall card modifier. */
+export const wqClass = (id: SeverityId) => `wq-${SEV_CLASS[id]}`;
+
+export const sevLabel = (id: SeverityId) => SEVERITIES.find((s) => s.id === id)?.label ?? id;
+
+
 /** One sort for the whole dev disasters list. Severity filters it, never groups it. */
 export const DISASTER_SORTS = [
   { id: 'liked', label: 'Most liked' },

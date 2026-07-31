@@ -13,7 +13,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Drip from '../components/Drip.astro';
-import { SITE, VISIBLE_TOPICS, SEVERITIES, START_HERE } from '../config/site';
+import { SITE, VISIBLE_TOPICS, sevClass, sevLabel, START_HERE } from '../config/site';
 import { allItems, itemsByKeys, itemsInTopic } from '../lib/content';
 import {
   allDisasters,
@@ -46,14 +46,6 @@ const topicCounts = await Promise.all(
   VISIBLE_TOPICS.map(async (t) => ({ topic: t, n: (await itemsInTopic(t.slug)).length }))
 );
 
-const sevClass: Record<string, string> = {
-  error: 'sev-error',
-  warning: 'sev-warn',
-  info: 'sev-info',
-  hint: 'sev-hint'
-};
-const sevLabel = Object.fromEntries(SEVERITIES.map((s) => [s.id, s.label]));
-
 const dripDay = latestDrip
   ? new Date(latestDrip.data.publishDate).toLocaleDateString('en-US', { weekday: 'short' })
   : '';
@@ -66,7 +58,7 @@ const dripDay = latestDrip
         <div class="lead-top">
           <span class="path">dev-disasters<span class="sep">/</span><b>{disasterCode(lead.id)}</b></span>
           <span class="spacer"></span>
-          <span class={`sev ${sevClass[lead.severity]}`}>{sevLabel[lead.severity]}</span>
+          <span class={`sev ${sevClass(lead.severity)}`}>{sevLabel(lead.severity)}</span>
         </div>
         <h1>{lead.title}</h1>
         <p class="excerpt">{lead.line}</p>
@@ -185,7 +177,7 @@ const dripDay = latestDrip
         {
           topProblems.map((d) => (
             <a class="prow" href={d.url}>
-              <span class={`sev ${sevClass[d.severity]}`}>{sevLabel[d.severity]}</span>
+              <span class={`sev ${sevClass(d.severity)}`}>{sevLabel(d.severity)}</span>
               <span class="msg">{d.line}</span>
               <span class="loc">
                 #{disasterCode(d.id)} &middot; &#9825; {d.likes.toLocaleString('en-US')}

@@ -15,7 +15,7 @@
 */
 import Base from '../../layouts/Base.astro';
 import Drip from '../../components/Drip.astro';
-import { SEVERITIES, DISASTER_SORTS } from '../../config/site';
+import { SEVERITIES, DISASTER_SORTS, sevClass, sevLabel, wqClass, type SeverityId } from '../../config/site';
 import {
   allDisasters,
   sortDisasters,
@@ -52,7 +52,7 @@ export function getStaticPaths() {
 }
 
 interface Props {
-  scope: string;
+  scope: SeverityId | 'all';
   sort: DisasterSort;
 }
 
@@ -65,14 +65,6 @@ const rows = sortDisasters(
   sort
 );
 
-const sevClass: Record<string, string> = {
-  error: 'sev-error',
-  warning: 'sev-warn',
-  info: 'sev-info',
-  hint: 'sev-hint'
-};
-const sevLabel = Object.fromEntries(SEVERITIES.map((s) => [s.id, s.label]));
-
 /** Rebuilds a URL for this route from a scope and a sort, using the same rules as above. */
 const viewUrl = (s: string, o: string) => {
   if (s === 'all' && o === 'liked') return '/dev-disasters/';
@@ -81,7 +73,7 @@ const viewUrl = (s: string, o: string) => {
   return `/dev-disasters/${s}/${o}/`;
 };
 
-const scopeLabel = scope === 'all' ? '' : sevLabel[scope];
+const scopeLabel = scope === 'all' ? '' : sevLabel(scope);
 const title = scope === 'all' ? 'dev disasters' : `${scopeLabel} dev disasters`;
 
 /*
@@ -154,10 +146,10 @@ const isDefault = scope === 'all' && sort === 'liked';
         ) : (
           <div class="wall">
             {rows.map((d) => (
-              <article class={`wq wq-${d.severity === 'warning' ? 'warn' : d.severity}`}>
+              <article class={`wq ${wqClass(d.severity)}`}>
                 <span class="wq-lab">
                   <b>{disasterCode(d.id)}</b>
-                  <span class={`sev ${sevClass[d.severity]}`}>{sevLabel[d.severity]}</span>
+                  <span class={`sev ${sevClass(d.severity)}`}>{sevLabel(d.severity)}</span>
                   <span class="wq-stats">
                     <span class="st">
                       <i>&#9825;</i>

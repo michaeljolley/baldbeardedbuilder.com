@@ -1,5 +1,6 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"]
+  "comment": "src/content is the michaeljolley/content submodule and is read only from here, so its own build tooling is not ours to typecheck or to fix.",
+  "exclude": ["dist", ".netlify", "src/content/_builder"]
 }

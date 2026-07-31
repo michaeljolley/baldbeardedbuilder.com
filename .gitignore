@@ -27,3 +27,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Supabase CLI scratch, holds the linked project ref
+supabase/.temp/

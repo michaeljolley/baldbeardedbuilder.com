@@ -19,6 +19,7 @@
     "gen:check": "pnpm gen && git diff --exit-code src/styles/themes.css src/styles/fonts.generated.css src/lib/themes.generated.ts src/lib/ec-themes.generated.mjs src/config/taxonomy.json public/_redirects",
     "test": "node --test \"tests/**/*.test.mjs\"",
     "check": "astro check",
+    "types": "node scripts/gen-types.mjs",
     "astro": "astro",
     "postbuild": "pagefind --site dist --exclude-selectors \"[data-pagefind-ignore]\"",
     "a11y": "node scripts/a11y.mjs",
@@ -32,12 +33,15 @@
     "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
     "@fontsource-variable/fira-code": "^5.3.0",
     "@fontsource-variable/fraunces": "^5.3.0",
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.111.0",
     "astro": "^5.17.1",
     "astro-expressive-code": "^0.41.6",
     "marked": "^17.0.1",
     "preact": "^10.29.7"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.10",
     "@axe-core/playwright": "^4.12.1",
     "axe-core": "^4.12.1",
     "chrome-launcher": "^1.2.1",
@@ -46,6 +50,7 @@
     "pagefind": "^1.5.2",
     "playwright": "^1.62.1",
     "shiki": "^3.22.0",
+    "typescript": "^5.9.3",
     "yaml": "^2.9.0"
   }
 }

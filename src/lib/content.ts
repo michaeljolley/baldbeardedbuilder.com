@@ -10,6 +10,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import taxonomy from '../config/taxonomy.json';
 import { topicBySlug, type Topic } from '../config/site';
+import { isPublished } from './publish';
 
 export type ItemKind = 'article' | 'video';
 
@@ -69,7 +70,7 @@ export async function allItems(): Promise<Item[]> {
   if (cache) return cache;
 
   const [blog, videos] = await Promise.all([getCollection('blog'), getCollection('videos')]);
-  const now = Date.now();
+  const now = new Date();
   const items: Item[] = [];
 
   for (const post of blog as CollectionEntry<'blog'>[]) {
@@ -90,7 +91,7 @@ export async function allItems(): Promise<Item[]> {
       views: null,
       thumbnail: post.data.image ?? null,
       external: null,
-      draft: post.data.pubDate.getTime() > now
+      draft: !isPublished(post.data.pubDate, now)
     });
   }
 
@@ -114,7 +115,7 @@ export async function allItems(): Promise<Item[]> {
       views: video.data.views ?? null,
       thumbnail: video.data.thumbnail,
       external: video.data.link,
-      draft: video.data.date.getTime() > now
+      draft: !isPublished(video.data.date, now)
     });
   }
 

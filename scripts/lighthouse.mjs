@@ -106,7 +106,7 @@ console.log('\n' + rows.join('\n') + '\n');
    chrome-launcher tries to delete it. That is cleanup, not a result, so it must never
    decide whether the gate passed. */
 try {
-  await chrome.kill();
+  chrome.kill();
 } catch (err) {
   console.warn(`Could not clean up the Chrome profile directory: ${err.message}`);
 }

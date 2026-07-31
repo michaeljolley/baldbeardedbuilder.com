@@ -1,0 +1,183 @@
+---
+/*
+  Your account.
+
+  The only page on the site with a form that writes to the database and no island behind
+  it. That is on purpose. Settings is where a person most needs to be sure the thing they
+  clicked took effect, and a full page POST followed by a redirect is certain by
+  construction in a way an optimistic fetch never is.
+
+  Signed out, this is a sign in page rather than a 401, because "you need an account" and
+  "here is the button" belong on the same screen.
+*/
+import Base from '../layouts/Base.astro';
+import { readAccount, saveAccount, deleteAccount, clearSession, BIO_MAX, LINKS_MAX } from '../lib/account';
+import { supabaseWritable } from '../lib/supabase';
+
+export const prerender = false;
+
+const profile = Astro.locals.profile;
+
+let error: string | null = null;
+
+if (Astro.request.method === 'POST' && profile) {
+  const form = await Astro.request.formData();
+
+  if (form.get('intent') === 'delete') {
+    if (String(form.get('confirm') ?? '').trim().toLowerCase() !== profile.handle) {
+      error = 'Type your handle exactly to confirm.';
+    } else {
+      const result = await deleteAccount(profile.id);
+      if (result.ok) {
+        clearSession(Astro);
+        return Astro.redirect('/?goodbye=1', 303);
+      }
+      error = result.error ?? 'Could not delete the account.';
+    }
+  } else {
+    const result = await saveAccount(profile.id, form);
+    if (result.ok) return Astro.redirect('/account/?saved=1', 303);
+    error = result.error ?? 'Could not save that.';
+  }
+}
+
+const account = profile ? await readAccount(profile.id) : null;
+const saved = Astro.url.searchParams.has('saved');
+const linkRows = Array.from({ length: LINKS_MAX }, (_, i) => account?.links[i] ?? { label: '', url: '' });
+---
+
+<Base title="Your account" description="Settings for your Bald Bearded Builder account." noindex>
+  <main id="main">
+    <div class="shell narrow">
+
+      <div class="rule"><h1>Your account</h1></div>
+
+      {!supabaseWritable && (
+        <p class="note">Accounts are switched off in this environment.</p>
+      )}
+
+      {supabaseWritable && !account && (
+        <>
+          <p class="lede">
+            Sign in with GitHub to comment, tell a story, and collect the badges you have
+            already earned.
+          </p>
+          <p>
+            <a class="btn primary" href="/auth/signin/?next=/account/" rel="nofollow">
+              Sign in with GitHub
+            </a>
+          </p>
+          <p class="fine">
+            We read your GitHub username, avatar and account age. Nothing else, and nothing
+            is written back.
+          </p>
+        </>
+      )}
+
+      {account && (
+        <>
+          {saved && <p class="note ok" role="status">Saved.</p>}
+          {error && <p class="note bad" role="alert">{error}</p>}
+
+          <form method="post" action="/account/">
+            <h2>Public details</h2>
+
+            <label for="handle">Handle</label>
+            <p class="fine" id="handle-help">
+              Your profile lives at /builders/{account.handle}/. Lower case letters,
+              numbers and hyphens.
+            </p>
+            <input
+              id="handle"
+              name="handle"
+              type="text"
+              value={account.handle}
+              required
+              minlength="3"
+              maxlength="32"
+              pattern="[a-z0-9][a-z0-9\-]{1,30}[a-z0-9]"
+              aria-describedby="handle-help"
+            />
+
+            <label for="display_name">Display name</label>
+            <input id="display_name" name="display_name" type="text" maxlength="60" value={account.displayName} />
+
+            <label for="bio">Bio</label>
+            <textarea id="bio" name="bio" rows="3" maxlength={BIO_MAX}>{account.bio}</textarea>
+
+            <fieldset>
+              <legend>Links</legend>
+              <p class="fine">
+                Up to {LINKS_MAX}. Everything here is nofollowed, so these are for humans
+                rather than for search engines.
+              </p>
+              {linkRows.map((l, i) => (
+                <div class="link-row">
+                  <label for={`link_label_${i}`} class="vh">Link {i + 1} label</label>
+                  <input id={`link_label_${i}`} name={`link_label_${i}`} type="text" placeholder="Label" maxlength="40" value={l.label} />
+                  <label for={`link_url_${i}`} class="vh">Link {i + 1} address</label>
+                  <input id={`link_url_${i}`} name={`link_url_${i}`} type="url" placeholder="https://" value={l.url} />
+                </div>
+              ))}
+            </fieldset>
+
+            <h2>Privacy</h2>
+            <div class="check">
+              <input id="is_private" name="is_private" type="checkbox" checked={account.isPrivate} />
+              <label for="is_private">
+                Hide my profile. Your stories and comments stay where they are, your
+                profile page returns a 404.
+              </label>
+            </div>
+
+            <h2>Email</h2>
+            <div class="check">
+              <input id="story_published" name="story_published" type="checkbox" checked={account.prefs.storyPublished} />
+              <label for="story_published">When a story I sent in gets published</label>
+            </div>
+            <div class="check">
+              <input id="story_featured" name="story_featured" type="checkbox" checked={account.prefs.storyFeatured} />
+              <label for="story_featured">When a story of mine gets featured</label>
+            </div>
+            <div class="check">
+              <input id="comment_reply" name="comment_reply" type="checkbox" checked={account.prefs.commentReply} />
+              <label for="comment_reply">When somebody replies to my comment</label>
+            </div>
+
+            <p><button class="btn primary" type="submit">Save</button></p>
+          </form>
+
+          <h2>Connected accounts</h2>
+          <ul class="plain">
+            <li>GitHub: {account.githubLogin ?? 'not connected'}</li>
+            <li>
+              Twitch: {account.twitchLogin ?? 'not connected'}
+              {!account.twitchLogin && (
+                <>
+                  {' '}
+                  <a href="/auth/link/twitch/" rel="nofollow">Link it</a> and the badges you
+                  earned in chat show up on their own.
+                </>
+              )}
+            </li>
+          </ul>
+
+          <div class="rule"><h2>Delete your account</h2></div>
+          <p>
+            This removes your account, your handle, your badges and your email settings,
+            and it cannot be undone. Stories you have already had published stay published
+            with your name taken off them. Comments become tombstones so the threads other
+            people are in still read properly.
+          </p>
+          <form method="post" action="/account/">
+            <input type="hidden" name="intent" value="delete" />
+            <label for="confirm">Type <b>{account.handle}</b> to confirm</label>
+            <input id="confirm" name="confirm" type="text" autocomplete="off" required />
+            <p><button class="btn danger" type="submit">Delete my account</button></p>
+          </form>
+        </>
+      )}
+
+    </div>
+  </main>
+</Base>

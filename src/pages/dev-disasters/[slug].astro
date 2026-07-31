@@ -7,7 +7,7 @@
   interactive. A dead control is worse than an absent one.
 */
 import Base from '../../layouts/Base.astro';
-import { SEVERITIES } from '../../config/site';
+import { sevClass, sevLabel } from '../../config/site';
 import { allDisasters, disasterBySlug, disasterCode, countsBySeverity } from '../../lib/disasters';
 
 export function getStaticPaths() {
@@ -19,14 +19,6 @@ const d = disasterBySlug(slug!);
 if (!d) throw new Error(`No dev disaster with slug "${slug}"`);
 
 const counts = countsBySeverity();
-
-const sevClass: Record<string, string> = {
-  error: 'sev-error',
-  warning: 'sev-warn',
-  info: 'sev-info',
-  hint: 'sev-hint'
-};
-const sevLabel = Object.fromEntries(SEVERITIES.map((s) => [s.id, s.label]));
 
 const filed = d.date.toLocaleDateString('en-GB', {
   day: 'numeric',
@@ -42,7 +34,7 @@ const filed = d.date.toLocaleDateString('en-GB', {
         <dl>
           <div>
             <dt>Severity</dt>
-            <dd><span class={`sev ${sevClass[d.severity]}`}>{sevLabel[d.severity]}</span></dd>
+            <dd><span class={`sev ${sevClass(d.severity)}`}>{sevLabel(d.severity)}</span></dd>
           </div>
           <div>
             <dt>Told by</dt>
