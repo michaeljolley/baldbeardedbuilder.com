@@ -42,9 +42,16 @@ port = 54324
 [auth]
 enabled = true
 site_url = "http://localhost:4321"
+# The sign in route builds redirectTo from the request origin, so every host that is
+# allowed to be returned to has to be listed. Anything missing here redirects to site_url
+# instead of failing, which reads as "signing in on the branch deploy sends me to
+# production" rather than as a configuration error. The hosted project needs the same list
+# under Authentication, URL Configuration. See docs/new-project.md step 6.
 additional_redirect_urls = [
   "http://localhost:4321/auth/callback",
+  "http://localhost:4321/auth/link/twitch/callback/",
   "https://baldbeardedbuilder.com/auth/callback",
+  "https://baldbeardedbuilder.com/auth/link/twitch/callback/",
 ]
 jwt_expiry = 3600
 enable_refresh_token_rotation = true

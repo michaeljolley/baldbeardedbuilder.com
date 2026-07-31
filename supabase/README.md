@@ -11,6 +11,12 @@ unrun, because Michael decides when it executes.
 
 ## First run
 
+Michael has to create the project first. `docs/new-project.md` is the click by click for
+that: what to name it, which region and why, the GitHub and Twitch OAuth apps, the
+redirect URL allowlist, and which Netlify deploy contexts each variable is scoped to.
+
+Once the ref exists:
+
 ```
 supabase link --project-ref <the-new-ref>
 supabase db push
