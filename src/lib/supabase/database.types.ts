@@ -1169,6 +1169,7 @@ export type Database = {
           lastUpdated: string | null
           login: string
           platform: string
+          twitch_user_id: string | null
         }
         Insert: {
           avatar_url: string
@@ -1176,6 +1177,7 @@ export type Database = {
           lastUpdated?: string | null
           login: string
           platform?: string
+          twitch_user_id?: string | null
         }
         Update: {
           avatar_url?: string
@@ -1183,6 +1185,7 @@ export type Database = {
           lastUpdated?: string | null
           login?: string
           platform?: string
+          twitch_user_id?: string | null
         }
         Relationships: []
       }
@@ -1308,6 +1311,24 @@ export type Database = {
       }
     }
     Functions: {
+      backfill_badges: { Args: never; Returns: number }
+      badge_counts: {
+        Args: { p_profile: string }
+        Returns: {
+          event: string
+          n: number
+        }[]
+      }
+      badge_progress: {
+        Args: { p_profile: string }
+        Returns: {
+          badge_id: string
+          earned: boolean
+          event: string
+          n: number
+          threshold: number
+        }[]
+      }
       compute_all_stream_stats: { Args: never; Returns: undefined }
       compute_stream_stats: {
         Args: { target_date: string }
@@ -1351,6 +1372,10 @@ export type Database = {
           raid_total: number
           sub_count: number
         }[]
+      }
+      grant_badges: {
+        Args: { p_profile: string; p_source?: string }
+        Returns: number
       }
       streams_watched: { Args: { p_login: string }; Returns: number }
       twitch_first_seen: { Args: { p_login: string }; Returns: string }

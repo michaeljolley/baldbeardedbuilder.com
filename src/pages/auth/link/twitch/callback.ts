@@ -36,7 +36,9 @@ export const GET: APIRoute = async ({ cookies, request, redirect }) => {
 
   if (!userId) return redirect('/account/?link=failed', 302);
 
-  const { error: writeError } = await serviceClient()
+  const db = serviceClient();
+
+  const { error: writeError } = await db
     .from('profiles')
     .update({
       twitch_user_id: userId,
@@ -48,9 +50,18 @@ export const GET: APIRoute = async ({ cookies, request, redirect }) => {
   if (writeError) return redirect('/account/?link=failed', 302);
 
   /*
-    Badges are granted by the backfill job rather than here. A link is one click, the
-    backfill is a scan of twenty four thousand rows, and making the person wait for the
-    second to finish the first would be the wrong trade.
+    Grant straight away rather than waiting for the nightly job.
+
+    The original plan deferred this on the grounds that a scan of twenty four thousand rows
+    is not something to make somebody wait for. With an index on lower(login) it is a few
+    milliseconds, and the alternative is telling somebody who just linked their account to
+    come back tomorrow and see if it worked. The nightly job still runs, because it catches
+    anybody whose numbers moved after they linked.
+
+    A failure here is deliberately not fatal. The link succeeded, which is the thing that
+    was asked for, and the nightly job will pick up the grants.
   */
+  await db.rpc('grant_badges', { p_profile: data.user.id, p_source: 'backfill' });
+
   return redirect('/account/?link=ok', 302);
 };

@@ -23,7 +23,8 @@
     "astro": "astro",
     "postbuild": "pagefind --site dist --exclude-selectors \"[data-pagefind-ignore]\"",
     "a11y": "node scripts/a11y.mjs",
-    "perf": "node scripts/lighthouse.mjs"
+    "perf": "node scripts/lighthouse.mjs",
+    "twitch:ids": "node --env-file-if-exists=.env scripts/twitch-ids.mjs"
   },
   "dependencies": {
     "@astrojs/netlify": "^6.6.5",

@@ -12,19 +12,10 @@
 
 import { serviceClient, supabaseWritable } from './supabase';
 import type { SeverityId } from '../config/site';
+import { shapeShelf } from './shelf';
+import type { ProgressRow, ShelfBadge } from './shelf';
 
-export interface ShelfBadge {
-  id: string;
-  family: string | null;
-  tier: number | null;
-  name: string;
-  description: string;
-  category: 'presence' | 'craft' | 'care';
-  tone: SeverityId;
-  earned: boolean;
-  /** Roman numeral for tiered families, null for a badge that has only one step. */
-  numeral: string | null;
-}
+export type { ShelfBadge } from './shelf';
 
 export interface ProfileDisaster {
   id: number;
@@ -53,14 +44,6 @@ export interface BuilderProfile {
   disasters: ProfileDisaster[];
 }
 
-const NUMERALS = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
-
-function numeral(tier: number | null, familySize: number): string | null {
-  /* A family with one step does not need a numeral. "Featured I" reads as a mistake. */
-  if (!tier || familySize < 2) return null;
-  return NUMERALS[tier] ?? String(tier);
-}
-
 export async function getBuilderProfile(handle: string): Promise<BuilderProfile | null> {
   if (!supabaseWritable) return null;
 
@@ -79,8 +62,13 @@ export async function getBuilderProfile(handle: string): Promise<BuilderProfile 
 
   if (!profile || profile.is_private || profile.deleted_at) return null;
 
-  const [grants, shelf, disasters, commentCount, streamCount, firstSeen] = await Promise.all([
-    db.from('badge_grants').select('badge_id').eq('profile_id', profile.id),
+  const [progress, shelf, disasters, commentCount, streamCount, firstSeen] = await Promise.all([
+    /*
+      One call rather than two. badge_progress answers both "which of these has this person
+      got" and "how close are they to the next one", from the same counter the triggers
+      grant on, so the shelf can never show a full progress bar next to an unearned badge.
+    */
+    db.rpc('badge_progress', { p_profile: profile.id }),
     db.from('badge_shelf').select('badge_id, family, tier, name, description, category, tone, sort_order'),
     db
       .from('disasters')
@@ -118,33 +106,7 @@ export async function getBuilderProfile(handle: string): Promise<BuilderProfile 
       : Promise.resolve({ data: null })
   ]);
 
-  const earned = new Set((grants.data ?? []).map((g) => g.badge_id));
-
-  const familySizes = new Map<string, number>();
-  for (const row of shelf.data ?? []) {
-    if (!row.family) continue;
-    familySizes.set(row.family, (familySizes.get(row.family) ?? 0) + 1);
-  }
-
-  /*
-    Every column on a view comes back nullable, because Postgres will not promise a view
-    preserves not-null. The rows are all real, so this filter is a type narrowing rather
-    than a data check, but it is the honest way to say so.
-  */
-  const badges: ShelfBadge[] = (shelf.data ?? [])
-    .filter((row) => row.badge_id && row.name && row.description)
-    .map((row) => ({
-      id: row.badge_id!,
-      family: row.family,
-      tier: row.tier,
-      name: row.name!,
-      description: row.description!,
-      category: row.category as ShelfBadge['category'],
-      tone: row.tone as SeverityId,
-      earned: earned.has(row.badge_id!),
-      numeral: numeral(row.tier, familySizes.get(row.family ?? '') ?? 1)
-    }))
-    .sort((a, b) => Number(b.earned) - Number(a.earned));
+  const badges = shapeShelf(shelf.data ?? [], (progress.data ?? []) as ProgressRow[]);
 
   const rows = disasters.data ?? [];
   const ids = rows.map((r) => String(r.id));

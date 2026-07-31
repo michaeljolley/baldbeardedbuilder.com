@@ -111,6 +111,17 @@ const n = (v: number) => v.toLocaleString('en-GB');
               {b.numeral && <span class="tier">{b.numeral}</span>}
               <span class="name">{b.name}</span>
               <span class="how">{b.description}</span>
+              {b.progress && (
+                <span class="prog">
+                  <span class="prog-bar" aria-hidden="true">
+                    <span
+                      class="prog-fill"
+                      style={`width:${Math.min(100, Math.round((b.progress.n / b.progress.threshold) * 100))}%`}
+                    />
+                  </span>
+                  <span class="prog-n">{n(b.progress.n)} of {n(b.progress.threshold)}</span>
+                </span>
+              )}
             </div>
           ))}
         </div>

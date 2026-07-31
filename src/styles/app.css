@@ -927,9 +927,29 @@ html:not(.js) .themer { display: none; }
 .plaque .name { font-family: var(--display); font-weight: 700; font-size: .9375rem; }
 .plaque .how { font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim); line-height: 1.5; }
 .plaque .tier { position: absolute; top: .7rem; right: .8rem; font-family: var(--mono); font-size: .6875rem; color: var(--accent); }
-.plaque.locked { opacity: .45; }
+/*
+  A locked plaque used to dim with opacity, which is fine until something inside it has to
+  be read. A progress figure at 45% opacity is a contrast failure that no automated check
+  can see, because opacity is applied after the ratio is computed. So the dimming is done
+  with real colours instead, which keeps the same look and keeps the number legible.
+*/
+.plaque.locked { background: var(--bg); border-style: dashed; }
 .plaque.locked::after { background: var(--line); }
-.plaque.locked .tier { color: var(--fg-dim); }
+.plaque.locked .tier,
+.plaque.locked .name { color: var(--fg-dim); }
+.plaque.locked .name { font-weight: 400; }
+
+/*
+  Progress under the next badge in a family. The bar is decoration and the figure beside it
+  is the real answer, which is why the bar is aria-hidden and the text is not: a screen
+  reader gets "12 of 30" and skips the box.
+*/
+.plaque .prog { display: flex; align-items: center; gap: .5rem; margin-top: .15rem; }
+.plaque .prog-bar {
+  flex: 1; height: 3px; border-radius: 2px; background: var(--line); overflow: hidden;
+}
+.plaque .prog-fill { display: block; height: 100%; background: var(--accent); }
+.plaque .prog-n { font-family: var(--mono); font-size: .625rem; color: var(--fg-dim); white-space: nowrap; }
 
 .tabs {
   display: flex; gap: 1.5rem; border-bottom: 1px solid var(--line);
