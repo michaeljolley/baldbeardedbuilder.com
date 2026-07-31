@@ -1,0 +1,32 @@
+---
+/*
+  One feed row. Used by the topic pages and by the front page rails.
+
+  The whole row is the link. The kind label, the title, the description and the stats all
+  sit inside a single anchor so there is exactly one tab stop per item, which is what
+  keyboard users want out of a list of fifty things.
+*/
+import type { Item } from '../lib/content';
+
+interface Props {
+  item: Item;
+}
+
+const { item } = Astro.props;
+
+const stats: string[] = [item.length];
+if (item.views !== null) {
+  stats.push(`${item.views.toLocaleString('en-US')} views`);
+}
+---
+
+<a class="fitem" href={item.url}>
+  <span class="kind">{item.kind === 'video' ? 'Video' : 'Article'}</span>
+  <span>
+    <h3>{item.title}</h3>
+    {item.description && <p>{item.description}</p>}
+  </span>
+  <span class="stat">
+    {stats.map((s) => <span>{s}</span>)}
+  </span>
+</a>

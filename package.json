@@ -7,12 +7,15 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "pnpm themes && astro dev",
+    "dev": "pnpm gen && astro dev",
     "build": "astro build",
-    "prebuild": "pnpm themes",
+    "prebuild": "pnpm gen",
     "preview": "astro preview",
+    "gen": "pnpm themes && pnpm taxonomy && pnpm redirects",
     "themes": "node scripts/gen-themes.mjs",
-    "themes:check": "pnpm themes && git diff --exit-code src/styles/themes.css src/lib/themes.generated.ts src/lib/ec-themes.generated.mjs",
+    "taxonomy": "node scripts/gen-taxonomy.mjs",
+    "redirects": "node scripts/gen-redirects.mjs",
+    "gen:check": "pnpm gen && git diff --exit-code src/styles/themes.css src/lib/themes.generated.ts src/lib/ec-themes.generated.mjs src/config/taxonomy.json public/_redirects",
     "test": "node --test \"tests/**/*.test.mjs\"",
     "check": "astro check",
     "astro": "astro"
@@ -28,6 +31,8 @@
     "preact": "^10.29.7"
   },
   "devDependencies": {
-    "shiki": "^3.22.0"
+    "gray-matter": "^4.0.3",
+    "shiki": "^3.22.0",
+    "yaml": "^2.9.0"
   }
 }

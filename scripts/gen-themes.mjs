@@ -214,10 +214,28 @@ const block = (sel, t) => `${sel} {
 
 /* ---------- Expressive Code theme, built from the resolved tokens ---------- */
 
-// Code blocks sit on --bg-inset, which is what .code does in app.css, so the generated
-// theme has to agree or a code block will not match the panel it sits in.
-const ecTheme = (id, t) => ({
-  name: id,
+/*
+  One theme, not sixteen.
+
+  Expressive Code inlines a CSS custom property per configured theme onto every syntax
+  span, so sixteen themes multiplied every code heavy article by sixteen. One real
+  article measured at 926 KB of HTML, which is a far worse violation of decision 32 than
+  any amount of JavaScript would have been.
+
+  The fix is to stop copying the colors and start referencing them. Every token
+  foreground here is var(--tok-*), which resolves against whichever [data-theme] block
+  themes.css has applied. The same article is 56 KB, the code blocks track the chrome
+  exactly rather than approximately, and switching theme needs no extra CSS at all.
+
+  Workbench colors still have to be hex because Expressive Code parses them before any
+  browser sees them. They are overridden by styleOverrides in ec.config.mjs, which does
+  accept variables, so nothing hex actually reaches the page. The values below are the
+  bbb-dark surfaces, present only to satisfy the parser.
+*/
+const EC_THEME_NAME = 'bbb';
+
+const ecTheme = (t) => ({
+  name: EC_THEME_NAME,
   type: t.scheme,
   semanticHighlighting: true,
   colors: {
@@ -235,7 +253,6 @@ const ecTheme = (id, t) => ({
     'editorWarning.foreground': t.warn,
     'editorInfo.foreground': t.info,
     'editorHint.foreground': t.hint,
-    // Frame chrome. Expressive Code draws a title bar and tabs from these.
     'titleBar.activeBackground': t.raised,
     'titleBar.activeForeground': t.dim,
     'tab.activeBackground': t.inset,
@@ -249,17 +266,24 @@ const ecTheme = (id, t) => ({
     'terminal.foreground': t.fg
   },
   tokenColors: [
-    { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: t.tok.com, fontStyle: 'italic' } },
-    { scope: ['string', 'string.quoted', 'string.template', 'punctuation.definition.string'], settings: { foreground: t.tok.str } },
-    { scope: ['constant.numeric', 'constant.language', 'constant.character', 'constant'], settings: { foreground: t.tok.num } },
-    { scope: ['keyword', 'storage', 'storage.type', 'storage.modifier', 'keyword.control', 'keyword.operator.expression', 'variable.language'], settings: { foreground: t.tok.key } },
-    { scope: ['entity.name.function', 'support.function', 'meta.function-call.generic', 'entity.name.function.member'], settings: { foreground: t.tok.fn } },
-    { scope: ['entity.name.type', 'entity.name.class', 'entity.name.namespace', 'support.type', 'support.class', 'entity.other.inherited-class'], settings: { foreground: t.tok.typ } },
-    { scope: ['variable', 'variable.other', 'meta.definition.variable', 'entity.name.variable'], settings: { foreground: t.fg } },
-    { scope: ['keyword.operator', 'punctuation'], settings: { foreground: t.dim } },
-    { scope: ['entity.name.tag'], settings: { foreground: t.tok.key } },
-    { scope: ['entity.other.attribute-name'], settings: { foreground: t.tok.fn } },
-    { scope: ['invalid', 'invalid.illegal'], settings: { foreground: t.err } }
+    /*
+      A scopeless rule is how a TextMate theme spells "default foreground". Without it
+      every token that matches no scope below, whitespace included, bakes the hex from
+      colors['editor.foreground'] and stops following the theme. That reads as white on
+      white the moment somebody picks a light theme.
+    */
+    { settings: { foreground: 'var(--fg)' } },
+    { scope: ['comment', 'punctuation.definition.comment'], settings: { foreground: 'var(--tok-com)', fontStyle: 'italic' } },
+    { scope: ['string', 'string.quoted', 'string.template', 'punctuation.definition.string'], settings: { foreground: 'var(--tok-str)' } },
+    { scope: ['constant.numeric', 'constant.language', 'constant.character', 'constant'], settings: { foreground: 'var(--tok-num)' } },
+    { scope: ['keyword', 'storage', 'storage.type', 'storage.modifier', 'keyword.control', 'keyword.operator.expression', 'variable.language'], settings: { foreground: 'var(--tok-key)' } },
+    { scope: ['entity.name.function', 'support.function', 'meta.function-call.generic', 'entity.name.function.member'], settings: { foreground: 'var(--tok-fn)' } },
+    { scope: ['entity.name.type', 'entity.name.class', 'entity.name.namespace', 'support.type', 'support.class', 'entity.other.inherited-class'], settings: { foreground: 'var(--tok-type)' } },
+    { scope: ['variable', 'variable.other', 'meta.definition.variable', 'entity.name.variable'], settings: { foreground: 'var(--fg)' } },
+    { scope: ['keyword.operator', 'punctuation'], settings: { foreground: 'var(--fg-dim)' } },
+    { scope: ['entity.name.tag'], settings: { foreground: 'var(--tok-key)' } },
+    { scope: ['entity.other.attribute-name'], settings: { foreground: 'var(--tok-fn)' } },
+    { scope: ['invalid', 'invalid.illegal'], settings: { foreground: 'var(--err)' } }
   ]
 });
 
@@ -319,7 +343,6 @@ const audit = (id, t) => {
 
 const css = ['/* Generated by scripts/gen-themes.mjs. Do not hand edit. */\n'];
 const list = [];
-const ec = [];
 const report = [];
 
 // House themes go through the identical guard. No special treatment for our own palette.
@@ -332,7 +355,6 @@ for (const t of Object.values(house)) {
 for (const [id, t] of Object.entries(house)) {
   css.push(block(`[data-theme="${id}"]`, t));
   list.push({ id, name: t.label, scheme: t.scheme, house: true });
-  ec.push(ecTheme(id, t));
   report.push(audit(id, t));
 }
 
@@ -350,7 +372,6 @@ for (const name of PICK) {
     scheme: t.scheme,
     house: false
   });
-  ec.push(ecTheme(name, t));
   report.push(audit(name, t));
 }
 
@@ -379,9 +400,14 @@ fs.writeFileSync(
   OUT_EC,
   '// Generated by scripts/gen-themes.mjs. Do not hand edit.\n' +
     '// A module rather than JSON so ec.config.mjs can import it without a resolver that\n' +
-    '// changes meaning once the config gets bundled.\n\n' +
+    '// changes meaning once the config gets bundled.\n' +
+    '//\n' +
+    '// One theme, whose token colors are var(--tok-*) references rather than copies.\n' +
+    '// Sixteen themes made Expressive Code inline sixteen hex values onto every syntax\n' +
+    '// span, which took one real article to 926 KB of HTML. This is the same article at\n' +
+    '// 56 KB, and the colors now track the chrome exactly instead of approximately.\n\n' +
     'export default ' +
-    JSON.stringify(ec, null, 2) +
+    JSON.stringify([ecTheme(house['bbb-dark'])], null, 2) +
     ';\n'
 );
 

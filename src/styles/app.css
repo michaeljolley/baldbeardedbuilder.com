@@ -730,7 +730,14 @@ html:not(.js) .themer { display: none; }
 .fitem:hover { background: var(--bg-raised); }
 .fitem h3 { font-size: 1.125rem; line-height: 1.25; margin-bottom: .35rem; }
 .fitem:hover h3 { color: var(--accent); }
-.fitem p { margin: 0; color: var(--fg-dim); font-size: .9375rem; }
+.fitem p {
+  margin: 0; color: var(--fg-dim); font-size: .9375rem;
+  /* The mockup was drawn with hand written two line descriptions. Real summaries run to
+     four hundred characters, which turns a scannable list into a wall. Clamp to two
+     lines so every row is the same shape and the eye can move down the column. */
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  overflow: hidden;
+}
 .fitem .kind {
   font-family: var(--mono); font-size: .6875rem;
   letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
@@ -746,6 +753,12 @@ html:not(.js) .themer { display: none; }
   border: 1px solid var(--line); background: var(--bg-inset);
   display: grid; place-items: center; position: relative;
   margin-bottom: 1.75rem;
+  overflow: hidden;
+}
+/* The mockup drew a play button placeholder rather than a real player, so there was
+   never a rule for the thing that actually goes in here. */
+.embed iframe {
+  width: 100%; height: 100%; border: 0; display: block;
 }
 .embed .play {
   width: 4.25rem; height: 3rem; border-radius: 8px;

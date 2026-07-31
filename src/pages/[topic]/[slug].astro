@@ -1,0 +1,111 @@
+---
+/*
+  Article and video detail, both served from the topic first URL.
+
+  Videos render the embed, the stats and the link out. Decision 22 says no transcript no
+  page, and transcripts are phase seven work, so until then a video page carries a clear
+  pointer to YouTube rather than pretending to be a substitute for it.
+*/
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { topicBySlug } from '../../config/site';
+import { allItems, type Item } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const [items, blog] = await Promise.all([allItems(), getCollection('blog')]);
+  const posts = new Map(blog.map((p) => [p.id, p]));
+  return items.map((item) => ({
+    params: { topic: item.topic, slug: item.slug },
+    props: { item, post: item.kind === 'article' ? posts.get(item.key.slice(5)) : undefined }
+  }));
+}
+
+type Post = Awaited<ReturnType<typeof getCollection<'blog'>>>[number];
+const { item, post } = Astro.props as { item: Item; post?: Post };
+
+const topic = topicBySlug(item.topic)!;
+const Content = post ? (await render(post)).Content : null;
+
+const dateLabel = item.date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+
+const alsoFiled = item.alsoFiled.map((slug) => topicBySlug(slug)).filter(Boolean);
+---
+
+<Base
+  title={item.title}
+  description={item.description || `${item.kind === 'video' ? 'Video' : 'Article'} by Michael Jolley.`}
+  active={item.topic}
+  image={item.thumbnail ?? undefined}
+  noindex={item.draft}
+  canonical={post?.data.canonicalUrl}
+>
+  <main id="main">
+    <div class="shell">
+      <article>
+        <header class="pagehead">
+          <span class="path">
+            <a href={`/${topic.slug}/`}>{topic.slug}</a><span class="sep">/</span><b>{item.slug}</b>
+          </span>
+          <h1>{item.title}</h1>
+          {item.description && <p class="lede">{item.description}</p>}
+          <p class="stat">
+            <time datetime={item.date.toISOString()}>{dateLabel}</time>
+            <span>{item.length}</span>
+            {item.views !== null && <span>{item.views.toLocaleString('en-US')} views</span>}
+          </p>
+        </header>
+
+        {
+          item.kind === 'video' && item.external && (
+            <div class="embed">
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${item.key.slice(7)}`}
+                title={item.title}
+                loading="lazy"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              />
+            </div>
+          )
+        }
+
+        {Content && <div class="prose"><Content /></div>}
+
+        {
+          item.kind === 'video' && (
+            <div class="note">
+              <p>
+                A written transcript is not up yet. Until it is, the full thing lives on
+                YouTube.
+              </p>
+              <p>
+                <a class="btn" href={item.external!} rel="noopener">
+                  Watch on YouTube
+                </a>
+              </p>
+            </div>
+          )
+        }
+
+        {
+          alsoFiled.length > 0 && (
+            <div class="below">
+              <div class="rule"><h2>Also filed under</h2></div>
+              <div class="chips">
+                {alsoFiled.map((t) => (
+                  <a class="chip" href={`/${t!.slug}/`}>
+                    {t!.slug}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )
+        }
+      </article>
+    </div>
+  </main>
+</Base>

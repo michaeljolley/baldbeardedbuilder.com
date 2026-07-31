@@ -4,3 +4,5 @@
 src/styles/themes.css        text eol=lf
 src/lib/themes.generated.ts  text eol=lf
 src/lib/ec-themes.generated.mjs text eol=lf
+src/config/taxonomy.json     text eol=lf
+public/_redirects            text eol=lf

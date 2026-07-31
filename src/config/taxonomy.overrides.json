@@ -1,0 +1,137 @@
+{
+  "$comment": "AI review pass over the keyword generated taxonomy. Anything listed here wins over the keyword score and is written into taxonomy.json with source set to ai. A human edit in taxonomy.json with reviewed set to true beats both. Only corrections live here, so an item absent from this file means the keyword pass got it right.",
+  "overrides": {
+    "blog:ef-core-audit-logging-with-interceptors-that-do-not-clutter-your-dbcontext": {
+      "primaryTopic": "data",
+      "alsoFiled": ["csharp"]
+    },
+    "blog:ef-core-query-performance-tips-for-everyone": {
+      "primaryTopic": "data",
+      "alsoFiled": []
+    },
+    "blog:repository-pattern-vs-dbcontext-in-entity-framework-core": {
+      "primaryTopic": "data",
+      "alsoFiled": ["csharp"]
+    },
+    "blog:unit-of-work-with-entity-framework-core-done-right": {
+      "primaryTopic": "data",
+      "alsoFiled": ["csharp"]
+    },
+    "blog:from-layers-to-slices-how-i-ship-faster-aspnet-core-apis": {
+      "primaryTopic": "aspnetcore",
+      "alsoFiled": ["csharp"]
+    },
+    "blog:how-net-10-speeds-up-api-validation-without-code-changes": {
+      "primaryTopic": "aspnetcore",
+      "alsoFiled": ["csharp"]
+    },
+    "blog:stop-breaking-clocks-in-aspnet-core-with-utc-and-timezoneinfo": {
+      "primaryTopic": "aspnetcore",
+      "alsoFiled": ["csharp"]
+    },
+    "blog:tame-configuration-in-aspnet-core-with-ivalidateoptions": {
+      "primaryTopic": "aspnetcore",
+      "alsoFiled": ["csharp"]
+    },
+    "blog:using-auto-mapper-with-asp-net-core-3": {
+      "primaryTopic": "aspnetcore",
+      "alsoFiled": ["csharp"]
+    },
+    "blog:five-di-anti-patterns-haunting-net-apps-and-how-to-fix-them": {
+      "primaryTopic": "aspnetcore",
+      "alsoFiled": ["csharp"]
+    },
+    "blog:sentiment-analysis-with-opentok-and-azure-face-api": {
+      "primaryTopic": "cloud",
+      "alsoFiled": ["csharp"]
+    },
+    "blog:from-sln-to-slnx-in-minutes-cleaner-diffs-faster-merges": {
+      "primaryTopic": "windows",
+      "alsoFiled": ["csharp"]
+    },
+    "blog:using-apollo-to-query-graph-ql-from-node-js": {
+      "primaryTopic": "dev-life",
+      "alsoFiled": [],
+      "note": "No topic covers Node and GraphQL. Filed under dev-life as the least wrong home. See the topic coverage gap."
+    },
+    "blog:integrating-notion-with-astro-sites": {
+      "primaryTopic": "dev-life",
+      "alsoFiled": [],
+      "note": "No topic covers Astro or front end web. Same gap as the Apollo post."
+    },
+    "blog:choosing-between-blazor-server-or-web-assembly": {
+      "primaryTopic": "blazor",
+      "alsoFiled": ["csharp"]
+    },
+    "blog:cross-platform-nuget-dotnet": {
+      "primaryTopic": "csharp",
+      "alsoFiled": ["dev-life"]
+    },
+    "blog:automating-release-notes-with-git-hub-app-veyor-and-octopus-deploy": {
+      "primaryTopic": "cloud",
+      "alsoFiled": ["dev-life"]
+    },
+    "blog:building-404-pages-that-bring-joy": {
+      "primaryTopic": "dev-life",
+      "alsoFiled": []
+    },
+    "blog:10-visual-studio-code-extensions-you-need-today": {
+      "primaryTopic": "windows",
+      "alsoFiled": []
+    },
+
+    "videos:AFrMhIvvGZU": { "primaryTopic": "blazor", "alsoFiled": ["csharp"] },
+    "videos:CR2Kigxx2rM": { "primaryTopic": "copilot", "alsoFiled": ["csharp"] },
+    "videos:d0Eah9-t9tY": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
+    "videos:jDb8WXFqqFQ": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
+    "videos:Mccqa_Z8-DY": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
+    "videos:Xw66RmohdeU": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
+    "videos:ToFqISWq4is": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
+    "videos:4YcSDHCttLg": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
+    "videos:NZ-4z3J2xy0": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
+    "videos:nIq2YPPm6es": { "primaryTopic": "windows", "alsoFiled": [] },
+    "videos:VWbHiXN3mno": { "primaryTopic": "windows", "alsoFiled": ["dev-life"] },
+    "videos:wUSoZ3Bw_xY": { "primaryTopic": "windows", "alsoFiled": ["dev-life"] },
+    "videos:ku2K9mTMJBU": { "primaryTopic": "windows", "alsoFiled": ["dev-life"] },
+    "videos:s7fK0owVO3s": { "primaryTopic": "windows", "alsoFiled": ["dev-life"] },
+    "videos:Yo4wKXlnLMc": { "primaryTopic": "windows", "alsoFiled": ["cloud"] },
+    "videos:i4jsvC_mzPI": { "primaryTopic": "dev-life", "alsoFiled": ["copilot"] },
+    "videos:MQciYVuS6cM": { "primaryTopic": "dev-life", "alsoFiled": ["copilot"] },
+    "videos:sEZstSgt-vo": { "primaryTopic": "csharp", "alsoFiled": ["dev-life"] },
+    "videos:BKeaojX45w0": { "primaryTopic": "copilot", "alsoFiled": ["csharp"] },
+    "videos:6I7v_mHbRYI": { "primaryTopic": "data", "alsoFiled": [] },
+    "videos:B9C4iK8IGbQ": { "primaryTopic": "data", "alsoFiled": ["csharp"] },
+    "videos:m50iQuELqeQ": { "primaryTopic": "data", "alsoFiled": ["csharp"] },
+    "videos:IZveVNSzrqY": { "primaryTopic": "data", "alsoFiled": ["csharp"] },
+    "videos:eq3z_ZiLraw": { "primaryTopic": "data", "alsoFiled": ["csharp"] },
+    "videos:7fk7jDrtvTs": { "primaryTopic": "data", "alsoFiled": ["csharp"] },
+    "videos:0NUUMMRwUbA": { "primaryTopic": "data", "alsoFiled": ["csharp"] },
+    "videos:922cq8unreM": {
+      "primaryTopic": "csharp",
+      "alsoFiled": [],
+      "note": "Title gives nothing away. Best guess from the surrounding C# run. Worth a human look."
+    },
+    "videos:v-nKgRil02A": {
+      "primaryTopic": "dev-life",
+      "alsoFiled": [],
+      "note": "Reads as a git video from the neighbouring titles. Worth a human look."
+    },
+    "videos:tgEBSuqD4w4": { "primaryTopic": "dev-life", "alsoFiled": [] },
+    "videos:CFKhuEGY8IU": { "primaryTopic": "dev-life", "alsoFiled": [] },
+    "videos:VYKtLWCv0tY": { "primaryTopic": "dev-life", "alsoFiled": [] },
+    "videos:xgyclPKGllQ": { "primaryTopic": "dev-life", "alsoFiled": [] },
+    "videos:_8FeXuoYcqU": { "primaryTopic": "dev-life", "alsoFiled": [] },
+    "videos:JkvYc1u9Fl4": { "primaryTopic": "dev-life", "alsoFiled": [] },
+    "videos:xl004KsPKGE": { "primaryTopic": "dev-life", "alsoFiled": [] },
+    "videos:BGvYjLgo-Uk": { "primaryTopic": "dev-life", "alsoFiled": [] },
+    "videos:70jllnMbGTY": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
+    "videos:cu4CUJAcJ-4": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
+    "videos:tnTzsR1K8Eo": { "primaryTopic": "aspnetcore", "alsoFiled": [] },
+    "videos:q7J050yovuo": { "primaryTopic": "cloud", "alsoFiled": [] },
+    "videos:Fi5bTG7yqsM": {
+      "primaryTopic": "windows",
+      "alsoFiled": [],
+      "note": "TailwindCSS, but the video is about the VS Code extension so the tooling topic fits better than a front end topic that does not exist."
+    }
+  }
+}
