@@ -154,6 +154,17 @@ export const DISASTER_SORTS = [
   { id: 'newest', label: 'Newest' }
 ] as const;
 
+/**
+ * Words a dev disaster slug can never be, because the archive serves its severity and
+ * sort views from those same segments. The submit API checks this before it accepts an
+ * AI written slug, and tests/disasters.test.mjs checks the seed.
+ */
+export const RESERVED_DISASTER_SLUGS = [
+  'all',
+  ...SEVERITIES.map((s) => s.id),
+  ...DISASTER_SORTS.map((s) => s.id)
+] as string[];
+
 export const SITE = {
   name: 'Bald Bearded Builder',
   author: 'Michael Jolley',
@@ -162,7 +173,11 @@ export const SITE = {
   url: 'https://baldbeardedbuilder.com',
   /** The comment avatar and the host badge key off this handle. */
   hostHandle: 'michaeljolley',
-  hostBadgeLabel: 'The bald one'
+  hostBadgeLabel: 'The bald one',
+  /** Shown on the code of conduct. Bump it whenever the rules actually change. */
+  conductUpdated: '2026-02-02',
+  /** Where a report goes when somebody would rather email than use the form. */
+  contactEmail: 'michael@baldbeardedbuilder.com'
 } as const;
 
 export const EXTERNAL = {
@@ -181,10 +196,14 @@ export const EXTERNAL = {
  * Entries are `collection:id` so a video and an article can sit side by side. Order is
  * the display order. Reorder here, not in the submodule.
  *
- * TODO: Michael to confirm the final four. These are real entries picked from the
+ * The first entry gets the wide card, whose thumbnail slot is drawn around a running
+ * time, so it should stay a video. Five entries fill the grid.
+ *
+ * TODO: Michael to confirm the final five. These are real entries picked from the
  * catalogue so the rail renders against real content until he chooses.
  */
 export const START_HERE: string[] = [
+  'videos:HAybBV-A1Gg',
   'blog:stop-parallelizing-everything-a-practical-guide-to-parallelforeach',
   'blog:repository-pattern-vs-dbcontext-in-entity-framework-core',
   'blog:tame-configuration-in-aspnet-core-with-ivalidateoptions',

@@ -1,0 +1,67 @@
+---
+/*
+  A YouTube facade rather than the player itself.
+
+  The embed pulls roughly 870 KB of YouTube script onto the page, on a site whose whole
+  performance decision is that a content page ships almost nothing. It also hands the
+  reader to YouTube before they have asked for anything. So the page renders a still and a
+  play control, and the real player only arrives when someone actually wants to watch.
+
+  The control is an anchor, not a button, so the page still works with no JavaScript: the
+  click goes to YouTube instead of swapping a player in. That is a worse experience and a
+  working one, which is the right way round.
+
+  The still is hqdefault rather than maxresdefault because hqdefault exists for every
+  video ever uploaded and maxresdefault does not, and a missing still on an old video is
+  a visible hole. It is 4:3 with letterbox bars baked in, which object-fit crops back off.
+*/
+interface Props {
+  /** YouTube video id. */
+  id: string;
+  /** Video title, used for the still's alt text and the player's frame title. */
+  title: string;
+  /** Watch URL, used as the no JavaScript fallback. */
+  href: string;
+}
+
+const { id, title, href } = Astro.props;
+---
+
+<div class="embed" data-embed data-video={id} data-title={title}>
+  <img
+    class="embed-still"
+    src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
+    alt=""
+    width="480"
+    height="360"
+    loading="lazy"
+    decoding="async"
+  />
+  <a class="play" href={href} rel="noopener">
+    <span aria-hidden="true">&#9654;</span>
+    <span class="vh">Play {title} on this page</span>
+  </a>
+</div>
+<p class="embed-note">Loads from YouTube when you press play</p>
+
+<script is:inline>
+  (() => {
+    for (const host of document.querySelectorAll('[data-embed]')) {
+      const link = host.querySelector('.play');
+      if (!link) continue;
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const frame = document.createElement('iframe');
+        frame.src = `https://www.youtube-nocookie.com/embed/${host.dataset.video}?autoplay=1`;
+        frame.title = host.dataset.title;
+        frame.allow =
+          'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        frame.allowFullscreen = true;
+        host.replaceChildren(frame);
+        host.nextElementSibling?.classList.contains('embed-note') &&
+          host.nextElementSibling.remove();
+        frame.focus();
+      });
+    }
+  })();
+</script>

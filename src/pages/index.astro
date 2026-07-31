@@ -1,222 +1,207 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Newsletter from '../components/Newsletter.astro';
-import VideoSection from '../components/VideoSection.astro';
-import BlogSection from '../components/BlogSection.astro';
-import TwitchSection from '../components/TwitchSection.astro';
+/*
+  The front page.
+
+  Two jobs, in this order: hand somebody a story worth reading in the first screen, then
+  prove there is a body of work behind it. The lead is a dev disaster rather than my
+  latest post, because somebody else's worst day is a better cold open than my resume.
+
+  Zero JavaScript. The "Another one" control is a real link to a real prerendered page
+  rather than a rotator, which keeps decision 24 and decision 32 from fighting: it works
+  with scripting off and it has nothing to respect prefers-reduced-motion about.
+*/
 import { getCollection } from 'astro:content';
-import { isOnline } from '../scripts/twitch';
-import { isPostPublished } from '../scripts/publish';
+import Base from '../layouts/Base.astro';
+import Drip from '../components/Drip.astro';
+import { SITE, VISIBLE_TOPICS, SEVERITIES, START_HERE } from '../config/site';
+import { allItems, itemsByKeys, itemsInTopic } from '../lib/content';
+import {
+  allDisasters,
+  sortDisasters,
+  countsBySeverity,
+  problemSummary,
+  disasterCode
+} from '../lib/disasters';
 
-const blogEntries = await getCollection('blog');
-const now = new Date();
-const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-const publishedEntries = blogEntries.filter(entry => isPostPublished(entry.data.pubDate));
-const sortedEntries = publishedEntries.sort((a, b) => 
-  b.data.pubDate.getTime() - a.data.pubDate.getTime()
+const items = (await allItems()).filter((i) => !i.draft);
+const fresh = items.slice(0, 5);
+const starters = await itemsByKeys(START_HERE);
+
+const disasters = allDisasters();
+const lead = disasters[0];
+/*
+  Deterministic per build rather than random per request, because the page is static.
+  Stepping a third of the way through the archive keeps the second pick well away from
+  the lead without needing a random number that would change on every rebuild.
+*/
+const another = disasters[Math.floor(disasters.length / 3)] ?? lead;
+const topProblems = sortDisasters(disasters, 'liked').slice(0, 4);
+const counts = countsBySeverity();
+
+const drips = await getCollection('drips');
+drips.sort((a, b) => (a.data.publishDate < b.data.publishDate ? 1 : -1));
+const latestDrip = drips[0];
+
+const topicCounts = await Promise.all(
+  VISIBLE_TOPICS.map(async (t) => ({ topic: t, n: (await itemsInTopic(t.slug)).length }))
 );
-const latestPost = sortedEntries[0];
-const hasRecentPost = latestPost && latestPost.data.pubDate >= sevenDaysAgo;
 
-const { isLive } = await isOnline();
+const sevClass: Record<string, string> = {
+  error: 'sev-error',
+  warning: 'sev-warn',
+  info: 'sev-info',
+  hint: 'sev-hint'
+};
+const sevLabel = Object.fromEntries(SEVERITIES.map((s) => [s.id, s.label]));
+
+const dripDay = latestDrip
+  ? new Date(latestDrip.data.publishDate).toLocaleDateString('en-US', { weekday: 'short' })
+  : '';
 ---
 
-<Layout title="Bald Bearded Builder | Michael Jolley">
-  <section class="hero">
-    <div class="hero-content">
-      <div class="hero-text">
-        <h1>Michael Jolley</h1>
-        <p class="aka">aka The Bald Bearded Builder</p>
-        <p class="tagline">Bringing smiles to the syntax — because laughter is the best error handler.</p>
-        <div class="hero-cta">
-          {isLive ? (
-            <>
-              <a href={`/blog/${latestPost.id}/`} class="btn btn-muted">Read the Latest</a>
-              <a href="https://youtube.com/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
-              <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-live" target="_blank" rel="noopener noreferrer">Live on Twitch Now</a>
-            </>
-          ) : hasRecentPost ? (
-            <>
-              <a href={`/blog/${latestPost.id}/`} class="btn btn-highlight">Read the Latest</a>
-              <a href="https://youtube.com/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
-              <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on Twitch</a>
-            </>
-          ) : (
-            <>
-              <a href={`/blog/${latestPost.id}/`} class="btn btn-muted">Read the Latest</a>
-              <a href="https://youtube.com/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
-              <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on Twitch</a>
-            </>
-          )}
+<Base title={SITE.name} description={SITE.tagline}>
+  <main id="main">
+    <section class="front shell">
+      <div class="lead">
+        <div class="lead-top">
+          <span class="path">dev-disasters<span class="sep">/</span><b>{disasterCode(lead.id)}</b></span>
+          <span class="spacer"></span>
+          <span class={`sev ${sevClass[lead.severity]}`}>{sevLabel[lead.severity]}</span>
+        </div>
+        <h1>{lead.title}</h1>
+        <p class="excerpt">{lead.line}</p>
+        <div class="acts">
+          <a class="btn primary" href={lead.url}>Read the whole thing</a>
+          <a class="btn" href={another.url}>&#8635; Another one</a>
+          <span class="by">
+            told by {
+              lead.teller ? <a href={`/builders/${lead.teller}/`}>{lead.teller}</a> : 'anonymous'
+            } &middot; {lead.likes.toLocaleString('en-US')} likes &middot; {lead.replies} replies
+          </span>
+        </div>
+
+        <div class="byline">
+          <span class="who">I'm Michael.</span>
+          <p>
+            Twenty years of C# and I still find new ways to embarrass myself. I teach .NET and
+            Windows development the way I learned it, out loud, on camera, mistakes included.
+            <a href="/about/">More about me &rarr;</a>
+          </p>
         </div>
       </div>
-      <div class="hero-image">
-        <img src="https://avatars.githubusercontent.com/u/1228996?v=4" alt="Michael Jolley - Bald Bearded Builder" />
+
+      <div class="side">
+        <div class="rule">
+          <h2>Fresh off the workbench</h2>
+          <a class="more" href="/csharp/">All &rarr;</a>
+        </div>
+        {
+          fresh.map((i) => (
+            <a class="row" href={i.url}>
+              <h3>{i.title}</h3>
+              <span class="meta">
+                <span class="k">{i.kind === 'video' ? 'Video' : 'Article'}</span> {i.length}
+              </span>
+            </a>
+          ))
+        }
+        {
+          latestDrip && (
+            <a class="row" href="https://dotnetdrip.com">
+              <h3>The links that were worth reading this week</h3>
+              <span class="meta">
+                <span class="k">Drip</span> {dripDay}
+              </span>
+            </a>
+          )
+        }
       </div>
+    </section>
+
+    <div class="below shell">
+      <div class="rule major">
+        <h2>Start here</h2>
+        <a class="more" href="/csharp/">Everything I've made &rarr;</a>
+      </div>
+      <p class="lead-in">
+        New around here? These are the ones people keep sending to their coworkers.
+      </p>
+      <div class="grid">
+        {
+          starters.map((i, n) =>
+            n === 0 ? (
+              <a class="card wide" href={i.url}>
+                <span class="thumb">{i.length}</span>
+                <span class="body">
+                  <h3>{i.title}</h3>
+                  {i.description && <p>{i.description}</p>}
+                  <span class="foot">
+                    <span class="k">{i.kind === 'video' ? 'Video' : 'Article'}</span> {i.topic}{' '}
+                    &middot; {i.length}
+                  </span>
+                </span>
+              </a>
+            ) : (
+              <a class="card" href={i.url}>
+                <h3>{i.title}</h3>
+                {i.description && <p>{i.description}</p>}
+                <span class="foot">
+                  <span class="k">{i.kind === 'video' ? 'Video' : 'Article'}</span> {i.topic}{' '}
+                  &middot; {i.length}
+                </span>
+              </a>
+            )
+          )
+        }
+      </div>
+
+      <div class="rule major"><h2>Learning paths</h2></div>
+      <p class="lead-in">
+        Pick a rabbit hole. Each one is everything I've made on that topic, in the order
+        that actually makes sense to read it.
+      </p>
+      <div class="chips">
+        {
+          topicCounts
+            .filter((t) => t.n > 0)
+            .map((t) => (
+              <a class="chip" href={`/${t.topic.slug}/`}>
+                {t.topic.label} <span class="n">{t.n}</span>
+              </a>
+            ))
+        }
+      </div>
+
+      <div class="rule major">
+        <h2>Dev disasters</h2>
+        <a class="more" href="/dev-disasters/">All {counts.all} &rarr;</a>
+      </div>
+      <p class="lead-in">Other people's worst days, filed by how bad it got.</p>
+      <div class="panel">
+        <div class="panel-bar">
+          <span>Problems</span>
+          <span class="count">{problemSummary()}</span>
+        </div>
+        {
+          topProblems.map((d) => (
+            <a class="prow" href={d.url}>
+              <span class={`sev ${sevClass[d.severity]}`}>{sevLabel[d.severity]}</span>
+              <span class="msg">{d.line}</span>
+              <span class="loc">
+                #{disasterCode(d.id)} &middot; &#9825; {d.likes.toLocaleString('en-US')}
+              </span>
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="story-cta">
+        <a class="btn primary" href="/submit/">Tell me yours</a>
+        <span class="fine">Post anonymously if you'd rather. Most people do.</span>
+      </div>
+
+      <div class="rule major" id="drip"><h2>The .NET Drip</h2></div>
+      <Drip uid="home" issues={drips.length} />
     </div>
-  </section>
-
-  <BlogSection />
-
-  <TwitchSection />
-
-  <VideoSection />
-
-  <Newsletter />
-</Layout>
-
-<style>
-  .hero {
-    padding: 4rem 2rem;
-  }
-
-  .hero-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: center;
-  }
-
-  .hero-text h1 {
-    font-size: 3.5rem;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, #9333ea, #3b82f6, #ec4899);
-    background-size: 300% 300%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: gradient-shift 8s ease infinite;
-  }
-
-  .aka {
-    font-size: 1.25rem;
-    opacity: 0.7;
-    margin-bottom: 1rem;
-  }
-
-  .tagline {
-    font-size: 1.5rem;
-    line-height: 1.5;
-    margin-bottom: 2rem;
-  }
-
-  .hero-cta {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .btn-muted {
-    background: rgba(107, 114, 128, 0.25);
-    color: #1f2937;
-  }
-
-  .btn-muted:hover {
-    background: rgba(107, 114, 128, 0.35);
-  }
-
-  :global(html.dark) .btn-muted {
-    background: rgba(156, 163, 175, 0.2);
-    color: #e5e7eb;
-  }
-
-  :global(html.dark) .btn-muted:hover {
-    background: rgba(156, 163, 175, 0.3);
-  }
-
-  .btn-highlight {
-    background: linear-gradient(135deg, #9333ea, #3b82f6);
-    color: white;
-    box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4);
-    animation: wiggle 10s ease-in-out infinite;
-  }
-
-  .btn-highlight:hover {
-    box-shadow: 0 6px 30px rgba(147, 51, 234, 0.6);
-  }
-
-  .btn-live {
-    position: relative;
-    background: #1e1b4b;
-    color: white;
-    border: none;
-    border-radius: 9999px;
-    animation: wiggle 10s ease-in-out infinite;
-    z-index: 0;
-    overflow: hidden;
-    font-weight: 600;
-  }
-
-  .btn-live::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 150%;
-    height: 500%;
-    background: conic-gradient(from 0deg, #9333ea, #3b82f6, #ec4899, #9333ea);
-    animation: border-rotate 2s linear infinite;
-    z-index: -2;
-  }
-
-  .btn-live::after {
-    content: '';
-    position: absolute;
-    inset: 3px;
-    background: #1e1b4b;
-    border-radius: 9999px;
-    z-index: -1;
-  }
-
-  .btn-live:hover {
-    box-shadow: 0 0 25px rgba(147, 51, 234, 0.6), 0 0 50px rgba(147, 51, 234, 0.3);
-  }
-
-  .btn-live:hover::after {
-    background: #2e2a5e;
-  }
-
-  @keyframes border-rotate {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg); }
-  }
-
-  @keyframes wiggle {
-    0% { transform: rotate(0deg) translateY(0); }
-    1% { transform: rotate(-1.5deg) translateY(-2px); }
-    2% { transform: rotate(1.5deg) translateY(-2px); }
-    3% { transform: rotate(-1deg) translateY(-1px); }
-    4% { transform: rotate(1deg) translateY(-1px); }
-    5% { transform: rotate(-0.5deg) translateY(0); }
-    6%, 100% { transform: rotate(0deg) translateY(0); }
-  }
-
-  .hero-image img {
-    width: 100%;
-    max-width: 400px;
-    border-radius: 50%;
-    border: 4px solid rgba(147, 51, 234, 0.3);
-    box-shadow: 0 20px 60px rgba(147, 51, 234, 0.2);
-  }
-
-  @media (max-width: 900px) {
-    .hero-content {
-      grid-template-columns: 1fr;
-      text-align: center;
-    }
-
-    .hero-image {
-      order: -1;
-    }
-
-    .hero-image img {
-      max-width: 250px;
-    }
-
-    .hero-cta {
-      justify-content: center;
-    }
-  }
-</style>
+  </main>
+</Base>

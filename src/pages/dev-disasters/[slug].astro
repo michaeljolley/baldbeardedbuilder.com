@@ -1,0 +1,107 @@
+---
+/*
+  One dev disaster.
+
+  The comment thread and the like button are Preact islands that land in phase five, so
+  this page is currently the story and its counts and nothing that pretends to be
+  interactive. A dead control is worse than an absent one.
+*/
+import Base from '../../layouts/Base.astro';
+import { SEVERITIES } from '../../config/site';
+import { allDisasters, disasterBySlug, disasterCode, countsBySeverity } from '../../lib/disasters';
+
+export function getStaticPaths() {
+  return allDisasters().map((d) => ({ params: { slug: d.slug } }));
+}
+
+const { slug } = Astro.params;
+const d = disasterBySlug(slug!);
+if (!d) throw new Error(`No dev disaster with slug "${slug}"`);
+
+const counts = countsBySeverity();
+
+const sevClass: Record<string, string> = {
+  error: 'sev-error',
+  warning: 'sev-warn',
+  info: 'sev-info',
+  hint: 'sev-hint'
+};
+const sevLabel = Object.fromEntries(SEVERITIES.map((s) => [s.id, s.label]));
+
+const filed = d.date.toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric'
+});
+---
+
+<Base title={d.title} active="dd" description={d.line}>
+  <main id="main">
+    <div class="shell read">
+      <aside class="rail">
+        <dl>
+          <div>
+            <dt>Severity</dt>
+            <dd><span class={`sev ${sevClass[d.severity]}`}>{sevLabel[d.severity]}</span></dd>
+          </div>
+          <div>
+            <dt>Told by</dt>
+            <dd>{d.teller ? <a href={`/builders/${d.teller}/`}>{d.teller}</a> : 'anonymous'}</dd>
+          </div>
+          <div>
+            <dt>Filed</dt>
+            <dd>{filed}</dd>
+          </div>
+        </dl>
+        <a
+          class="fine"
+          href={`/report/?type=disaster&target=${encodeURIComponent(d.url)}`}
+        >
+          Report this story
+        </a>
+      </aside>
+
+      {/* One filter per element. See the note in [topic]/[slug].astro. */}
+      <article
+        data-pagefind-body
+        data-pagefind-meta="kind:disaster"
+        data-pagefind-filter="kind:disaster"
+      >
+        <header class="storyhead">
+          <span class="path" data-pagefind-filter={`severity:${d.severity}`}
+            >dev-disasters<span class="sep">/</span><b>{disasterCode(d.id)}</b></span
+          >
+          <h1>{d.title}</h1>
+          <p class="lede">{d.line}</p>
+        </header>
+
+        <div class="prose dd-body">
+          {d.body.map((p) => <p>{p}</p>)}
+        </div>
+
+        <p class="notice dd-notice">
+          Names and the company have been scrubbed. Stories are lightly edited for length
+          and clarity, never for content. If something here is yours and you want it taken
+          down, email me and it's gone.
+        </p>
+
+        <div class="hero-actions dd-acts">
+          <a class="btn primary" href="/submit/">Tell me yours</a>
+          <a class="btn" href="/dev-disasters/">All {counts.all} dev disasters &rarr;</a>
+        </div>
+      </article>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .dd-body {
+    margin-top: 2rem;
+  }
+  .dd-notice {
+    margin-top: 2.5rem;
+  }
+  .dd-acts {
+    margin-top: 2rem;
+  }
+</style>

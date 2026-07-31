@@ -8,6 +8,7 @@
 */
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
 import { topicBySlug } from '../../config/site';
 import { allItems, type Item } from '../../lib/content';
 
@@ -45,9 +46,18 @@ const alsoFiled = item.alsoFiled.map((slug) => topicBySlug(slug)).filter(Boolean
 >
   <main id="main">
     <div class="shell">
-      <article>
+      {/*
+        One filter per element. Pagefind reads the whole attribute value as a single
+        "name:value" pair, so putting two pairs in one attribute silently produces one
+        filter named topic whose values are strings like "csharp, kind:video".
+      */}
+      <article
+        data-pagefind-body
+        data-pagefind-meta={`kind:${item.kind}`}
+        data-pagefind-filter={`topic:${item.topic}`}
+      >
         <header class="pagehead">
-          <span class="path">
+          <span class="path" data-pagefind-filter={`kind:${item.kind}`}>
             <a href={`/${topic.slug}/`}>{topic.slug}</a><span class="sep">/</span><b>{item.slug}</b>
           </span>
           <h1>{item.title}</h1>
@@ -61,15 +71,7 @@ const alsoFiled = item.alsoFiled.map((slug) => topicBySlug(slug)).filter(Boolean
 
         {
           item.kind === 'video' && item.external && (
-            <div class="embed">
-              <iframe
-                src={`https://www.youtube-nocookie.com/embed/${item.key.slice(7)}`}
-                title={item.title}
-                loading="lazy"
-                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              />
-            </div>
+            <VideoEmbed id={item.key.slice(7)} title={item.title} href={item.external} />
           )
         }
 

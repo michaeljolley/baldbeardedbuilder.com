@@ -4,6 +4,10 @@ dist/
 # generated types
 .astro/
 
+# Copied out of Fontsource by scripts/gen-fonts.mjs on every build. Fontsource is the
+# source of truth, so a committed copy could only ever drift away from it.
+public/fonts/
+
 # dependencies
 node_modules/
 

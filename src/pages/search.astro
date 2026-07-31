@@ -1,0 +1,127 @@
+---
+/*
+  Search.
+
+  Pagefind builds a static index over dist after the Astro build, so this is a real
+  search with no server and no third party. The Component UI ships as web components,
+  which is why the script is a plain module tag rather than something Vite bundles. It is
+  also the accessible one. The older PagefindUI class is deprecated as of Pagefind 1.5.
+
+  The UI is the only thing on this site that genuinely cannot work without JavaScript,
+  so it says so in a noscript rather than sitting there as an empty box.
+
+  The mockups never drew a search page, so this borrows the reading layout. The whole
+  component set is repainted through its own --pf-* variables, all mapped onto site
+  tokens, so it follows the theme picker like everything else.
+*/
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Search"
+  description="Search every article, video and dev disaster on the site."
+  noindex={true}
+>
+  <link slot="head" rel="stylesheet" href="/pagefind/pagefind-component-ui.css" />
+  <script slot="head" is:inline type="module" src="/pagefind/pagefind-component-ui.js"></script>
+
+  <main id="main">
+    <div class="shell read">
+      <aside class="rail">
+        <dl>
+          <div><dt>Covers</dt><dd>Articles, videos, dev disasters</dd></div>
+          <div><dt>Runs</dt><dd>In your browser</dd></div>
+          <div><dt>Sends your query</dt><dd>Nowhere</dd></div>
+        </dl>
+        <span class="fine">No tracking, no third party, no autocomplete calling home.</span>
+      </aside>
+
+      <article>
+        <header class="storyhead">
+          <span class="path">search</span>
+          <h1>Find the one where <span class="squiggle"><span>something broke.</span></span></h1>
+          <p class="lede">
+            The index is a static file your browser downloads once, so nothing you type
+            here leaves the page.
+          </p>
+        </header>
+
+        <div class="search-slot">
+          <noscript>
+            <p class="notice">
+              Search needs JavaScript, because the index is queried in your browser rather
+              than on a server. Everything else on this site works without it. If you'd
+              rather browse, start from <a href="/">the front page</a> or pick a topic in
+              the nav.
+            </p>
+          </noscript>
+
+          <pagefind-input instance="bbb"></pagefind-input>
+          <div class="search-meta">
+            <pagefind-summary instance="bbb" default-message="Type to search."
+            ></pagefind-summary>
+          </div>
+          {/*
+            The filter pane rather than the filter dropdown. The dropdown puts
+            role="combobox" on its trigger button and then names it with the text inside
+            the button, and a combobox does not take its name from its content, so the
+            control ends up with no accessible name at all. The pane is a details element
+            wrapping a real fieldset of checkboxes, which needs no rescuing.
+          */}
+          <pagefind-filter-pane instance="bbb" open="true"></pagefind-filter-pane>
+          <pagefind-results instance="bbb"></pagefind-results>
+          <pagefind-config instance="bbb"></pagefind-config>
+        </div>
+      </article>
+    </div>
+  </main>
+</Base>
+
+<style is:global>
+  .search-slot {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: 1.25rem;
+
+    --pf-font: var(--body);
+    --pf-background: var(--bg-raised);
+    --pf-text: var(--fg);
+    --pf-text-secondary: var(--fg-dim);
+    --pf-text-muted: var(--fg-dim);
+    --pf-border: var(--line);
+    --pf-border-focus: var(--accent);
+    --pf-border-radius: var(--r);
+    --pf-outline-focus: var(--accent);
+    --pf-outline-width: 2px;
+    --pf-outline-offset: 1px;
+    --pf-hover: var(--bg-inset);
+    --pf-mark: var(--accent);
+    --pf-skeleton: var(--bg-inset);
+    --pf-skeleton-shine: var(--line);
+    --pf-error-bg: var(--bg-inset);
+    --pf-error-border: var(--line);
+    --pf-error-text: var(--fg);
+    --pf-error-text-secondary: var(--fg-dim);
+    /* The design language does not use drop shadows anywhere else. */
+    --pf-shadow-sm: none;
+    --pf-shadow-md: none;
+    --pf-shadow-lg: none;
+    --pf-scroll-shadow: none;
+  }
+
+  .search-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* Web components are unstyled until their bundle lands, which reads as a broken page. */
+  pagefind-input:not(:defined),
+  pagefind-summary:not(:defined),
+  pagefind-filter-pane:not(:defined),
+  pagefind-results:not(:defined) {
+    visibility: hidden;
+  }
+</style>

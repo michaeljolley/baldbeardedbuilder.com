@@ -1,0 +1,127 @@
+---
+/*
+  Tell me your dev disaster.
+
+  The form posts to /api/disasters/, which lands in phase five along with sign in. It is
+  a real form with real fields rather than a script driven one, so the no JavaScript path
+  is the only path and there is nothing to degrade.
+
+  The mockup's rail said "TITLE: I'll write it" and the notice said "I write a title".
+  Decision 25 says the title and slug are generated on submit and editable afterwards, so
+  the copy here says that instead. A public promise the system will not keep is worse
+  than a slightly less charming sentence.
+
+  The anonymity control is a checkbox, not a button with aria-checked. A button needs
+  script to change state, and this page is not allowed to need script.
+*/
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Tell me your Dev disaster"
+  active="dd"
+  description="Somewhere in your git history is a commit you still think about. Write it down."
+>
+  <main id="main">
+    <div class="shell read">
+      <aside class="rail">
+        <dl>
+          <div><dt>Sign in</dt><dd>GitHub</dd></div>
+          <div><dt>Review time</dt><dd>Usually a day</dd></div>
+          <div><dt>Title</dt><dd>Drafted for you</dd></div>
+          <div><dt>Length</dt><dd>Whatever it takes</dd></div>
+        </dl>
+        <span class="fine">Nothing publishes until I've read it.</span>
+      </aside>
+
+      <article>
+        <header class="storyhead">
+          <span class="path">dev-disasters<span class="sep">/</span><b>new</b></span>
+          <h1>What's the one you <span class="squiggle"><span>still think about?</span></span></h1>
+          <p class="lede">
+            No form fields to fight with. No severity to pick. Just tell it the way you'd
+            tell it to somebody at a bar who also writes code.
+          </p>
+        </header>
+
+        <form class="form submit-form" method="post" action="/api/disasters/">
+          <div class="field">
+            <label for="story">The story</label>
+            <p class="help">
+              Start wherever it starts. What broke, what you tried, what actually fixed it,
+              and what you do differently now. Markdown works, and code fences are welcome
+              if the query is the punchline.
+            </p>
+            <textarea
+              id="story"
+              name="story"
+              rows="14"
+              required
+              placeholder="It was a Tuesday and I was the guy who knew the database..."></textarea>
+            <p class="help count">No minimum, no maximum</p>
+          </div>
+
+          <div class="switch-row">
+            <input class="switch" type="checkbox" id="anon" name="anonymous" checked />
+            <div>
+              <label class="switch-label" for="anon">Publish anonymously</label>
+              <span class="switch-help">
+                Your name and handle stay off the page. You still get the badge, and I can
+                still email you if the story becomes a video.
+              </span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Before you send it <span class="opt">plain English, no lawyers</span></label>
+            <label class="consent">
+              <input type="checkbox" name="consent_scrubbed" required />
+              <span>
+                This happened to me, or I was there for it. I've taken out anything that
+                would identify my employer, my coworkers, or a customer. If I missed
+                something, take it out for me.
+              </span>
+            </label>
+            <label class="consent">
+              <input type="checkbox" name="consent_publish" required />
+              <span>
+                You can publish it here, edit it for length and clarity but never for
+                meaning, and talk about it in a video. I keep the right to ask you to take
+                it down, and you'll do it.
+              </span>
+            </label>
+          </div>
+
+          <p class="notice">
+            Here's what happens next. It lands in a queue only I can see, with a title and
+            a web address drafted for it automatically. I read it, fix the title if the
+            machine got it wrong, check it for anything that identifies somebody, and file
+            it under a severity. You get an email when it goes live, and another one if it
+            turns into a video. If I decide not to run it, you get that email too, with the
+            reason.
+          </p>
+
+          <div class="form-foot">
+            <button class="btn primary" type="submit">Send it in</button>
+            <span class="fine">You can edit it until I publish it.</span>
+          </div>
+
+          <p class="fine submit-fine">
+            The long version lives in the <a href="/terms/">submission terms</a>. It says
+            the same thing with more commas. The <a href="/conduct/">code of conduct</a>
+            applies here too.
+          </p>
+        </form>
+      </article>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .submit-form {
+    margin-top: 2.5rem;
+  }
+  .submit-fine {
+    margin-top: -0.5rem;
+  }
+</style>

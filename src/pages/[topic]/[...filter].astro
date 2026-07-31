@@ -91,6 +91,10 @@ const title = filter ? `${topic.title}, ${filter}` : topic.title;
       {
         shown.length > 0 ? (
           <div class="feed">
+            <h2 class="vh">
+              {filter === 'articles' ? 'Articles' : filter === 'videos' ? 'Videos' : 'Everything'}
+              {' '}filed under {topic.slug}
+            </h2>
             {shown.map((item) => (
               <FeedItem item={item} />
             ))}

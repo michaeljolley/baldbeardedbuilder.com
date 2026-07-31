@@ -1,0 +1,277 @@
+{
+  "_note": "Seed dev disasters. These are placeholder stories carried over from the design mockups so the archive, the wall and the detail template render against real shaped data. Real submissions live in Supabase and arrive through the build hook in decision 23. Michael signs off on the launch seed set before cutover, and this file goes away when he does.",
+  "disasters": [
+    {
+      "id": 412,
+      "slug": "the-raccoon-in-the-server-room-was-not-a-metaphor",
+      "severity": "info",
+      "title": "The raccoon in the server room was not a metaphor",
+      "line": "The ticket said intermittent packet loss on rack four. The cause was a raccoon, and so was the fix.",
+      "teller": "dana-codes",
+      "likes": 3088,
+      "replies": 214,
+      "published": "2025-02-11",
+      "body": [
+        "The alerts were textbook. Packet loss on one rack, clean everywhere else, and it moved around enough that three of us spent a day writing very confident theories about a failing switch.",
+        "Facilities found it on the second night. Something had been chewing the run between the top of rack switch and the patch panel, and it had done enough damage to drop frames without ever taking the link down cleanly.",
+        "We replaced the cable and the loss went away. Two weeks later it came back, which is when we learned that the fix is not the cable. The fix is closing the gap in the ceiling tile."
+      ]
+    },
+    {
+      "id": 299,
+      "slug": "i-demoed-to-the-ceo-with-the-wrong-monitor-shared",
+      "severity": "hint",
+      "title": "I demoed to the CEO with the wrong monitor shared",
+      "line": "He was very polite about the browser tab titled \"how to leave a job without burning bridges\".",
+      "teller": null,
+      "likes": 2640,
+      "replies": 141,
+      "published": "2025-01-28",
+      "body": [
+        "I had rehearsed the demo four times. What I had not rehearsed was picking the right display out of a list of three in a meeting that started ninety seconds late.",
+        "So the whole leadership team got my left monitor, which had my actual working session on it. Email, a Slack thread about a coworker, and the tab.",
+        "Nobody said anything for the eleven seconds it took me to notice. The CEO waited until the end of the call and then messaged me one line: \"the demo was good.\" I still think about how kind that was."
+      ]
+    },
+    {
+      "id": 702,
+      "slug": "the-intern-deleted-the-resource-group-we-thanked-him-later",
+      "severity": "error",
+      "title": "The intern deleted the resource group. We thanked him later.",
+      "line": "Everything was gone in ninety seconds. What we found out over the next nine hours was that almost none of it had ever been in source control.",
+      "teller": null,
+      "likes": 2431,
+      "replies": 156,
+      "published": "2025-03-04",
+      "body": [
+        "He had been given contributor on the subscription on his second day, which is the first thing that was wrong and the last thing anybody talked about afterwards.",
+        "He was cleaning up a sandbox. The sandbox and production sat next to each other in a list sorted alphabetically, with names that differed by two characters.",
+        "The rebuild took nine hours, and seven of those were archaeology. Function app settings that existed nowhere but the portal. A storage container somebody had created by hand in 2021. A firewall rule with a comment that just said \"do not remove\".",
+        "He did not cause the outage. He revealed it. We wrote that down in the postmortem and we meant it."
+      ]
+    },
+    {
+      "id": 388,
+      "slug": "i-spent-two-days-debugging-a-trailing-space-in-a-config-key",
+      "severity": "hint",
+      "title": "I spent two days debugging a trailing space in a config key",
+      "line": "Two days. The diff, when I finally found it, was one character wide and invisible in every tool I own.",
+      "teller": "sbrennan",
+      "likes": 1977,
+      "replies": 88,
+      "published": "2025-02-02",
+      "body": [
+        "The setting bound to null in one environment and bound correctly in every other one. Same code, same package, same deployment pipeline.",
+        "I diffed the config files. They matched. I diffed them again in a different tool. They still matched. I read the binder source. I wrote a test that proved the binder worked.",
+        "On the second afternoon I piped the key through a hex dump because I had run out of respectable ideas. There it was, one trailing space, pasted in from a wiki page two years earlier.",
+        "Configuration keys are strings and strings have edges. I trim them now, everywhere, and I have never once regretted it."
+      ]
+    },
+    {
+      "id": 281,
+      "slug": "the-backup-job-had-been-failing-silently-since-march",
+      "severity": "info",
+      "title": "The backup job had been failing silently since March",
+      "line": "It emailed a mailbox that got deleted when the guy who set it up left. Six months of green dashboards and zero backups.",
+      "teller": null,
+      "likes": 1845,
+      "replies": 102,
+      "published": "2024-12-19",
+      "body": [
+        "The job reported success to a dashboard and reported failure to an email address. That split is the entire story.",
+        "When the person who owned that mailbox left, the address stopped existing and the bounces went to a queue nobody watched. The dashboard kept showing the last successful run, which was in March, in a font small enough that none of us ever read the date.",
+        "We found out during a restore drill, which is the good ending. The bad ending was available the whole time.",
+        "Now every backup job writes a heartbeat with a timestamp, and something alerts when the timestamp gets old. Not when the job fails. When it stops saying anything at all."
+      ]
+    },
+    {
+      "id": 598,
+      "slug": "a-regex-ate-the-payroll-run",
+      "severity": "error",
+      "title": "A regex ate the payroll run",
+      "line": "One unescaped dot. Eleven hundred people got paid an amount that was technically a number.",
+      "teller": "m-santos",
+      "likes": 1510,
+      "replies": 94,
+      "published": "2025-03-18",
+      "body": [
+        "The pattern was supposed to pull a decimal amount out of a fixed width import. The dot was meant to be a decimal point. The regex read it as any character.",
+        "For most rows that made no difference, which is why it survived review and a staging run. For rows where the amount column butted up against the employee code, it happily swallowed a digit from the wrong field.",
+        "Payroll went out on a Friday. The calls started Monday.",
+        "The fix was one backslash. The process change was bigger: every parser we own now has a test built from real production shaped rows, including the ugly ones nobody wants in the fixtures."
+      ]
+    },
+    {
+      "id": 190,
+      "slug": "my-temporary-console-app-ran-in-production-for-six-years",
+      "severity": "hint",
+      "title": "My \"temporary\" console app ran in production for six years",
+      "line": "I named it temp-fix. It outlived two rewrites, one acquisition, and my entire tenure at the company.",
+      "teller": "chrisd-dev",
+      "likes": 1333,
+      "replies": 67,
+      "published": "2024-11-30",
+      "body": [
+        "It moved a file from one share to another and renamed it. Forty lines. I wrote it on a Thursday to unblock a client while the real integration got built.",
+        "The real integration got built. It did not handle the one case my forty lines handled, so somebody left mine running alongside it.",
+        "Six years later a former colleague messaged me a screenshot of a scheduled task named temp-fix and asked if I knew what it did. I did.",
+        "Nothing is as permanent as a temporary fix that works. Name things like they are going to outlive you, because some of them will."
+      ]
+    },
+    {
+      "id": 41,
+      "slug": "i-ran-the-migration-on-prod-then-i-ran-it-again",
+      "severity": "error",
+      "title": "I ran the migration on prod. Then I ran it again.",
+      "line": "Idempotent is a word I now understand at a cellular level. Four million rows backfilled twice, and two dashboards that finally agreed with each other.",
+      "teller": "chrisd-dev",
+      "likes": 1204,
+      "replies": 87,
+      "published": "2025-03-22",
+      "body": [
+        "I was the person who knew the database, which is how you get handed a deploy window.",
+        "The migration added a column and backfilled it from another table. I had run it on staging four times and it came back clean every time. So at 9pm on a Tuesday I ran it against production and watched it hang.",
+        "I gave it ninety seconds, then hit Ctrl+C and ran it again, because obviously it had not started.",
+        "It had started. It was most of the way through four million rows. What I actually did was kill a transaction halfway, leave the migration table believing it had never run, and then start a second pass over data that was already half converted.",
+        "By 9:40 the reporting team was asking why revenue had doubled. Every backfilled row had been backfilled twice, and the totals were wrong in a way that looked plausible enough that two dashboards agreed with each other.",
+        "We restored from a snapshot and lost forty minutes of writes. My lead asked one question in the postmortem: what would have made it safe to run twice? Every migration I have written since has been idempotent, not because a style guide said so, but because I remember what the reporting channel looked like that night."
+      ]
+    },
+    {
+      "id": 344,
+      "slug": "datetime-now-took-down-a-hospital-scheduling-system",
+      "severity": "warning",
+      "title": "DateTime.Now took down a hospital scheduling system",
+      "line": "Every appointment moved by an hour on a Sunday morning in March. The nurses noticed before the monitoring did.",
+      "teller": "rtorres",
+      "likes": 1102,
+      "replies": 73,
+      "published": "2025-03-10",
+      "body": [
+        "Appointments were stored as local time. Reminders were calculated in local time. Nothing anywhere carried an offset, because the whole system ran in one building in one time zone and had done for a decade.",
+        "Then daylight saving arrived and every stored time meant something different than it had the night before. Not shifted consistently. Shifted depending on whether the calculation ran before or after two in the morning.",
+        "The monitoring was green the entire time. Every service was up. Every query returned. The data was just wrong.",
+        "Store instants. Store the zone the human meant separately if you need to show it back to them. Local time is a display format, not a storage format, and a hospital is a bad place to learn that."
+      ]
+    },
+    {
+      "id": 244,
+      "slug": "a-rounding-error-paid-one-customer-1-4-million",
+      "severity": "info",
+      "title": "A rounding error paid one customer $1.4 million",
+      "line": "Banker's rounding is a real thing with a real name, and I learned both of them on a Saturday.",
+      "teller": "a-okoro",
+      "likes": 966,
+      "replies": 44,
+      "published": "2025-01-14",
+      "body": [
+        "A rebate calculation ran over several million line items and rounded at every step instead of once at the end.",
+        "Half a cent, rounded the way the framework rounds by default rather than the way the contract said, multiplied by a customer large enough that the difference stopped being funny.",
+        "Finance caught it before it left the building, which is the only reason this is a story instead of a lawsuit.",
+        "Two things came out of it. Money is a decimal, never a double. And rounding is a business rule with a name and a spec, not a thing you let a language pick for you."
+      ]
+    },
+    {
+      "id": 776,
+      "slug": "our-load-test-ran-against-production-for-eleven-minutes",
+      "severity": "warning",
+      "title": "Our load test ran against production for eleven minutes",
+      "line": "The staging connection string was right there in the config. The one we shipped read an environment variable nobody had touched since 2021.",
+      "teller": null,
+      "likes": 892,
+      "replies": 61,
+      "published": "2025-04-02",
+      "body": [
+        "The load test harness had a config file with a staging connection string in it, checked in, obvious, correct.",
+        "It also had an environment variable override, added years earlier for a one off, still set on the build agent, pointing at production.",
+        "Eleven minutes of synthetic traffic later, a queue backed up far enough that real customers started seeing timeouts, and somebody finally read the target host in the log output.",
+        "Nothing was corrupted. We got extremely lucky. The change we made was not to the config, it was to the harness: it now refuses to start if the target host is not on an allow list."
+      ]
+    },
+    {
+      "id": 176,
+      "slug": "i-opened-a-pr-titled-fix-that-changed-412-files",
+      "severity": "hint",
+      "title": "I opened a PR titled \"fix\" that changed 412 files",
+      "line": "My editor had been quietly reformatting on save for a month. The one real change was on line 8,214.",
+      "teller": null,
+      "likes": 840,
+      "replies": 39,
+      "published": "2024-10-08",
+      "body": [
+        "A format on save setting got turned on by an extension update, and my editor started applying a slightly different style than the repo had been using.",
+        "For a month I only touched a handful of files at a time, so the noise looked like normal churn. Then I fixed a bug in a file that imported half the codebase, and every file I had opened while investigating went along for the ride.",
+        "Nobody could review it. One reviewer approved it anyway, which is its own small horror story.",
+        "The repo has a format check in CI now and a committed editor config, so the tool and the pipeline agree. Formatting arguments belong in a config file, not in a diff."
+      ]
+    },
+    {
+      "id": 655,
+      "slug": "our-retry-policy-retried-the-delete",
+      "severity": "warning",
+      "title": "Our retry policy retried the delete",
+      "line": "Three attempts, exponential backoff, and a delete that had been succeeding all along. We removed the same records four times.",
+      "teller": "k-nakamura",
+      "likes": 774,
+      "replies": 52,
+      "published": "2025-02-24",
+      "body": [
+        "The downstream service did the work and then timed out writing the response. From our side that looks identical to never having run at all.",
+        "So the policy retried. Three times, politely, with backoff, deleting a slightly different set of rows each time because the underlying query was not pinned to a snapshot.",
+        "Retries are only safe on operations that are safe to repeat. We had put a general purpose policy in front of an operation that was not.",
+        "Now anything that mutates carries an idempotency key and the handler checks it first. The retry still happens. It just stops being a second delete."
+      ]
+    },
+    {
+      "id": 843,
+      "slug": "its-always-dns-except-the-one-time-it-was-a-leap-second",
+      "severity": "warning",
+      "title": "It's always DNS. Except the one time it was a leap second.",
+      "line": "We spent six hours proving it was DNS. It was not DNS. It has never been so satisfying to be so completely wrong.",
+      "teller": "jenwrites",
+      "likes": 641,
+      "replies": 38,
+      "published": "2025-04-09",
+      "body": [
+        "Nodes started dropping out of the cluster in a pattern that looked exactly like resolution failures. So we did what everybody does and went after DNS with both hands.",
+        "Six hours of packet captures, resolver configs, and one increasingly heated argument about caching later, we had proved conclusively that DNS was fine.",
+        "The clocks had stepped backwards during a leap second smear that two of our hosts handled differently from the rest. Health checks with a monotonic assumption started measuring negative durations and marking things unhealthy.",
+        "The lesson is not that it is never DNS. The lesson is that six hours of confirming a hypothesis is six hours you did not spend trying to disprove it."
+      ]
+    },
+    {
+      "id": 361,
+      "slug": "our-cache-warmed-itself-into-an-outage-every-morning-at-6-02",
+      "severity": "info",
+      "title": "Our cache warmed itself into an outage every morning at 6:02",
+      "line": "The warmer was scheduled for 6:00. It took two minutes to bring the site down, every day, for five weeks.",
+      "teller": null,
+      "likes": 588,
+      "replies": 31,
+      "published": "2024-09-16",
+      "body": [
+        "The cache warmer ran every morning at six and fetched every product page so the first real visitor got a warm response.",
+        "It fetched them all at once. Against the same origin the real visitors use. With no concurrency limit, because when it was written the catalogue had two hundred items and now it had ninety thousand.",
+        "For five weeks the site fell over for about four minutes every morning, and because it recovered on its own before anybody on call finished reading the page, it kept getting written off as a blip.",
+        "A warmer that takes the thing down is not a warmer. It is a load test on a schedule."
+      ]
+    },
+    {
+      "id": 533,
+      "slug": "we-shipped-a-feature-flag-that-defaulted-to-on",
+      "severity": "warning",
+      "title": "We shipped a feature flag that defaulted to on",
+      "line": "The flag existed so we could turn it on carefully. It arrived on. There was nothing left to turn.",
+      "teller": null,
+      "likes": 410,
+      "replies": 27,
+      "published": "2024-08-21",
+      "body": [
+        "The flag was added so the rewrite could go out dark and get enabled for one percent of traffic on a Tuesday morning with everybody watching.",
+        "The default in code was true. The flag service had no value for it yet, so the code fell back to the default, which is exactly what the code was written to do.",
+        "It went live to everyone at deploy time on a Friday afternoon. It mostly worked, which somehow made it worse, because it took two hours to notice.",
+        "A kill switch that defaults to on is not a kill switch. New flags default to off, and the deploy fails if the flag service does not already know about them."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+/*
+  Performance, best practices and SEO gate.
+
+  axe covers the accessibility decision. This covers the rest of decision 32: a content
+  page ships almost no JavaScript, loads fast on a throttled phone, and is indexable.
+  Lighthouse is run against the built files rather than a dev server, because a dev server
+  measures Vite rather than the site.
+
+  Chrome comes from Playwright, which is already installed for the accessibility gate, so
+  there is no second browser download and no dependence on whatever Chrome a CI image
+  happens to ship.
+*/
+
+import { chromium } from 'playwright';
+import { launch } from 'chrome-launcher';
+import lighthouse from 'lighthouse';
+import { serveDist } from './lib/serve-dist.mjs';
+
+/* A smaller list than the accessibility gate because each run takes several seconds.
+   These four cover the shapes that differ: a heavy homepage, a paginated index, a code
+   heavy article, and a page carrying a third party embed. */
+const PAGES = [
+  ['home', '/'],
+  ['topic index', '/csharp/'],
+  ['article', '/csharp/the-traps-of-nullable-in-c-sharp/'],
+  ['video', '/windows/keep-track-of-vs-code-windows-with-peacock/'],
+  ['disaster archive', '/dev-disasters/']
+];
+
+/* Accessibility is deliberately absent. axe already runs across fifteen archetypes under
+   three themes at two widths, which is a far stronger check than Lighthouse's subset, and
+   having two tools own the same gate means neither of them really does. */
+const THRESHOLDS = {
+  performance: 0.95,
+  'best-practices': 0.95,
+  seo: 1
+};
+
+/* The one number that matters most on a content page, stated separately so a regression
+   reads as "the homepage now ships 40 KB of script" rather than as a score drop. */
+const MAX_SCRIPT_BYTES = {
+  '/': 30_000,
+  '/csharp/': 30_000,
+  '/csharp/the-traps-of-nullable-in-c-sharp/': 30_000,
+  '/windows/keep-track-of-vs-code-windows-with-peacock/': 30_000,
+  '/dev-disasters/': 30_000
+};
+
+const { server, base } = await serveDist();
+
+/* chrome-launcher rather than Playwright's own launcher, because Lighthouse drives Chrome
+   over a devtools port and Playwright drives it over a pipe. Letting chrome-launcher pick
+   the port also avoids fighting whatever else on the machine is already sitting on 9222. */
+const chrome = await launch({
+  chromePath: chromium.executablePath(),
+  chromeFlags: ['--headless=new', '--no-sandbox', '--disable-gpu']
+});
+
+const failures = [];
+const rows = [];
+
+for (const [label, path] of PAGES) {
+  const result = await lighthouse(base + path, {
+    port: chrome.port,
+    output: 'json',
+    logLevel: 'error'
+  });
+  const lhr = result.lhr;
+
+  const scores = {};
+  for (const [key, min] of Object.entries(THRESHOLDS)) {
+    const score = lhr.categories[key]?.score ?? 0;
+    scores[key] = score;
+    if (score < min) {
+      const failed = Object.values(lhr.audits)
+        .filter((a) => a.score !== null && a.score < 0.9 && a.title)
+        .slice(0, 6)
+        .map((a) => `${a.title} (${a.displayValue ?? a.score})`);
+      failures.push(
+        `${label} ${key} scored ${(score * 100).toFixed(0)}, needs ${min * 100}\n` +
+          failed.map((t) => `      ${t}`).join('\n')
+      );
+    }
+  }
+
+  const scriptBytes = (lhr.audits['network-requests']?.details?.items ?? [])
+    .filter((i) => (i.mimeType ?? '').includes('javascript'))
+    .reduce((sum, i) => sum + (i.transferSize ?? 0), 0);
+
+  const budget = MAX_SCRIPT_BYTES[path];
+  if (budget !== undefined && scriptBytes > budget) {
+    failures.push(`${label} ships ${scriptBytes} bytes of script, budget is ${budget}`);
+  }
+
+  rows.push(
+    `  ${label.padEnd(18)} perf ${(scores.performance * 100).toFixed(0).padStart(3)}  ` +
+      `bp ${(scores['best-practices'] * 100).toFixed(0).padStart(3)}  ` +
+      `seo ${(scores.seo * 100).toFixed(0).padStart(3)}  ` +
+      `js ${String(scriptBytes).padStart(6)} bytes`
+  );
+}
+
+console.log('\n' + rows.join('\n') + '\n');
+
+/* Chrome on Windows sometimes still holds its temporary profile directory open when
+   chrome-launcher tries to delete it. That is cleanup, not a result, so it must never
+   decide whether the gate passed. */
+try {
+  await chrome.kill();
+} catch (err) {
+  console.warn(`Could not clean up the Chrome profile directory: ${err.message}`);
+}
+server.close();
+
+if (failures.length) {
+  console.error(`Lighthouse found ${failures.length} problems:\n`);
+  for (const f of failures) console.error('  ' + f);
+  process.exit(1);
+}
+
+console.log(`Lighthouse clean across ${PAGES.length} pages.`);

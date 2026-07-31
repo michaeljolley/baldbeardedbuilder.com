@@ -165,6 +165,12 @@ h1, h2, h3, h4 {
 .foot .mark { width: 2.4rem; height: 2.4rem; }
 
 .nav { display: flex; gap: 1.15rem; list-style: none; margin: 0; padding: 0; margin-left: auto; }
+/* The mockup dropped the topic list straight into the masthead flex row. Wrapping it in
+   a <nav> so the topics are a real landmark adds a flex item the rules above were not
+   written for, and without min-width the wrapper refuses to shrink below its content and
+   pushes the whole page sideways on a phone. The list keeps its own auto margin, which
+   does nothing once the wrapper owns the spacing. */
+.masthead nav { margin-left: auto; min-width: 0; }
 .nav a {
   font-family: var(--mono);
   font-size: .8125rem;
@@ -209,7 +215,11 @@ html:not(.js) .themer { display: none; }
   box-shadow: 0 12px 32px color-mix(in srgb, var(--bg) 72%, transparent);
 }
 .themer-menu[hidden] { display: none; }
-.themer-menu h4 {
+/* Dark and Light are group labels, not document headings. Making them h4 put an h4
+   before the h1 on every page in the site, which is a worse outline than no label at
+   all. role="group" plus aria-labelledby says the same thing without lying about
+   structure. */
+.themer-menu .themer-group-label {
   font-family: var(--mono); font-size: .625rem; font-weight: 500;
   letter-spacing: .16em; text-transform: uppercase;
   color: var(--fg-dim); padding: .6rem .6rem .35rem; margin: 0;
@@ -337,7 +347,11 @@ html:not(.js) .themer { display: none; }
   display: inline-flex; gap: .5rem; align-items: baseline;
 }
 .chip:hover { border-color: var(--accent); color: var(--accent); }
-.chip .n { font-size: .6875rem; opacity: .6; }
+/* The mockup dimmed the count with opacity .6 on top of --fg-dim, which lands under
+   4.5:1 in every one of the sixteen themes. The generator's contrast guard cannot see
+   this because opacity is not a token. Tabular numerals and a slightly smaller size do
+   the same visual job of making the count secondary without dropping the contrast. */
+.chip .n { font-size: .6875rem; font-variant-numeric: tabular-nums; }
 
 /* ---------- drip ---------- */
 
@@ -545,7 +559,10 @@ html:not(.js) .themer { display: none; }
    which is most obvious on phones where the four columns collapse into one. */
 .foot { border-top: 1px solid var(--line); padding: 3rem 0 4rem; }
 .foot-grid { display: grid; grid-template-columns: 1.5fr repeat(3, 1fr); gap: 2.5rem; }
-.foot h4 { font-family: var(--mono); font-size: .625rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-dim); margin-bottom: .9rem; }
+/* The mockup used h4 here purely because it wanted small text. A footer column heading is
+   a top level section of the footer, so it is an h2 that happens to be painted small.
+   Using h4 made every page jump from h1 or h2 straight to h4. */
+.foot h2 { font-family: var(--mono); font-size: .625rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-dim); margin: 0 0 .9rem; }
 .foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; font-size: .9375rem; }
 .foot ul a { color: var(--fg-dim); text-decoration: none; }
 .foot ul a:hover { color: var(--fg); }
@@ -566,6 +583,21 @@ html:not(.js) .themer { display: none; }
   margin-bottom: 1.5rem;
 }
 .rule .more { margin-left: auto; text-transform: none; letter-spacing: .04em; text-decoration: none; }
+/* A quiet rail is still a section, and a section full of h3 cards needs its own heading
+   or the document outline jumps straight from the h1 to an h3. The heading is painted as
+   the mono eyebrow the mockup drew, so this costs nothing visually. */
+.rule h2 {
+  font: inherit; letter-spacing: inherit; text-transform: inherit;
+  color: inherit; margin: 0;
+}
+
+/* Available to a screen reader, invisible on screen. Used where the mockup relies on
+   position and styling to say what a block is and a heading has to exist anyway. */
+.vh {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
 
 /* Major section waypoints. Rails inside the fold stay as quiet mono eyebrows; the
    sections a reader actually navigates between get the display face so they register
@@ -765,7 +797,25 @@ html:not(.js) .themer { display: none; }
   border: 1px solid var(--line); background: var(--bg-raised);
   display: grid; place-items: center; color: var(--fg); font-size: 1.15rem;
 }
-.embed .fine { position: absolute; bottom: 1rem; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim); }
+/* The still sits behind the play control rather than beside it, so both are children of
+   the same grid cell. Cover crops the letterbox bars that YouTube bakes into hqdefault. */
+.embed-still {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  /* Dimmed so the play control reads as the foreground on a busy frame. Nothing is
+     allowed to depend on this for contrast, because a contrast checker cannot measure
+     text over a photograph. */
+  filter: brightness(.5);
+}
+.embed .play { position: relative; text-decoration: none; }
+.embed .play:hover { border-color: var(--accent); color: var(--accent); }
+/* Deliberately outside .embed. Text over a photograph cannot be contrast checked, so no
+   text sits on the still except inside the play control's own opaque background. */
+.embed-note {
+  font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim);
+  margin: -1.25rem 0 1.75rem; text-align: center;
+}
+.embed .fine { position: absolute; bottom: 1rem; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: .6875rem; color: var(--fg); }
 
 .transcript { border: 1px solid var(--line); border-radius: var(--r); margin-top: 2rem; }
 .transcript summary {
@@ -838,7 +888,7 @@ html:not(.js) .themer { display: none; }
 .tabs a { text-decoration: none; color: var(--fg-dim); padding: .7rem 0; border-bottom: 2px solid transparent; margin-bottom: -1px; }
 .tabs a:hover { color: var(--fg); }
 .tabs a.on { color: var(--fg); border-bottom-color: var(--accent); }
-.tabs .n { opacity: .6; }
+.tabs .n { font-variant-numeric: tabular-nums; }
 
 /* ---------- forms ---------- */
 
@@ -878,6 +928,18 @@ html:not(.js) .themer { display: none; }
 .switch[aria-checked="true"] .knob { transform: translateX(1.3rem); background: var(--accent); }
 .switch-label { font-family: var(--display); font-weight: 700; font-size: 1rem; display: block; }
 .switch-help { color: var(--fg-dim); font-size: .9375rem; display: block; margin-top: .3rem; max-width: 36rem; }
+
+/* The mockup drew the switch as a button with aria-checked, which needs script to move.
+   A real checkbox carries its own state, submits with the form, and is already what a
+   screen reader wants to hear, so the same paint is applied to input[type=checkbox]. */
+input.switch { appearance: none; align-items: center; }
+input.switch::after {
+  content: ""; width: 1.2rem; height: 1.2rem; border-radius: 50%;
+  background: var(--fg-dim); transition: transform .15s, background .15s;
+}
+input.switch:checked { border-color: var(--accent); }
+input.switch:checked::after { transform: translateX(1.3rem); background: var(--accent); }
+input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .consent { display: grid; grid-template-columns: auto 1fr; gap: .75rem; align-items: start; font-size: .9375rem; color: var(--fg-dim); }
 .consent input {
@@ -940,6 +1002,7 @@ html:not(.js) .themer { display: none; }
   .card.wide { grid-column: span 2; }
   .drip { grid-template-columns: 1fr; gap: 1.75rem; }
   .masthead .shell { flex-wrap: wrap; height: auto; padding-top: .75rem; padding-bottom: .75rem; gap: .75rem 1.25rem; }
+  .masthead nav { order: 3; width: 100%; margin-left: 0; }
   .nav {
     order: 3; width: 100%; margin-left: 0;
     overflow-x: auto; scrollbar-width: none;

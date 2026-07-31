@@ -133,7 +133,15 @@ export async function itemByUrl(url: string): Promise<Item | undefined> {
 
 export async function itemsByKeys(keys: readonly string[]): Promise<Item[]> {
   const all = await allItems();
-  return keys.map((k) => all.find((i) => i.key === k)).filter((i): i is Item => Boolean(i));
+  return keys.map((k) => {
+    const found = all.find((i) => i.key === k);
+    /*
+      Curated lists are hand written, so a typo would otherwise show up as a grid that is
+      quietly one card short rather than as an error anybody notices.
+    */
+    if (!found) throw new Error(`No content item with key "${k}". Check src/config/site.ts.`);
+    return found;
+  });
 }
 
 export interface TopicView {

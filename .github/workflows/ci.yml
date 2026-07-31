@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'dev/**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # src/content is a submodule pointing at michaeljolley/content. Without it the
+          # collections are empty and every gate passes for the wrong reason.
+          submodules: true
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Fails if a generated artifact was hand edited. themes.css, the font CSS, the
+      # taxonomy map and _redirects are all outputs, never inputs.
+      - name: Generated artifacts are in sync
+        run: pnpm gen:check
+
+      - name: Unit and redirect tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      # Both browser gates need dist, and a build is slow enough that handing it over
+      # beats building it three times.
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 3
+
+  a11y:
+    name: Accessibility (WCAG 2.2 AA)
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm a11y
+
+  perf:
+    name: Performance budget
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm perf

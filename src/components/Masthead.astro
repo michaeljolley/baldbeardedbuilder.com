@@ -1,6 +1,6 @@
 ---
 import Wordmark from './Wordmark.astro';
-import ThemePicker from './islands/ThemePicker';
+import ThemePicker from './ThemePicker.astro';
 import { VISIBLE_TOPICS } from '../config/site';
 
 interface Props {
@@ -40,6 +40,6 @@ const { active } = Astro.props;
         </li>
       </ul>
     </nav>
-    <ThemePicker client:idle />
+    <ThemePicker />
   </div>
 </header>

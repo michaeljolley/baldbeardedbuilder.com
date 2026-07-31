@@ -1,4 +1,5 @@
 ---
+import '../styles/fonts.generated.css';
 import '../styles/themes.css';
 import '../styles/app.css';
 
@@ -73,11 +74,24 @@ const themeNames = Object.fromEntries(THEMES.map((t) => [t.id, t.name]));
     </script>
 
     <link rel="icon" href="/images/icons/bbb.svg" type="image/svg+xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/*
+      The two faces that paint above the fold on every page. Everything else, including
+      the latin-ext subsets and the mono face, is left to the normal cascade so the
+      browser only fetches what a given page actually needs.
+    */}
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Atkinson+Hyperlegible+Next:wght@200..800&family=Fira+Code:wght@400;500&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/fraunces-latin-full-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
 
     <meta property="og:type" content="website" />
