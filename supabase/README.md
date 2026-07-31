@@ -50,6 +50,7 @@ Both tables arrive empty. Michael loads them. `docs/backfill.md` is the spec.
 | `20260710001100_badge_backfill_indexes` | `lower(login)` indexes. Turns the sweep from a sequential scan into milliseconds |
 | `20260710001200_badge_backfill_schedule` | Nightly `pg_cron` sweep at 01:30 UTC |
 | `20260710001300_video_transcripts` | Transcripts and chapters, read at build time |
+| `20260801000000_notifications` | `disasters.featured_at`, the `email_outbox` queue, the three enqueue triggers and one click unsubscribe |
 
 `supabase/reversal/` is not part of the chain and `db push` never sees it. That is
 deliberate: a file that drops the whole v2 schema must not be able to run against the new
@@ -93,10 +94,38 @@ The build and the routes need these. Never commit them.
 | `LIKE_IP_SECRET` | Netlify only | HMAC key for `likes.ip_hash` |
 | `SUPABASE_AUTH_GITHUB_CLIENT_ID` / `_SECRET` | Supabase dashboard | Sign in |
 | `SUPABASE_AUTH_TWITCH_CLIENT_ID` / `_SECRET` | Supabase dashboard | Link only identity |
+| `RESEND_API_KEY` | Netlify only | Sends the three notification emails |
+| `MAIL_FROM` | Netlify only | From address, on a domain the provider has verified |
+| `NOTIFY_SECRET` | Netlify only, and in the scheduler | Bearer token the queue drain demands |
 
 `LIKE_IP_SECRET` is rotatable. Rotating it does not lose any likes, it just means the
 people who already liked something could like it once more. That is the intended
 tradeoff: the column is a dedupe token with a shelf life, not a stored IP address.
+
+## Draining the email queue
+
+`20260801000000_notifications.sql` fills `email_outbox` from triggers. It does not empty
+it, and it deliberately does not schedule anything.
+
+The drain is `POST /api/notifications/` on the site, guarded by `NOTIFY_SECRET` as a
+bearer token. It lives there rather than in a database function because the emails are
+rendered from the same content helpers the pages use, and rebuilding topic first URLs in
+SQL would guarantee that an email and a page eventually disagree about where something
+is.
+
+Something has to call it, roughly every five minutes. Either works:
+
+- a Netlify scheduled function, which keeps the secret in Netlify with the others,
+- or `pg_cron` plus `net.http_post`, which means the secret also lives in the database.
+
+The first is preferred for exactly that reason. Whichever is chosen, run one at a time.
+The queue's unique dedupe key stops the same event being queued twice, but it cannot stop
+two concurrent drains reading the same row before either marks it.
+
+With no `RESEND_API_KEY` set, the queue still fills and the drain logs what it would have
+sent rather than failing. That is the right default: the reply that triggers an email is
+on the same request as the comment that caused it, and a missing key must never turn
+somebody's comment into a 500.
 
 ## Things worth knowing
 

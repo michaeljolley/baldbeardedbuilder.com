@@ -17,6 +17,7 @@ import { SITE, VISIBLE_TOPICS, sevClass, sevLabel, START_HERE } from '../config/
 import { allItems, itemsByKeys, itemsInTopic } from '../lib/content';
 import {
   allDisasters,
+  leadDisaster,
   sortDisasters,
   countsBySeverity,
   problemSummary,
@@ -28,13 +29,13 @@ const fresh = items.slice(0, 5);
 const starters = await itemsByKeys(START_HERE);
 
 const disasters = allDisasters();
-const lead = disasters[0];
+const lead = leadDisaster();
 /*
   Deterministic per build rather than random per request, because the page is static.
   Stepping a third of the way through the archive keeps the second pick well away from
   the lead without needing a random number that would change on every rebuild.
 */
-const another = disasters[Math.floor(disasters.length / 3)] ?? lead;
+const another = disasters.filter((d) => d.id !== lead.id)[Math.floor(disasters.length / 3)] ?? lead;
 const topProblems = sortDisasters(disasters, 'liked').slice(0, 4);
 const counts = countsBySeverity();
 

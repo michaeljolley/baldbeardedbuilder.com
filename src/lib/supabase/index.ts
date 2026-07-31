@@ -30,13 +30,6 @@ const ANON = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
  * quiet. The alternative is a build that dies on a missing environment variable, which
  * is a worse first five minutes for anybody.
  */
-/**
- * True when the site has been given a Supabase project to talk to. Everything that reads
- * from Supabase checks this and degrades rather than throwing, so a fork, a preview
- * build or a contributor with no keys still gets a working site with the social parts
- * quiet. The alternative is a build that dies on a missing environment variable, which
- * is a worse first five minutes for anybody.
- */
 export const supabaseConfigured = Boolean(URL && ANON);
 
 /**

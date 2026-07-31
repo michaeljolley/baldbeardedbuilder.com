@@ -28,6 +28,12 @@ export interface Disaster {
   likes: number;
   replies: number;
   date: Date;
+  /*
+    When Michael put this on the front page, or null. Decision 15's story_featured email
+    keys off exactly this, so it has to be a real act rather than a side effect of being
+    newest. In Supabase it is disasters.featured_at, set by hand in Studio.
+  */
+  featuredAt: Date | null;
   /** Story paragraphs. Plain prose, no markup. */
   body: string[];
 }
@@ -41,6 +47,7 @@ interface SeedRow {
   teller: string | null;
   replies: number;
   published: string;
+  featured?: string;
   body: string[];
 }
 
@@ -77,6 +84,7 @@ export function allDisasters(): Disaster[] {
       likes: likesById.get(String(r.id)) ?? 0,
       replies: r.replies,
       date: new Date(r.published),
+      featuredAt: r.featured ? new Date(r.featured) : null,
       body: r.body
     } satisfies Disaster;
   });
@@ -86,8 +94,23 @@ export function allDisasters(): Disaster[] {
   return rows;
 }
 
-export type DisasterSort = 'liked' | 'replies' | 'newest';
+/**
+ * The story on the front page.
+ *
+ * Most recently featured, falling back to newest when nothing has been featured yet,
+ * which is the state on day one. Before this existed the lead was simply the newest row,
+ * so nobody was ever chosen and the "your story is on the front page" email described
+ * something that could not happen.
+ */
+export function leadDisaster(): Disaster {
+  const rows = allDisasters();
+  const featured = rows
+    .filter((d) => d.featuredAt)
+    .sort((a, b) => b.featuredAt!.getTime() - a.featuredAt!.getTime());
+  return featured[0] ?? rows[0];
+}
 
+export type DisasterSort = 'liked' | 'replies' | 'newest';
 export function sortDisasters(rows: Disaster[], sort: DisasterSort): Disaster[] {
   const out = [...rows];
   if (sort === 'liked') out.sort((a, b) => b.likes - a.likes);

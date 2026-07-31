@@ -1,0 +1,109 @@
+---
+/*
+  Unsubscribe.
+
+  Two callers, one URL. A person clicking a link in an email arrives with GET. A mail
+  client honouring RFC 8058 arrives with POST and never renders anything. Both have to
+  work, and both have to work with no session, because an unsubscribe link that demands a
+  sign in is not an unsubscribe link.
+
+  The GET does the work rather than showing a confirm button, and that is a deliberate
+  trade with a real downside. A link scanner that prefetches URLs can turn somebody's
+  email off without them asking. The alternative costs more: a confirm page means somebody
+  who wanted out, clicked, and closed the tab keeps getting email. Between wrongly silent
+  and wrongly noisy, silent is the one you can undo from your account page in ten seconds,
+  and noisy is the one that makes people mark you as spam.
+
+  Nothing here says whether the token was real. A page that renders differently for a
+  valid token turns this URL into an oracle for guessing them.
+*/
+import Base from '../layouts/Base.astro';
+import { serviceClient, supabaseWritable } from '../lib/supabase';
+import type { PendingDatabase } from '../lib/supabase/pending.types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+
+export const prerender = false;
+
+const KINDS = ['story_published', 'story_featured', 'comment_reply', 'all'] as const;
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+const params = Astro.url.searchParams;
+const token = params.get('token') ?? '';
+const raw = params.get('kind') ?? 'all';
+const kind = (KINDS as readonly string[]).includes(raw) ? raw : 'all';
+
+/*
+  Shaped rather than valid. A page that renders differently for a token that exists turns
+  this URL into an oracle for guessing them, so a wrong token and a right one produce the
+  same words. A missing token is a different thing entirely: nobody arrived from an email,
+  so saying "that is switched off" would be a lie told to a passer by.
+*/
+const hasToken = UUID_RE.test(token);
+
+if (supabaseWritable && hasToken) {
+  /* See lib/supabase/pending.types.ts. The cast goes when the types can be generated. */
+  const db = serviceClient() as unknown as SupabaseClient<PendingDatabase>;
+  await db.rpc('unsubscribe_by_token', { p_token: token, p_kind: kind });
+}
+
+/* RFC 8058 wants a 200 and nothing else. No redirect, no body worth parsing. */
+if (Astro.request.method === 'POST') {
+  return new Response('ok', { status: 200, headers: { 'content-type': 'text/plain' } });
+}
+
+const WHAT: Record<string, string> = {
+  story_published: 'emails about your stories going up',
+  story_featured: 'emails about your stories being featured',
+  comment_reply: 'emails about replies to your comments',
+  all: 'every kind of email from this site'
+};
+---
+
+<Base title="Unsubscribed" description="You have been unsubscribed." noindex>
+  <main id="main">
+    <div class="shell narrow">
+
+      {!hasToken && (
+        <>
+          <div class="rule"><h1>That link is missing something</h1></div>
+
+          <p class="lede">
+            An unsubscribe link carries a token that says which settings to change, and
+            this one arrived without it.
+          </p>
+
+          <p>
+            Nothing has changed either way. Open the link in the email again, or turn any
+            of it off from your account.
+          </p>
+
+          <p><a class="btn" href="/account/">Your email settings</a></p>
+        </>
+      )}
+
+      {hasToken && (
+        <>
+          <div class="rule"><h1>That is switched off</h1></div>
+
+          <p class="lede">
+            You will not get {WHAT[kind]} any more.
+          </p>
+
+          <p>
+            Nothing else changed. Your account, your comments and your stories are exactly
+            where you left them, and you can turn this back on whenever you like.
+          </p>
+
+          <p><a class="btn" href="/account/">Your email settings</a></p>
+
+          <p class="fine">
+            If you did not ask for this, somebody has your unsubscribe link. Turning it
+            back on from your account page is enough, there is nothing else to undo.
+          </p>
+        </>
+      )}
+
+    </div>
+  </main>
+</Base>
