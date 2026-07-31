@@ -28,6 +28,8 @@ const PAGES = [
   ['disaster', '/dev-disasters/a-regex-ate-the-payroll-run/'],
   ['about', '/about/'],
   ['conduct', '/conduct/'],
+  ['privacy', '/privacy/'],
+  ['terms', '/terms/'],
   ['uses', '/uses/'],
   ['search', '/search/'],
   ['not found', '/404.html']

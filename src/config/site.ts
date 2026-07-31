@@ -197,6 +197,9 @@ export const SITE = {
   hostBadgeLabel: 'The bald one',
   /** Shown on the code of conduct. Bump it whenever the rules actually change. */
   conductUpdated: '2026-02-02',
+  /** Shown on the privacy and terms pages. Bump both when either actually changes. */
+  privacyUpdated: '2026-02-02',
+  termsUpdated: '2026-02-02',
   /** Where a report goes when somebody would rather email than use the form. */
   contactEmail: 'michael@baldbeardedbuilder.com'
 } as const;

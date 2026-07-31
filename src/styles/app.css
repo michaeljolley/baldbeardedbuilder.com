@@ -397,7 +397,12 @@ html:not(.js) .themer { display: none; }
   text-transform: uppercase; color: var(--fg-dim); margin-bottom: .3rem;
 }
 .rail dd { margin: 0; font-family: var(--mono); font-size: .8125rem; display: flex; gap: .6rem; flex-wrap: wrap; }
-.rail dd a { text-decoration: none; }
+/*
+  Text at .8125rem gives a link box around 17px tall, which is under the 24px WCAG 2.2
+  asks for. The rail is quiet by design so the type stays small and the target grows
+  instead. Caught by axe on the terms page, where two rail links first appeared together.
+*/
+.rail dd a { text-decoration: none; display: inline-flex; align-items: center; min-height: 24px; }
 
 .like {
   margin-top: 1.75rem;
