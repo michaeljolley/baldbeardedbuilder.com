@@ -39,7 +39,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
       const { data } = await supabase
         .from('profiles')
-        .select('id, handle, display_name, avatar_url, is_private')
+        .select('id, handle, display_name, avatar_url, is_private, github_created_at')
         .eq('id', user.id)
         .maybeSingle();
 

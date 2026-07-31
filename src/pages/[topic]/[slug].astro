@@ -12,7 +12,9 @@ import VideoEmbed from '../../components/VideoEmbed.astro';
 import { topicBySlug } from '../../config/site';
 import { allItems, type Item } from '../../lib/content';
 import LikeButton from '../../components/islands/LikeButton';
+import CommentThread from '../../components/islands/CommentThread';
 import { bakedLike } from '../../lib/likes';
+import { bakedReplies } from '../../lib/comments';
 
 export async function getStaticPaths() {
   const [items, blog] = await Promise.all([allItems(), getCollection('blog')]);
@@ -40,6 +42,7 @@ const alsoFiled = item.alsoFiled.map((slug) => topicBySlug(slug)).filter(Boolean
 /* Baked at build time and honestly a little stale, per conflict 6. The island reconciles
    it against the live count the moment it hydrates. */
 const likes = await bakedLike('content', item.key);
+const replies = await bakedReplies('content', item.key);
 ---
 
 <Base
@@ -128,5 +131,26 @@ const likes = await bakedLike('content', item.key);
         }
       </article>
     </div>
+
+    {/*
+      The thread hydrates on visible, which on an article means it costs nothing until
+      somebody reaches the end of what they came for. The reply count is baked, so a
+      reader with JavaScript off still gets told whether there is a conversation here.
+    */}
+    <section class="comments" id="comments">
+      <CommentThread
+        client:visible
+        kind="content"
+        targetKey={item.key}
+        initial={replies}
+        pageUrl={item.url}
+      />
+      <noscript>
+        <div class="shell">
+          <aside class="rail"><p class="eyebrow">{replies} {replies === 1 ? 'reply' : 'replies'}</p></aside>
+          <div><p class="note">Replies need JavaScript. The rest of this page does not.</p></div>
+        </div>
+      </noscript>
+    </section>
   </main>
 </Base>

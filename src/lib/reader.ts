@@ -22,6 +22,17 @@ export type TargetKind = 'content' | 'disaster';
 
 export const KINDS: TargetKind[] = ['content', 'disaster'];
 
+/*
+  What a like can point at, matching the like_target enum.
+
+  Wider than TargetKind by exactly one: a comment can be liked but cannot be commented on.
+  Two types rather than one, because letting the wider one stand in everywhere would allow
+  a comment whose target is the kind "comment", which is not a thing that exists.
+*/
+export type LikeTarget = TargetKind | 'comment';
+
+export const LIKE_TARGETS: LikeTarget[] = ['content', 'disaster', 'comment'];
+
 export const TOKEN_COOKIE = 'bbb_t';
 
 /* Just over a year, so somebody who reads once a winter is still recognised next winter. */
@@ -29,6 +40,10 @@ const TOKEN_MAX_AGE = 60 * 60 * 24 * 400;
 
 export function isTargetKind(value: unknown): value is TargetKind {
   return typeof value === 'string' && KINDS.includes(value as TargetKind);
+}
+
+export function isLikeTarget(value: unknown): value is LikeTarget {
+  return typeof value === 'string' && LIKE_TARGETS.includes(value as LikeTarget);
 }
 
 /*

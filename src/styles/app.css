@@ -563,6 +563,46 @@ html:not(.js) .themer { display: none; }
 .cacts .rep { color: var(--fg-dim); text-decoration: none; }
 .cacts .rep:hover { color: var(--sev-error); text-decoration: underline; text-underline-offset: 2px; }
 
+/* The like under a comment is the same control at conversation scale, so it loses the
+   detail page's top margin and its raised background rather than becoming a new thing. */
+.like-sm {
+  margin-top: 0; padding: 0; gap: .35rem;
+  background: none; border: 0; border-radius: 0;
+  font-size: .75rem; color: var(--fg-dim);
+}
+.like-sm:hover { border: 0; color: var(--sev-error); }
+.like-sm.like-idle:hover { color: var(--fg-dim); }
+
+/* Code inside a comment. Highlighted through the same theme as the rest of the site, so a
+   snippet somebody pastes reads like the ones in the article above it. */
+.c-code {
+  margin: .7rem 0; padding: .8rem 1rem; overflow-x: auto;
+  background: var(--bg-inset); border: 1px solid var(--line); border-radius: var(--r);
+  font-family: var(--mono); font-size: .8125rem; line-height: 1.6;
+}
+.c-code code { background: none; padding: 0; font: inherit; }
+.cbody code { background: var(--bg-inset); padding: .1rem .3rem; border-radius: 3px; font-size: .875em; }
+.cbody blockquote {
+  margin: .7rem 0; padding-left: .9rem;
+  border-left: 2px solid var(--line); color: var(--fg-dim);
+}
+.cbody ul, .cbody ol { margin: .7rem 0; padding-left: 1.2rem; }
+.cbody li { margin-bottom: .3rem; }
+.cbody hr { border: 0; border-top: 1px solid var(--line); margin: 1rem 0; }
+.cbody a { color: var(--accent); }
+
+/* Every state the mockup did not draw. Each one is a real thing a reader will hit, and
+   inventing them at the last minute is how a design language stops being one. */
+.c-signedout, .c-empty, .c-notice { margin-bottom: 1rem; }
+.c-tomb { color: var(--fg-dim); font-style: italic; }
+.c-edited { font-style: italic; }
+.composer-btns { margin-left: auto; display: flex; gap: .5rem; }
+.composer-foot .composer-btns .btn { margin-left: 0; }
+.linkish {
+  background: none; border: 0; padding: 0; font: inherit; cursor: pointer;
+  color: var(--accent); text-decoration: underline; text-underline-offset: 2px;
+}
+
 /* ---------- footer ---------- */
 
 /* The footer needs its own edge. Without a rule it reads as one more content block,

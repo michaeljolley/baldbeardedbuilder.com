@@ -12,15 +12,17 @@
 import { useEffect, useState } from 'preact/hooks';
 
 interface Props {
-  kind: 'content' | 'disaster';
+  kind: 'content' | 'disaster' | 'comment';
   targetKey: string;
   /** The build time count, used until the live one arrives. */
   initial: number;
   /** What the control is for, read out to anybody who cannot see the page. */
   label: string;
+  /** Small variant, for the row of controls under a comment. */
+  compact?: boolean;
 }
 
-export default function LikeButton({ kind, targetKey, initial, label }: Props) {
+export default function LikeButton({ kind, targetKey, initial, label, compact }: Props) {
   const [likes, setLikes] = useState(initial);
   const [liked, setLiked] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -98,7 +100,7 @@ export default function LikeButton({ kind, targetKey, initial, label }: Props) {
   return (
     <>
       <button
-        class={ready ? 'like' : 'like like-idle'}
+        class={`like${compact ? ' like-sm' : ''}${ready ? '' : ' like-idle'}`}
         type="button"
         onClick={toggle}
         aria-pressed={ready ? liked : undefined}

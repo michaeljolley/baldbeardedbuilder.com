@@ -12,6 +12,7 @@
 import { chromium } from 'playwright';
 import { AxeBuilder } from '@axe-core/playwright';
 import { serveDist } from './lib/serve-dist.mjs';
+import { serveDev } from './lib/serve-dev.mjs';
 
 /* One of each archetype rather than all 199 pages. Adding a new archetype means adding
    a line here, which is the point. */
@@ -33,6 +34,18 @@ const PAGES = [
   ['not found', '/404.html']
 ];
 
+/*
+  Pages that are rendered on demand, so they are not in dist and a static audit cannot see
+  them. The report page reads its prefill on the server, which is what keeps it working
+  with JavaScript off, and that is exactly why it must not be the one page nobody checks.
+*/
+const ON_DEMAND = [
+  ['report', '/report/'],
+  ['report prefilled', '/report/?type=comment&ref=00000000-0000-4000-8000-000000000000&target=%2Fcsharp%2F'],
+  ['report sent', '/report/?sent=1'],
+  ['report refused', '/report/?sent=slow']
+];
+
 const VIEWPORTS = [
   ['phone', { width: 390, height: 844 }],
   ['desktop', { width: 1280, height: 900 }]
@@ -43,7 +56,15 @@ const VIEWPORTS = [
 const THEMES = ['bbb-dark', 'bbb-light', 'hotdog-stand'];
 
 const { server, base } = await serveDist();
+const dev = await serveDev();
 const browser = await chromium.launch();
+
+/* One list of absolute URLs, so the audit loop does not have to care which server a page
+   came from. Everything after this point treats them identically, which is the point. */
+const TARGETS = [
+  ...PAGES.map(([label, path]) => [label, base + path]),
+  ...ON_DEMAND.map(([label, path]) => [label, dev.base + path])
+];
 
 const failures = [];
 let checks = 0;
@@ -52,10 +73,10 @@ for (const [vpName, viewport] of VIEWPORTS) {
   const context = await browser.newContext({ viewport, reducedMotion: 'reduce' });
   const page = await context.newPage();
 
-  for (const [label, path] of PAGES) {
-    const res = await page.goto(base + path, { waitUntil: 'load' });
+  for (const [label, url] of TARGETS) {
+    const res = await page.goto(url, { waitUntil: 'load' });
     if (!res || res.status() !== 200) {
-      failures.push(`${label} ${path} returned ${res ? res.status() : 'no response'}`);
+      failures.push(`${label} ${url} returned ${res ? res.status() : 'no response'}`);
       continue;
     }
 
@@ -123,6 +144,7 @@ for (const [vpName, viewport] of VIEWPORTS) {
 
 await browser.close();
 server.close();
+dev.stop();
 
 if (failures.length) {
   console.error(`\naxe found ${failures.length} problems across ${checks} audits:\n`);
@@ -130,4 +152,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`axe clean across ${checks} audits and ${PAGES.length * VIEWPORTS.length} page loads.`);
+console.log(`axe clean across ${checks} audits and ${TARGETS.length * VIEWPORTS.length} page loads.`);

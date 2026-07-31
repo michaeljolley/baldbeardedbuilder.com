@@ -14,10 +14,10 @@
 */
 
 import { serviceClient, supabaseWritable } from './supabase';
-import { hashIp, isTargetKind, KINDS, type TargetKind } from './reader';
+import { hashIp, isLikeTarget, LIKE_TARGETS, type LikeTarget } from './reader';
 
-export type { TargetKind } from './reader';
-export { isTargetKind, isTargetKey, browserToken, clientIp, hashIp, TOKEN_COOKIE } from './reader';
+export type { TargetKind, LikeTarget } from './reader';
+export { isTargetKind, isLikeTarget, isTargetKey, browserToken, clientIp, hashIp, TOKEN_COOKIE } from './reader';
 
 export interface LikeState {
   likes: number;
@@ -25,7 +25,7 @@ export interface LikeState {
 }
 
 export async function readLike(
-  kind: TargetKind,
+  kind: LikeTarget,
   key: string,
   token: string
 ): Promise<LikeState> {
@@ -58,7 +58,7 @@ export async function readLike(
  * people are afraid to press.
  */
 export async function toggleLike(
-  kind: TargetKind,
+  kind: LikeTarget,
   key: string,
   token: string,
   ip: string,
@@ -108,13 +108,13 @@ export async function toggleLike(
   the whole table is three columns, so a page at a time would be a hundred and fifty round
   trips to save a few kilobytes of memory.
 */
-let allCounts: Map<TargetKind, Map<string, number>> | null = null;
+let allCounts: Map<LikeTarget, Map<string, number>> | null = null;
 
-async function loadCounts(): Promise<Map<TargetKind, Map<string, number>>> {
+async function loadCounts(): Promise<Map<LikeTarget, Map<string, number>>> {
   if (allCounts) return allCounts;
 
-  const built = new Map<TargetKind, Map<string, number>>();
-  for (const kind of KINDS) built.set(kind, new Map());
+  const built = new Map<LikeTarget, Map<string, number>>();
+  for (const kind of LIKE_TARGETS) built.set(kind, new Map());
 
   if (supabaseWritable) {
     const { data } = await serviceClient()
@@ -122,7 +122,7 @@ async function loadCounts(): Promise<Map<TargetKind, Map<string, number>>> {
       .select('target_kind, target_key, likes');
 
     for (const row of data ?? []) {
-      if (!isTargetKind(row.target_kind) || !row.target_key) continue;
+      if (!isLikeTarget(row.target_kind) || !row.target_key) continue;
       built.get(row.target_kind)!.set(row.target_key, Number(row.likes ?? 0));
     }
   }
@@ -132,11 +132,11 @@ async function loadCounts(): Promise<Map<TargetKind, Map<string, number>>> {
 }
 
 /** Every count for one kind, keyed by target. Empty when Supabase is not configured. */
-export async function bakedLikes(kind: TargetKind): Promise<Map<string, number>> {
+export async function bakedLikes(kind: LikeTarget): Promise<Map<string, number>> {
   return (await loadCounts()).get(kind)!;
 }
 
 /** One count, for a page that only needs its own. */
-export async function bakedLike(kind: TargetKind, key: string): Promise<number> {
+export async function bakedLike(kind: LikeTarget, key: string): Promise<number> {
   return (await bakedLikes(kind)).get(key) ?? 0;
 }

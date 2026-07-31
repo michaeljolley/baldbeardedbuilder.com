@@ -34,6 +34,29 @@ const rawTarget = params.get('target') ?? '';
 const target = rawTarget.startsWith('/') && !rawTarget.startsWith('//')
   ? `${SITE.url}${rawTarget}`
   : '';
+
+/*
+  The id of the thing being reported, kept separate from the human readable link. The auto
+  hide trigger acts on this and nothing else, so it has to be an id rather than a URL a
+  reader could have typed anything into.
+*/
+const rawRef = params.get('ref') ?? '';
+const ref = /^[0-9a-z-]{1,64}$/i.test(rawRef) ? rawRef : '';
+
+/*
+  Outcomes of the form post. The form works with JavaScript off, so the answer comes back
+  as a redirect with a word on the end of it rather than as a message an island drew.
+*/
+const SENT: Record<string, { tone: 'ok' | 'bad'; text: string }> = {
+  '1': { tone: 'ok', text: "Sent. I've got it, and I read these usually within a day." },
+  empty: { tone: 'bad', text: 'That came through with nothing in the box. Tell me what happened and send it again.' },
+  slow: { tone: 'bad', text: "That's a lot of reports in one hour. If something urgent is happening, email me instead." },
+  off: { tone: 'bad', text: "Reports aren't saving right now. Please email me instead." },
+  bad: { tone: 'bad', text: "That didn't come through. Try again, or email me." },
+  failed: { tone: 'bad', text: "That didn't save. Try again, or email me." }
+};
+
+const sent = SENT[params.get('sent') ?? ''] ?? null;
 ---
 
 <Base
@@ -67,6 +90,16 @@ const target = rawTarget.startsWith('/') && !rawTarget.startsWith('//')
         </header>
 
         <form class="form report-form" method="post" action="/api/report/">
+          {
+            sent && (
+              <p class={sent.tone === 'ok' ? 'notice report-sent' : 'notice report-sent bad'} role="status">
+                {sent.text}
+              </p>
+            )
+          }
+
+          <input type="hidden" name="ref" value={ref} />
+
           <div class="field">
             <label id="what-label">What are you reporting</label>
             <div class="picks" role="group" aria-labelledby="what-label">
@@ -146,5 +179,11 @@ const target = rawTarget.startsWith('/') && !rawTarget.startsWith('//')
   }
   .report-fine {
     margin-top: -0.5rem;
+  }
+  .report-sent {
+    border-color: var(--sev-info);
+  }
+  .report-sent.bad {
+    border-color: var(--sev-error);
   }
 </style>

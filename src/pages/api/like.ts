@@ -14,7 +14,7 @@ import {
   clientIp,
   hashIp,
   isTargetKey,
-  isTargetKind,
+  isLikeTarget,
   readLike,
   toggleLike
 } from '../../lib/likes';
@@ -56,7 +56,7 @@ export const GET: APIRoute = async (context) => {
   const kind = context.url.searchParams.get('kind');
   const key = context.url.searchParams.get('key');
 
-  if (!isTargetKind(kind) || !isTargetKey(key)) return bad('Unknown target.');
+  if (!isLikeTarget(kind) || !isTargetKey(key)) return bad('Unknown target.');
 
   const token = browserToken(context);
   return ok(await readLike(kind, key, token));
@@ -73,7 +73,7 @@ export const POST: APIRoute = async (context) => {
   }
 
   const { kind, key } = payload;
-  if (!isTargetKind(kind) || !isTargetKey(key)) return bad('Unknown target.');
+  if (!isLikeTarget(kind) || !isTargetKey(key)) return bad('Unknown target.');
 
   const token = browserToken(context);
   const ip = clientIp(context);

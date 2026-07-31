@@ -408,6 +408,7 @@ export type Database = {
       comments: {
         Row: {
           author_id: string | null
+          body_html: string | null
           body_markdown: string
           created_at: string
           deleted_at: string | null
@@ -421,6 +422,7 @@ export type Database = {
         }
         Insert: {
           author_id?: string | null
+          body_html?: string | null
           body_markdown: string
           created_at?: string
           deleted_at?: string | null
@@ -434,6 +436,7 @@ export type Database = {
         }
         Update: {
           author_id?: string | null
+          body_html?: string | null
           body_markdown?: string
           created_at?: string
           deleted_at?: string | null
@@ -783,7 +786,7 @@ export type Database = {
           ip_hash: string
           profile_id: string | null
           target_key: string
-          target_kind: Database["public"]["Enums"]["target_kind"]
+          target_kind: Database["public"]["Enums"]["like_target"]
         }
         Insert: {
           browser_token: string
@@ -792,7 +795,7 @@ export type Database = {
           ip_hash: string
           profile_id?: string | null
           target_key: string
-          target_kind: Database["public"]["Enums"]["target_kind"]
+          target_kind: Database["public"]["Enums"]["like_target"]
         }
         Update: {
           browser_token?: string
@@ -801,7 +804,7 @@ export type Database = {
           ip_hash?: string
           profile_id?: string | null
           target_key?: string
-          target_kind?: Database["public"]["Enums"]["target_kind"]
+          target_kind?: Database["public"]["Enums"]["like_target"]
         }
         Relationships: [
           {
@@ -967,6 +970,7 @@ export type Database = {
           kind: string
           reason: string
           reporter_email: string | null
+          reporter_hash: string | null
           reporter_id: string | null
           resolved_at: string | null
           status: string
@@ -979,6 +983,7 @@ export type Database = {
           kind: string
           reason: string
           reporter_email?: string | null
+          reporter_hash?: string | null
           reporter_id?: string | null
           resolved_at?: string | null
           status?: string
@@ -991,6 +996,7 @@ export type Database = {
           kind?: string
           reason?: string
           reporter_email?: string | null
+          reporter_hash?: string | null
           reporter_id?: string | null
           resolved_at?: string | null
           status?: string
@@ -1251,6 +1257,14 @@ export type Database = {
         }
         Relationships: []
       }
+      comment_counts: {
+        Row: {
+          replies: number | null
+          target_key: string | null
+          target_kind: Database["public"]["Enums"]["target_kind"] | null
+        }
+        Relationships: []
+      }
       comments_public: {
         Row: {
           author_avatar: string | null
@@ -1288,7 +1302,7 @@ export type Database = {
         Row: {
           likes: number | null
           target_key: string | null
-          target_kind: Database["public"]["Enums"]["target_kind"] | null
+          target_kind: Database["public"]["Enums"]["like_target"] | null
         }
         Relationships: []
       }
@@ -1342,6 +1356,7 @@ export type Database = {
       twitch_first_seen: { Args: { p_login: string }; Returns: string }
     }
     Enums: {
+      like_target: "content" | "disaster" | "comment"
       target_kind: "content" | "disaster"
     }
     CompositeTypes: {
@@ -1470,6 +1485,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      like_target: ["content", "disaster", "comment"],
       target_kind: ["content", "disaster"],
     },
   },

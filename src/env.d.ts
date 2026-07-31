@@ -25,6 +25,8 @@ declare namespace App {
       display_name: string | null;
       avatar_url: string | null;
       is_private: boolean;
+      /** When the GitHub account was made. Feeds the new account hold on comments. */
+      github_created_at: string | null;
     } | null;
     userId: string | null;
   }
