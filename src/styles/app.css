@@ -328,11 +328,27 @@ html:not(.js) .themer { display: none; }
 .card:hover { background: var(--bg-raised); }
 .card h3 { font-size: 1.1875rem; line-height: 1.2; }
 .card:hover h3 { color: var(--accent); }
-.card p { margin: 0; color: var(--fg-dim); font-size: .9375rem; }
+/*
+  Summaries come from the content repo and run to whatever length somebody felt like.
+  Feed rows already clamp for the same reason. Left unclamped in a grid, one long summary
+  sets the height of every card beside it, and the cards with less to say turn into voids.
+*/
+.card p {
+  margin: 0; color: var(--fg-dim); font-size: .9375rem;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4;
+  line-clamp: 4; overflow: hidden;
+}
 .card .foot { margin-top: auto; padding-top: .9rem; font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim); display: flex; gap: .6rem; flex-wrap: wrap; }
 .card .foot .k { color: var(--accent); letter-spacing: .1em; text-transform: uppercase; }
-.card.wide { grid-column: span 2; display: grid; grid-template-columns: 15rem 1fr; gap: 1.25rem; align-content: start; }
+.card.wide { grid-column: span 2; display: grid; grid-template-columns: 15rem 1fr; gap: 1.25rem; align-content: stretch; }
 .card.wide .thumb { margin: 0; max-height: none; }
+/*
+  A video carries no written summary until one is authored for it, so the lead card
+  can be a title and a foot line and nothing else. Left at align-content start that
+  drew a title in the top corner of a card sized by its taller neighbour, which is a
+  void, not a lead. Stretching lets the thumbnail take the height instead.
+*/
+.card .thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; }
 .card.wide .body { display: flex; flex-direction: column; gap: .6rem; height: 100%; }
 .card .thumb {
   aspect-ratio: 16/9; max-height: 10rem; border-radius: 2px;
@@ -641,10 +657,15 @@ html:not(.js) .themer { display: none; }
 /* A quiet rail is still a section, and a section full of h3 cards needs its own heading
    or the document outline jumps straight from the h1 to an h3. The heading is painted as
    the mono eyebrow the mockup drew, so this costs nothing visually. */
-.rule h2 {
+.rule h2, .rule h3 {
   font: inherit; letter-spacing: inherit; text-transform: inherit;
   color: inherit; margin: 0;
 }
+/* A year divider inside a feed needs air above it or it reads as part of the row it follows. */
+.feed + .rule { margin-top: 2.5rem; }
+.rule h3 + span { margin-left: auto; }
+/* The rows below carry their own top border, so a second one here just doubles the line. */
+.rule.year { border-bottom: 0; margin-bottom: .4rem; padding-bottom: .4rem; }
 
 /* Available to a screen reader, invisible on screen. Used where the mockup relies on
    position and styling to say what a block is and a heading has to exist anyway. */
@@ -815,8 +836,8 @@ html:not(.js) .themer { display: none; }
   text-decoration: none; color: inherit;
 }
 .fitem:hover { background: var(--bg-raised); }
-.fitem h3 { font-size: 1.125rem; line-height: 1.25; margin-bottom: .35rem; }
-.fitem:hover h3 { color: var(--accent); }
+.fitem h3, .fitem h4 { font-size: 1.125rem; line-height: 1.25; margin-bottom: .35rem; }
+.fitem:hover h3, .fitem:hover h4 { color: var(--accent); }
 .fitem p {
   margin: 0; color: var(--fg-dim); font-size: .9375rem;
   /* The mockup was drawn with hand written two line descriptions. Real summaries run to

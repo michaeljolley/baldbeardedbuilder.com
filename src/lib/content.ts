@@ -11,6 +11,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import taxonomy from '../config/taxonomy.json';
 import { topicBySlug, type Topic } from '../config/site';
 import { isPublished } from './publish';
+import { videoPages } from './videos';
 
 export type ItemKind = 'article' | 'video';
 
@@ -19,7 +20,19 @@ export interface Item {
   key: string;
   kind: ItemKind;
   slug: string;
-  url: string;
+  /**
+   * The page on this site, or null when there is not one.
+   *
+   * Null only ever happens for a video, and only when no video_pages row exists for it.
+   * Deliberately nullable rather than defaulting to the URL a page would have had, so
+   * that anything printing a link to a page has to say out loud what it does when there
+   * is no page. Use href to link to an item and url to talk about a page.
+   */
+  url: string | null;
+  /** Where a card sends somebody. The page when there is one, YouTube when there is not. */
+  href: string;
+  /** True when href points off this site. */
+  offsite: boolean;
   topic: string;
   alsoFiled: string[];
   title: string;
@@ -32,6 +45,8 @@ export interface Item {
   thumbnail: string | null;
   /** YouTube watch URL. Only set on videos. */
   external: string | null;
+  /** A YouTube short. Only meaningful on videos. */
+  short: boolean;
   /**
    * Dated in the future. The nightly bot stages posts ahead of time. They build, so the
    * URL is live and shareable the moment the date passes and nothing 404s in between,
@@ -69,7 +84,11 @@ let cache: Item[] | null = null;
 export async function allItems(): Promise<Item[]> {
   if (cache) return cache;
 
-  const [blog, videos] = await Promise.all([getCollection('blog'), getCollection('videos')]);
+  const [blog, videos, pages] = await Promise.all([
+    getCollection('blog'),
+    getCollection('videos'),
+    videoPages()
+  ]);
   const now = new Date();
   const items: Item[] = [];
 
@@ -82,6 +101,8 @@ export async function allItems(): Promise<Item[]> {
       kind: 'article',
       slug: t.slug,
       url: t.url,
+      href: t.url,
+      offsite: false,
       topic: t.primaryTopic,
       alsoFiled: t.alsoFiled ?? [],
       title: post.data.title,
@@ -91,6 +112,7 @@ export async function allItems(): Promise<Item[]> {
       views: null,
       thumbnail: post.data.image ?? null,
       external: null,
+      short: false,
       draft: !isPublished(post.data.pubDate, now)
     });
   }
@@ -99,22 +121,35 @@ export async function allItems(): Promise<Item[]> {
     const key = `videos:${video.data.id}`;
     const t = entries[key];
     if (!t) continue;
+    /*
+      No row, no page. The card then points at YouTube, which is where the video has been
+      the whole time, rather than at a page that would only exist to say so.
+    */
+    const page = pages.get(video.data.id);
+    const live = page ? isPublished(page.publishedAt, now) : false;
     items.push({
       key,
       kind: 'video',
       slug: t.slug,
-      url: t.url,
+      url: live ? t.url : null,
+      href: live ? t.url : video.data.link,
+      offsite: !live,
       topic: t.primaryTopic,
       alsoFiled: t.alsoFiled ?? [],
       title: video.data.title,
-      // Videos carry no description in the collection. The transcript work in phase
-      // seven is what eventually fills this.
-      description: '',
+      /*
+        Videos carry no description in the collection, and nothing generates one. A row in
+        video_pages is the only source, so until Michael writes one a video row in a feed
+        is a title, a kind and a runtime. That is the shape to design for, not the
+        exception to handle.
+      */
+      description: page?.summary ?? '',
       date: video.data.date,
       length: runtime(video.data.duration),
       views: video.data.views ?? null,
       thumbnail: video.data.thumbnail,
       external: video.data.link,
+      short: video.data.short,
       draft: !isPublished(video.data.date, now)
     });
   }
@@ -129,7 +164,12 @@ export async function itemsInTopic(slug: string): Promise<Item[]> {
 }
 
 export async function itemByUrl(url: string): Promise<Item | undefined> {
-  return (await allItems()).find((i) => i.url === url);
+  return (await allItems()).find((i) => i.url !== null && i.url === url);
+}
+
+/** Everything with a page on this site. What getStaticPaths and the sitemap want. */
+export async function pagedItems(): Promise<Item[]> {
+  return (await allItems()).filter((i) => i.url !== null);
 }
 
 export async function itemsByKeys(keys: readonly string[]): Promise<Item[]> {

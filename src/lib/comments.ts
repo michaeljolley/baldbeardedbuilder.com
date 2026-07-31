@@ -344,3 +344,8 @@ async function loadReplies(): Promise<Map<TargetKind, Map<string, number>>> {
 export async function bakedReplies(kind: TargetKind, key: string): Promise<number> {
   return (await loadReplies()).get(kind)?.get(key) ?? 0;
 }
+
+/** Every reply count for one kind, keyed by target. Empty when Supabase is not configured. */
+export async function bakedRepliesFor(kind: TargetKind): Promise<Map<string, number>> {
+  return (await loadReplies()).get(kind) ?? new Map();
+}

@@ -208,9 +208,16 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
   return (
     <div class="shell">
       <aside class="rail">
-        <p class="eyebrow">
-          {total} {total === 1 ? 'reply' : 'replies'}
-        </p>
+        {/*
+          At zero there is nothing to count, so the rail stays empty rather than
+          announcing "0 replies" above an invitation to write the first one. A count
+          is a fact about a conversation, and there is no conversation yet.
+        */}
+        {total > 0 && (
+          <p class="eyebrow">
+            {total} {total === 1 ? 'reply' : 'replies'}
+          </p>
+        )}
       </aside>
 
       <div>
@@ -243,7 +250,9 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
 
         {loadFailed && (
           <p class="note" role="status">
-            The live replies did not load, so that count is from the last build.{' '}
+            {total > 0
+              ? 'The live replies did not load, so that count is from the last build. '
+              : 'The replies did not load. '}
             <button class="linkish" type="button" onClick={load}>Try again</button>
           </p>
         )}

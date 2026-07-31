@@ -58,8 +58,13 @@ async function urlForComment(kind: string, key: string): Promise<string | null> 
     return found ? absolute(`${found.url}#comments`) : null;
   }
 
+  /*
+    No page, no link. A video with no video_pages row has no comment thread to point at,
+    so there is nothing to say here. renderNotification treats null as "this event no
+    longer resolves" and settles the row rather than retrying it forever.
+  */
   const [item] = await itemsByKeys([key]);
-  return item ? absolute(`${item.url}#comments`) : null;
+  return item?.url ? absolute(`${item.url}#comments`) : null;
 }
 
 export interface DrainResult {

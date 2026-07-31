@@ -54,16 +54,67 @@ test('every topic page was built', { skip: !hasBuild && 'no dist, run pnpm build
   assert.deepEqual(missing, [], `topic index pages missing: ${missing.join(', ')}`);
 });
 
-test('every content item was built at its taxonomy URL', { skip: !hasBuild && 'no dist, run pnpm build first' }, () => {
+test('every article was built at its taxonomy URL', { skip: !hasBuild && 'no dist, run pnpm build first' }, () => {
   const taxonomy = JSON.parse(
     fs.readFileSync(path.join(ROOT, 'src', 'config', 'taxonomy.json'), 'utf8')
   );
+  /*
+    Articles only. A video's taxonomy url is where its page goes if it ever gets one, and
+    it only gets one when there is a video_pages row, per decision 22 and amendment 47. On
+    a build with no database there are none, and that is the shipping configuration rather
+    than a failure. The test below is the one that keeps videos honest.
+  */
   const missing = Object.entries(taxonomy.entries)
+    .filter(([key]) => key.startsWith('blog:'))
     .filter(([, e]) => !built(e.url))
     .map(([k, e]) => `${k} -> ${e.url}`);
   assert.deepEqual(
     missing,
     [],
     `${missing.length} items not built:\n  ${missing.slice(0, 20).join('\n  ')}`
+  );
+});
+
+/*
+  A video page exists or it does not, and either is fine. What is not fine is a page that
+  exists and says nothing, which is what the site shipped before: every video had a page
+  and every page apologised for having no transcript. So this asserts the only property
+  that matters, which is that nothing links to a video page that was not built.
+*/
+test('nothing links to a video page that was not built', { skip: !hasBuild && 'no dist, run pnpm build first' }, () => {
+  const taxonomy = JSON.parse(
+    fs.readFileSync(path.join(ROOT, 'src', 'config', 'taxonomy.json'), 'utf8')
+  );
+  const unbuilt = new Set(
+    Object.entries(taxonomy.entries)
+      .filter(([key]) => key.startsWith('videos:'))
+      .map(([, e]) => e.url)
+      .filter((url) => !built(url))
+  );
+
+  const html = [];
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name.endsWith('.html')) html.push(full);
+    }
+  };
+  walk(DIST);
+
+  const offenders = [];
+  for (const file of html) {
+    const body = fs.readFileSync(file, 'utf8');
+    for (const url of unbuilt) {
+      if (body.includes(`href="${url}"`)) {
+        offenders.push(`${path.relative(DIST, file)} links to ${url}`);
+      }
+    }
+  }
+
+  assert.deepEqual(
+    offenders,
+    [],
+    `${offenders.length} links to video pages that do not exist:\n  ${offenders.slice(0, 20).join('\n  ')}`
   );
 });

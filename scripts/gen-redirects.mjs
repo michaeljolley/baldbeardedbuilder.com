@@ -121,15 +121,18 @@ for (const from of RETIRED) {
 }
 
 /*
-  3. Index and pagination routes that v2 does not have. Topic pages replace the single
-     flat blog index, and there is no combined video index either. Home carries the
-     Fresh rail, so it is the honest destination rather than a topic picked at random.
+  3. Index and pagination routes that v2 does not have in the same shape. Topic pages
+     replace the single flat blog index, so a blog index page has no successor and home
+     carries the Fresh rail, which makes it the honest destination.
+
+     The video index does have a successor. /videos/ is a real page again, listing the
+     whole catalogue, so the old index and its pagination land there rather than being
+     dumped on the front page.
 */
 add('/blog/', '/');
-add('/videos/', '/');
 for (let n = 2; n <= 12; n++) {
   add(`/blog/${n}/`, '/');
-  add(`/videos/${n}/`, '/');
+  add(`/videos/${n}/`, '/videos/');
 }
 
 const sorted = [...rules.entries()].sort(([a], [b]) => {

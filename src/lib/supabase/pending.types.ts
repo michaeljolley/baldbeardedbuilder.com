@@ -11,7 +11,7 @@
   project this file is deleted and the casts come out with it. If it is still here in six
   months, that is the smell it is meant to be.
 
-  Covers 20260801000000_notifications.sql only.
+  Covers 20260801000000_notifications.sql and 20260802000000_video_pages.sql only.
 */
 
 import type { Json } from './database.types';
@@ -19,6 +19,28 @@ import type { Json } from './database.types';
 export interface PendingDatabase {
   public: {
     Tables: {
+      video_pages: {
+        Row: {
+          video_id: string;
+          summary: string | null;
+          intro_markdown: string | null;
+          published_at: string;
+          updated_at: string;
+          created_at: string;
+        };
+        Insert: {
+          video_id: string;
+          summary?: string | null;
+          intro_markdown?: string | null;
+          published_at?: string;
+        };
+        Update: {
+          summary?: string | null;
+          intro_markdown?: string | null;
+          published_at?: string;
+        };
+        Relationships: [];
+      };
       email_outbox: {
         Row: {
           id: number;

@@ -5,6 +5,11 @@
   Still a Netlify Form, still posting to the same `net-drip` form the current site uses,
   so nothing on the subscriber side changes. Restyled only.
 
+  Deliberately no issue count and no subscriber count. The archive in the content
+  submodule holds the recent run, not the whole history, so any number built from it
+  understates the real one and reads as a smaller newsletter than this is. A count that
+  is only right at a particular scale does not belong in a build that ships at zero.
+
   The input id has to be unique per page because more than one Drip block can appear on
   the same document, and two labels pointing at the same id makes the second one lie.
 */
@@ -13,10 +18,9 @@ import { EXTERNAL } from '../config/site';
 interface Props {
   /** Distinguishes this block's input from any other Drip block on the same page. */
   uid: string;
-  issues?: number;
 }
 
-const { uid, issues } = Astro.props;
+const { uid } = Astro.props;
 const inputId = `drip-${uid}`;
 ---
 
@@ -48,7 +52,7 @@ const inputId = `drip-${uid}`;
       <button class="btn primary" type="submit">Subscribe</button>
     </form>
     <p class="fine">
-      {issues ? `${issues.toLocaleString('en-US')} issues sent` : 'Free'} &middot; no sponsor reads &middot;
+      Free &middot; no sponsor reads &middot;
       <a href={EXTERNAL.drip}>read the archive</a>
     </p>
   </div>

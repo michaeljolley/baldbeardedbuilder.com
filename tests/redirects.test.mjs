@@ -40,10 +40,26 @@ const pages = new Set([
   '/about/',
   '/conduct/',
   '/dev-disasters/',
+  '/privacy/',
   '/report/',
+  '/search/',
   '/submit/',
+  '/terms/',
   '/uses/',
-  ...Object.values(taxonomy.entries).map((e) => e.url)
+  '/videos/',
+  /*
+    Articles only.
+
+    A video's taxonomy url is where its page would be, not where a page is. A video page
+    only exists when there is a video_pages row for it, per decision 22 and amendment 47,
+    and this test cannot see the database. So a redirect pointing at a video url is a
+    redirect that might land on a 404 depending on what somebody has written this week,
+    which is not a redirect anybody should be allowed to write. Sending it to YouTube or
+    to the topic feed is the answer, and the test below is what enforces that.
+  */
+  ...Object.entries(taxonomy.entries)
+    .filter(([key]) => key.startsWith('blog:'))
+    .map(([, e]) => e.url)
 ]);
 
 test('every redirect has a source, a destination and a 301', () => {
@@ -68,6 +84,16 @@ test('no source appears twice', () => {
 test('every destination is a page that exists', () => {
   const missing = explicit.filter((r) => !pages.has(r.to)).map((r) => `${r.from} -> ${r.to}`);
   assert.deepEqual(missing, [], `destinations that are not real pages:\n  ${missing.join('\n  ')}`);
+});
+
+test('no redirect points at a video page, which may not exist', () => {
+  const videoUrls = new Set(
+    Object.entries(taxonomy.entries)
+      .filter(([key]) => key.startsWith('videos:'))
+      .map(([, e]) => e.url)
+  );
+  const risky = explicit.filter((r) => videoUrls.has(r.to)).map((r) => `${r.from} -> ${r.to}`);
+  assert.deepEqual(risky, [], `redirects to conditional video pages:\n  ${risky.join('\n  ')}`);
 });
 
 test('no redirect chains, a destination is never also a source', () => {

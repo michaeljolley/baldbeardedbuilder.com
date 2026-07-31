@@ -18,11 +18,17 @@ import { serveDev } from './lib/serve-dev.mjs';
    a line here, which is the point. */
 const PAGES = [
   ['home', '/'],
+  ['videos', '/videos/'],
   ['topic index', '/csharp/'],
   ['topic filtered', '/csharp/articles/'],
   ['empty topic', '/mcp/'],
   ['article', '/csharp/the-traps-of-nullable-in-c-sharp/'],
-  ['video', '/windows/keep-track-of-vs-code-windows-with-peacock/'],
+  /*
+    A video detail page exists only when there is a video_pages row for it, and there are
+    none until Michael writes one. So there is no video page archetype to audit yet, and
+    hardcoding a URL here just makes the gate fail on a page nobody asked for. The videos
+    index above is the surface every video actually has.
+  */
   ['disaster archive', '/dev-disasters/'],
   ['disaster filtered', '/dev-disasters/error/newest/'],
   ['disaster', '/dev-disasters/a-regex-ate-the-payroll-run/'],

@@ -12,6 +12,7 @@
 import seed from '../config/disasters.seed.json';
 import { SEVERITIES, type SeverityId } from '../config/site';
 import { bakedLikes } from './likes';
+import { bakedRepliesFor } from './comments';
 
 export interface Disaster {
   /** Sequential, shown as the diagnostic code. Stable, never reused. */
@@ -45,7 +46,6 @@ interface SeedRow {
   title: string;
   line: string;
   teller: string | null;
-  replies: number;
   published: string;
   featured?: string;
   body: string[];
@@ -54,15 +54,20 @@ interface SeedRow {
 const SEVERITY_IDS = SEVERITIES.map((s) => s.id) as readonly string[];
 
 /*
-  Like counts are read once here, at module load, rather than per page.
+  Like and reply counts are read once here, at module load, rather than per page.
 
   Top level await so that allDisasters stays synchronous. Every page on the site calls it,
   several of them inside getStaticPaths, and turning it async would push the await into a
   dozen call sites for no gain. The count is real in both places it appears, which is the
   point: a card on the wall saying eleven and its own detail page saying nothing would
   read as a broken site.
+
+  Neither number lives in the seed file. A seeded reply count is a claim that a
+  conversation happened, and on a site with an empty comments table no conversation has.
+  Both read zero until somebody turns up, which is the truth.
 */
 const likesById = await bakedLikes('disaster');
+const repliesById = await bakedRepliesFor('disaster');
 
 let cache: Disaster[] | null = null;
 
@@ -82,7 +87,7 @@ export function allDisasters(): Disaster[] {
       line: r.line,
       teller: r.teller,
       likes: likesById.get(String(r.id)) ?? 0,
-      replies: r.replies,
+      replies: repliesById.get(String(r.id)) ?? 0,
       date: new Date(r.published),
       featuredAt: r.featured ? new Date(r.featured) : null,
       body: r.body
@@ -101,8 +106,11 @@ export function allDisasters(): Disaster[] {
  * which is the state on day one. Before this existed the lead was simply the newest row,
  * so nobody was ever chosen and the "your story is on the front page" email described
  * something that could not happen.
+ *
+ * Undefined when nothing has been published. The front page draws an invitation in that
+ * case rather than a story, so this returns the absence rather than inventing a lead.
  */
-export function leadDisaster(): Disaster {
+export function leadDisaster(): Disaster | undefined {
   const rows = allDisasters();
   const featured = rows
     .filter((d) => d.featuredAt)

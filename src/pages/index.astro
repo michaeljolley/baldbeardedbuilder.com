@@ -35,9 +35,25 @@ const lead = leadDisaster();
   Stepping a third of the way through the archive keeps the second pick well away from
   the lead without needing a random number that would change on every rebuild.
 */
-const another = disasters.filter((d) => d.id !== lead.id)[Math.floor(disasters.length / 3)] ?? lead;
+const another = lead
+  ? disasters.filter((d) => d.id !== lead.id)[Math.floor(disasters.length / 3)]
+  : undefined;
 const topProblems = sortDisasters(disasters, 'liked').slice(0, 4);
 const counts = countsBySeverity();
+
+/*
+  Engagement on the lead, printed only where there is any.
+
+  A story carrying "0 likes, 0 replies" on the front page reads as a story nobody wanted,
+  which is a different claim from a story nobody has found yet. Silence is the honest
+  rendering of not knowing.
+*/
+const leadStats = lead
+  ? [
+      lead.likes > 0 ? `${lead.likes.toLocaleString('en-US')} likes` : null,
+      lead.replies > 0 ? `${lead.replies.toLocaleString('en-US')} replies` : null
+    ].filter(Boolean)
+  : [];
 
 const drips = await getCollection('drips');
 drips.sort((a, b) => (a.data.publishDate < b.data.publishDate ? 1 : -1));
@@ -56,23 +72,66 @@ const dripDay = latestDrip
   <main id="main">
     <section class="front shell">
       <div class="lead">
-        <div class="lead-top">
-          <span class="path">dev-disasters<span class="sep">/</span><b>{disasterCode(lead.id)}</b></span>
-          <span class="spacer"></span>
-          <span class={`sev ${sevClass(lead.severity)}`}>{sevLabel(lead.severity)}</span>
-        </div>
-        <h1>{lead.title}</h1>
-        <p class="excerpt">{lead.line}</p>
-        <div class="acts">
-          <a class="btn primary" href={lead.url}>Read the whole thing</a>
-          <a class="btn" href={another.url}>&#8635; Another one</a>
-          <span class="by">
-            told by {
-              lead.teller ? <a href={`/builders/${lead.teller}/`}>{lead.teller}</a> : 'anonymous'
-            } &middot; {lead.likes.toLocaleString('en-US')} likes &middot; {lead.replies} replies
-          </span>
-        </div>
-
+        {
+          lead ? (
+            <Fragment>
+              <div class="lead-top">
+                <span class="path">
+                  dev-disasters<span class="sep">/</span>
+                  <b>{disasterCode(lead.id)}</b>
+                </span>
+                <span class="spacer" />
+                <span class={`sev ${sevClass(lead.severity)}`}>{sevLabel(lead.severity)}</span>
+              </div>
+              <h1>{lead.title}</h1>
+              <p class="excerpt">{lead.line}</p>
+              <div class="acts">
+                <a class="btn primary" href={lead.url}>
+                  Read the whole thing
+                </a>
+                {another && (
+                  <a class="btn" href={another.url}>
+                    &#8635; Another one
+                  </a>
+                )}
+                <span class="by">
+                  told by{' '}
+                  {lead.teller ? <a href={`/builders/${lead.teller}/`}>{lead.teller}</a> : 'anonymous'}
+                  {leadStats.map((s) => (
+                    <Fragment> &middot; {s}</Fragment>
+                  ))}
+                </span>
+              </div>
+            </Fragment>
+          ) : (
+            /*
+              Nothing published yet. The front page still leads with dev disasters, because
+              that is what this site opens with, but it asks for one instead of pretending
+              to have one. No apology, no "coming soon", no empty frame where a story goes.
+            */
+            <Fragment>
+              <div class="lead-top">
+                <span class="path">dev-disasters</span>
+                <span class="spacer" />
+                <span class="sev sev-info">Info</span>
+              </div>
+              <h1>Somebody has to go first.</h1>
+              <p class="excerpt">
+                This is where other people's worst days live. The outage, the migration
+                that ran against the wrong database, the regex that paid everybody twice.
+                Nobody gets named and nobody gets dunked on.
+              </p>
+              <div class="acts">
+                <a class="btn primary" href="/submit/">
+                  Tell me yours
+                </a>
+                <a class="btn" href="/dev-disasters/">
+                  What counts as one
+                </a>
+              </div>
+            </Fragment>
+          )
+        }
         <div class="byline">
           <span class="who">I'm Michael.</span>
           <p>
@@ -90,10 +149,11 @@ const dripDay = latestDrip
         </div>
         {
           fresh.map((i) => (
-            <a class="row" href={i.url}>
+            <a class="row" href={i.href} rel={i.offsite ? 'noopener' : undefined}>
               <h3>{i.title}</h3>
               <span class="meta">
                 <span class="k">{i.kind === 'video' ? 'Video' : 'Article'}</span> {i.length}
+                {i.offsite && <Fragment> &middot; YouTube</Fragment>}
               </span>
             </a>
           ))
@@ -117,30 +177,39 @@ const dripDay = latestDrip
         <a class="more" href="/csharp/">Everything I've made &rarr;</a>
       </div>
       <p class="lead-in">
-        New around here? These are the ones people keep sending to their coworkers.
+        New around here? The things I would hand you first, in the order I would hand
+        them over.
       </p>
       <div class="grid">
         {
           starters.map((i, n) =>
             n === 0 ? (
-              <a class="card wide" href={i.url}>
-                <span class="thumb">{i.length}</span>
+              <a class="card wide" href={i.href} rel={i.offsite ? 'noopener' : undefined}>
+                <span class="thumb">
+                  {i.thumbnail ? (
+                    <img src={i.thumbnail} alt="" width="480" height="270" loading="lazy" />
+                  ) : (
+                    i.length
+                  )}
+                </span>
                 <span class="body">
                   <h3>{i.title}</h3>
                   {i.description && <p>{i.description}</p>}
                   <span class="foot">
                     <span class="k">{i.kind === 'video' ? 'Video' : 'Article'}</span> {i.topic}{' '}
                     &middot; {i.length}
+                    {i.offsite && <Fragment> &middot; YouTube</Fragment>}
                   </span>
                 </span>
               </a>
             ) : (
-              <a class="card" href={i.url}>
+              <a class="card" href={i.href} rel={i.offsite ? 'noopener' : undefined}>
                 <h3>{i.title}</h3>
                 {i.description && <p>{i.description}</p>}
                 <span class="foot">
                   <span class="k">{i.kind === 'video' ? 'Video' : 'Article'}</span> {i.topic}{' '}
                   &middot; {i.length}
+                  {i.offsite && <Fragment> &middot; YouTube</Fragment>}
                 </span>
               </a>
             )
@@ -167,7 +236,7 @@ const dripDay = latestDrip
 
       <div class="rule major">
         <h2>Dev disasters</h2>
-        <a class="more" href="/dev-disasters/">All {counts.all} &rarr;</a>
+        <a class="more" href="/dev-disasters/">{counts.all > 0 ? `All ${counts.all} ` : 'All '}&rarr;</a>
       </div>
       <p class="lead-in">Other people's worst days, filed by how bad it got.</p>
       <div class="panel">
@@ -181,20 +250,30 @@ const dripDay = latestDrip
               <span class={`sev ${sevClass(d.severity)}`}>{sevLabel(d.severity)}</span>
               <span class="msg">{d.line}</span>
               <span class="loc">
-                #{disasterCode(d.id)} &middot; &#9825; {d.likes.toLocaleString('en-US')}
+                #{disasterCode(d.id)}
+                {d.likes > 0 && <Fragment> &middot; &#9825; {d.likes.toLocaleString('en-US')}</Fragment>}
               </span>
             </a>
           ))
+        }
+        {
+          topProblems.length === 0 && (
+            <a class="prow" href="/submit/">
+              <span class="sev sev-info">Info</span>
+              <span class="msg">No problems reported. Yours would be the first.</span>
+              <span class="loc">#000</span>
+            </a>
+          )
         }
       </div>
 
       <div class="story-cta">
         <a class="btn primary" href="/submit/">Tell me yours</a>
-        <span class="fine">Post anonymously if you'd rather. Most people do.</span>
+        <span class="fine">Post anonymously if you'd rather. No name is ever required.</span>
       </div>
 
       <div class="rule major" id="drip"><h2>The .NET Drip</h2></div>
-      <Drip uid="home" issues={drips.length} />
+      <Drip uid="home" />
     </div>
   </main>
 </Base>

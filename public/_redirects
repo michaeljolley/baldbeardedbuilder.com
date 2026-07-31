@@ -14,7 +14,7 @@
 # Resolving from the id fixes it and stops the same rot recurring, because a
 # destination that stops existing now fails the build test instead of the visitor.
 
-# 148 explicit rules
+# 147 explicit rules
 
 /blog/ef-core-audit-logging-with-interceptors-that-do-not-clutter-your-dbcontext/    /data/ef-core-audit-logging-with-interceptors-that-do-not-clutter-your-dbcontext/    301!
 /blog/virtual-vs-override-vs-partial-in-c-explained-with-small-runnable-examples/    /csharp/virtual-vs-override-vs-partial-in-c-explained-with-small-runnable-examples/  301!
@@ -140,17 +140,17 @@
 /blog/girls-who-code                                                                 /dev-life/girls-who-code/                                                            301!
 /posts/stream-setup/                                                                 /dev-life/current-twitch-live-coding-stream-setup/                                   301!
 /posts/stream-setup                                                                  /dev-life/current-twitch-live-coding-stream-setup/                                   301!
-/videos/10/                                                                          /                                                                                    301!
-/videos/11/                                                                          /                                                                                    301!
-/videos/12/                                                                          /                                                                                    301!
-/videos/2/                                                                           /                                                                                    301!
-/videos/3/                                                                           /                                                                                    301!
-/videos/4/                                                                           /                                                                                    301!
-/videos/5/                                                                           /                                                                                    301!
-/videos/6/                                                                           /                                                                                    301!
-/videos/7/                                                                           /                                                                                    301!
-/videos/8/                                                                           /                                                                                    301!
-/videos/9/                                                                           /                                                                                    301!
+/videos/10/                                                                          /videos/                                                                             301!
+/videos/11/                                                                          /videos/                                                                             301!
+/videos/12/                                                                          /videos/                                                                             301!
+/videos/2/                                                                           /videos/                                                                             301!
+/videos/3/                                                                           /videos/                                                                             301!
+/videos/4/                                                                           /videos/                                                                             301!
+/videos/5/                                                                           /videos/                                                                             301!
+/videos/6/                                                                           /videos/                                                                             301!
+/videos/7/                                                                           /videos/                                                                             301!
+/videos/8/                                                                           /videos/                                                                             301!
+/videos/9/                                                                           /videos/                                                                             301!
 /blog/10/                                                                            /                                                                                    301!
 /blog/11/                                                                            /                                                                                    301!
 /blog/12/                                                                            /                                                                                    301!
@@ -162,7 +162,6 @@
 /blog/7/                                                                             /                                                                                    301!
 /blog/8/                                                                             /                                                                                    301!
 /blog/9/                                                                             /                                                                                    301!
-/videos/                                                                             /                                                                                    301!
 /blog/                                                                               /                                                                                    301!
 
 # Safety net. Anything under these prefixes that is not named above was never a real

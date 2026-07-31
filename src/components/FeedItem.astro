@@ -5,25 +5,39 @@
   The whole row is the link. The kind label, the title, the description and the stats all
   sit inside a single anchor so there is exactly one tab stop per item, which is what
   keyboard users want out of a list of fifty things.
+
+  A row goes wherever the item actually lives. Most videos have no page on this site, so
+  most video rows are links to YouTube, and the stat line says so rather than leaving
+  somebody to find out by arriving there.
 */
 import type { Item } from '../lib/content';
 
 interface Props {
   item: Item;
+  /*
+    A feed sitting directly under a section heading uses h3. A feed broken into groups
+    with their own headings has to drop a level, or the group label and the rows inside
+    it end up as siblings and the outline stops describing the page.
+  */
+  level?: 3 | 4;
 }
 
-const { item } = Astro.props;
+const { item, level = 3 } = Astro.props;
+const Title = `h${level}` as 'h3' | 'h4';
 
 const stats: string[] = [item.length];
 if (item.views !== null) {
   stats.push(`${item.views.toLocaleString('en-US')} views`);
 }
+if (item.offsite) {
+  stats.push('YouTube');
+}
 ---
 
-<a class="fitem" href={item.url}>
+<a class="fitem" href={item.href} rel={item.offsite ? 'noopener' : undefined}>
   <span class="kind">{item.kind === 'video' ? 'Video' : 'Article'}</span>
   <span>
-    <h3>{item.title}</h3>
+    <Title>{item.title}</Title>
     {item.description && <p>{item.description}</p>}
   </span>
   <span class="stat">

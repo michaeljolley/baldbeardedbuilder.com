@@ -1,5 +1,5 @@
 {
-  "_note": "Seed dev disasters. These are placeholder stories carried over from the design mockups so the archive, the wall and the detail template render against real shaped data. Real submissions live in Supabase and arrive through the build hook in decision 23. Michael signs off on the launch seed set before cutover, and this file goes away when he does.",
+  "_note": "Seed dev disasters. These are placeholder stories carried over from the design mockups so the archive, the wall and the detail template render against real shaped data. Real submissions live in Supabase and arrive through the build hook in decision 23. Michael signs off on the launch seed set before cutover, and this file goes away when he does. Deliberately no like or reply counts here: those are read from Supabase at build time and read zero until somebody turns up, because a seeded count is a claim that a conversation happened.",
   "disasters": [
     {
       "id": 412,
@@ -8,7 +8,6 @@
       "title": "The raccoon in the server room was not a metaphor",
       "line": "The ticket said intermittent packet loss on rack four. The cause was a raccoon, and so was the fix.",
       "teller": "dana-codes",
-      "replies": 214,
       "published": "2025-02-11",
       "body": [
         "The alerts were textbook. Packet loss on one rack, clean everywhere else, and it moved around enough that three of us spent a day writing very confident theories about a failing switch.",
@@ -23,7 +22,6 @@
       "title": "I demoed to the CEO with the wrong monitor shared",
       "line": "He was very polite about the browser tab titled \"how to leave a job without burning bridges\".",
       "teller": null,
-      "replies": 141,
       "published": "2025-01-28",
       "body": [
         "I had rehearsed the demo four times. What I had not rehearsed was picking the right display out of a list of three in a meeting that started ninety seconds late.",
@@ -38,7 +36,6 @@
       "title": "The intern deleted the resource group. We thanked him later.",
       "line": "Everything was gone in ninety seconds. What we found out over the next nine hours was that almost none of it had ever been in source control.",
       "teller": null,
-      "replies": 156,
       "published": "2025-03-04",
       "body": [
         "He had been given contributor on the subscription on his second day, which is the first thing that was wrong and the last thing anybody talked about afterwards.",
@@ -54,7 +51,6 @@
       "title": "I spent two days debugging a trailing space in a config key",
       "line": "Two days. The diff, when I finally found it, was one character wide and invisible in every tool I own.",
       "teller": "sbrennan",
-      "replies": 88,
       "published": "2025-02-02",
       "body": [
         "The setting bound to null in one environment and bound correctly in every other one. Same code, same package, same deployment pipeline.",
@@ -70,7 +66,6 @@
       "title": "The backup job had been failing silently since March",
       "line": "It emailed a mailbox that got deleted when the guy who set it up left. Six months of green dashboards and zero backups.",
       "teller": null,
-      "replies": 102,
       "published": "2024-12-19",
       "body": [
         "The job reported success to a dashboard and reported failure to an email address. That split is the entire story.",
@@ -86,7 +81,6 @@
       "title": "A regex ate the payroll run",
       "line": "One unescaped dot. Eleven hundred people got paid an amount that was technically a number.",
       "teller": "m-santos",
-      "replies": 94,
       "published": "2025-03-18",
       "body": [
         "The pattern was supposed to pull a decimal amount out of a fixed width import. The dot was meant to be a decimal point. The regex read it as any character.",
@@ -102,7 +96,6 @@
       "title": "My \"temporary\" console app ran in production for six years",
       "line": "I named it temp-fix. It outlived two rewrites, one acquisition, and my entire tenure at the company.",
       "teller": "chrisd-dev",
-      "replies": 67,
       "published": "2024-11-30",
       "body": [
         "It moved a file from one share to another and renamed it. Forty lines. I wrote it on a Thursday to unblock a client while the real integration got built.",
@@ -118,7 +111,6 @@
       "title": "I ran the migration on prod. Then I ran it again.",
       "line": "Idempotent is a word I now understand at a cellular level. Four million rows backfilled twice, and two dashboards that finally agreed with each other.",
       "teller": "chrisd-dev",
-      "replies": 87,
       "published": "2025-03-22",
       "body": [
         "I was the person who knew the database, which is how you get handed a deploy window.",
@@ -136,7 +128,6 @@
       "title": "DateTime.Now took down a hospital scheduling system",
       "line": "Every appointment moved by an hour on a Sunday morning in March. The nurses noticed before the monitoring did.",
       "teller": "rtorres",
-      "replies": 73,
       "published": "2025-03-10",
       "body": [
         "Appointments were stored as local time. Reminders were calculated in local time. Nothing anywhere carried an offset, because the whole system ran in one building in one time zone and had done for a decade.",
@@ -152,7 +143,6 @@
       "title": "A rounding error paid one customer $1.4 million",
       "line": "Banker's rounding is a real thing with a real name, and I learned both of them on a Saturday.",
       "teller": "a-okoro",
-      "replies": 44,
       "published": "2025-01-14",
       "body": [
         "A rebate calculation ran over several million line items and rounded at every step instead of once at the end.",
@@ -168,7 +158,6 @@
       "title": "Our load test ran against production for eleven minutes",
       "line": "The staging connection string was right there in the config. The one we shipped read an environment variable nobody had touched since 2021.",
       "teller": null,
-      "replies": 61,
       "published": "2025-04-02",
       "body": [
         "The load test harness had a config file with a staging connection string in it, checked in, obvious, correct.",
@@ -184,7 +173,6 @@
       "title": "I opened a PR titled \"fix\" that changed 412 files",
       "line": "My editor had been quietly reformatting on save for a month. The one real change was on line 8,214.",
       "teller": null,
-      "replies": 39,
       "published": "2024-10-08",
       "body": [
         "A format on save setting got turned on by an extension update, and my editor started applying a slightly different style than the repo had been using.",
@@ -200,7 +188,6 @@
       "title": "Our retry policy retried the delete",
       "line": "Three attempts, exponential backoff, and a delete that had been succeeding all along. We removed the same records four times.",
       "teller": "k-nakamura",
-      "replies": 52,
       "published": "2025-02-24",
       "body": [
         "The downstream service did the work and then timed out writing the response. From our side that looks identical to never having run at all.",
@@ -216,7 +203,6 @@
       "title": "It's always DNS. Except the one time it was a leap second.",
       "line": "We spent six hours proving it was DNS. It was not DNS. It has never been so satisfying to be so completely wrong.",
       "teller": "jenwrites",
-      "replies": 38,
       "published": "2025-04-09",
       "body": [
         "Nodes started dropping out of the cluster in a pattern that looked exactly like resolution failures. So we did what everybody does and went after DNS with both hands.",
@@ -232,7 +218,6 @@
       "title": "Our cache warmed itself into an outage every morning at 6:02",
       "line": "The warmer was scheduled for 6:00. It took two minutes to bring the site down, every day, for five weeks.",
       "teller": null,
-      "replies": 31,
       "published": "2024-09-16",
       "body": [
         "The cache warmer ran every morning at six and fetched every product page so the first real visitor got a warm response.",
@@ -248,7 +233,6 @@
       "title": "We shipped a feature flag that defaulted to on",
       "line": "The flag existed so we could turn it on carefully. It arrived on. There was nothing left to turn.",
       "teller": null,
-      "replies": 27,
       "published": "2024-08-21",
       "body": [
         "The flag was added so the rewrite could go out dark and get enabled for one percent of traffic on a Tuesday morning with everybody watching.",

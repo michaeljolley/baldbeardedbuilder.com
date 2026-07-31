@@ -35,10 +35,12 @@
     social_contacts      nothing in v2 reads it
     streams              per stream rollups. Nothing in v2 reads it either. See below
 
-  NAMING HAZARD. There are now three unrelated things called videos: the legacy `videos`
+  NAMING HAZARD. There are now four unrelated things called videos: the legacy `videos`
   table above, which is the idea pipeline, the `videos` collection in the content
-  submodule, which is the real catalogue, and `video_transcripts`, which is v2's. Only
-  the last two exist in this project. Do not let a fourth in.
+  submodule, which is the real catalogue, `video_transcripts`, which is the machine half
+  of a v2 video page, and `video_pages`, which is the authored half and the only thing
+  that decides whether a video has a page at all. Only the last three exist in this
+  project. Do not let a fifth in.
 
   WHY streams IS NOT HERE, WHICH CORRECTS AN EARLIER READ
   ------------------------------------------------------
