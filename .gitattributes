@@ -1,0 +1,6 @@
+# Generated artifacts are committed so CI can regenerate them and diff. That only works
+# if the checked out bytes match what the generator writes, so these stay LF on every
+# platform regardless of core.autocrlf.
+src/styles/themes.css        text eol=lf
+src/lib/themes.generated.ts  text eol=lf
+src/lib/ec-themes.generated.mjs text eol=lf

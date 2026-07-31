@@ -1,0 +1,24 @@
+# Netlify only reads this file from the repository root or the configured base
+# directory. It used to live in public/, where it was copied into dist/ and never
+# read, so none of these rules were running.
+#
+# Content redirects are not written here. They are generated into public/_redirects
+# by scripts/gen-redirects.mjs, because netlify.toml rules are evaluated before
+# _redirects rules, and a wildcard here would shadow the specific per item rules the
+# generator emits. Only rules that _redirects cannot express belong in this file.
+
+[build]
+  command = "pnpm build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"
+  PNPM_VERSION = "9"
+
+# Short links. bbb.dev fronts the shorturls table through a Supabase edge function.
+# Host matching is not expressible in _redirects, so it stays here.
+[[redirects]]
+  from = "https://bbb.dev/*"
+  to = "https://bvyerlczpakdlfvybkev.supabase.co/functions/v1/redirect?path=:splat"
+  status = 301
+  force = true

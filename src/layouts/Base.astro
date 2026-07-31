@@ -1,0 +1,101 @@
+---
+import '../styles/themes.css';
+import '../styles/app.css';
+
+import Masthead from '../components/Masthead.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { SITE } from '../config/site';
+import { THEMES, DEFAULT_DARK, DEFAULT_LIGHT, THEME_STORAGE_KEY } from '../lib/themes.generated';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Topic slug, or "dd" for dev disasters. Drives the current nav marker. */
+  active?: string;
+  image?: string;
+  noindex?: boolean;
+  /** Set on pages whose canonical lives elsewhere, for example a syndicated article. */
+  canonical?: string;
+}
+
+const {
+  title,
+  description = SITE.tagline,
+  active,
+  image = '/images/social.png',
+  noindex = false,
+  canonical
+} = Astro.props;
+
+const pageTitle = title === SITE.name ? title : `${title} | ${SITE.name}`;
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).href;
+const socialImage = new URL(image, Astro.site).href;
+
+/*
+  The picker renders client side, so between first paint and hydration the button would
+  otherwise show whichever theme the server guessed. This map lets the no FOUC script
+  correct the label and the swatch in the same tick it sets data-theme. It is serialized
+  from the generated list, so it cannot drift from the picker.
+*/
+const themeNames = Object.fromEntries(THEMES.map((t) => [t.id, t.name]));
+---
+
+<!doctype html>
+<html lang="en" data-theme={DEFAULT_DARK}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <script is:inline define:vars={{ themeNames, DEFAULT_DARK, DEFAULT_LIGHT, THEME_STORAGE_KEY }}>
+      (function () {
+        var t;
+        try {
+          t = localStorage.getItem(THEME_STORAGE_KEY);
+        } catch (e) {
+          /* private mode */
+        }
+        if (!t || !themeNames[t]) {
+          t = matchMedia('(prefers-color-scheme: light)').matches ? DEFAULT_LIGHT : DEFAULT_DARK;
+        }
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.classList.add('js');
+        document.addEventListener('DOMContentLoaded', function () {
+          var label = document.querySelector('.themer-btn .themer-label');
+          var swatch = document.querySelector('.themer-btn .swatch');
+          if (label) label.textContent = themeNames[t];
+          if (swatch) swatch.setAttribute('data-theme', t);
+        });
+      })();
+    </script>
+
+    <link rel="icon" href="/images/icons/bbb.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Atkinson+Hyperlegible+Next:wght@200..800&family=Fira+Code:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@baldbeardedbuildr" />
+
+    <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Masthead active={active} />
+    <slot />
+    <SiteFooter />
+  </body>
+</html>

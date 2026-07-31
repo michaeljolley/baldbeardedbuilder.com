@@ -1,0 +1,103 @@
+---
+/*
+  Design system proof page. It exists so every primitive in app.css can be checked under
+  all sixteen themes, at 390px and at desktop, with axe pointed at it. Not linked from
+  anywhere and kept out of the index, but built on purpose so CI can assert against it.
+*/
+import Base from '../layouts/Base.astro';
+import { Code } from 'astro-expressive-code/components';
+import { THEMES } from '../lib/themes.generated';
+import { SEVERITIES } from '../config/site';
+
+const sample = `public sealed record Disaster(string Slug, Severity Severity)
+{
+    public static Disaster Parse(string raw)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(raw);
+        var parts = raw.Split(':', 2);
+        return new Disaster(parts[0], Enum.Parse<Severity>(parts[1], true));
+    }
+}`;
+---
+
+<Base title="Kitchen sink" description="Design system proof page." noindex>
+  <main id="main">
+    <section class="shell">
+      <div class="pagehead">
+        <p class="eyebrow">Design system</p>
+        <h1>Kitchen <span class="slash">/</span> sink</h1>
+        <p class="lede">
+          Every primitive in one place, so a theme that breaks one of them breaks
+          visibly instead of quietly.
+        </p>
+      </div>
+
+      <div class="rule major"><h2>Severities</h2></div>
+      <div class="chips">
+        {
+          SEVERITIES.map((s) => (
+            <span class={`sev sev-${s.id === 'warning' ? 'warn' : s.id}`}>{s.label}</span>
+          ))
+        }
+      </div>
+
+      <div class="rule major"><h2>Squiggle</h2></div>
+      <div class="storyhead">
+        <h1>
+          The migration that <span class="squiggle"><span>dropped the wrong table</span></span>
+        </h1>
+      </div>
+
+      <div class="rule major"><h2>Buttons</h2></div>
+      <p>
+        <a class="btn primary" href="#main">Primary action</a>
+        <a class="btn" href="#main">Secondary action</a>
+      </p>
+
+      <div class="rule major"><h2>Chips</h2></div>
+      <div class="chips">
+        <a class="chip on" href="#main">csharp <span class="n">64</span></a>
+        <a class="chip" href="#main">aspnetcore <span class="n">41</span></a>
+        <a class="chip" href="#main">data <span class="n">28</span></a>
+      </div>
+
+      <div class="rule major"><h2>Prose and code</h2></div>
+      <div class="prose">
+        <p>
+          Body copy sets in Atkinson Hyperlegible Next. Inline <code>var(--tok-key)</code>
+          should read against the inset surface, and the fenced block below is rendered by
+          Expressive Code using the same resolved tokens.
+        </p>
+        <h2>A second level heading</h2>
+        <blockquote>
+          A pull quote, which is the only place the display face shows up inside prose.
+        </blockquote>
+        <Code code={sample} lang="csharp" title="Disaster.cs" />
+      </div>
+      <div class="rule major"><h2>Callout</h2></div>
+      <div class="callout">
+        <span class="tag">What I would do now</span>
+        <p>Take the backup first. Then take a second one.</p>
+      </div>
+
+      <div class="rule major"><h2>Rows</h2></div>
+      <div>
+        <article class="row">
+          <h3><a href="#main">Stop parallelizing everything</a></h3>
+          <p class="meta"><span class="k">Article</span> 12 min</p>
+          <p>Parallel.ForEach is not free, and the bill arrives as thread pool starvation.</p>
+        </article>
+        <article class="row">
+          <h3><a href="#main">Repository pattern versus DbContext</a></h3>
+          <p class="meta"><span class="k">Video</span> 18 min</p>
+          <p>One of these is already a unit of work. It is not the one you wrapped.</p>
+        </article>
+      </div>
+
+      <div class="rule major"><h2>Themes in this build</h2></div>
+      <ul class="fine">
+        {THEMES.map((t) => <li>{t.name} <code>{t.id}</code> ({t.scheme})</li>)}
+      </ul>
+    </section>
+  </main>
+</Base>

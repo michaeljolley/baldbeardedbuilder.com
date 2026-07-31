@@ -1,3 +1,8 @@
+# GENERATED IN PART. Specific rules first, catch alls last, because Netlify uses the
+# first match. Rules below are the pre v2 set and still point at /blog/, which becomes
+# an old URL itself once topic first URLs land. scripts/gen-redirects.mjs rewrites all
+# of them to point straight at their final destination so nothing chains.
+
 # old blog posts
 
 /posts/adding-hateoas-to-an-aspnetcore-rest-api/ /blog/adding-hateoas-to-an-asp-net-core-api/
@@ -13,3 +18,9 @@
 /posts/setting-up-raspberry-pi-for-kiosk-mode /blog/setting-up-raspberry-pi-for-use-in-kiosk-mode-with-chromium/
 /posts/using-netlify-functions-to-add-comments-to-gridsome/ /
 /posts/cheers-to-2019-bring-on-2020/ /
+
+# catch alls. These lived in public/netlify.toml, where Netlify never read them, so
+# they have not been running. They sit last so the specific rules above win.
+
+/brain-dump/*  /                 301!
+/posts/*       /blog/:splat      301!

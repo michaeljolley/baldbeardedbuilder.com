@@ -1,0 +1,192 @@
+/*
+  Site configuration.
+
+  Everything here would otherwise have to live in content frontmatter, which sits in the
+  michaeljolley/content submodule and is read only from this repo. Anything that needs to
+  change without a submodule bump belongs in this file.
+*/
+
+export interface Topic {
+  /** URL segment. Content lives at /[slug]/[entry]/ */
+  slug: string;
+  /** Nav and chip label. Lowercase on purpose, it is a path segment first. */
+  label: string;
+  /** Longer name for footer columns and page titles. */
+  title: string;
+  /** Deck copy on the topic page. */
+  blurb: string;
+  /**
+   * Hidden topics keep their URL space reserved but stay out of the nav and the chip
+   * rail. blazor and mcp start thin, and a topic page with three items on it reads as
+   * abandoned rather than new.
+   */
+  visible: boolean;
+}
+
+export const TOPICS: Topic[] = [
+  {
+    slug: 'csharp',
+    label: 'csharp',
+    title: 'C#',
+    blurb:
+      'The language itself. Pattern matching, nullable reference types, records, and the ' +
+      'features people skip because the old way still compiles.',
+    visible: true
+  },
+  {
+    slug: 'aspnetcore',
+    label: 'aspnetcore',
+    title: 'ASP.NET Core',
+    blurb:
+      'Minimal APIs, middleware, dependency injection, configuration, and the parts of ' +
+      'the request pipeline that only bite you in production.',
+    visible: true
+  },
+  {
+    slug: 'data',
+    label: 'data',
+    title: 'Data and EF Core',
+    blurb:
+      'EF Core, SQL Server, migrations, and the long slow realization that the database ' +
+      'was never the slow part.',
+    visible: true
+  },
+  {
+    slug: 'copilot',
+    label: 'copilot',
+    title: 'Copilot and AI',
+    blurb:
+      'Getting real work out of AI tooling, and being honest about the parts where it ' +
+      'still hands you confident nonsense.',
+    visible: true
+  },
+  {
+    slug: 'windows',
+    label: 'windows',
+    title: 'Windows',
+    blurb:
+      'Building for the desktop people actually use. WinUI, packaging, PowerShell, and ' +
+      'the platform quirks nobody documents.',
+    visible: true
+  },
+  {
+    slug: 'cloud',
+    label: 'cloud',
+    title: 'Cloud',
+    blurb:
+      'Azure, containers, deployment, and the bill that shows up when something you ' +
+      'wired at 2am keeps running.',
+    visible: true
+  },
+  {
+    slug: 'dev-life',
+    label: 'dev-life',
+    title: 'Dev life',
+    blurb:
+      'Everything that is not code. Reviews, postmortems, burnout, teaching, and ' +
+      'learning out loud where people can watch you get it wrong.',
+    visible: true
+  },
+  {
+    slug: 'blazor',
+    label: 'blazor',
+    title: 'Blazor',
+    blurb: 'Components, render modes, and where the interactivity boundary actually sits.',
+    visible: false
+  },
+  {
+    slug: 'mcp',
+    label: 'mcp',
+    title: 'MCP',
+    blurb: 'Model Context Protocol servers, tools, and wiring an agent into real systems.',
+    visible: false
+  }
+];
+
+export const TOPIC_SLUGS = TOPICS.map((t) => t.slug);
+export const VISIBLE_TOPICS = TOPICS.filter((t) => t.visible);
+export const topicBySlug = (slug: string) => TOPICS.find((t) => t.slug === slug);
+
+/**
+ * Top level paths that are not topics. Content is served from /[topic]/[slug]/, so a
+ * topic slug that collides with one of these would shadow a real page. Enforced by a
+ * test rather than by remembering.
+ */
+export const RESERVED_SLUGS = [
+  '404',
+  'about',
+  'blog',
+  'builders',
+  'conduct',
+  'dev-disasters',
+  'images',
+  'kitchen-sink',
+  'privacy',
+  'report',
+  'rss.xml',
+  'search',
+  'settings',
+  'sitemap-index.xml',
+  'submit',
+  'terms',
+  'uses',
+  'videos'
+] as const;
+
+/**
+ * The four diagnostic severities, which are the ones the editor already draws. They
+ * replace the rejected SEV-1 through SEV-4 scale, because a developer reading "Warning"
+ * already knows roughly how bad it was.
+ */
+export const SEVERITIES = [
+  { id: 'error', label: 'Error', blurb: 'Took production down.' },
+  { id: 'warning', label: 'Warning', blurb: 'Nearly took production down.' },
+  { id: 'info', label: 'Info', blurb: 'Expensive lesson everybody lived through.' },
+  { id: 'hint', label: 'Hint', blurb: 'Just embarrassing.' }
+] as const;
+
+export type SeverityId = (typeof SEVERITIES)[number]['id'];
+
+/** One sort for the whole dev disasters list. Severity filters it, never groups it. */
+export const DISASTER_SORTS = [
+  { id: 'liked', label: 'Most liked' },
+  { id: 'replies', label: 'Most replies' },
+  { id: 'newest', label: 'Newest' }
+] as const;
+
+export const SITE = {
+  name: 'Bald Bearded Builder',
+  author: 'Michael Jolley',
+  tagline:
+    'Bringing smiles to the syntax, because laughter is the best error handler.',
+  url: 'https://baldbeardedbuilder.com',
+  /** The comment avatar and the host badge key off this handle. */
+  hostHandle: 'michaeljolley',
+  hostBadgeLabel: 'The bald one'
+} as const;
+
+export const EXTERNAL = {
+  drip: 'https://dotnetdrip.com',
+  youtube: 'https://youtube.com/@baldbeardedbuilder',
+  twitch: 'https://twitch.tv/baldbeardedbuilder',
+  github: 'https://github.com/michaeljolley',
+  bluesky: 'https://bsky.app/profile/baldbeardedbuilder.com'
+} as const;
+
+/**
+ * The Start here rail. Hand curated evergreen picks, deliberately not the latest work,
+ * because the Fresh rail directly below it already shows that and the two would
+ * duplicate each other.
+ *
+ * Entries are `collection:id` so a video and an article can sit side by side. Order is
+ * the display order. Reorder here, not in the submodule.
+ *
+ * TODO: Michael to confirm the final four. These are real entries picked from the
+ * catalogue so the rail renders against real content until he chooses.
+ */
+export const START_HERE: string[] = [
+  'blog:stop-parallelizing-everything-a-practical-guide-to-parallelforeach',
+  'blog:repository-pattern-vs-dbcontext-in-entity-framework-core',
+  'blog:tame-configuration-in-aspnet-core-with-ivalidateoptions',
+  'blog:the-traps-of-nullable-in-c-sharp'
+];

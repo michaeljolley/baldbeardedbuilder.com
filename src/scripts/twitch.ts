@@ -46,17 +46,21 @@ export async function getLastStream(): Promise<{
 	);
 	const vidBody = await vidResponse.text();
 	const { data: videos } = JSON.parse(vidBody);
+	const latest = Array.isArray(videos) && videos.length > 0 ? videos[0] : null;
 
-	let lastThumbnail =
-		videos && videos.length > 0 ? videos[0].thumbnail_url : "";
+	// Every one of these guards existed except the URL, which meant an empty or errored
+	// Twitch response took the whole site build down rather than just hiding one panel.
+	let lastThumbnail = latest ? latest.thumbnail_url : "";
 	lastThumbnail = lastThumbnail
 		.replace("%{width}", "960")
 		.replace("%{height}", "540");
 
-	const lastStreamUrl = `https://www.twitch.tv/videos/${videos[0].id}`;
-	const lastStreamTitle = videos && videos.length > 0 ? videos[0].title : "";
-	const lastStreamDuration = videos && videos.length > 0 ? videos[0].duration : "";
-	const lastStreamDate = videos && videos.length > 0 ? videos[0].created_at : "";
+	const lastStreamUrl = latest
+		? `https://www.twitch.tv/videos/${latest.id}`
+		: "https://www.twitch.tv/baldbeardedbuilder";
+	const lastStreamTitle = latest ? latest.title : "";
+	const lastStreamDuration = latest ? latest.duration : "";
+	const lastStreamDate = latest ? latest.created_at : "";
 
 	return {
 		lastStreamUrl,

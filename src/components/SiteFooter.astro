@@ -1,0 +1,44 @@
+---
+import Wordmark from './Wordmark.astro';
+import { SITE, EXTERNAL } from '../config/site';
+---
+
+<footer class="foot">
+  <div class="shell">
+    <div class="foot-grid">
+      <div>
+        <Wordmark />
+        <p class="tagline">{SITE.tagline}</p>
+      </div>
+      <nav aria-labelledby="foot-learn">
+        <h4 id="foot-learn">Learn</h4>
+        <ul>
+          <li><a href="/csharp/">C#</a></li>
+          <li><a href="/aspnetcore/">ASP.NET Core</a></li>
+          <li><a href="/data/">Data and EF Core</a></li>
+          <li><a href="/windows/">Windows</a></li>
+        </ul>
+      </nav>
+      <nav aria-labelledby="foot-community">
+        <h4 id="foot-community">Community</h4>
+        <ul>
+          <li><a href="/dev-disasters/">dev disasters</a></li>
+          <li><a href="/submit/">Tell your story</a></li>
+          <li><a href="/builders/">Builders</a></li>
+          <li><a href="/conduct/">Code of conduct</a></li>
+          <li><a href="/report/">Report a problem</a></li>
+        </ul>
+      </nav>
+      <nav aria-labelledby="foot-elsewhere">
+        <h4 id="foot-elsewhere">Elsewhere</h4>
+        <ul>
+          <li><a href="/about/">About Michael</a></li>
+          <li><a href={EXTERNAL.drip}>The .NET Drip</a></li>
+          <li><a href={EXTERNAL.youtube}>YouTube</a></li>
+          <li><a href={EXTERNAL.twitch}>Twitch</a></li>
+          <li><a href={EXTERNAL.github}>GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</footer>
