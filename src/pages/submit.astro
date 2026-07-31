@@ -2,9 +2,14 @@
 /*
   Tell me your dev disaster.
 
-  The form posts to /api/disasters/, which lands in phase five along with sign in. It is
-  a real form with real fields rather than a script driven one, so the no JavaScript path
-  is the only path and there is nothing to degrade.
+  Rendered on demand rather than prerendered, for the same reason the report page is: it
+  has to know whether the reader is signed in before it draws a form that needs a sign in,
+  and a page built once and served from a CDN cannot know that. Low traffic, so an on
+  demand render costs nothing worth measuring.
+
+  The form posts to /api/disasters/. It is a real form with real fields rather than a
+  script driven one, so the no JavaScript path is the only path and there is nothing to
+  degrade.
 
   The mockup's rail said "TITLE: I'll write it" and the notice said "I write a title".
   Decision 25 says the title and slug are generated on submit and editable afterwards, so
@@ -14,7 +19,33 @@
   The anonymity control is a checkbox, not a button with aria-checked. A button needs
   script to change state, and this page is not allowed to need script.
 */
+export const prerender = false;
+
 import Base from '../layouts/Base.astro';
+
+const params = Astro.url.searchParams;
+const signedIn = Astro.locals.profile !== null;
+
+/*
+  Outcomes of the form post, since the form works with JavaScript off and the answer comes
+  back as a redirect rather than as a message an island drew.
+*/
+const SENT: Record<string, { tone: 'ok' | 'bad'; text: string }> = {
+  '1': {
+    tone: 'ok',
+    text: "Got it. It's in the queue with a title drafted for it, and you'll get an email either way."
+  },
+  signin: { tone: 'bad', text: 'That needs a sign in. Sign in and send it again, the box will still be there.' },
+  consent: { tone: 'bad', text: 'Both boxes at the bottom need ticking before I can run it.' },
+  short: { tone: 'bad', text: "That's shorter than a story. Tell me what broke and what fixed it." },
+  long: { tone: 'bad', text: "That's longer than anything I can publish. Send me the part you still think about." },
+  slow: { tone: 'bad', text: "That's three today, which is my reading limit rather than yours. Tomorrow." },
+  off: { tone: 'bad', text: "Submissions aren't saving right now. Try later, or email it to me." },
+  bad: { tone: 'bad', text: "That didn't come through. Try again." },
+  failed: { tone: 'bad', text: "That didn't save. Try again, or email it to me." }
+};
+
+const sent = SENT[params.get('sent') ?? ''] ?? null;
 ---
 
 <Base
@@ -45,6 +76,24 @@ import Base from '../layouts/Base.astro';
         </header>
 
         <form class="form submit-form" method="post" action="/api/disasters/">
+          {
+            sent && (
+              <p class={sent.tone === 'ok' ? 'notice submit-sent' : 'notice submit-sent bad'} role="status">
+                {sent.text}
+              </p>
+            )
+          }
+
+          {
+            !signedIn && (
+              <p class="notice submit-signin">
+                <a href="/auth/signin/?next=%2Fsubmit%2F">Sign in with GitHub</a> before you
+                send it. Not so I know who you are on the page, because you can still publish
+                anonymously, but so I can email you when it runs and hand you the badge.
+              </p>
+            )
+          }
+
           <div class="field">
             <label for="story">The story</label>
             <p class="help">
@@ -102,8 +151,10 @@ import Base from '../layouts/Base.astro';
           </p>
 
           <div class="form-foot">
-            <button class="btn primary" type="submit">Send it in</button>
-            <span class="fine">You can edit it until I publish it.</span>
+            <button class="btn primary" type="submit" aria-disabled={!signedIn}>Send it in</button>
+            <span class="fine">
+              {signedIn ? 'You can edit it until I publish it.' : 'Sign in first and this wakes up.'}
+            </span>
           </div>
 
           <p class="fine submit-fine">
@@ -123,5 +174,11 @@ import Base from '../layouts/Base.astro';
   }
   .submit-fine {
     margin-top: -0.5rem;
+  }
+  .submit-sent {
+    border-color: var(--sev-info);
+  }
+  .submit-sent.bad {
+    border-color: var(--sev-error);
   }
 </style>

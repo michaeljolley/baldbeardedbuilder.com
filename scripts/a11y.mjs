@@ -28,7 +28,6 @@ const PAGES = [
   ['disaster', '/dev-disasters/a-regex-ate-the-payroll-run/'],
   ['about', '/about/'],
   ['conduct', '/conduct/'],
-  ['submit', '/submit/'],
   ['uses', '/uses/'],
   ['search', '/search/'],
   ['not found', '/404.html']
@@ -43,7 +42,10 @@ const ON_DEMAND = [
   ['report', '/report/'],
   ['report prefilled', '/report/?type=comment&ref=00000000-0000-4000-8000-000000000000&target=%2Fcsharp%2F'],
   ['report sent', '/report/?sent=1'],
-  ['report refused', '/report/?sent=slow']
+  ['report refused', '/report/?sent=slow'],
+  ['submit', '/submit/'],
+  ['submit sent', '/submit/?sent=1'],
+  ['submit refused', '/submit/?sent=consent']
 ];
 
 const VIEWPORTS = [

@@ -20,7 +20,15 @@ export default defineConfig({
     preact({ compat: false }),
     sitemap({
       // Profiles are noindex by decision 14, so they stay out of the sitemap too.
-      filter: (page) => !page.includes('/builders/')
+      filter: (page) => !page.includes('/builders/'),
+
+      /*
+        Submit is rendered on demand, because it has to know whether the reader is signed
+        in before it draws a form that needs a sign in. On demand pages are invisible to
+        the sitemap, and this one is a page people should be able to find, so it goes back
+        in by hand. Report is deliberately not here: it is noindex.
+      */
+      customPages: ['https://baldbeardedbuilder.com/submit/']
     })
   ]
 });

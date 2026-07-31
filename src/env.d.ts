@@ -7,6 +7,10 @@ interface ImportMetaEnv {
   readonly SUPABASE_SERVICE_ROLE_KEY?: string;
   /** Server only. HMAC key for the hashed IP that dedupes anonymous likes. */
   readonly LIKE_IP_SECRET?: string;
+  /** Server only. Drafts the title, line and severity for a submitted dev disaster. */
+  readonly AI_API_KEY?: string;
+  readonly AI_API_URL?: string;
+  readonly AI_MODEL?: string;
 }
 
 interface ImportMeta {
