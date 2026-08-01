@@ -265,11 +265,57 @@ if (deadSpace.skipped) {
 
   Measured per row rather than per grid, because a hole in the middle of a grid and a hole
   at the end are the same defect and only the last row is intuitive.
+
+  THE PAGE LIST IS DERIVED, NOT WRITTEN DOWN. The thumbnail checks above run against three
+  hand picked layouts, which is right for them: they exist to cover one page per layout that
+  can produce a thumbnail. Reusing that list here would have left the check guarding the
+  pages somebody remembered rather than the pages that have a grid on them.
+
+  So this walks the built output and visits every page that actually contains one. Today
+  that is exactly one page. The point is the day it is not, when somebody puts a grid on the
+  about page and nothing in this file has to be edited for it to be measured. Adding a grid
+  is the same shape of edit as adding a curated pick: it looks like content and it can paint
+  a coloured rectangle.
 */
 let cellsMeasured = 0;
 const cellFailures = [];
 
-for (const [name, url] of PAGES) {
+/** Every built page carrying a .grid, as urls, found by reading dist rather than by memory. */
+async function pagesWithGrids() {
+  const { readdir, readFile } = await import('node:fs/promises');
+  const found = [];
+
+  const walk = async (dir, prefix) => {
+    for (const entry of await readdir(dir, { withFileTypes: true })) {
+      const full = `${dir}/${entry.name}`;
+      if (entry.isDirectory()) {
+        await walk(full, `${prefix}${entry.name}/`);
+        continue;
+      }
+      if (entry.name !== 'index.html') continue;
+      const html = await readFile(full, 'utf8');
+      /*
+        A class list and not a substring. `class="grid"` alone would miss `class="grid tight"`,
+        and a loose /\bgrid\b/ would match `foot-grid`, because a hyphen is a word boundary.
+        foot-grid has no painted background so it cannot hole, and pulling it in here would
+        make this check report on a grid it has nothing to say about.
+      */
+      const hasGrid = [...html.matchAll(/class="([^"]*)"/g)].some((m) =>
+        m[1].split(/\s+/).includes('grid')
+      );
+      if (hasGrid) {
+        found.push([prefix === '' ? 'home' : prefix.replace(/\/$/, ''), `/${prefix}`]);
+      }
+    }
+  };
+
+  await walk('dist', '');
+  return found;
+}
+
+const GRID_PAGES = await pagesWithGrids();
+
+for (const [name, url] of GRID_PAGES) {
   for (const width of WIDTHS) {
     const page = await browser.newPage({ viewport: { width, height: 1200 } });
     await page.goto(base + url, { waitUntil: 'networkidle' });
@@ -377,12 +423,22 @@ if (measured === 0) {
 }
 
 if (cellsMeasured === 0) {
-  console.error('no grid cells were measured, so the cell fill check proved nothing. Check the .grid selector.');
+  /*
+    Fail closed. This now covers two ways of proving nothing: the .grid selector no longer
+    matching anything on a page, and the discovery walk finding no pages to visit. Both end
+    with a gate that reports clean over a site it never looked at.
+  */
+  console.error(
+    `no grid cells were measured, so the cell fill check proved nothing. ` +
+      `The walk over dist found ${GRID_PAGES.length} page(s) carrying a grid. ` +
+      `Check the .grid selector and the class list match in pagesWithGrids.`
+  );
   process.exit(1);
 }
 
 console.log(
   `layout is clean across ${measured} thumbnail measurements and ${cellsMeasured} grid ` +
-    `cells, the wide card's thumb held its ratio with a 2000px neighbour, and the lead ` +
-    `card has ${deadSpace.trailing}px below its last text.`
+    `cells on ${GRID_PAGES.length} page(s) found by walking dist, the wide card's thumb ` +
+    `held its ratio with a 2000px neighbour, and the lead card has ` +
+    `${deadSpace.trailing}px below its last text.`
 );
