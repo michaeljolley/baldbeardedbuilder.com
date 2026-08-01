@@ -29,6 +29,8 @@ const DIST_READING_GATES = [
   'check-layout.mjs',
   'check-share.mjs',
   'check-aria.mjs',
+  'check-emails.mjs',
+  'check-headings.mjs',
   'a11y.mjs',
   'lighthouse.mjs',
 ];
@@ -72,7 +74,7 @@ test('the stamp records whether the tree was clean', () => {
     and reassuring in both incidents, because in both of them the sha was correct and the
     working tree was not.
   */
-  assert.match(src, /status['"]?,\s*['"]--porcelain['"]/, 'the stamp never asks git whether the tree is dirty.');
+  assert.match(src, /git\('diff'/, 'the stamp never asks git whether the tree is dirty.');
   assert.match(src, /clean:/, 'the stamp does not record a clean flag.');
   assert.match(src, /dirtyFiles:/, 'the stamp records a clean flag but not which files made it dirty.');
 });

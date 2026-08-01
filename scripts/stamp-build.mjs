@@ -44,10 +44,25 @@ const branch = process.env.BRANCH || git('rev-parse', '--abbrev-ref', 'HEAD');
   Netlify checks out a specific commit into a fresh workspace, so its tree is clean by
   construction and `git status` there tells us nothing we did not already know. Locally
   it is the whole point of the file.
+
+  Two commands rather than `git status --porcelain`, and the reason is a false dirty this
+  caught on its first run in a clean worktree. `git status` compares working tree bytes
+  against index bytes, so on Windows a generated file the build rewrote with LF into a
+  CRLF checkout comes back modified with an empty diff. `git diff` normalises line endings
+  the same way `gen:check` does, so the two now agree about what a change is.
+
+  That mattered more than a tidy status line. A flag that says dirty on a checkout nobody
+  touched is a flag people learn to read past, and the two incidents this file exists for
+  both look exactly like a dirty flag on a tree somebody believed was clean.
+
+  Tracked changes come from `git diff --name-only HEAD`, which covers staged and unstaged
+  in one pass. Untracked files are a separate question git will not answer in the same
+  command, and they matter here: a new file the build reads is a difference from the
+  commit even though nothing tracked moved.
 */
-const status = process.env.NETLIFY ? '' : git('status', '--porcelain');
-const dirty = status
-  .split('\n')
+const tracked = process.env.NETLIFY ? '' : git('diff', '--name-only', 'HEAD');
+const untracked = process.env.NETLIFY ? '' : git('ls-files', '--others', '--exclude-standard');
+const dirty = [...tracked.split('\n'), ...untracked.split('\n')]
   .map((l) => l.trim())
   .filter(Boolean);
 
@@ -56,7 +71,7 @@ const provenance = {
   shortSha: (sha || 'unknown').slice(0, 7),
   branch: branch || 'unknown',
   clean: dirty.length === 0,
-  dirtyFiles: dirty.map((l) => l.replace(/^\S+\s+/, '')),
+  dirtyFiles: dirty,
   builtAt: new Date().toISOString(),
   ci: Boolean(process.env.NETLIFY || process.env.CI),
 };
