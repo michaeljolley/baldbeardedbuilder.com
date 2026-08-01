@@ -173,6 +173,12 @@ jobs:
       - name: Share intents
         run: pnpm check:share
 
+      # Separate from the accessibility job on purpose. axe only reports a missing id when
+      # the element needed a name to be usable, so this catches a class that job is right
+      # to stay quiet about, and a failure here should not read as an axe one.
+      - name: Id references
+        run: pnpm check:aria
+
   perf:
     name: Performance budget
     runs-on: ubuntu-latest
