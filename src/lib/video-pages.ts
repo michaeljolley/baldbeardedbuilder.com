@@ -1,6 +1,11 @@
 /*
   Video pages.
 
+  Named video-pages and not videos on purpose. This module reads the video_pages table and
+  nothing else. It has never touched the videos collection, which is the actual catalogue
+  and is read in content.ts. Under the old name somebody looking for the catalogue opened
+  this file, found the page gate, and had to go looking again.
+
   A video gets a detail page if and only if there is a video_pages row for it. Decision 22
   and amendment 47 are the rule, this is the only place the rule is read, and there is no
   second path that can produce a page some other way.

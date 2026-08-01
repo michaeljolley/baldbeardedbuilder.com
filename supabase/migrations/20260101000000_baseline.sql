@@ -35,12 +35,25 @@
     social_contacts      nothing in v2 reads it
     streams              per stream rollups. Nothing in v2 reads it either. See below
 
-  NAMING HAZARD. There are now four unrelated things called videos: the legacy `videos`
-  table above, which is the idea pipeline, the `videos` collection in the content
-  submodule, which is the real catalogue, `video_transcripts`, which is the machine half
-  of a v2 video page, and `video_pages`, which is the authored half and the only thing
-  that decides whether a video has a page at all. Only the last three exist in this
-  project. Do not let a fifth in.
+  NAMING HAZARD. Several unrelated things are called some variation of video. Named
+  rather than counted, because a count is a fact that goes stale and a list is not. When
+  this was a count it said four, and a fifth was already in the repo at the time.
+
+    videos               legacy table in bvyerlczpakdlfvybkev, the idea generation
+                         pipeline. NOT in this project and not the catalogue
+    videos               the collection in the content submodule. This is the real
+                         catalogue. Read in src/lib/content.ts and nowhere else
+    video_transcripts    the machine half of a v2 video page. Written by
+                         scripts/gen-video-meta.mjs
+    video_pages          the authored half, and the only thing that decides whether a
+                         video has a page at all
+    src/lib/video-pages  reads video_pages only. It was called videos, which pointed
+                         anybody hunting for the catalogue at the page gate instead
+    src/pages/videos     the /videos/ route, which lists the collection
+    VideoEmbed           the player component
+
+  Of these only video_transcripts and video_pages exist in this project. If you add
+  another, add it to this list.
 
   WHY streams IS NOT HERE, WHICH CORRECTS AN EARLIER READ
   ------------------------------------------------------

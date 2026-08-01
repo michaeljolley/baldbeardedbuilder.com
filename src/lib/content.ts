@@ -11,7 +11,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import taxonomy from '../config/taxonomy.json';
 import { topicBySlug, type Topic } from '../config/site';
 import { isPublished } from './publish';
-import { videoPages } from './videos';
+import { videoPages } from './video-pages';
 
 export type ItemKind = 'article' | 'video';
 
