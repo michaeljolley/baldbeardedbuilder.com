@@ -181,10 +181,10 @@ test('a failed read stops the build instead of drawing an empty wall', () => {
   between that constraint and SEVERITIES, and one row the site cannot classify must not
   take down every article and video on the site with it.
 */
-test('an unknown severity drops one row rather than the whole build', () => {
-  const m = disastersLib.match(/if \(!SEVERITY_IDS\.includes\(r\.severity\)\) \{([\s\S]*?)\n {4}\}/);
-  assert.ok(m, 'the severity guard was not found in src/lib/disasters.ts');
-  assert.match(m[1], /console\.warn/, 'the skipped row is not reported');
-  assert.match(m[1], /continue;/, 'the row is not skipped');
-  assert.doesNotMatch(m[1], /throw/, 'one unknown severity still takes the whole build down');
-});
+/*
+  The severity guard used to be asserted here by matching source. It is now executed in
+  disaster.rows.test.mjs, which hands shapeDisasters a row with severity "catastrophe" and
+  checks that one row is dropped, the rest survive, and the warning names the id. Matching
+  source proved the code existed. Running it proves what it does, so the source assertion
+  came out rather than being repointed at the new file.
+*/

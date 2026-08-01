@@ -12,10 +12,15 @@
   a link into that 404 from the wall, the front page lead and the story page. The site
   refused to confirm somebody existed on one route and confirmed it on three others.
 
-  These are source assertions rather than rendered ones. The wall is empty until the v2
-  Supabase project exists, so there is no row to render and a dist test would pass by
-  having nothing to look at, which is the failure this branch keeps cataloguing. When the
-  database is live these should be joined by a rendered check.
+  These were source assertions, because the wall is empty until the v2 Supabase project
+  exists and a dist test would have passed by having nothing to look at. The behavioural
+  half now runs for real in disaster.rows.test.mjs, against fixture rows, because the row
+  logic moved to src/lib/disaster-rows.ts specifically so it could be executed rather than
+  read. What stays here is what only source can show: that the query asks the database for
+  the two visibility columns in the first place, and that no page draws a byline of its own.
+  Neither of those is visible from the shaping functions.
+
+  When the database is live these should be joined by a rendered check.
 */
 
 import { test } from 'node:test';
@@ -28,6 +33,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 
 const disasters = read(path.join('src', 'lib', 'disasters.ts'));
+const rows = read(path.join('src', 'lib', 'disaster-rows.ts'));
 
 const PAGES = [
   path.join('src', 'pages', 'index.astro'),
@@ -53,27 +59,38 @@ test('the byline query asks whether the profile is visible', () => {
 });
 
 test('a hidden profile is turned into anonymous rather than dropped', () => {
+  /*
+    Behaviour is proved by running this in disaster.rows.test.mjs. What is asserted here is
+    that the rule is still written where the service query can reach it, with the comment
+    that stops somebody deleting it as redundant.
+  */
   assert.match(
-    disasters,
+    rows,
     /is_private \|\| p\.deleted_at !== null/,
     'the visibility predicate is no longer applied to each profile row'
   );
+  /*
+    Comment text is matched against the file with its wrapping collapsed, because this note
+    spans three lines and a regex written against one of them would break the next time
+    somebody reflows the paragraph.
+  */
+  const prose = rows.replace(/\r?\n\s*\*?\s*/g, ' ');
   assert.match(
-    disasters,
-    /shown: 'anonymous', why: 'private'/,
-    'a hidden profile no longer resolves to an anonymous byline. If it were simply left ' +
-      'out of the map it would be indistinguishable from a profile that does not exist.'
+    prose,
+    /Do not delete this as redundant\. It is not inherited\./,
+    'the note explaining that a service role query does not inherit RLS is gone, which is ' +
+      'how this predicate gets removed as pointless by somebody reading it cold'
   );
 });
 
 test('a lookup that finds nothing does not claim the teller chose anonymity', () => {
   assert.match(
-    disasters,
+    rows,
     /shown: 'nothing'/,
     'the unresolved case is gone, so a missing profile would render as a deliberate choice'
   );
   assert.doesNotMatch(
-    disasters,
+    rows,
     /tellers\.get\([^)]*\) \?\? null/,
     'tellerFor is back to collapsing a map miss into the same value as anonymity'
   );
