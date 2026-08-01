@@ -139,6 +139,8 @@ const TARGETS = [
 const failures = [];
 let checks = 0;
 let disclosuresOpened = 0;
+/* Which pages the focus checks below actually reached, so zero can fail rather than pass. */
+const focusChecked = new Set();
 
 for (const [vpName, viewport] of VIEWPORTS) {
   const context = await browser.newContext({ viewport, reducedMotion: 'reduce' });
@@ -289,6 +291,104 @@ for (const [vpName, viewport] of VIEWPORTS) {
     if (overflow > 1) {
       failures.push(`${label} [${vpName}] scrolls sideways by ${overflow}px`);
     }
+
+    /*
+      Focus rings on the two controls that are not boxes, WCAG 2.2 success criterion 2.4.7.
+
+      Here rather than in a script of its own because these two pages are prerender = false,
+      so they write no file and this is the only gate with a dev server that can reach them.
+      It is also the same subject: axe has no rule for focus appearance, so a ring that is
+      drawn on the wrong element, or not drawn at all, passes every audit above.
+
+      The defect it was written for shipped on both pages. `.field input:focus` had no
+      exclusion for radios and checkboxes, so clicking an option drew a 2px square around a
+      13px dot floating inside a much larger rounded chip, and it fired on :focus rather
+      than :focus-visible so a mouse click drew it. It was doing the same to the consent
+      checkboxes on submit, on top of the correct .consent rule fifteen lines away, which
+      nobody had noticed because nobody was looking at that control.
+
+      Removing the ring outright was the literal request and would have failed 2.4.7, so
+      what is asserted is that it moved rather than that it went away.
+
+      Transitions are already settled here: every context is opened with reducedMotion
+      'reduce' and app.css collapses transition-duration under it, so a computed style read
+      straight after a state change is the settled one. That is measured in check:headings
+      rather than assumed here.
+
+      Clicks assert a transition rather than a state. Asserting "checked" after a click
+      makes the answer depend on whether the fixture ships pre-ticked, and "no ring" only
+      means something if the click landed at all.
+    */
+    const ringed = (el) => {
+      const s = getComputedStyle(el);
+      return s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0;
+    };
+
+    if (await page.locator('.pick input').first().count()) {
+      focusChecked.add(label);
+
+      const atRest = await page.evaluate((fn) => {
+        const test = new Function('el', `return (${fn})(el)`);
+        return [...document.querySelectorAll('.pick')].filter(
+          (chip) => test(chip) || test(chip.querySelector('input'))
+        ).length;
+      }, ringed.toString());
+      if (atRest > 0) failures.push(`${label} [${vpName}] draws a focus ring on ${atRest} option(s) at rest`);
+
+      /* An option that is not already selected, so the click has somewhere to move to. */
+      const target = await page.evaluate(() => {
+        const chips = [...document.querySelectorAll('.pick')];
+        const chip = chips.find((c) => !c.querySelector('input').checked) ?? chips[0];
+        chip.setAttribute('data-focus-probe', '');
+        return chips.indexOf(chip);
+      });
+      if (target < 0) failures.push(`${label} [${vpName}] has options but none could be probed`);
+
+      await page.locator('[data-focus-probe]').click();
+      const onMouse = await page.evaluate((fn) => {
+        const test = new Function('el', `return (${fn})(el)`);
+        const chip = document.querySelector('[data-focus-probe]');
+        const input = chip.querySelector('input');
+        return { checked: input.checked, chip: test(chip), dot: test(input) };
+      }, ringed.toString());
+
+      if (!onMouse.checked) failures.push(`${label} [${vpName}] clicking an option did not select it`);
+      if (onMouse.dot) failures.push(`${label} [${vpName}] a mouse click rings the radio dot`);
+      if (onMouse.chip) failures.push(`${label} [${vpName}] a mouse click rings the option chip`);
+
+      /*
+        Keyboard next. A real key press first, because :focus-visible follows the modality of
+        the last interaction, and the click above has just set that to mouse. Focusing after
+        the press is what a reader arrowing through the group ends up in.
+      */
+      await page.keyboard.press('Tab');
+      await page.evaluate(() => document.querySelector('[data-focus-probe] input').focus());
+      const onKeys = await page.evaluate((fn) => {
+        const test = new Function('el', `return (${fn})(el)`);
+        const chip = document.querySelector('[data-focus-probe]');
+        return { chip: test(chip), dot: test(chip.querySelector('input')) };
+      }, ringed.toString());
+
+      if (!onKeys.chip) failures.push(`${label} [${vpName}] a keyboard focused option draws no ring at all`);
+      if (onKeys.dot) failures.push(`${label} [${vpName}] a keyboard focused option rings the dot as well as the chip`);
+
+      await page.evaluate(() => document.querySelector('[data-focus-probe]')?.removeAttribute('data-focus-probe'));
+    }
+
+    if (await page.locator('.consent input').first().count()) {
+      focusChecked.add(label);
+
+      const before = await page.locator('.consent input').first().isChecked();
+      await page.locator('.consent input').first().click();
+      const consent = await page.evaluate((fn) => {
+        const test = new Function('el', `return (${fn})(el)`);
+        const input = document.querySelector('.consent input');
+        return { checked: input.checked, ring: test(input) };
+      }, ringed.toString());
+
+      if (consent.checked === before) failures.push(`${label} [${vpName}] clicking a consent box did not toggle it`);
+      if (consent.ring) failures.push(`${label} [${vpName}] a mouse click rings the consent checkbox`);
+    }
   }
 
   await context.close();
@@ -314,8 +414,21 @@ if (disclosuresOpened === 0) {
   process.exit(1);
 }
 
+if (focusChecked.size < 2) {
+  /*
+    Fail closed, same reasoning as the disclosures above. Both /report/ and /submit/ carry
+    these controls, so anything under two means a selector stopped matching and the focus
+    checks quietly measured nothing while still reporting clean.
+  */
+  console.error(
+    `focus rings were only checked on ${focusChecked.size} page(s): ${[...focusChecked].join(', ') || 'none'}.`
+  );
+  process.exit(1);
+}
+
 console.log(
   `axe clean across ${checks} audits, ${TARGETS.length * VIEWPORTS.length} page loads and ` +
-    `${disclosuresOpened} disclosure audits, each scoped to the panel and shut again after.` +
+    `${disclosuresOpened} disclosure audits, each scoped to the panel and shut again after. ` +
+    `Focus rings checked on ${focusChecked.size} page(s).` +
     provenanceSuffix()
 );

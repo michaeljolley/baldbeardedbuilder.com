@@ -1297,8 +1297,21 @@ footer.foot .tagline { color: var(--fg-dim); font-size: .875rem; margin: 0; max-
   padding: .85rem 1rem; resize: vertical;
 }
 .field textarea::placeholder, .field input::placeholder { color: var(--fg-dim); }
+/*
+  The same exclusion as the rule above, and for the same reason. A text input is a box, so
+  a ring around the box is a ring around the control. A radio is a 13px dot inside a
+  labelled chip, so a ring around the dot is a small square floating inside a larger
+  rounded one, which is exactly what it looked like.
+
+  It was also on :focus rather than :focus-visible, so it fired on a mouse click and told a
+  reader which option they had just clicked, which they know. The chip takes the ring
+  instead, below.
+
+  One rule of a pair was updated and its twin was not: the exclusion at :1294 has been
+  there all along.
+*/
 .field textarea:focus,
-.field input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.field input:not([type="radio"]):not([type="checkbox"]):focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 
 .switch-row {
   display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start;
@@ -1362,6 +1375,23 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
 .pick:hover { border-color: var(--accent); color: var(--fg); }
 .pick:has(input:checked) { border-color: var(--accent); color: var(--accent); }
 .pick input { accent-color: var(--accent); margin: 0; }
+
+/*
+  The ring goes on the chip rather than on the dot. A keyboard reaches these with arrow
+  keys inside the group, so the ring has to say which whole option is live, and the chip is
+  the thing with the name in it. :focus-visible, so a mouse click selects without drawing
+  anything.
+
+  Removing the ring outright was the literal request and would have been a 2.4.7 failure:
+  arrowing through a radio group with nothing on screen leaves a keyboard reader with no
+  way to tell where they are.
+
+  The reset on the first line is not optional. :focus-visible at :41 is global, so without
+  it both the dot and the chip draw a ring and the keyboard state ends up worse than the
+  mouse state it replaced. Same two line shape as .wq-line .stretch at :1067.
+*/
+.pick input:focus-visible { outline: none; }
+.pick:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ---------- your own submissions ---------- */
 
