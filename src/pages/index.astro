@@ -26,7 +26,10 @@ import {
 
 const items = (await allItems()).filter((i) => !i.draft);
 const fresh = items.slice(0, 5);
-const starters = await itemsByKeys(START_HERE);
+const starters = (await itemsByKeys(START_HERE.map((s) => s.key))).map((item, n) => ({
+  ...item,
+  description: START_HERE[n].blurb ?? item.description
+}));
 
 const disasters = allDisasters();
 const lead = leadDisaster();

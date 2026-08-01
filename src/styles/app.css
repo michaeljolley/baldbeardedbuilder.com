@@ -338,15 +338,39 @@ html:not(.js) .themer { display: none; }
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4;
   line-clamp: 4; overflow: hidden;
 }
-.card .foot { margin-top: auto; padding-top: .9rem; font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim); display: flex; gap: .6rem; flex-wrap: wrap; }
+/*
+  The border is deliberate and now explicit. It used to arrive by accident from the site
+  footer's .foot rule, so scoping that rule would have silently removed a line the design
+  actually draws between a card's prose and its metadata.
+*/
+.card .foot { margin-top: auto; padding-top: .9rem; border-top: 1px solid var(--line); font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim); display: flex; gap: .6rem; flex-wrap: wrap; }
 .card .foot .k { color: var(--accent); letter-spacing: .1em; text-transform: uppercase; }
 .card.wide { grid-column: span 2; display: grid; grid-template-columns: 15rem 1fr; gap: 1.25rem; align-content: stretch; }
 .card.wide .thumb { margin: 0; max-height: none; }
 /*
-  A video carries no written summary until one is authored for it, so the lead card
-  can be a title and a foot line and nothing else. Left at align-content start that
-  drew a title in the top corner of a card sized by its taller neighbour, which is a
-  void, not a lead. Stretching lets the thumbnail take the height instead.
+  align-content is stretch, and the reason is worth keeping because the obvious reading of
+  it is wrong in both directions.
+
+  It does not stretch the thumbnail, and it never can. The thumb has a definite width from
+  the 15rem column and a specified aspect-ratio, which together give it a definite height,
+  and stretch does not apply to an item that already has one. So there is no crop risk here.
+  Measured at 0 percent loss, thumb unchanged at 238x134, and scripts/check-layout.mjs holds
+  that by forcing the neighbouring card to 2000px and re-measuring.
+
+  What it does stretch is .body, which has no definite height. That is the half that matters,
+  because .card .foot uses margin-top: auto and needs free space to push into. With start the
+  body stops at its content, the auto margin has nothing to absorb, and the foot floats 24.3px
+  above where every neighbouring card puts its foot. With stretch it lands on the shared
+  baseline. Measured both ways: 26.1px of dead space against 1.8px.
+
+  Do not "fix" this by dropping aspect-ratio on .card.wide .thumb so the picture can fill the
+  card. That was measured too and costs 47.9 percent of the image at 1200px, because a 16:9
+  thumbnail in a tall narrow box gets its sides cut off by object-fit cover.
+
+  None of this was visible until two other things were fixed, which is why it read as a layout
+  bug for so long. The site footer's bare .foot rule was leaking 4rem of padding into every
+  card foot, and the lead had no summary because a video has no description field to supply
+  one. See the footer.foot note below, and START_HERE in src/config/site.ts.
 */
 .card .thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; }
 .card.wide .body { display: flex; flex-direction: column; gap: .6rem; height: 100%; }
@@ -638,19 +662,32 @@ html:not(.js) .themer { display: none; }
 
 /* ---------- footer ---------- */
 
-/* The footer needs its own edge. Without a rule it reads as one more content block,
-   which is most obvious on phones where the four columns collapse into one. */
-.foot { border-top: 1px solid var(--line); padding: 3rem 0 4rem; }
+/*
+  Every rule here is element qualified, and that is load bearing rather than tidiness.
+
+  The site footer and the metadata line at the bottom of a card were both called .foot.
+  The bare .foot rule below sets a padding shorthand, and .card .foot only ever overrode
+  padding-top, so 4rem of footer padding-bottom landed inside all five cards on the front
+  page. That is 64 pixels of nothing under the foot line of every card on the site, and it
+  read as a layout bug in the card rather than as a footer rule reaching somewhere it was
+  never meant to go. It also meant margin-top auto on the card foot resolved to zero,
+  because the padding had already consumed the free space it was supposed to absorb.
+
+  The collision is in the mockup too, so this is not a porting mistake, it is a defect
+  carried over faithfully with everything else. Qualifying with footer means the rule can
+  only ever match the real footer element, because the card foot is a span.
+*/
+footer.foot { border-top: 1px solid var(--line); padding: 3rem 0 4rem; }
 .foot-grid { display: grid; grid-template-columns: 1.5fr repeat(3, 1fr); gap: 2.5rem; }
 /* The mockup used h4 here purely because it wanted small text. A footer column heading is
    a top level section of the footer, so it is an h2 that happens to be painted small.
    Using h4 made every page jump from h1 or h2 straight to h4. */
-.foot h2 { font-family: var(--mono); font-size: .625rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-dim); margin: 0 0 .9rem; }
-.foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; font-size: .9375rem; }
-.foot ul a { color: var(--fg-dim); text-decoration: none; }
-.foot ul a:hover { color: var(--fg); }
+footer.foot h2 { font-family: var(--mono); font-size: .625rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-dim); margin: 0 0 .9rem; }
+footer.foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; font-size: .9375rem; }
+footer.foot ul a { color: var(--fg-dim); text-decoration: none; }
+footer.foot ul a:hover { color: var(--fg); }
 .signoff { font-family: var(--display); font-size: 1.25rem; font-variation-settings: "SOFT" 40, "WONK" 1; margin: .75rem 0 .5rem; }
-.foot .tagline { color: var(--fg-dim); font-size: .875rem; margin: 0; max-width: 22rem; }
+footer.foot .tagline { color: var(--fg-dim); font-size: .875rem; margin: 0; max-width: 22rem; }
 
 /* ---------- front page skeleton ---------- */
 

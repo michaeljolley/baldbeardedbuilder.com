@@ -223,13 +223,44 @@ export const EXTERNAL = {
  * The first entry gets the wide card, whose thumbnail slot is drawn around a running
  * time, so it should stay a video. Five entries fill the grid.
  *
- * TODO: Michael to confirm the final five. These are real entries picked from the
- * catalogue so the rail renders against real content until he chooses.
+ * WHY A VIDEO NEEDS A BLURB HERE. The wide card in the mockup carries a title, a summary
+ * and a foot line, and it was drawn that way because a summary is what gives the card its
+ * height. Articles bring their own description. A video cannot: the videos collection
+ * schema is id, date, title, link, thumbnail, views, likes, comments, short and duration,
+ * with no description field anywhere in it, and the collection lives in a submodule this
+ * repo treats as read only. So a video lead with no blurb draws a title and a foot line
+ * with a hole between them, sized by whichever neighbour had more to say.
+ *
+ * The blurb is the fix, and it belongs here rather than in the submodule for the same
+ * reason the picks do. It is editorial, it is about why this is where somebody should
+ * start, and it is a better sentence than a generic description would have been.
+ *
+ * TODO: Michael to confirm the final five and to reword the blurb in his own voice.
+ * These are real entries picked from the catalogue so the rail renders against real
+ * content until he chooses.
  */
-export const START_HERE: string[] = [
-  'videos:HAybBV-A1Gg',
-  'blog:stop-parallelizing-everything-a-practical-guide-to-parallelforeach',
-  'blog:repository-pattern-vs-dbcontext-in-entity-framework-core',
-  'blog:tame-configuration-in-aspnet-core-with-ivalidateoptions',
-  'blog:the-traps-of-nullable-in-c-sharp'
+export interface Starter {
+  /** `collection:id`, the same key taxonomy.json uses. */
+  key: string;
+  /**
+   * Optional editorial line, used in place of the item's own description.
+   *
+   * Required in practice for the first entry, because it takes the wide card and a video
+   * has no description to fall back on. Optional for the rest, which are articles.
+   */
+  blurb?: string;
+}
+
+export const START_HERE: Starter[] = [
+  {
+    key: 'videos:HAybBV-A1Gg',
+    blurb:
+      'Class, struct or record. You choose one of these every time you model anything ' +
+      'in C#, and most advice stops at "records are for data". Under eight minutes on ' +
+      'what actually drives the decision.'
+  },
+  { key: 'blog:stop-parallelizing-everything-a-practical-guide-to-parallelforeach' },
+  { key: 'blog:repository-pattern-vs-dbcontext-in-entity-framework-core' },
+  { key: 'blog:tame-configuration-in-aspnet-core-with-ivalidateoptions' },
+  { key: 'blog:the-traps-of-nullable-in-c-sharp' }
 ];

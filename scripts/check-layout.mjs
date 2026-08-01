@@ -1,0 +1,268 @@
+/*
+  Layout gate. The things only a browser can see.
+
+  Every automated gate in this repo so far checks data, markup or output files. That has
+  repeatedly missed a whole class of bug where the data is right and the rendering is
+  wrong: a progress bar drawn in the divider colour, a reply count correct about the
+  database and wrong about the reader, two status markers resolving to the same colour, a
+  linked title drawn identically to an unlinked one. None of those were reachable by a
+  test that never laid out a page.
+
+  This one measures geometry against intent.
+
+  THUMBNAIL CROPPING. .card .thumb declares aspect-ratio 16/9 and .card .thumb img uses
+  object-fit cover, so the moment the box stops being 16/9 the image gets cut. The wide
+  lead card is the exposed one: .card.wide is a grid with align-content stretch, and its
+  thumb drops the base max-height, so on the face of it the row height should drive the
+  thumb height and crop the picture.
+
+  It does not, and the reason is worth writing down because it is load bearing and easy to
+  delete by accident. A definite inline size plus a specified aspect-ratio gives the box a
+  definite block size, and align-self stretch does not apply to an item that already has
+  one. So the row stretches, .body fills it, and the thumb keeps its ratio. Forcing the
+  neighbouring card to 2000px tall leaves the thumb at exactly its 16/9 box.
+
+  That is a CSS subtlety, not a promise. Setting an explicit height on .card .thumb, or
+  removing its aspect-ratio, would silently start cropping every thumbnail on the site,
+  and nothing else here would notice.
+
+  Run against a built dist, after pnpm build.
+*/
+
+import { chromium } from 'playwright';
+import { serveDist } from './lib/serve-dist.mjs';
+
+/* Pages that carry thumbnails, one per layout that can produce them. */
+const PAGES = [
+  ['home', '/'],
+  ['videos', '/videos/'],
+  ['topic index', '/csharp/']
+];
+
+const WIDTHS = [1200, 860, 390];
+
+/*
+  A one pixel border on a 135 pixel box is most of a percent on its own, so the floor has
+  to clear rounding without letting a real crop through. Anything genuinely stretched
+  lands far above this: the failure mode being guarded costs about 27 percent.
+*/
+const MAX_CROP_PERCENT = 3;
+
+const { server, base } = await serveDist();
+const browser = await chromium.launch();
+
+const failures = [];
+const cropHint =
+  'Check whether .card .thumb still has its aspect-ratio and no explicit height. A box ' +
+  'with both a width and a height ignores aspect-ratio, and object-fit cover then cuts ' +
+  'the picture to fit.';
+let cropped = false;
+let measured = 0;
+
+for (const [name, url] of PAGES) {
+  for (const width of WIDTHS) {
+    const page = await browser.newPage({ viewport: { width, height: 1200 } });
+    await page.goto(base + url, { waitUntil: 'networkidle' });
+
+    const thumbs = await page.evaluate(() => {
+      const out = [];
+      for (const thumb of document.querySelectorAll('.thumb')) {
+        const img = thumb.querySelector('img');
+        if (!img || !img.naturalWidth || !img.naturalHeight) continue;
+
+        const box = thumb.getBoundingClientRect();
+        if (!box.width || !box.height) continue;
+
+        out.push({
+          boxRatio: box.width / box.height,
+          srcRatio: img.naturalWidth / img.naturalHeight,
+          box: `${Math.round(box.width)}x${Math.round(box.height)}`,
+          wide: Boolean(thumb.closest('.card.wide')),
+          alt: (img.getAttribute('alt') || '').slice(0, 40)
+        });
+      }
+      return out;
+    });
+
+    for (const t of thumbs) {
+      measured += 1;
+
+      /*
+        cover scales to fill the box, so whichever axis is relatively short gets cut.
+        Report the proportion of the source lost, whichever way round it is.
+      */
+      const lost =
+        t.boxRatio < t.srcRatio
+          ? 1 - t.boxRatio / t.srcRatio
+          : 1 - t.srcRatio / t.boxRatio;
+      const percent = lost * 100;
+
+      if (percent > MAX_CROP_PERCENT) {
+        cropped = true;
+        failures.push(
+          `${name} at ${width}px: ${t.wide ? 'wide ' : ''}thumb ${t.box} loses ` +
+            `${percent.toFixed(1)}% of "${t.alt}" ` +
+            `(box ${t.boxRatio.toFixed(3)} against source ${t.srcRatio.toFixed(3)})`
+        );
+      }
+    }
+
+    await page.close();
+  }
+}
+
+/*
+  The measurements above only prove today's layout is fine. The risk is that a future
+  change makes the thumb's height come from the row, and the row's height comes from
+  whatever card sits beside it. So force that: make the neighbour absurdly tall and check
+  the thumb has not moved. If aspect-ratio ever stops winning, this is what says so, and
+  it says so without waiting for a summary long enough to trigger it naturally.
+*/
+const stress = await (async () => {
+  const page = await browser.newPage({ viewport: { width: 1200, height: 1000 } });
+  await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+
+  const result = await page.evaluate(() => {
+    const card = document.querySelector('.card.wide');
+    if (!card) return { skipped: 'no wide card on the home page' };
+
+    const thumb = card.querySelector('.thumb');
+    const sibling = [...card.parentElement.children].find((el) => el !== card);
+    if (!thumb || !sibling) return { skipped: 'no thumb or no neighbour to stretch' };
+
+    const before = thumb.getBoundingClientRect();
+    sibling.style.minHeight = '2000px';
+    void card.offsetHeight;
+    const after = thumb.getBoundingClientRect();
+    const cardHeight = card.getBoundingClientRect().height;
+    sibling.style.minHeight = '';
+
+    return {
+      cardGrewTo: Math.round(cardHeight),
+      before: `${Math.round(before.width)}x${Math.round(before.height)}`,
+      after: `${Math.round(after.width)}x${Math.round(after.height)}`,
+      grewBy: Math.round(after.height - before.height)
+    };
+  });
+
+  await page.close();
+  return result;
+})();
+
+if (stress.skipped) {
+  failures.push(`could not run the stretch check: ${stress.skipped}`);
+} else if (stress.grewBy > 1) {
+  cropped = true;
+  failures.push(
+    `the wide card's thumb stretched with its neighbour: ${stress.before} became ` +
+      `${stress.after} when the card grew to ${stress.cardGrewTo}px. The row height is ` +
+      `driving the thumb, so object-fit cover will crop the image.`
+  );
+}
+
+/*
+  DEAD SPACE IN THE LEAD CARD. The wide card sits in a grid row whose height is set by
+  whichever card beside it had the most to say. If the lead has less, the difference has to
+  go somewhere, and it shows up either as a hole between the title and the foot line or as a
+  band of nothing under the whole row. Both read as a broken card rather than a lead.
+
+  MEASURE INK, NOT BOXES. The first version of this compared element rectangles, and it
+  scored a card 24px clean while 64px of dead space sat inside it, because a stray padding
+  shorthand had inflated the foot element itself. Every box was flush against its
+  neighbour and the card still had a hole in it. What a person sees is where the last
+  pixel of text or picture is, so that is what gets measured: walk the text nodes, take
+  the lowest one, and compare it to the card's content edge.
+*/
+/*
+  The limit is 12px, and it is tight on purpose. Clean measures 1.8px, because the lead's
+  foot sits on the same baseline as its neighbours'. The regression this is really guarding
+  is align-content going back to start on .card.wide, which measures 26.1px and reads as a
+  visible hole under the lead. A limit of 48 passed that happily, so it was a gate that
+  could not fail for the one bug it was written after.
+*/
+const DEAD_SPACE_LIMIT = 12;
+
+const deadSpace = await (async () => {
+  const page = await browser.newPage({ viewport: { width: 1200, height: 1200 } });
+  await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+
+  const result = await page.evaluate(() => {
+    const card = document.querySelector('.card.wide');
+    if (!card) return { skipped: 'no wide card on the home page' };
+
+    const inkBottom = (root) => {
+      let lowest = -Infinity;
+      const range = document.createRange();
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        if (!n.textContent.trim()) continue;
+        range.selectNodeContents(n);
+        const r = range.getBoundingClientRect();
+        if (r.height) lowest = Math.max(lowest, r.bottom);
+      }
+      for (const img of root.querySelectorAll('img')) {
+        const r = img.getBoundingClientRect();
+        if (r.height) lowest = Math.max(lowest, r.bottom);
+      }
+      return lowest;
+    };
+
+    const style = getComputedStyle(card);
+    const box = card.getBoundingClientRect();
+    const contentBottom = box.bottom - parseFloat(style.paddingBottom);
+    const ink = inkBottom(card);
+    if (!Number.isFinite(ink)) return { skipped: 'the wide card drew no text or images' };
+
+    const body = card.querySelector('.body');
+    return {
+      trailing: Math.round(contentBottom - ink),
+      hasSummary: Boolean(body?.querySelector('p')?.textContent?.trim()),
+      cardHeight: Math.round(box.height)
+    };
+  });
+
+  await page.close();
+  return result;
+})();
+
+if (deadSpace.skipped) {
+  failures.push(`could not measure the lead card: ${deadSpace.skipped}`);
+} else if (deadSpace.trailing > DEAD_SPACE_LIMIT) {
+  failures.push(
+    `the wide lead card has ${deadSpace.trailing}px of nothing below its last text, ` +
+      `in a card ${deadSpace.cardHeight}px tall` +
+      (deadSpace.hasSummary
+        ? '. Two known causes, in the order they are worth checking: align-content on ' +
+          '.card.wide is start rather than stretch, so .body never fills the card and the ' +
+          "foot's margin-top: auto has no free space to push into. Or a padding or margin " +
+          'shorthand is reaching the foot from another rule, which is how the site footer ' +
+          'once leaked 4rem into every card.'
+        : ', and it has no summary. A video has no description in the collection, so the ' +
+          'lead needs a blurb in START_HERE in src/config/site.ts.')
+  );
+}
+
+await browser.close();
+server.close();
+
+if (failures.length) {
+  /*
+    The heading has to cover both halves of this gate. It said "thumbnails are being
+    cropped" while reporting a dead space failure, which sent the reader looking at
+    aspect-ratio for a problem that was a missing summary.
+  */
+  console.error('layout problems:\n' + failures.map((f) => `  ${f}`).join('\n'));
+  if (cropped) console.error('\n' + cropHint);
+  process.exit(1);
+}
+
+if (measured === 0) {
+  console.error('no thumbnails were measured, so this gate proved nothing. Check the selectors.');
+  process.exit(1);
+}
+
+console.log(
+  `layout is clean across ${measured} thumbnail measurements, the wide card's thumb ` +
+    `held its ratio with a 2000px neighbour, and the lead card has ${deadSpace.trailing}px ` +
+    `below its last text.`
+);

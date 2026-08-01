@@ -27,6 +27,7 @@
     "video:meta": "node --env-file-if-exists=.env scripts/gen-video-meta.mjs",
     "check:migrations": "node scripts/check-migrations.mjs",
     "check:dist": "node scripts/check-dist.mjs",
+    "check:layout": "node scripts/check-layout.mjs",
     "verify:deploy": "node scripts/verify-deploy.mjs"
   },
   "dependencies": {

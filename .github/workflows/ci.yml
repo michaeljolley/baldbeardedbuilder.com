@@ -81,7 +81,7 @@ jobs:
           retention-days: 3
 
   a11y:
-    name: Accessibility (WCAG 2.2 AA)
+    name: Accessibility and layout
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 30
@@ -102,6 +102,12 @@ jobs:
 
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm a11y
+
+      # Rides along in this job because it is the only one that pays for a browser, and
+      # installing chromium twice to run a second thirty second check is not worth it.
+      # Different question from accessibility, same requirement: a laid out page.
+      - name: Layout geometry
+        run: pnpm check:layout
 
   perf:
     name: Performance budget
