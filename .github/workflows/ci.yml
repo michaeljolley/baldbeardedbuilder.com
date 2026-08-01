@@ -54,6 +54,23 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # The step above is the first thing in this job that produces dist, and four tests
+      # in redirects.build.test.mjs need it. They were only in the run above, before the
+      # build, so they skipped on every run and reported green while asserting nothing.
+      # Run again here, where dist exists. REQUIRE_DIST turns the skip into a failure, so
+      # this cannot quietly stop working again if the steps are ever reordered.
+      - name: Redirect tests against the real build
+        run: pnpm test
+        env:
+          REQUIRE_DIST: '1'
+
+      # Reads the built output rather than the source, because the sitemap and the
+      # Pagefind index are generated and so are never reviewed by a person. Catches a
+      # parked route that still ships, and any page listed in the sitemap whose own
+      # markup says noindex.
+      - name: Shipped output
+        run: pnpm check:dist
+
       # Both browser gates need dist, and a build is slow enough that handing it over
       # beats building it three times.
       - name: Upload dist

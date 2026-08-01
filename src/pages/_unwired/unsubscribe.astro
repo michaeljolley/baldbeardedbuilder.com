@@ -30,7 +30,7 @@
 */
 import Base from '../../layouts/Base.astro';
 import { serviceClient, supabaseWritable } from '../../lib/supabase';
-import type { PendingDatabase } from '../../lib/supabase/pending.types';
+import type { DeferredDatabase } from '../../lib/supabase/pending.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const prerender = false;
@@ -54,7 +54,7 @@ const hasToken = UUID_RE.test(token);
 
 if (supabaseWritable && hasToken) {
   /* See lib/supabase/pending.types.ts. The cast goes when the types can be generated. */
-  const db = serviceClient() as unknown as SupabaseClient<PendingDatabase>;
+  const db = serviceClient() as unknown as SupabaseClient<DeferredDatabase>;
   await db.rpc('unsubscribe_by_token', { p_token: token, p_kind: kind });
 }
 

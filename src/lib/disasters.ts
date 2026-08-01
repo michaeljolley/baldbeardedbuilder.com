@@ -30,9 +30,18 @@ export interface Disaster {
   replies: number;
   date: Date;
   /*
-    When Michael put this on the front page, or null. Decision 15's story_featured email
-    keys off exactly this, so it has to be a real act rather than a side effect of being
-    newest. In Supabase it is disasters.featured_at, set by hand in Studio.
+    When Michael put this on the front page, or null. A real act rather than a side effect
+    of being newest, which is what lets the front page lead on a choice.
+
+    In Supabase it is disasters.featured_at, set by hand in Studio. Two live things hang
+    off it: the front page lead, which takes most recently featured and falls back to
+    newest, and the Featured badge, granted by its own trigger on the null to not null
+    transition.
+
+    Decision 15's story_featured email also keyed off it, and this comment used to say so
+    as though that were the reason it exists. That email is parked, per
+    docs/notifications.md, and the column outlived it. Both remaining uses work with the
+    entire email path inert.
   */
   featuredAt: Date | null;
   /** Story paragraphs. Plain prose, no markup. */

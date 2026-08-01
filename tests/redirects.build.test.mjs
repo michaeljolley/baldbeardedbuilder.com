@@ -3,8 +3,17 @@
 
   tests/redirects.test.mjs proves the map is internally consistent. This proves the
   destinations are pages that actually got built, which is the only version of the claim
-  that matters to a visitor. It skips itself when dist is absent so the fast test run
-  still works without a build.
+  that matters to a visitor.
+
+  It skips itself when dist is absent so the fast local test run still works without a
+  build. That convenience quietly cost the whole file: CI ran pnpm test before pnpm build,
+  so dist was never there and all four tests skipped on every single run. Green, reported
+  as passing, and asserting nothing. The exhaustive redirect check the plan calls for had
+  never once executed in the pipeline.
+
+  REQUIRE_DIST is how that stays fixed. CI sets it on the test step that follows the
+  build, and there a missing dist is a workflow ordering bug rather than somebody running
+  tests quickly at their desk, so it fails loudly instead of printing a skip nobody reads.
 
   Run after: pnpm build
 */
@@ -18,6 +27,13 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.join(ROOT, 'dist');
 const hasBuild = fs.existsSync(path.join(DIST, 'index.html'));
+
+if (!hasBuild && process.env.REQUIRE_DIST) {
+  throw new Error(
+    'REQUIRE_DIST is set but dist is missing, so these tests would silently skip. ' +
+      'This step is meant to run after pnpm build.'
+  );
+}
 
 const rules = fs
   .readFileSync(path.join(ROOT, 'public', '_redirects'), 'utf8')

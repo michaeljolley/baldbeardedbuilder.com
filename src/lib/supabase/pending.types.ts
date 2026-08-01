@@ -87,13 +87,37 @@ export interface PendingDatabase {
       };
     };
     Views: Record<string, never>;
+    /*
+      Empty on purpose. The only function this file ever declared was
+      unsubscribe_by_token, and that is created by the notifications migration, which is
+      parked in supabase/deferred/ and is not in the applied chain.
+
+      A declaration here is a promise that .rpc() can call the thing. Leaving it would
+      have let a typed call compile against a function Postgres does not have, which fails
+      at runtime and nowhere earlier. Same shape as a preference for an email that never
+      sends, one layer down.
+
+      It lives on DeferredDatabase below, so the parked page still typechecks against
+      exactly the schema it would run on. types.test.mjs asserts the split holds.
+    */
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
+  };
+}
+
+/*
+  What the schema gains when supabase/deferred/20260801000100_notifications.sql is moved
+  into the applied chain. Nothing in src/pages or src/lib outside _unwired may use this,
+  because none of it exists in the database as shipped.
+*/
+export interface DeferredDatabase {
+  public: PendingDatabase['public'] & {
     Functions: {
       unsubscribe_by_token: {
         Args: { p_token: string; p_kind: string };
         Returns: boolean;
       };
     };
-    Enums: Record<string, never>;
-    CompositeTypes: Record<string, never>;
   };
 }
