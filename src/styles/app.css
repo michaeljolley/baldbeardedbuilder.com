@@ -517,7 +517,7 @@ html:not(.js) .themer { display: none; }
   both sizes.
 */
 .rail-acts {
-  display: flex; flex-wrap: wrap; align-items: flex-start;
+  display: flex; flex-direction:column; flex-wrap: wrap; align-items: flex-start;
   gap: .5rem; margin-top: 1.75rem;
 }
 .rail-acts .like { margin-top: 0; }
@@ -1025,10 +1025,12 @@ footer.foot .tagline { color: var(--fg-dim); font-size: .875rem; margin: 0; max-
 
 /* ---------- page heads and filters ---------- */
 
-.pagehead { padding: 3rem 0 1.5rem; }
-.pagehead h1 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: .9rem; }
+.pagehead { padding: 0rem 0 1.5rem; }
+.pagehead h1 { font-size: clamp(2rem, 4vw, 3rem); margin: .9rem 0; }
 .pagehead h1 .slash { color: var(--accent); font-weight: 400; }
 .pagehead .lede { max-width: 44rem; }
+
+.topichead { margin-top: 2.5rem; }
 
 .filters {
   display: flex; gap: .5rem; flex-wrap: wrap; align-items: center;

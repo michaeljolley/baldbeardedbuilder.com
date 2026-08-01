@@ -114,7 +114,7 @@ export default function LikeButton({ kind, targetKey, initial, label, compact }:
         aria-busy={busy}
       >
         <span aria-hidden="true">{liked ? '\u2665' : '\u2661'}</span>{' '}
-        <span class="lbl">Like</span> <b>{likes}</b>
+        <b>{likes}</b>
         <span class="vh">
           {ready ? ` likes on ${label}` : ` likes on ${label}. Liking needs JavaScript.`}
         </span>
