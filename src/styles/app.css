@@ -363,9 +363,21 @@ html:not(.js) .themer { display: none; }
   above where every neighbouring card puts its foot. With stretch it lands on the shared
   baseline. Measured both ways: 26.1px of dead space against 1.8px.
 
-  Do not "fix" this by dropping aspect-ratio on .card.wide .thumb so the picture can fill the
-  card. That was measured too and costs 47.9 percent of the image at 1200px, because a 16:9
-  thumbnail in a tall narrow box gets its sides cut off by object-fit cover.
+  Both of the obvious alternatives have now been measured on the built page, because this
+  rule keeps being questioned and the answers should not have to be rediscovered each time.
+
+  Dropping aspect-ratio on .card.wide .thumb so the picture fills the card cuts 30.8 percent
+  of the image at 1200px, 21.0 at 860 and 6.7 at 390, and the stretch check reports the thumb
+  growing from 240x195 to 240x1952 beside a 2000px neighbour. check-layout.mjs fails on four
+  counts, because a 16:9 thumbnail in a tall narrow box gets its sides cut off by object-fit
+  cover.
+
+  Setting align-content to start and stopping a neighbour driving the height, with
+  align-self: start on the card, passes check-layout.mjs and is still wrong. The card shrinks
+  to 219px beside a 243px sibling, and .grid draws its 1px gaps as background: var(--line),
+  so the missing 24px arrives as a band of divider colour across the full width of the lead.
+  The void does not go away. It changes colour and moves outside the card, where the gate
+  cannot see it. That blind spot is real and deserves a check of its own.
 
   None of this was visible until two other things were fixed, which is why it read as a layout
   bug for so long. The site footer's bare .foot rule was leaking 4rem of padding into every
