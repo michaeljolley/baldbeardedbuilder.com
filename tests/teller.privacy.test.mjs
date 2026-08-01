@@ -35,11 +35,30 @@ const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 const disasters = read(path.join('src', 'lib', 'disasters.ts'));
 const rows = read(path.join('src', 'lib', 'disaster-rows.ts'));
 
-const PAGES = [
-  path.join('src', 'pages', 'index.astro'),
-  path.join('src', 'pages', 'dev-disasters', '[slug].astro'),
-  path.join('src', 'pages', 'dev-disasters', '[...filter].astro')
-];
+/*
+  The pages that draw a byline, found rather than remembered.
+
+  This was a hand written list of three, and decision 118 moved the front page off a
+  dev disaster lead, which took its byline with it. A hand list would have gone red for
+  a page that is now correct, and worse, it would have kept passing for a new page
+  somebody added that drew a teller by hand.
+
+  So the list is the set of page sources that mention a teller at all. A page with no
+  byline is not in it and needs no guard; a page with one has to use the component.
+*/
+function pagesDrawingTellers(dir = path.join(ROOT, 'src', 'pages'), found = []) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      pagesDrawingTellers(full, found);
+    } else if (entry.name.endsWith('.astro') && /teller/i.test(fs.readFileSync(full, 'utf8'))) {
+      found.push(path.relative(ROOT, full));
+    }
+  }
+  return found;
+}
+
+const PAGES = pagesDrawingTellers();
 
 test('the byline query asks whether the profile is visible', () => {
   const q = disasters.match(/\.from\('profiles'\)[\s\S]{0,200}?\.in\('id', ids\)/);
@@ -97,6 +116,16 @@ test('a lookup that finds nothing does not claim the teller chose anonymity', ()
 });
 
 test('no page draws a byline of its own', () => {
+  /*
+    A walk that finds nowhere to go proves nothing, and would report clean the day
+    somebody renames the component. Two pages is the floor: the story page and the wall.
+  */
+  assert.ok(
+    PAGES.length >= 2,
+    `only ${PAGES.length} page sources mention a teller. Either the byline moved out of ` +
+      'src/pages or the walk stopped finding them, and either way this test is now ' +
+      'guarding nothing.'
+  );
   for (const p of PAGES) {
     const s = read(p);
     assert.doesNotMatch(

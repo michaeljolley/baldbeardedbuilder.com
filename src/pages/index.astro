@@ -1,25 +1,25 @@
 ---
 /*
-  The front page.
+  The front page. Decision 118, layout A, the workbench.
 
-  Two jobs, in this order: hand somebody a story worth reading in the first screen, then
-  prove there is a body of work behind it. The lead is a dev disaster rather than my
-  latest post, because somebody else's worst day is a better cold open than my resume.
+  The newest thing Michael made is the headline. Dev disasters keep their section and
+  their call to action, but they sit mid page as the Problems panel rather than owning
+  the H1. This is a hierarchy change only: every colour, size and radius below is a
+  token that was already in use.
 
-  Zero JavaScript. The "Another one" control is a real link to a real prerendered page
-  rather than a rotator, which keeps decision 24 and decision 32 from fighting: it works
-  with scripting off and it has nothing to respect prefers-reduced-motion about.
+  Zero JavaScript, same as before. Nothing here rotates, animates or fetches.
 */
-import Teller from '../components/Teller.astro';
+import Mark from '../components/Mark.astro';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Drip from '../components/Drip.astro';
 import { SITE, VISIBLE_TOPICS, sevClass, sevLabel } from '../config/site';
 import { allItems, itemsInTopic } from '../lib/content';
 import { starterItems, fillSpans } from '../lib/starters';
+import { freshnessKicker, postedOn } from '../lib/freshness';
+import { leadSentences } from '../lib/excerpt';
 import {
   allDisasters,
-  leadDisaster,
   sortDisasters,
   countsBySeverity,
   problemSummary,
@@ -27,154 +27,169 @@ import {
 } from '../lib/disasters';
 
 const items = await allItems();
-const fresh = items.slice(0, 5);
+
+/*
+  The hero is the newest item that carries a summary, not simply the newest item.
+
+  Same rule as the Start here lead, and for the same measured reason: the layout gives
+  the excerpt a paragraph of height, so an item without one leaves a hole in the largest
+  element on the page. Skipping forward costs a few days of recency and never costs the
+  page its shape.
+*/
+const hero = items.find((i) => i.description);
+const alsoNew = items.filter((i) => i !== hero).slice(0, 3);
+
 const starters = await starterItems();
 const fill = fillSpans(starters.length);
 
 const disasters = allDisasters();
-const lead = leadDisaster();
-/*
-  Deterministic per build rather than random per request, because the page is static.
-  Stepping a third of the way through the archive keeps the second pick well away from
-  the lead without needing a random number that would change on every rebuild.
-*/
-const another = lead
-  ? disasters.filter((d) => d.id !== lead.id)[Math.floor(disasters.length / 3)]
-  : undefined;
 const topProblems = sortDisasters(disasters, 'liked').slice(0, 4);
 const counts = countsBySeverity();
-
-/*
-  Engagement on the lead, printed only where there is any.
-
-  A story carrying "0 likes, 0 replies" on the front page reads as a story nobody wanted,
-  which is a different claim from a story nobody has found yet. Silence is the honest
-  rendering of not knowing.
-*/
-const leadStats = lead
-  ? [
-      lead.likes > 0 ? `${lead.likes.toLocaleString('en-US')} likes` : null,
-      lead.replies > 0 ? `${lead.replies.toLocaleString('en-US')} replies` : null
-    ].filter(Boolean)
-  : [];
 
 const drips = await getCollection('drips');
 drips.sort((a, b) => (a.data.publishDate < b.data.publishDate ? 1 : -1));
 const latestDrip = drips[0];
 
+const dripDay = latestDrip
+  ? new Date(latestDrip.data.publishDate).toLocaleDateString('en-US', { weekday: 'short' })
+  : '';
+
+/*
+  Four rows across two columns, the drip taking the last slot when there is one. Split by
+  halves rather than by column index so an odd count leaves the shorter column second.
+*/
+const alsoRows: Array<{ href: string; title: string; kindLabel: string; meta: string; offsite: boolean }> =
+  alsoNew.map((i) => ({
+    href: i.href,
+    title: i.title,
+    kindLabel: i.kind === 'video' ? (i.short ? 'Short' : 'Video') : 'Article',
+    meta: i.length,
+    offsite: i.offsite
+  }));
+
+if (latestDrip) {
+  alsoRows.push({
+    href: 'https://dotnetdrip.com',
+    title: 'The links that were worth reading this week',
+    kindLabel: 'Drip',
+    meta: dripDay,
+    offsite: true
+  });
+}
+
+const alsoSplit = Math.ceil(alsoRows.length / 2);
+const alsoColumns = [alsoRows.slice(0, alsoSplit), alsoRows.slice(alsoSplit)].filter(
+  (c) => c.length > 0
+);
+
 const topicCounts = await Promise.all(
   VISIBLE_TOPICS.map(async (t) => ({ topic: t, n: (await itemsInTopic(t.slug)).length }))
 );
 
-const dripDay = latestDrip
-  ? new Date(latestDrip.data.publishDate).toLocaleDateString('en-US', { weekday: 'short' })
-  : '';
+/*
+  Views print only when there are some. A video showing "0 views" on the front page reads
+  as work nobody wanted, which is a different claim from a number we have not fetched.
+*/
+const heroMeta = hero
+  ? [
+      hero.views && hero.views > 0 ? `${hero.views.toLocaleString('en-US')} views` : null,
+      `posted ${postedOn(hero.date)}`,
+      hero.thumbnail ? null : hero.length,
+      hero.offsite ? 'on YouTube' : null
+    ].filter(Boolean)
+  : [];
 ---
 
 <Base title={SITE.name} description={SITE.tagline}>
   <main id="main">
-    <section class="front shell">
-      <div class="lead">
-        {
-          lead ? (
-            <Fragment>
-              <div class="lead-top">
-                <span class="path">
-                  dev-disasters<span class="sep">/</span>
-                  <b>{disasterCode(lead.id)}</b>
-                </span>
-                <span class="spacer" />
-                <span class={`sev ${sevClass(lead.severity)}`}>{sevLabel(lead.severity)}</span>
-              </div>
-              <h1>{lead.title}</h1>
-              <p class="excerpt">{lead.line}</p>
-              <div class="acts">
-                <a class="btn primary" href={lead.url}>
-                  Read the whole thing
-                </a>
-                {another && (
-                  <a class="btn" href={another.url}>
-                    &#8635; Another one
-                  </a>
-                )}
-                <span class="by">
-                  told by{' '}
-                  <Teller teller={lead.teller} />
-                  {leadStats.map((s) => (
-                    <Fragment> &middot; {s}</Fragment>
-                  ))}
-                </span>
-              </div>
-            </Fragment>
-          ) : (
+    {
+      hero && (
+        <section class={`bench shell${hero.thumbnail ? '' : ' plain'}`}>
+          {
             /*
-              Nothing published yet. The front page still leads with dev disasters, because
-              that is what this site opens with, but it asks for one instead of pretending
-              to have one. No apology, no "coming soon", no empty frame where a story goes.
+              No still, no column for one. `image` is optional in the blog schema, so a
+              post without one is a commit away, and a two column headline with nothing
+              in the left column is half a screen of nothing. The length moves to the
+              meta line in that case, since the duration badge lives on the still.
             */
-            <Fragment>
-              <div class="lead-top">
-                <span class="path">dev-disasters</span>
-                <span class="spacer" />
-                <span class="sev sev-info">Info</span>
-              </div>
-              <h1>Somebody has to go first.</h1>
-              <p class="excerpt">
-                This is where other people's worst days live. The outage, the migration
-                that ran against the wrong database, the regex that paid everybody twice.
-                Nobody gets named and nobody gets dunked on.
-              </p>
-              <div class="acts">
-                <a class="btn primary" href="/submit/">
-                  Tell me yours
-                </a>
-                <a class="btn" href="/dev-disasters/">
-                  What counts as one
-                </a>
-              </div>
-            </Fragment>
-          )
-        }
-        <div class="byline">
-          <span class="who">I'm Michael.</span>
-          <p>
-            Twenty years of C# and I still find new ways to embarrass myself. I teach .NET and
-            Windows development the way I learned it, out loud, on camera, mistakes included.
-            <a href="/about/">More about me &rarr;</a>
-          </p>
-        </div>
-      </div>
+          }
+          {hero.thumbnail && (
+            <a class="shot" href={hero.href} rel={hero.offsite ? 'noopener' : undefined} tabindex="-1" aria-hidden="true">
+              <img src={hero.thumbnail} alt="" width="640" height="360" />
+              {hero.kind === 'video' && <span class="play" aria-hidden="true">&#9654;</span>}
+              <span class="dur">{hero.length}</span>
+            </a>
+          )}
 
-      <div class="side">
-        <div class="rule">
-          <h2>Fresh off the workbench</h2>
-          <a class="more" href="/csharp/">All &rarr;</a>
-        </div>
-        {
-          fresh.map((i) => (
-            <a class="row" href={i.href} rel={i.offsite ? 'noopener' : undefined}>
-              <h3>{i.title}</h3>
-              <span class="meta">
-                <span class="k">{i.kind === 'video' ? 'Video' : 'Article'}</span> {i.length}
-                {i.offsite && <Fragment> &middot; YouTube</Fragment>}
+          <div>
+            <div class="eyebrow">
+              <span class="path">
+                {hero.topic}
+                <span class="sep">/</span>
+                <b>{hero.kind === 'video' ? 'video' : 'article'}</b>
               </span>
-            </a>
-          ))
-        }
-        {
-          latestDrip && (
-            <a class="row" href="https://dotnetdrip.com">
-              <h3>The links that were worth reading this week</h3>
-              <span class="meta">
-                <span class="k">Drip</span> {dripDay}
-              </span>
-            </a>
-          )
-        }
+              <span class="spacer" />
+              <span class="kick">{freshnessKicker(hero.date)}</span>
+            </div>
+
+            <h1>{hero.title}</h1>
+
+            <p class="excerpt">{leadSentences(hero.description)}</p>
+
+            <div class="acts">
+              <a class="btn primary" href={hero.href} rel={hero.offsite ? 'noopener' : undefined}>
+                {hero.kind === 'video' ? 'Watch it' : 'Read it'}
+              </a>
+              <a class="btn" href={`/${hero.topic}/`}>
+                Everything on {hero.topic}
+              </a>
+            </div>
+
+            <p class="meta">{heroMeta.join(' \u00b7 ')}</p>
+          </div>
+        </section>
+      )
+    }
+
+    {/* Whose site this is. Full bleed so it reads as the page speaking, not as a module. */}
+    <div class="ident">
+      <div class="shell">
+        <Mark class="mk" />
+        <p>
+          <b>I'm Michael.</b> Twenty years of C# and I still find new ways to embarrass
+          myself. I teach .NET and Windows development the way I learned it, out loud, on
+          camera, mistakes included.
+        </p>
+        <a class="more" href="/about/">More about me &rarr;</a>
       </div>
-    </section>
+    </div>
 
     <div class="below shell">
+      {
+        alsoColumns.length > 0 && (
+          <Fragment>
+            <div class="rule">
+              <h2>Also new</h2>
+              <a class="more" href="/csharp/">All &rarr;</a>
+            </div>
+            <div class="two">
+              {alsoColumns.map((column) => (
+                <div>
+                  {column.map((r) => (
+                    <a class="row" href={r.href} rel={r.offsite ? 'noopener' : undefined}>
+                      <h3>{r.title}</h3>
+                      <span class="meta">
+                        <span class="k">{r.kindLabel}</span> {r.meta}
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </Fragment>
+        )
+      }
+
       <div class="rule major">
         <h2>Start here</h2>
         <a class="more" href="/csharp/">Everything I've made &rarr;</a>
@@ -241,7 +256,7 @@ const dripDay = latestDrip
         <h2>Dev disasters</h2>
         <a class="more" href="/dev-disasters/">{counts.all > 0 ? `All ${counts.all} ` : 'All '}&rarr;</a>
       </div>
-      <p class="lead-in">Other people's worst days, filed by how bad it got.</p>
+      <p class="lead-in">Not mine. Yours. Other people's worst days, filed by how bad it got.</p>
       <div class="panel">
         <div class="panel-bar">
           <span>Problems</span>
