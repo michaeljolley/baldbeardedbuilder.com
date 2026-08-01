@@ -142,10 +142,10 @@ The first is preferred for exactly that reason. Whichever is chosen, run one at 
 The queue's unique dedupe key stops the same event being queued twice, but it cannot stop
 two concurrent drains reading the same row before either marks it.
 
-With no `RESEND_API_KEY` set, the queue still fills and the drain logs what it would have
-sent rather than failing. That is the right default: the reply that triggers an email is
-on the same request as the comment that caused it, and a missing key must never turn
-somebody's comment into a 500.
+With no `RESEND_API_KEY` set the queue would still fill, and the drain would log what it
+would have sent rather than failing. That is the right default: the reply that triggers an
+email is on the same request as the comment that caused it, and a missing key must never
+turn somebody's comment into a 500.
 
 ## Things worth knowing
 

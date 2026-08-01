@@ -41,9 +41,13 @@ const FROM = import.meta.env.MAIL_FROM ?? 'Bald Bearded Builder <hello@baldbeard
 /**
  * True when mail can actually leave the building.
  *
- * Read this before offering anything that promises an email. The queue still fills when
- * this is false, which is deliberate: the events are real, and a project that gains a key
- * later should find its history waiting rather than lost.
+ * Always false in v1, because no key is set anywhere. Read this before offering anything
+ * that promises an email.
+ *
+ * The queue would still fill when this is false, which is deliberate: the events are real,
+ * and a project that gains a key later should find its history waiting rather than lost.
+ * In v1 nothing fills it either, because the enqueue trigger and email_outbox are both
+ * held in supabase/deferred/.
  */
 export const mailConfigured = Boolean(KEY);
 
