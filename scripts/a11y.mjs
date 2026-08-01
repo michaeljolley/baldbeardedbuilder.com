@@ -100,6 +100,31 @@ const VIEWPORTS = [
    it is the one most likely to expose a contrast rule the guard missed. */
 const THEMES = ['bbb-dark', 'bbb-light', 'hotdog-stand'];
 
+/*
+  One unexplained failure, 31 July, recorded here and closed rather than chased.
+
+  A single run reported contrast violations on h4 elements. The offending markup was
+  located exactly by querying the DOM across every target: /videos/, the sixth .feed, the
+  seven external items, each of which draws a span wrapping an h4. Nothing else on any
+  target has that shape.
+
+  It has not reproduced. Four full runs since, including one from a clean worktree built
+  from committed source, plus 96 targeted audits on /csharp/ and 64 on /videos/ using an
+  exact mirror of this file's browser setup. All clean.
+
+  Two things are known and neither explains it. The rule id is gone, because the failing
+  run was piped through `Select-Object -Last 2` and the id was above the cut, so never do
+  that to a gate that can fail. And the body colour transition at app.css:34 does not
+  reach this file: every context here is opened with reducedMotion 'reduce', and
+  app.css:1506 collapses transition-duration to .01ms under that. Measured both ways, and
+  a probe using a default context instead does report mid transition colours, which is
+  what made the transition look like the cause when it is not.
+
+  Left as is on purpose. Chasing an unreproducible failure with no error text is how an
+  afternoon goes. If it returns it will return with the rule id attached, and that is a
+  better starting point than anything guessed at now.
+*/
+
 const { server, base } = await serveDist();
 const dev = await serveDev();
 const browser = await chromium.launch();
