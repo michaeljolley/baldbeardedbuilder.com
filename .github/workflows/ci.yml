@@ -27,26 +27,54 @@ jobs:
         with:
           submodules: false
 
+      # A deploy key rather than a personal access token, which is decision 101.
+      #
+      # A fine grained PAT expires at twelve months at the most and dies with the account
+      # that issued it, so both of those bring this exact failure back later and quietly, on
+      # a timer. A deploy key does not expire, is scoped to one repository rather than to a
+      # person, and needs no decision about who owns it. Netlify solved the same problem on
+      # this same repository pair in 2024 with a read only deploy key on the content repo,
+      # so the precedent is already live.
+      #
+      # It is also less machinery than the token was. .gitmodules already asks for
+      # git@github.com:michaeljolley/content.git, so the old step had to rewrite SSH into
+      # HTTPS to get a token into the URL. With a key the native URL is simply correct and
+      # the rewrite goes away.
+      #
+      # The secret is named for what it holds. Calling an SSH private key CONTENT_TOKEN
+      # would be the same defect this branch has now caught three times, where a name goes
+      # on describing what something used to be.
       - name: Check out the content submodule
         env:
-          CONTENT_TOKEN: ${{ secrets.CONTENT_TOKEN }}
+          CONTENT_DEPLOY_KEY: ${{ secrets.CONTENT_DEPLOY_KEY }}
         run: |
-          if [ -z "$CONTENT_TOKEN" ]; then
+          if [ -z "$CONTENT_DEPLOY_KEY" ]; then
             echo "::error::CI cannot read src/content, so no collection would have any entries."
             echo "src/content is a git submodule pointing at michaeljolley/content, which is"
             echo "private. The default GITHUB_TOKEN is scoped to this repository only and"
             echo "cannot clone another one."
             echo ""
             echo "Fix, once, by hand:"
-            echo "  1. Create a fine grained personal access token with Contents: read"
-            echo "     on michaeljolley/content."
-            echo "  2. Save it on this repository as the secret CONTENT_TOKEN."
+            echo "  1. ssh-keygen -t ed25519 -C 'baldbeardedbuilder.com CI' -f content-ci -N ''"
+            echo "  2. On michaeljolley/content, Settings, Deploy keys, Add deploy key."
+            echo "     Paste content-ci.pub. Leave write access UNCHECKED, a build only reads."
+            echo "  3. On this repository, save the private half, the whole content-ci file"
+            echo "     including its BEGIN and END lines, as the secret CONTENT_DEPLOY_KEY."
+            echo "  4. Delete both local files. GitHub keeps the only copies that matter."
+            echo ""
+            echo "A deploy key rather than a token on purpose. A token expires and is tied to"
+            echo "a person, so it brings this same failure back later without warning."
             echo ""
             echo "This job fails rather than building without content, because an empty"
             echo "collection set makes every gate below pass for the wrong reason."
             exit 1
           fi
-          git config --global url."https://x-access-token:$CONTENT_TOKEN@github.com/".insteadOf "git@github.com:"
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          # printf rather than echo, because a key is worthless if its final newline is lost.
+          printf '%s\n' "$CONTENT_DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t rsa,ecdsa,ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
           git submodule update --init --depth 1 src/content
           if [ ! -f src/content/content.config.ts ]; then
             echo "::error::src/content was cloned but content.config.ts is not in it."

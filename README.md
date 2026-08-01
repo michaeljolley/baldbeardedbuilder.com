@@ -33,8 +33,33 @@ git submodule update --init --recursive
 Treat it as read only from here. Anything that would mean editing frontmatter
 across the submodule belongs in `src/config/` instead.
 
-CI needs a token to read it, since the default `GITHUB_TOKEN` cannot clone
-another repository. That is the secret `CONTENT_TOKEN`.
+CI needs its own credential to read it, since the default `GITHUB_TOKEN` is scoped
+to this repository and cannot clone another one. That is the secret
+`CONTENT_DEPLOY_KEY`, and it holds the private half of a read only deploy key on
+`michaeljolley/content` rather than a personal access token. The CI step prints the
+four steps to create one when the secret is missing.
+
+A key rather than a token on purpose. A fine grained token expires at twelve months
+at the most and dies with the account that issued it, so it brings this same failure
+back later and silently. Netlify solved the same problem on the same pair of
+repositories in 2024 with a deploy key, so the precedent was already live.
+
+## CI was red for its whole life and nobody opened it
+
+Worth writing down, because the next person inherits the same blind spot.
+
+The CI workflow had never succeeded on any ref since it was written. Eighteen runs,
+eighteen failures, each 8 to 21 seconds, all of them the submodule checkout failing
+with "Repository not found" inside `git submodule` output. The signal was not subtle.
+The run list said `failure` in red eighteen times. It was the only external check on
+the branch and it was never clicked.
+
+The green runs above it in the list belong to a different workflow on a different
+branch, which is what made the list read as mostly healthy at a glance.
+
+So when reading this repository's checks, read the workflow name and the ref, not the
+colour of the newest row. And treat a gate nobody has opened as a gate that is not
+running, because for eighteen commits that is exactly what this was.
 
 ## Generated files, and why the build fights you about them
 
