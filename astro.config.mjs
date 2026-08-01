@@ -7,6 +7,7 @@ import expressiveCode from 'astro-expressive-code';
 import sitemap from '@astrojs/sitemap';
 import preact from '@astrojs/preact';
 import netlify from '@astrojs/netlify';
+import { rehypeDemoteHeadings } from './src/lib/rehype-demote-headings.mjs';
 
 /*
   Every route whose page asks not to be indexed.
@@ -83,6 +84,13 @@ export default defineConfig({
   adapter: netlify(),
   devToolbar: {
     enabled: false
+  },
+  /*
+    See src/lib/rehype-demote-headings.mjs. A markdown body that opens with its own title
+    would otherwise put a second h1 on a page that already has one.
+  */
+  markdown: {
+    rehypePlugins: [rehypeDemoteHeadings]
   },
   integrations: [
     // Options live in ec.config.mjs. See the comment at the top of that file.
