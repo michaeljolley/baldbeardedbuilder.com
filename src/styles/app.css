@@ -372,6 +372,13 @@ html:not(.js) .themer { display: none; }
   counts, because a 16:9 thumbnail in a tall narrow box gets its sides cut off by object-fit
   cover.
 
+  It also buys nothing where the complaint points. The gap between the summary and the meta
+  line measures 34px against a four line neighbour, identical with the aspect ratio and
+  without it, because that gap is the foot's own padding plus the body's row gap and neither
+  responds to the thumb. What the change actually removes is 59px of space below the
+  thumbnail in the left column, which is a different gap in a different column, and the price
+  is every line of the title on the thumbnail losing its first character.
+
   Setting align-content to start and stopping a neighbour driving the height, with
   align-self: start on the card, passes check-layout.mjs and is still wrong. The card shrinks
   to 219px beside a 243px sibling, and .grid draws its 1px gaps as background: var(--line),
