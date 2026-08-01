@@ -16,18 +16,24 @@ import { renderComment } from './markdown';
 import { isTargetKind, type TargetKind } from './reader';
 import {
   order,
-  withinEditWindow,
-  BODY_MAX,
-  COMMENTS_PER_DAY,
-  COMMENTS_PER_HOUR,
-  EDIT_WINDOW_MINUTES,
   type CommentStatus,
   type CommentView,
   type Thread
 } from './thread';
 
+import {
+  bodyProblem,
+  parentProblem,
+  limitProblem,
+  checkEdit,
+  deleteStep,
+  COMMENTS_OFF,
+  type Refusal
+} from './comment-rules';
+
 /* One import for call sites, which is the whole point of splitting the file. */
 export * from './thread';
+export * from './comment-rules';
 
 /**
  * A whole thread, ordered oldest first, replies following their parent.
@@ -141,13 +147,11 @@ export async function postComment(input: {
   authorId: string;
   hold: boolean;
 }): Promise<PostResult> {
-  if (!supabaseWritable) return { ok: false, error: 'Comments are off right now.', status: 503 };
+  if (!supabaseWritable) return COMMENTS_OFF;
 
   const body = input.body.trim();
-  if (!body) return { ok: false, error: 'A comment needs some words in it.', status: 400 };
-  if (body.length > BODY_MAX) {
-    return { ok: false, error: 'That is longer than a comment box can hold.', status: 400 };
-  }
+  const bodyBad = bodyProblem(body);
+  if (bodyBad) return bodyBad;
 
   const db = serviceClient();
 
@@ -165,7 +169,7 @@ export async function postComment(input: {
   if (banned) return { ok: false, error: 'That did not post.', status: 403 };
 
   const limit = await overLimit(input.authorId);
-  if (limit) return { ok: false, error: limit, status: 429 };
+  if (limit) return limit;
 
   if (input.parentId) {
     const { data: parent } = await db
@@ -174,15 +178,8 @@ export async function postComment(input: {
       .eq('id', input.parentId)
       .maybeSingle();
 
-    if (!parent || parent.target_kind !== input.kind || parent.target_key !== input.key) {
-      return { ok: false, error: 'That reply has nowhere to go.', status: 400 };
-    }
-    if (parent.parent_id) {
-      return { ok: false, error: 'Replies only go one level deep.', status: 400 };
-    }
-    if (parent.status !== 'visible') {
-      return { ok: false, error: 'That comment is not taking replies.', status: 400 };
-    }
+    const parentBad = parentProblem(parent, { kind: input.kind, key: input.key });
+    if (parentBad) return parentBad;
   }
 
   const html = await renderComment(body);
@@ -206,8 +203,8 @@ export async function postComment(input: {
   return { ok: true, id: data.id, held: input.hold };
 }
 
-/** Null when the account is inside both limits, or the sentence to show when it is not. */
-async function overLimit(authorId: string): Promise<string | null> {
+/** Null when the account is inside both limits, or the refusal to hand back. */
+async function overLimit(authorId: string): Promise<Refusal | null> {
   const db = serviceClient();
   const now = Date.now();
 
@@ -224,9 +221,7 @@ async function overLimit(authorId: string): Promise<string | null> {
       .gte('created_at', new Date(now - 24 * 60 * 60 * 1000).toISOString())
   ]);
 
-  if ((hour.count ?? 0) >= COMMENTS_PER_HOUR) return 'That is a lot of comments in an hour. Give it a bit.';
-  if ((day.count ?? 0) >= COMMENTS_PER_DAY) return 'That is a lot of comments today. Try again tomorrow.';
-  return null;
+  return limitProblem(hour.count ?? 0, day.count ?? 0);
 }
 
 export async function editComment(
@@ -234,13 +229,11 @@ export async function editComment(
   authorId: string,
   body: string
 ): Promise<PostResult> {
-  if (!supabaseWritable) return { ok: false, error: 'Comments are off right now.', status: 503 };
+  if (!supabaseWritable) return COMMENTS_OFF;
 
   const trimmed = body.trim();
-  if (!trimmed) return { ok: false, error: 'A comment needs some words in it.', status: 400 };
-  if (trimmed.length > BODY_MAX) {
-    return { ok: false, error: 'That is longer than a comment box can hold.', status: 400 };
-  }
+  const bodyBad = bodyProblem(trimmed);
+  if (bodyBad) return bodyBad;
 
   const db = serviceClient();
 
@@ -250,20 +243,8 @@ export async function editComment(
     .eq('id', id)
     .maybeSingle();
 
-  /*
-    Somebody else's comment and a comment that is not there get the same answer. Telling
-    the difference apart would turn this into a way to ask whether a given id exists.
-  */
-  if (!existing || existing.author_id !== authorId) {
-    return { ok: false, error: 'That is not yours to edit.', status: 404 };
-  }
-  if (existing.status === 'deleted' || existing.status === 'hidden') {
-    return { ok: false, error: 'That comment is gone.', status: 409 };
-  }
-
-  if (!withinEditWindow(existing.created_at)) {
-    return { ok: false, error: `Edits close after ${EDIT_WINDOW_MINUTES} minutes.`, status: 409 };
-  }
+  const edit = checkEdit(existing, authorId);
+  if (!edit.ok) return edit.result;
 
   const html = await renderComment(trimmed);
 
@@ -273,7 +254,7 @@ export async function editComment(
     .eq('id', id);
 
   if (error) return { ok: false, error: 'That did not save.', status: 500 };
-  return { ok: true, id, held: existing.status === 'held' };
+  return { ok: true, id, held: edit.row.status === 'held' };
 }
 
 /**
@@ -284,7 +265,7 @@ export async function editComment(
  * database anyway.
  */
 export async function deleteComment(id: string, authorId: string): Promise<PostResult> {
-  if (!supabaseWritable) return { ok: false, error: 'Comments are off right now.', status: 503 };
+  if (!supabaseWritable) return COMMENTS_OFF;
 
   const db = serviceClient();
 
@@ -294,10 +275,9 @@ export async function deleteComment(id: string, authorId: string): Promise<PostR
     .eq('id', id)
     .maybeSingle();
 
-  if (!existing || existing.author_id !== authorId) {
-    return { ok: false, error: 'That is not yours to delete.', status: 404 };
-  }
-  if (existing.status === 'deleted') return { ok: true, id, held: false };
+  const step = deleteStep(existing, authorId);
+  if (step.step === 'refuse') return step.result;
+  if (step.step === 'done') return { ok: true, id, held: false };
 
   const { error } = await db
     .from('comments')
