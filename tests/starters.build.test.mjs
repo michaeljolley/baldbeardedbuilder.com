@@ -83,7 +83,7 @@ test('the lead is chosen by having prose, not by being first', () => {
   );
   assert.match(
     starters,
-    /resolved\.unshift\(lead\)/,
+    /resolved\.unshift\(lead\)|ready\.unshift\(lead\)/,
     'the chosen lead is no longer moved to the front of the rail'
   );
 });
@@ -102,6 +102,77 @@ test('an authored line wins over whatever the collection supplied', () => {
     starters,
     /picks\[n\]\.blurb \?\? item\.description/,
     'the blurb is no longer preferred over the item description'
+  );
+});
+
+/*
+  Nothing in the rail is unpublished.
+
+  This reads the built pages rather than the source, because the thing that matters is
+  whether a visitor is being handed something that is not published yet. Every card in the
+  rail is followed to the page it points at, and a draft page says so itself through the
+  robots meta the layout writes for it.
+
+  The count assertion at the end is the point of the test as much as the loop is. A regex
+  that quietly matches nothing passes every assertion inside a loop that never runs, which
+  is a green test asserting zero. That has already happened twice on this branch.
+*/
+test('no Start here card points at an unpublished page', { skip: !hasBuild }, () => {
+  const html = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8');
+
+  const heading = html.indexOf('>Start here<');
+  assert.notEqual(heading, -1, 'the Start here heading is gone from the homepage');
+  /* The rail ends where the next section heading begins. */
+  const next = html.indexOf('<h2', heading + 12);
+  const rail = html.slice(heading, next === -1 ? html.length : next);
+
+  const hrefs = [...rail.matchAll(/<a class="card[^"]*" href="([^"]+)"/g)].map((m) => m[1]);
+  assert.ok(
+    hrefs.length >= 2,
+    `only ${hrefs.length} cards were found in the Start here rail, so this test is ` +
+      'checking almost nothing. The card markup or the rail boundary has changed.'
+  );
+
+  let checked = 0;
+  for (const href of hrefs) {
+    /* A video with no page on this site links to YouTube. There is nothing here to read. */
+    if (!href.startsWith('/')) continue;
+
+    const file = path.join(DIST, href.replace(/^\/|\/$/g, ''), 'index.html');
+    assert.ok(fs.existsSync(file), `the Start here rail links to ${href}, which was not built`);
+
+    const page = fs.readFileSync(file, 'utf8');
+    assert.doesNotMatch(
+      page,
+      /<meta[^>]+name="robots"[^>]+noindex/i,
+      `the Start here rail is handing somebody ${href}, and that page tells search engines ` +
+        'not to index it. A dated item is a draft until its date passes. Remove it from ' +
+        'START_HERE in src/config/site.ts or wait for it to publish.'
+    );
+    checked += 1;
+  }
+
+  assert.ok(checked > 0, 'every card in the rail was offsite, so no page was actually read');
+});
+
+test('a drafted pick is held back, and a rail that empties out fails', () => {
+  assert.match(
+    starters,
+    /const ready = resolved\.filter\(\(item\) => !item\.draft\)/,
+    'starterItems no longer filters drafts out of the rail. itemsByKeys reads the ' +
+      'catalogue unfiltered, so without this the rail is the one listing on the site ' +
+      'that shows unpublished work.'
+  );
+  assert.match(
+    starters,
+    /return ready/,
+    'starterItems filters drafts and then returns the unfiltered list anyway, which puts ' +
+      'the draft straight back on the front page'
+  );
+  assert.match(
+    starters,
+    /ready\.length < 2[\s\S]{0,120}throw new Error/,
+    'the floor is gone, so drafts could empty the rail without anything failing'
   );
 });
 
