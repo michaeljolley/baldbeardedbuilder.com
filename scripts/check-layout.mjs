@@ -403,6 +403,67 @@ for (const [name, url] of GRID_PAGES) {
 
 failures.push(...cellFailures);
 
+/*
+  Every topic has to be on screen at phone width.
+
+  This gate exists because the nav was overflow-x: auto with the scrollbar hidden, so
+  two of seven topics sat off the right edge with nothing on screen saying they were
+  there. Dev disasters was last in the list, so the section the site leads with was the
+  one item a phone never showed. Nothing could see it: the markup was complete, the
+  page was accessible, and the items existed at a scroll position nobody knew to reach.
+
+  It measures reach rather than the rule, so it fails for any future cause. A row that
+  clips because somebody added a ninth topic is the same defect as a row that clips
+  because somebody restored the overflow.
+*/
+const NAV_WIDTHS = [390, 360];
+let navMeasured = 0;
+
+for (const width of NAV_WIDTHS) {
+  const page = await browser.newPage({ viewport: { width, height: 844 } });
+  await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+
+  const nav = await page.evaluate(() => {
+    const list = document.querySelector('.nav');
+    if (!list) return null;
+    const box = list.getBoundingClientRect();
+    const items = [...list.querySelectorAll('li')].map((li) => {
+      const r = li.getBoundingClientRect();
+      return { label: li.textContent.trim(), right: r.right, left: r.left };
+    });
+    return {
+      count: items.length,
+      /* One pixel of tolerance, because a subpixel layout can round a flush edge over. */
+      clipped: items.filter((i) => i.right > box.right + 1 || i.left < box.left - 1).map((i) => i.label),
+      scrollable: list.scrollWidth > list.clientWidth + 1
+    };
+  });
+
+  await page.close();
+
+  if (!nav) {
+    failures.push(`the front page at ${width}px has no .nav, so the topic reach check proved nothing.`);
+    continue;
+  }
+
+  navMeasured += nav.count;
+
+  if (nav.clipped.length) {
+    failures.push(
+      `front page at ${width}px: ${nav.clipped.length} topic` +
+        `${nav.clipped.length === 1 ? '' : 's'} sit outside the nav box (${nav.clipped.join(', ')}). ` +
+        `A topic a phone cannot reach is a section of the site that does not exist on a phone.`
+    );
+  }
+
+  if (nav.scrollable) {
+    failures.push(
+      `front page at ${width}px: the nav scrolls horizontally. The topics wrap by decision ` +
+        `123, and a hidden scrollbar is how two of them went missing in the first place.`
+    );
+  }
+}
+
 await browser.close();
 server.close();
 
@@ -436,9 +497,15 @@ if (cellsMeasured === 0) {
   process.exit(1);
 }
 
+if (navMeasured === 0) {
+  console.error('no nav topics were measured, so the topic reach check proved nothing.');
+  process.exit(1);
+}
+
 console.log(
-  `layout is clean across ${measured} thumbnail measurements and ${cellsMeasured} grid ` +
-    `cells on ${GRID_PAGES.length} page(s) found by walking dist, the wide card's thumb ` +
+  `layout is clean across ${measured} thumbnail measurements, ${cellsMeasured} grid ` +
+    `cells on ${GRID_PAGES.length} page(s) found by walking dist and ${navMeasured} topic ` +
+    `reaches at phone width, the wide card's thumb ` +
     `held its ratio with a 2000px neighbour, and the lead card has ` +
     `${deadSpace.trailing}px below its last text.`
 );
