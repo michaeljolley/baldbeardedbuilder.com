@@ -13,8 +13,9 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Drip from '../components/Drip.astro';
-import { SITE, VISIBLE_TOPICS, sevClass, sevLabel, START_HERE } from '../config/site';
-import { allItems, itemsByKeys, itemsInTopic } from '../lib/content';
+import { SITE, VISIBLE_TOPICS, sevClass, sevLabel } from '../config/site';
+import { allItems, itemsInTopic } from '../lib/content';
+import { starterItems } from '../lib/starters';
 import {
   allDisasters,
   leadDisaster,
@@ -26,10 +27,7 @@ import {
 
 const items = (await allItems()).filter((i) => !i.draft);
 const fresh = items.slice(0, 5);
-const starters = (await itemsByKeys(START_HERE.map((s) => s.key))).map((item, n) => ({
-  ...item,
-  description: START_HERE[n].blurb ?? item.description
-}));
+const starters = await starterItems();
 
 const disasters = allDisasters();
 const lead = leadDisaster();
