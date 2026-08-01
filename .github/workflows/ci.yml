@@ -17,11 +17,42 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      # The submodule is deliberately NOT checked out here. src/content points at
+      # michaeljolley/content, which is private, and the default GITHUB_TOKEN is scoped to
+      # this repository alone. Asking actions/checkout to do it fails inside git submodule
+      # output with "Repository not found", which is how this job failed on every run of
+      # its life while looking like an ordinary red cross. Doing it in a step below turns
+      # that into an instruction.
       - uses: actions/checkout@v4
         with:
-          # src/content is a submodule pointing at michaeljolley/content. Without it the
-          # collections are empty and every gate passes for the wrong reason.
-          submodules: true
+          submodules: false
+
+      - name: Check out the content submodule
+        env:
+          CONTENT_TOKEN: ${{ secrets.CONTENT_TOKEN }}
+        run: |
+          if [ -z "$CONTENT_TOKEN" ]; then
+            echo "::error::CI cannot read src/content, so no collection would have any entries."
+            echo "src/content is a git submodule pointing at michaeljolley/content, which is"
+            echo "private. The default GITHUB_TOKEN is scoped to this repository only and"
+            echo "cannot clone another one."
+            echo ""
+            echo "Fix, once, by hand:"
+            echo "  1. Create a fine grained personal access token with Contents: read"
+            echo "     on michaeljolley/content."
+            echo "  2. Save it on this repository as the secret CONTENT_TOKEN."
+            echo ""
+            echo "This job fails rather than building without content, because an empty"
+            echo "collection set makes every gate below pass for the wrong reason."
+            exit 1
+          fi
+          git config --global url."https://x-access-token:$CONTENT_TOKEN@github.com/".insteadOf "git@github.com:"
+          git submodule update --init --depth 1 src/content
+          if [ ! -f src/content/content.config.ts ]; then
+            echo "::error::src/content was cloned but content.config.ts is not in it."
+            exit 1
+          fi
+          echo "src/content present, $(find src/content -name '*.md' | wc -l) markdown files."
 
       - uses: pnpm/action-setup@v4
 
