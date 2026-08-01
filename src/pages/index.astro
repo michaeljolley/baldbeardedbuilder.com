@@ -16,7 +16,7 @@ import Base from '../layouts/Base.astro';
 import Drip from '../components/Drip.astro';
 import { SITE, VISIBLE_TOPICS, sevClass, sevLabel } from '../config/site';
 import { allItems, itemsInTopic } from '../lib/content';
-import { starterItems } from '../lib/starters';
+import { starterItems, fillSpans } from '../lib/starters';
 import {
   allDisasters,
   leadDisaster,
@@ -29,6 +29,7 @@ import {
 const items = (await allItems()).filter((i) => !i.draft);
 const fresh = items.slice(0, 5);
 const starters = await starterItems();
+const fill = fillSpans(starters.length);
 
 const disasters = allDisasters();
 const lead = leadDisaster();
@@ -182,7 +183,7 @@ const dripDay = latestDrip
         New around here? The things I would hand you first, in the order I would hand
         them over.
       </p>
-      <div class="grid">
+      <div class="grid" style={`--fill-3:${fill.three};--fill-2:${fill.two}`}>
         {
           starters.map((i, n) =>
             n === 0 ? (

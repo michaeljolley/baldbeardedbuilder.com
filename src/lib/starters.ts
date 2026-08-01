@@ -109,3 +109,5 @@ export async function starterItems(picks: readonly Starter[] = START_HERE): Prom
 
   return ready;
 }
+
+export * from './grid-fill';

@@ -318,7 +318,33 @@ html:not(.js) .themer { display: none; }
 
 /* ---------- latest grid ---------- */
 
+/*
+  Decision 108. THE SEAMS ARE BACKGROUND, NOT BORDERS.
+
+  The one pixel gaps are not drawn. The grid paints var(--line) across its whole area and
+  every card paints var(--bg) over its own cell, so what reads as a divider is the grid
+  showing through the gap. The consequence is the part worth remembering: anything that
+  does not cover its cell shows divider colour at full strength, in the shape of whatever
+  is missing. A card that stops short of its row draws a horizontal band. A cell with no
+  card in it at all draws a solid rectangle.
+
+  This has already happened twice. A lead card with align-content start left a 24px bar,
+  and a Start here rail with a count that does not tile left a whole empty cell on the front
+  page. Neither was visible to any gate that read data or markup.
+
+  So before setting align-self, a definite height, or any rule that lets a card be smaller
+  than its cell, and before changing how many columns this has: check-layout.mjs measures
+  both, at every breakpoint. It exists because of this rule.
+*/
 .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+
+/*
+  The last card takes whatever columns are left over, so a rail whose length does not tile
+  cannot leave a coloured hole. The two spans are computed where the cards are counted and
+  arrive as custom properties, because CSS cannot count its own children. Both default to 1,
+  which is the ordinary case of a grid that already tiles.
+*/
+.grid > .card:last-child { grid-column: span var(--fill-3, 1); }
 .card {
   background: var(--bg);
   padding: 1.5rem 1.35rem;
@@ -1244,6 +1270,7 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
   }
   .rail dl { grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); }
   .grid { grid-template-columns: 1fr 1fr; }
+  .grid > .card:last-child { grid-column: span var(--fill-2, 1); }
   .card.wide { grid-column: span 2; }
   .drip { grid-template-columns: 1fr; gap: 1.75rem; }
   .masthead .shell { flex-wrap: wrap; height: auto; padding-top: .75rem; padding-bottom: .75rem; gap: .75rem 1.25rem; }
@@ -1263,6 +1290,7 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
   .shell { padding-inline: 1.25rem; }
   .hero { padding: 2.5rem 0 2rem; }
   .grid, .card.wide { grid-column: auto; }
+  .grid > .card:last-child { grid-column: auto; }
   .grid { grid-template-columns: 1fr; }
   .card.wide { grid-template-columns: 1fr; gap: .6rem; }
   .card.wide .thumb { max-height: 10rem; }
