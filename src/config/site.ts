@@ -205,8 +205,21 @@ export const SITE = {
   /** Shown on the privacy and terms pages. Bump both when either actually changes. */
   privacyUpdated: '2026-02-02',
   termsUpdated: '2026-02-02',
-  /** Where a report goes when somebody would rather email than use the form. */
-  contactEmail: 'michael@baldbeardedbuilder.com'
+  /*
+    Two role addresses, deliberately not one.
+
+    Decision 129. A single contactEmail had to point somewhere, and pointing it at the
+    conduct inbox would have routed data and deletion requests into the one inbox that
+    has to stay readable during an incident. There is no alias back to a general address
+    on purpose: the next page that needs somewhere to write would take it and land in
+    whichever inbox it happened to name.
+
+    Role addresses rather than a personal one because the conduct page's own copy says
+    reporting Michael to Michael is awkward, and a personal inbox cannot serve that
+    sentence. These can be handed to a moderator without a code change.
+  */
+  conductEmail: 'coc@baldbeardedbuilder.com',
+  privacyEmail: 'privacy@baldbeardedbuilder.com'
 } as const;
 
 export const EXTERNAL = {

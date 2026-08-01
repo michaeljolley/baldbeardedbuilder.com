@@ -30,6 +30,7 @@
     "check:layout": "node scripts/check-layout.mjs",
     "check:share": "node scripts/check-share.mjs",
     "check:aria": "node scripts/check-aria.mjs",
+    "check:emails": "node scripts/check-emails.mjs",
     "verify:deploy": "node scripts/verify-deploy.mjs"
   },
   "dependencies": {
