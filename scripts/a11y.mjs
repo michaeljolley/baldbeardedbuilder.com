@@ -25,10 +25,10 @@ const PAGES = [
   ['empty topic', '/mcp/'],
   /*
     The article archetype is discovered rather than named. It used to be a hardcoded slug
-    sitting six lines above the disaster function that exists to avoid exactly that, and it
-    named a post in the src/content submodule, which Michael edits without touching this
-    repo. One rename for SEO and this gate went red on a build where no site code changed,
-    which is decision 117 straight through the middle.
+    sitting in this file alongside the disaster function that exists to avoid exactly that,
+    and it named a post in the src/content submodule, which Michael edits without touching
+    this repo. One rename for SEO and this gate went red on a build where no site code
+    changed, which is decision 117 straight through the middle.
   */
   ...firstArticlePage(),
   /*
@@ -138,7 +138,7 @@ for (const [vpName, viewport] of VIEWPORTS) {
     await page.evaluate(() => document.fonts.ready);
 
     /*
-      Open every disclosure before auditing.
+      Find every disclosure on the page and tag it, so its contents can be audited.
 
       Found while adding the share menu. A closed disclosure is display: none, so axe walks
       straight past it, which means the theme picker menu has been on every page of this
@@ -150,22 +150,49 @@ for (const [vpName, viewport] of VIEWPORTS) {
       disclosure on this site is either a details element or a panel hidden by the hidden
       attribute, and both open the same way from here.
     */
-    const opened = await page.evaluate(() => {
-      let count = 0;
+    const panels = await page.evaluate(() => {
+      const found = [];
+
       for (const d of document.querySelectorAll('details')) {
-        d.open = true;
-        count++;
+        d.setAttribute('data-a11y-disclosure', String(found.length));
+        found.push({ index: found.length, kind: 'details', label: d.className || 'details' });
       }
+
       for (const trigger of document.querySelectorAll('[aria-expanded="false"][aria-controls]')) {
         const panel = document.getElementById(trigger.getAttribute('aria-controls'));
         if (!panel) continue;
-        panel.hidden = false;
-        trigger.setAttribute('aria-expanded', 'true');
-        count++;
+        panel.setAttribute('data-a11y-disclosure', String(found.length));
+        trigger.setAttribute('data-a11y-trigger', String(found.length));
+        found.push({ index: found.length, kind: 'panel', label: panel.className || panel.id });
       }
-      return count;
+
+      return found;
     });
-    disclosuresOpened += opened;
+
+    /**
+     * Open or close one tagged disclosure, in the page.
+     *
+     * One at a time, and closed again afterwards, which is the whole point. Opening them
+     * all and leaving them open put a 581 pixel panel over the top of the videos page and
+     * axe then reported contrast failures on the first three titles underneath it. That is
+     * text no reader can see, because the panel painting over it is opaque, so the finding
+     * was an artifact of the audit rather than anything wrong with the page. It failed
+     * about two runs in five, which is worse than failing every time: a gate that goes red
+     * at random teaches people to press the button again.
+     */
+    const setDisclosure = ({ index, open }) => {
+      const el = document.querySelector(`[data-a11y-disclosure="${index}"]`);
+      if (!el) return;
+
+      if (el.tagName === 'DETAILS') {
+        el.open = open;
+        return;
+      }
+
+      el.hidden = !open;
+      const trigger = document.querySelector(`[data-a11y-trigger="${index}"]`);
+      if (trigger) trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
 
     for (const theme of THEMES) {
       await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
@@ -173,23 +200,47 @@ for (const [vpName, viewport] of VIEWPORTS) {
       await page.waitForTimeout(50);
       await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
 
-      const results = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'])
-        /* YouTube's own player markup, which we do not control and cannot fix. The iframe
-           element itself is still audited, and the title assertion below covers the part
-           that is actually ours. */
-        .exclude('iframe[src*="youtube"]')
-        .analyze();
+      const audit = () =>
+        new AxeBuilder({ page })
+          .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'])
+          /* YouTube's own player markup, which we do not control and cannot fix. The iframe
+             element itself is still audited, and the title assertion below covers the part
+             that is actually ours. */
+          .exclude('iframe[src*="youtube"]');
+
+      const record = (results, where) => {
+        for (const v of results.violations) {
+          failures.push(
+            `${label}${where} [${vpName}, ${theme}] ${v.id} (${v.impact}): ${v.help}\n` +
+              v.nodes
+                .slice(0, 3)
+                .map((n) => `      ${n.target.join(' ')}`)
+                .join('\n')
+          );
+        }
+      };
+
+      /* The page as it actually ships, with every disclosure shut. */
+      record(await audit().analyze(), '');
       checks++;
 
-      for (const v of results.violations) {
-        failures.push(
-          `${label} [${vpName}, ${theme}] ${v.id} (${v.impact}): ${v.help}\n` +
-            v.nodes
-              .slice(0, 3)
-              .map((n) => `      ${n.target.join(' ')}`)
-              .join('\n')
+      /*
+        Then each disclosure's own contents, scoped to the panel. Scoping is what keeps the
+        two questions apart: whether the page is accessible, and whether the thing a reader
+        opens on top of it is. Auditing the whole page with a panel open answers neither
+        cleanly, because half the page is behind an opaque box.
+      */
+      for (const panel of panels) {
+        await page.evaluate(setDisclosure, { index: panel.index, open: true });
+
+        record(
+          await audit().include(`[data-a11y-disclosure="${panel.index}"]`).analyze(),
+          ` (${panel.label} open)`
         );
+        checks++;
+        disclosuresOpened++;
+
+        await page.evaluate(setDisclosure, { index: panel.index, open: false });
       }
     }
 
@@ -237,4 +288,7 @@ if (disclosuresOpened === 0) {
   process.exit(1);
 }
 
-console.log(`axe clean across ${checks} audits, ${TARGETS.length * VIEWPORTS.length} page loads and ${disclosuresOpened} opened disclosures.`);
+console.log(
+  `axe clean across ${checks} audits, ${TARGETS.length * VIEWPORTS.length} page loads and ` +
+    `${disclosuresOpened} disclosure audits, each scoped to the panel and shut again after.`
+);

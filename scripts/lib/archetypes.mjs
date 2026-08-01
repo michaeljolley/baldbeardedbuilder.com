@@ -13,10 +13,16 @@
   testing the fixture.
 
   The article page was the same mistake with a longer fuse and a worse blast radius. Its
-  slug sat hardcoded six lines below the disaster function that exists to avoid exactly
-  that, and it named a post in the src/content submodule, michaeljolley/content, which
-  Michael edits without touching this repo at all. One SEO rename and the gate goes red on
-  a build where nobody changed a line of site code.
+  slug sat hardcoded in the same file as the disaster function that exists to avoid exactly
+  that, between its definition and its call site, and it named a post in the src/content
+  submodule, michaeljolley/content, which Michael edits without touching this repo at all.
+  One SEO rename and the gate goes red on a build where nobody changed a line of site code.
+
+  No line count here on purpose. The first draft of this comment carried one, it was wrong,
+  the reply correcting it was wrong in the other direction, and both versions shipped in the
+  same commit contradicting each other. A distance stops being true the next time anybody
+  edits a file, and the point does not need it: a discovery function and a hardcoded slug
+  lived in the same file, which is true at any distance.
 
   These are used by the accessibility gate and the share gate, so a rename now moves both
   in one place instead of leaving one of them stale.
