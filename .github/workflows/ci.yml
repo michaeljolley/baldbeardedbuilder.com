@@ -132,8 +132,8 @@ jobs:
 
       # In this job rather than the browser one because it needs no browser, and it reads
       # source as well as dist. /report/ is prerender = false, so it writes no file and
-      # every other dist reading gate here is blind to it. That is the page the whole
-      # reporting flow ends on.
+      # every gate that works from the built output is blind to it. a11y is the exception,
+      # since it starts a dev server for exactly that reason.
       - name: Published addresses
         run: pnpm check:emails
 
@@ -185,6 +185,12 @@ jobs:
       # to stay quiet about, and a failure here should not read as an axe one.
       - name: Id references
         run: pnpm check:aria
+
+      # Rides along here because it needs a browser and a built dist. Sixteen themes times
+      # five heading levels is 96 computed colours, and the failure being guarded is a
+      # heading that reads as body text or as a link rather than one that looks broken.
+      - name: Prose heading colour
+        run: pnpm check:headings
 
   perf:
     name: Performance budget

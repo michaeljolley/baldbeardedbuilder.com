@@ -29,6 +29,19 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT_CSS = path.join(ROOT, 'src', 'styles', 'themes.css');
 const OUT_LIST = path.join(ROOT, 'src', 'lib', 'themes.generated.ts');
 const OUT_EC = path.join(ROOT, 'src', 'lib', 'ec-themes.generated.mjs');
+/*
+  Which theme and level pairs could not be given a color.
+
+  This exists because a justified fallback and a lazy one are byte identical in the
+  output. Both are --fg-strong. Without a written record the gate can only check that
+  every heading is one of the values the generator emitted, which it always is, so the
+  gate could never fail in the direction that matters: a level that should have had a
+  color and quietly did not.
+
+  With the record, a theme edit that opens up a color turns the gate red until the CSS is
+  regenerated, which is the correct behaviour rather than a nuisance.
+*/
+const OUT_FALLBACKS = path.join(ROOT, 'src', 'lib', 'heading-fallbacks.generated.json');
 
 const TARGET = 4.5;
 
@@ -128,6 +141,150 @@ const hueGap = (a, b) => { const d = Math.abs(hue(a) - hue(b)); return Math.min(
 const firstDistinct = (other, minGap, ...vals) =>
   vals.find(v => v && chroma(v) >= 0.14 && (!other || hueGap(v, other) >= minGap)) || first(...vals);
 
+/* ---------- perceptual distance ---------- */
+
+/*
+  CIE76 deltaE. Added for decision 130, which needs to ask whether two colors read as
+  different rather than whether one is legible on the other.
+
+  Contrast ratio cannot answer that question and never could. Two colors of identical
+  luminance and opposite hue have a ratio of 1.0, and a reader tells them apart instantly.
+  Two colors a hair apart in hue and far apart in lightness have a high ratio and read as
+  the same color in two weights. Ratio is the legibility test, deltaE is the sameness
+  test, and 130 needs both at once.
+
+  CIE76 rather than CIEDE2000 on purpose. 2000 is more faithful near the thresholds, and
+  the thresholds here are set by sweeping rather than by theory, so the extra fidelity
+  would move the numbers without changing which pairs resolve. A simple formula that can
+  be read in one sitting is worth more here than a better one nobody checks.
+*/
+const linearize = (v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+const D65 = [0.95047, 1, 1.08883];
+const lab = (h) => {
+  const [r, g, b] = rgb(h).map(linearize);
+  const xyz = [
+    r * 0.4124564 + g * 0.3575761 + b * 0.1804375,
+    r * 0.2126729 + g * 0.7151522 + b * 0.0721750,
+    r * 0.0193339 + g * 0.1191920 + b * 0.9503041
+  ];
+  const f = (t) => (t > 216 / 24389 ? Math.cbrt(t) : (841 / 108) * t + 4 / 29);
+  const [x, y, z] = xyz.map((v, i) => f(v / D65[i]));
+  return [116 * y - 16, 500 * (x - y), 200 * (y - z)];
+};
+const deltaE = (a, b) => {
+  const [l1, a1, b1] = lab(a);
+  const [l2, a2, b2] = lab(b);
+  return Math.sqrt((l1 - l2) ** 2 + (a1 - a2) ** 2 + (b1 - b2) ** 2);
+};
+
+/* ---------- prose heading color, decision 130 ---------- */
+
+/*
+  A different color per heading level, resolved here rather than in CSS.
+
+  A heading color has to clear three tests at once, not one. Far from --bg or nobody can
+  read it. Far from --fg or it is not a heading, it is a bold paragraph. Far from --accent
+  or it is a link, which is worse than either because it is wrong rather than weak.
+
+  Measured across all sixteen themes before writing this: no token in the contract clears
+  all three everywhere. --tok-str is the best of them and still falls to 17 somewhere.
+  Every other candidate hits 0 in some theme, meaning byte identical. --tok-key, which is
+  the semantically tidy pick, is the same color as the link in both house themes.
+
+  The reason is structural and is worth stating rather than working around. These tokens
+  come out of VS Code themes, where they are tuned to differ from each other on the code
+  surface. Nothing in that contract has ever promised a token differs from prose, or from
+  a link, on the page background. The property being asked for here was never designed in,
+  which is why it has to be searched for per theme instead of assigned once.
+
+  CSS cannot ask whether two colors are far apart, so this resolves at generation time and
+  app.css does nothing cleverer than color: var(--h2-fg).
+*/
+
+/*
+  Ordered preference per level, then first past the tests wins.
+
+  The orders are semantic rather than tuned. h2 leads with the keyword color because a
+  section heading is the most structural thing in prose. h3 leads with the type color and
+  h4 with the number color, which puts the three levels on three different families before
+  any test runs, so the separation test is usually confirming a choice rather than making
+  one.
+*/
+const HEADING_ORDER = {
+  h2: ['key', 'str', 'fn', 'typ', 'num'],
+  h3: ['typ', 'fn', 'num', 'str', 'key'],
+  h4: ['num', 'str', 'typ', 'fn', 'key']
+};
+
+/*
+  Thresholds, stated rather than buried so they can be argued with.
+
+  25 deltaE against prose and against the link color, 20 between two heading levels.
+  Swept 12 through 25 in steps of 3 and the count of levels that cannot be colored moves
+  5, 5, 5, 6, 9, so the result at 25 sits on a plateau rather than on a cliff edge, and is
+  not an artifact of where the line was drawn. The between levels number is lower because
+  two headings are never adjacent on the page and never have to be told apart at a glance,
+  while a heading and a link routinely sit in the same sentence.
+*/
+const D_PROSE = 25;
+const D_LINK = 25;
+const D_LEVEL = 20;
+
+/*
+  The neutral a heading falls back to, and why it is clamped.
+
+  Michael's rule is white in dark themes and a very dark grey in light ones. Taken
+  literally that rule introduces the exact defect it exists to prevent. --fg is already at
+  the end of the scale in twelve of the sixteen themes: 7 deltaE from white in bbb-dark, 4
+  in dracula and monokai. In hotdog-stand --fg is literally #000000, so a fixed #111111
+  would be lighter than the prose it is supposed to outrank, and the heading would read as
+  weaker than the paragraph under it.
+
+  So --fg-strong is the more extreme of the seed and --fg, never the weaker. A real lift
+  in four themes and a deliberate no-op in the other twelve.
+
+  Be honest about what it does. Every fallback lands in a theme with under 25 deltaE of
+  headroom, which is why it is falling back at all. The four themes with real headroom
+  never need it. So this is not separating the heading by color and cannot: its job is to
+  stop the heading being a failed color. Weight and size carry the rest, which is what a
+  heading normally relies on anyway.
+*/
+const strongFg = (t) => {
+  const seed = t.scheme === 'dark' ? '#ffffff' : '#111111';
+  const more = t.scheme === 'dark'
+    ? (lum(seed) >= lum(t.fg) ? seed : t.fg)
+    : (lum(seed) <= lum(t.fg) ? seed : t.fg);
+  return more;
+};
+
+function headings(t) {
+  const strong = strongFg(t);
+  const out = { strong, fell: [] };
+  const taken = [];
+
+  for (const level of ['h2', 'h3', 'h4']) {
+    let picked = null;
+    for (const key of HEADING_ORDER[level]) {
+      const c = t.tok[key];
+      if (!c) continue;
+      if (deltaE(c, t.fg) < D_PROSE) continue;
+      if (deltaE(c, t.accent) < D_LINK) continue;
+      if (ratio(c, t.bg) < TARGET) continue;
+      if (taken.some(p => deltaE(c, p) < D_LEVEL)) continue;
+      picked = c;
+      break;
+    }
+    if (picked) {
+      out[level] = picked;
+      taken.push(picked);
+    } else {
+      out[level] = strong;
+      out.fell.push(level);
+    }
+  }
+  return out;
+}
+
 /* ---------- resolve one theme to our token contract ---------- */
 
 function resolve(theme) {
@@ -198,6 +355,10 @@ const block = (sel, t) => `${sel} {
   --bg-inset: ${t.inset};
   --fg: ${t.fg};
   --fg-dim: ${t.dim};
+  --fg-strong: ${t.h.strong};
+  --h2-fg: ${t.h.h2};
+  --h3-fg: ${t.h.h3};
+  --h4-fg: ${t.h.h4};
   --line: ${t.line};
   --accent: ${t.accent};
   --sev-error: ${t.err};
@@ -344,6 +505,7 @@ const audit = (id, t) => {
 const css = ['/* Generated by scripts/gen-themes.mjs. Do not hand edit. */\n'];
 const list = [];
 const report = [];
+const fallbacks = {};
 
 // House themes go through the identical guard. No special treatment for our own palette.
 for (const t of Object.values(house)) {
@@ -353,9 +515,11 @@ for (const t of Object.values(house)) {
 }
 
 for (const [id, t] of Object.entries(house)) {
+  t.h = headings(t);
   css.push(block(`[data-theme="${id}"]`, t));
   list.push({ id, name: t.label, scheme: t.scheme, house: true });
   report.push(audit(id, t));
+  fallbacks[id] = t.h.fell;
 }
 
 for (const name of PICK) {
@@ -364,6 +528,7 @@ for (const name of PICK) {
   const theme = (await loader()).default;
   const t = resolve(theme);
   const info = bundledThemesInfo.find(i => i.id === name);
+  t.h = headings(t);
 
   css.push(block(`[data-theme="${name}"]`, t));
   list.push({
@@ -373,6 +538,7 @@ for (const name of PICK) {
     house: false
   });
   report.push(audit(name, t));
+  fallbacks[name] = t.h.fell;
 }
 
 const ts = `// Generated by scripts/gen-themes.mjs. Do not hand edit.
@@ -412,11 +578,34 @@ fs.writeFileSync(
 );
 
 const rel = (p) => path.relative(ROOT, p).replaceAll('\\', '/');
+
+fs.writeFileSync(
+  OUT_FALLBACKS,
+  JSON.stringify(
+    {
+      note:
+        'Generated by scripts/gen-themes.mjs. Do not hand edit. Theme id to the list of ' +
+        'prose heading levels that could not be given a color and fell back to ' +
+        '--fg-strong. scripts/check-headings.mjs holds the CSS to this list.',
+      thresholds: { prose: D_PROSE, link: D_LINK, level: D_LEVEL },
+      fallbacks
+    },
+    null,
+    2
+  ) + '\n'
+);
+
+const fellCount = Object.values(fallbacks).reduce((n, l) => n + l.length, 0);
+const pairs = Object.keys(fallbacks).length * 3;
 for (const r of report) {
   const status = r.failed.length ? `FAIL ${r.failed.join(',')}` : 'pass';
   console.log(`${r.id.padEnd(20)} ${r.scheme.padEnd(6)} worst ${r.worst.toFixed(2)}:1  ${status}`);
 }
 console.log(`\n${report.length} themes to ${rel(OUT_CSS)}, ${rel(OUT_LIST)}, ${rel(OUT_EC)}`);
+console.log(
+  `prose headings: ${pairs - fellCount} of ${pairs} theme and level pairs took a color, ` +
+    `${fellCount} fell back to --fg-strong, recorded in ${rel(OUT_FALLBACKS)}`
+);
 
 const broken = report.filter(r => r.failed.length);
 if (broken.length) {

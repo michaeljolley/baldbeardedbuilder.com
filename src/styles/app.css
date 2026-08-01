@@ -634,6 +634,30 @@ html:not(.js) .themer { display: none; }
 .prose > * { margin: 0; }
 .prose > * + * { margin-top: 1.35rem; }
 .prose h2 { font-size: 1.4rem; margin-top: 2.5rem; }
+
+/* Decision 130. A colour per heading level, resolved per theme by scripts/gen-themes.mjs
+   because CSS cannot ask whether two colours are far apart. Every value here is chosen
+   against that theme's prose colour, its link colour and its page background, so nothing
+   in this block is a constant and nothing needs to be.
+
+   h5 and h6 take the neutral rather than a hue. Michael scoped the request to 2 through
+   4, and they had no rule of their own at all before this, which left them in the body
+   font at browser default sizes: an h5 rendered smaller than the paragraph under it. */
+.prose h3 { font-size: 1.15rem; margin-top: 2rem; }
+.prose h4 { font-size: 1rem; margin-top: 1.75rem; }
+.prose h5, .prose h6 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-variation-settings: "SOFT" 28, "WONK" 1;
+  line-height: 1.06;
+  letter-spacing: -.018em;
+  font-size: .9375rem;
+  margin-top: 1.5rem;
+}
+.prose h2 { color: var(--h2-fg); }
+.prose h3 { color: var(--h3-fg); }
+.prose h4 { color: var(--h4-fg); }
+.prose h5, .prose h6 { color: var(--fg-strong); }
 .prose blockquote {
   margin: 1.75rem 0; padding: .25rem 0 .25rem 1.25rem;
   border-left: 2px solid var(--sev-error);

@@ -62,10 +62,14 @@ const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
   Source files worth scanning as well as dist.
 
   Not decoration. /report/ is prerender = false, so it renders on demand and never writes
-  a file, which means every gate in this repo that reads dist has never once looked at the
-  page the whole reporting flow ends on. That is the page this decision exists for. A dist
-  only version of this gate would have reported clean on the one page it most needed to
-  read.
+  a file, which means every gate in this repo that reads dist is blind to the page the
+  whole reporting flow ends on. That is the page this decision exists for. A dist only
+  version of this gate would have reported clean on the one page it most needed to read.
+
+  a11y.mjs is the exception and is worth naming rather than leaving implied: it starts a
+  dev server and audits seven on demand targets, /report/ among them. So the page is not
+  unaudited, it is unreadable to anything that works from the built output, which is this
+  gate and four others.
 */
 const SRC_DIRS = ['src/pages', 'src/components', 'src/config', 'src/lib'];
 
