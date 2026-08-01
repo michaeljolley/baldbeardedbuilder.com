@@ -38,6 +38,7 @@ if (!hasBuild && process.env.REQUIRE_DIST) {
 
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 const starters = read(path.join('src', 'lib', 'starters.ts'));
+const content = read(path.join('src', 'lib', 'content.ts'));
 const index = read(path.join('src', 'pages', 'index.astro'));
 
 /* The wide card is the lead. Pull it out of the built markup and look inside it. */
@@ -155,24 +156,34 @@ test('no Start here card points at an unpublished page', { skip: !hasBuild }, ()
   assert.ok(checked > 0, 'every card in the rail was offsite, so no page was actually read');
 });
 
-test('a drafted pick is held back, and a rail that empties out fails', () => {
+test('an unpublished pick fails the build rather than being dropped', () => {
+  /*
+    This used to assert that starterItems filtered drafts out of the rail. Decision 111
+    moved the rule down into itemsByKeys and turned it from a filter into a throw, so the
+    assertion moved with it. The behaviour being protected is the same one: the rail must
+    never be quietly one card short because something has not published.
+  */
   assert.match(
-    starters,
-    /const ready = resolved\.filter\(\(item\) => !item\.draft\)/,
-    'starterItems no longer filters drafts out of the rail. itemsByKeys reads the ' +
-      'catalogue unfiltered, so without this the rail is the one listing on the site ' +
-      'that shows unpublished work.'
+    content,
+    /if \(found\.draft\)[\s\S]{0,400}throw new Error/,
+    'itemsByKeys no longer throws on an unpublished pick, so a curated list can silently ' +
+      'lose a card again. That is the defect decision 111 was written for.'
   );
   assert.match(
+    content,
+    /Curated pick[\s\S]{0,200}has not published/,
+    'the unpublished pick error no longer says what went wrong in words somebody can act on'
+  );
+  assert.doesNotMatch(
     starters,
-    /return ready/,
-    'starterItems filters drafts and then returns the unfiltered list anyway, which puts ' +
-      'the draft straight back on the front page'
+    /filter\(\(item\) => !item\.draft\)/,
+    'starterItems is filtering drafts again. Under decision 111 they cannot reach it, so a ' +
+      'filter here is either dead code or a sign the throw was weakened.'
   );
   assert.match(
     starters,
     /ready\.length < 2[\s\S]{0,120}throw new Error/,
-    'the floor is gone, so drafts could empty the rail without anything failing'
+    'the floor is gone, so a rail trimmed below two cards would build'
   );
 });
 

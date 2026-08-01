@@ -24,10 +24,10 @@
   START_HERE.
 
   A third thing is guarded here that has nothing to do with the lead card. The Item
-  interface says a draft stays out of every listing until its date passes, and this rail
-  was the one listing that did not ask, because itemsByKeys reads the catalogue unfiltered
-  while every other caller filters afterwards. An invariant written down in one place and
-  broken in another is worth failing over.
+  interface says a draft stays out of every listing until its date passes, and this rail was
+  the one listing that did not ask. That is now fixed at the source rather than here:
+  allItems() is published only under decision 110, and itemsByKeys throws on an unpublished
+  pick under decision 111.
 */
 
 import { START_HERE, type Starter } from '../config/site';
@@ -55,40 +55,25 @@ export async function starterItems(picks: readonly Starter[] = START_HERE): Prom
   }));
 
   /*
-    Picks that have not published yet.
+    Picks that have not published yet no longer reach this point. Under decision 111
+    itemsByKeys throws on an unpublished key, naming it and its date, so the rail cannot be
+    quietly one card short.
 
-    Every other surface filters drafts: the front page feed, the videos page and each topic
-    page all drop them. This rail did not, because itemsByKeys reads the catalogue unfiltered
-    while every other caller filters afterwards. The Item interface already says a draft
-    stays out of every listing until its date passes, so this was an invariant written down
-    in one place and broken in another.
+    This used to drop them with a warning, and the argument for dropping was that failing
+    would break a build on a morning when nobody edited anything. That was wrong. Drafts
+    only ever become published posts, so time clears the condition and never creates it.
+    The single way to reach it is to curate something that has not published, which is an
+    edit somebody made and can undo.
 
-    It drops the pick rather than failing the build, and the distinction is the whole design.
-    itemsByKeys throws on a key it cannot find because a typo is permanent and only a person
-    can clear it. A draft is the opposite: it is correct today and fixes itself on a date
-    nobody has to act on. Throwing would mean a build that breaks on a morning when nobody
-    edited anything, which is how a guard teaches people to route around it.
-
-    The floor is what stops the drop being silent. Two cards is a lead and a companion, which
-    is thin but is still a rail. Below that there is nothing to hand anybody and the config
-    needs a person.
+    The floor below still earns its place. It catches a rail that is too short for reasons
+    that have nothing to do with dates, such as a START_HERE trimmed to one pick.
   */
-  const ready = resolved.filter((item) => !item.draft);
-  for (const item of resolved) {
-    if (item.draft) {
-      const when = item.date.toISOString().slice(0, 10);
-      console.warn(
-        `[starters] Holding ${item.key} out of the Start here rail. It is dated ${when} ` +
-          'and drafts stay out of every listing until then. It returns on its own.'
-      );
-    }
-  }
+  const ready = resolved;
 
   if (ready.length < 2) {
     throw new Error(
-      `Only ${ready.length} of ${resolved.length} Start here picks have published, which is ` +
-        'not a rail. Add picks that are already live to START_HERE in src/config/site.ts, ' +
-        'rather than waiting for dated ones to catch up.'
+      `Only ${ready.length} Start here pick(s), which is not a rail. A lead and a companion ` +
+        'is the minimum. Add picks to START_HERE in src/config/site.ts.'
     );
   }
 

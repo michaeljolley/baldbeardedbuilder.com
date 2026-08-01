@@ -4,8 +4,8 @@
   Articles only. Videos have their own feed on YouTube and duplicating them here would
   push the articles somebody subscribed for off the first page.
 
-  Links come from allItems(), so they are the topic first URLs. Drafts are dated in the
-  future and stay out, same rule as every other listing.
+  Links come from allItems(), so they are the topic first URLs, and allItems() is published
+  only, so drafts stay out without this file asking.
 */
 import rss from '@astrojs/rss';
 import { allItems } from '../lib/content';
@@ -13,7 +13,7 @@ import { SITE } from '../config/site';
 
 export async function GET(context) {
   const items = (await allItems())
-    .filter((i) => i.kind === 'article' && !i.draft)
+    .filter((i) => i.kind === 'article')
     .sort((a, b) => b.date.valueOf() - a.date.valueOf());
 
   return rss({

@@ -27,7 +27,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { allDisasters } from './disasters';
-import { itemsByKeys } from './content';
+import { itemByKey } from './content';
 import { sendMail, type Mail } from './mail';
 import {
   absolute,
@@ -68,8 +68,12 @@ async function urlForComment(kind: string, key: string): Promise<string | null> 
     No page, no link. A video with no video_pages row has no comment thread to point at,
     so there is nothing to say here. renderNotification treats null as "this event no
     longer resolves" and settles the row rather than retrying it forever.
+
+    itemByKey and not itemsByKeys, which throws on an unpublished item under decision 111.
+    That throw is right for a curated list and wrong here: a draft has a real page, somebody
+    can comment on it, and the notification for that comment has to resolve.
   */
-  const [item] = await itemsByKeys([key]);
+  const item = await itemByKey(key);
   return item?.url ? absolute(`${item.url}#comments`) : null;
 }
 

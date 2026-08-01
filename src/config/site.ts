@@ -266,6 +266,12 @@ export const START_HERE: Starter[] = [
   },
   { key: 'blog:stop-parallelizing-everything-a-practical-guide-to-parallelforeach' },
   { key: 'blog:repository-pattern-vs-dbcontext-in-entity-framework-core' },
-  { key: 'blog:tame-configuration-in-aspnet-core-with-ivalidateoptions' },
+  /*
+    A fifth pick sat here, blog:tame-configuration-in-aspnet-core-with-ivalidateoptions,
+    dated 2026-08-03. Under decision 111 a curated pick that has not published fails the
+    build rather than being dropped with a warning, so it comes out until its date arrives.
+    Put it back on or after 3 August. It was one of the placeholder picks below, not a
+    choice of Michael's.
+  */
   { key: 'blog:the-traps-of-nullable-in-c-sharp' }
 ];

@@ -26,7 +26,7 @@ import {
   disasterCode
 } from '../lib/disasters';
 
-const items = (await allItems()).filter((i) => !i.draft);
+const items = await allItems();
 const fresh = items.slice(0, 5);
 const starters = await starterItems();
 const fill = fillSpans(starters.length);

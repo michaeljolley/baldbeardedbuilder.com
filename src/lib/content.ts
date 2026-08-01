@@ -81,7 +81,7 @@ function runtime(duration: string): string {
 
 let cache: Item[] | null = null;
 
-export async function allItems(): Promise<Item[]> {
+async function loadItems(): Promise<Item[]> {
   if (cache) return cache;
 
   const [blog, videos, pages] = await Promise.all([
@@ -159,21 +159,63 @@ export async function allItems(): Promise<Item[]> {
   return items;
 }
 
-export async function itemsInTopic(slug: string): Promise<Item[]> {
-  return (await allItems()).filter((i) => i.topic === slug && !i.draft);
+/*
+  Decision 110. THE DEFAULT IS PUBLISHED, AND WANTING DRAFTS IS SOMETHING YOU SAY OUT LOUD.
+
+  This used to return everything, so every listing on the site had to remember to filter
+  drafts on its way out. Four remembered, one wanted them on purpose, and one forgot, which
+  put an unpublished post in the curated rail on the front page. A default that is unsafe
+  with an exclusion that is opt-in only ever fails in one direction, and it fails quietly,
+  because a missing filter looks exactly like a filter nobody needed.
+
+  So the safe thing is the short name and the dangerous thing has to be asked for by a name
+  that says what it does. Anything written later is right without knowing the rule exists.
+*/
+export async function allItems(): Promise<Item[]> {
+  return (await loadItems()).filter((i) => !i.draft);
 }
 
-export async function itemByUrl(url: string): Promise<Item | undefined> {
-  return (await allItems()).find((i) => i.url !== null && i.url === url);
+/**
+ * The catalogue including posts whose date has not arrived.
+ *
+ * Only for surfaces that build pages rather than list them. A draft has a real page, built
+ * and noindexed, so that it can be previewed before its date. Nothing that renders a
+ * listing should be calling this.
+ */
+export async function allItemsIncludingDrafts(): Promise<Item[]> {
+  return loadItems();
+}
+
+export async function itemsInTopic(slug: string): Promise<Item[]> {
+  return (await allItems()).filter((i) => i.topic === slug);
 }
 
 /** Everything with a page on this site. What getStaticPaths and the sitemap want. */
 export async function pagedItems(): Promise<Item[]> {
-  return (await allItems()).filter((i) => i.url !== null);
+  return (await allItemsIncludingDrafts()).filter((i) => i.url !== null);
 }
 
+/**
+ * One item by key, or undefined, drafts included.
+ *
+ * This is a lookup and not a listing. It exists because a comment can be left on a draft's
+ * page, so the notification pointing back at that comment has to resolve an item its own
+ * listings would not show. Callers get undefined rather than a throw because an event that
+ * no longer resolves is a row to settle, not a build to fail.
+ */
+export async function itemByKey(key: string): Promise<Item | undefined> {
+  return (await allItemsIncludingDrafts()).find((i) => i.key === key);
+}
+
+/*
+  Decision 111. A CURATED PICK THAT IS NOT PUBLISHED IS AN ERROR, NOT A GAP.
+
+  Reads the unfiltered catalogue on purpose, so that a pick which exists but has not
+  published yet reports as unpublished rather than as a key nobody can find. Those are
+  different mistakes and they have different fixes, so they get different messages.
+*/
 export async function itemsByKeys(keys: readonly string[]): Promise<Item[]> {
-  const all = await allItems();
+  const all = await allItemsIncludingDrafts();
   return keys.map((k) => {
     const found = all.find((i) => i.key === k);
     /*
@@ -181,6 +223,27 @@ export async function itemsByKeys(keys: readonly string[]): Promise<Item[]> {
       quietly one card short rather than as an error anybody notices.
     */
     if (!found) throw new Error(`No content item with key "${k}". Check src/config/site.ts.`);
+
+    /*
+      A pick that has not published is the same failure wearing a different hat. Dropping it
+      leaves the rail one card short with only a warning nobody reads to say why, and it
+      changes the card count, which the grid pays for separately.
+
+      The earlier version of this argued that failing here breaks a build on a morning when
+      nobody edited anything. That was wrong, and it is worth saying why rather than just
+      deleting it: drafts only ever turn into published posts, so time clears this error and
+      never causes it. The only way to see it is to add a pick that has not published, which
+      is an edit, made by the person who can undo it.
+    */
+    if (found.draft) {
+      const when = found.date.toISOString().slice(0, 10);
+      throw new Error(
+        `Curated pick "${k}" is dated ${when} and has not published, so it cannot be in a ` +
+          'curated list yet. Remove it from src/config/site.ts and add it back on or after ' +
+          `${when}. Its page exists and is noindexed, so it can be previewed before then.`
+      );
+    }
+
     return found;
   });
 }

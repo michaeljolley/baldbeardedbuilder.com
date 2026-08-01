@@ -22,7 +22,7 @@ import Drip from '../components/Drip.astro';
 import { allItems } from '../lib/content';
 import { EXTERNAL } from '../config/site';
 
-const videos = (await allItems()).filter((i) => i.kind === 'video' && !i.draft);
+const videos = (await allItems()).filter((i) => i.kind === 'video');
 const long = videos.filter((v) => !v.short);
 const shorts = videos.filter((v) => v.short);
 
