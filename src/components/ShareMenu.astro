@@ -1,6 +1,7 @@
 ---
 import { OUTBOUND_PLATFORMS, SHARE_LABELS, shareIntentUrl, shareableUrl } from '../lib/share-links';
 import type { TargetKind } from '../lib/reader';
+import ShareMark from './ShareMark.astro';
 
 /*
   Decision 121. The share menu.
@@ -20,11 +21,13 @@ import type { TargetKind } from '../lib/reader';
   every share taken from staging would have pointed at staging. These are built from
   Astro.site, so a share always points at the real page.
 
-  No platform logos and no brand colours. Five marks at 14px in an 11rem rail is noise,
-  and doing them properly means hardcoding X black and Bluesky #0285FF, which would be
-  the first literal colours anywhere in this codebase and would look wrong in fifteen of
-  the sixteen themes. Names in mono read as a command palette, which is the voice the site
-  already speaks.
+  Decision 128 reversed half of that. Brand marks go in, monochrome, inheriting the row
+  colour. The two halves of the original ruling were never two decisions, and only the
+  colour half had a reason under it: drawing a mark properly meant hardcoding X black and
+  Bluesky #0285FF into a codebase with zero literal colours, and those two values fight
+  fifteen of the sixteen themes. currentColor removes the objection exactly, and monochrome
+  is the alternate treatment all four brand guidelines already permit for a mark sitting on
+  a surface whose colour is not known in advance.
 */
 
 interface Props {
@@ -55,13 +58,16 @@ const url = shareableUrl(new URL(path, Astro.site ?? 'https://baldbeardedbuilder
 
   <div class="share-menu">
     {/*
-      A paragraph rather than a heading. It labels a control group, not a section of the
-      document, and an h4 sitting between the page h1 and the h2s in the article body is
-      a skipped level that axe is right to complain about.
-    */}
-    <p class="menu-label" id={`share-label-${targetKey}`}>Share this</p>
+      No label element above the list. The summary this menu hangs off already reads
+      "Share", so a heading here would name the list a second time and a reader using it
+      would hear the same word twice before reaching a destination.
 
-    <ul aria-labelledby={`share-label-${targetKey}`}>
+      Nothing points at a label either. An earlier version carried an aria-labelledby that
+      outlived the element it named, which shipped a reference to a missing id on all 50
+      article pages and which axe is right not to report: the host is a ul, role=list, and
+      a list does not need a name to be usable. scripts/check-aria.mjs exists because of it.
+    */}
+    <ul>
       {
         OUTBOUND_PLATFORMS.map((platform) => (
           <li>
@@ -71,6 +77,7 @@ const url = shareableUrl(new URL(path, Astro.site ?? 'https://baldbeardedbuilder
               target="_blank"
               rel="noopener noreferrer"
             >
+              <ShareMark platform={platform} />
               {SHARE_LABELS[platform]}
               <span class="vh"> (opens in a new tab)</span>
             </a>
@@ -83,10 +90,19 @@ const url = shareableUrl(new URL(path, Astro.site ?? 'https://baldbeardedbuilder
         button in a page with no JavaScript, or on an insecure origin where the clipboard
         API does not exist, is a control that cannot do its job, which is the same rule
         the like button follows before it hydrates.
+
+        The words live in their own span, and this is load bearing rather than tidy. The
+        script swaps this label to "Copied" and back on a timer, and an element whose text
+        is replaced wholesale loses every child it had, so writing to the button would
+        delete the mark on first use and the timeout would restore the words without it.
+        Nothing would fail. The button would keep working and quietly stop having an icon,
+        once, for readers who used it. An element whose content is swapped on a timer
+        cannot also be the element that owns children.
       */}
       <li>
         <button type="button" class="copy" data-share-platform="copy" hidden>
-          {SHARE_LABELS.copy}
+          <ShareMark platform="copy" />
+          <span class="copy-label">{SHARE_LABELS.copy}</span>
         </button>
       </li>
     </ul>
@@ -143,6 +159,15 @@ const url = shareableUrl(new URL(path, Astro.site ?? 'https://baldbeardedbuilder
       const copy = host.querySelector('.copy');
       if (!copy || !navigator.clipboard) return;
 
+      /*
+        Written to rather than the button, because the button now owns a mark as well as
+        its words. textContent on the button would take the svg with it on the first copy
+        and the timeout would put the words back without it. The fallback is the button
+        itself so a missing span degrades to the old behaviour instead of throwing, which
+        would take the four outbound listeners down with it.
+      */
+      const label = copy.querySelector('.copy-label') || copy;
+
       copy.hidden = false;
       copy.addEventListener('click', async () => {
         try {
@@ -156,10 +181,10 @@ const url = shareableUrl(new URL(path, Astro.site ?? 'https://baldbeardedbuilder
           just did on purpose, and it would arrive somewhere other than where they are
           looking.
         */
-        copy.textContent = 'Copied';
+        label.textContent = 'Copied';
         copy.setAttribute('data-done', '1');
         setTimeout(() => {
-          copy.textContent = 'Copy link';
+          label.textContent = 'Copy link';
           copy.removeAttribute('data-done');
         }, 1600);
       });

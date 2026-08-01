@@ -133,6 +133,24 @@ await page.evaluate(() =>
 
 const firstKey = await page.evaluate(() => document.querySelector('[data-share]').dataset.key);
 
+/*
+  Counted before anything is clicked, which is the point of doing it here rather than
+  alongside the copy assertions further down. The first press is what would delete a mark,
+  so a count taken after it cannot tell a menu that shipped four marks from a menu that
+  shipped five and lost one.
+*/
+const marksAtLoad = await page.evaluate(
+  () => document.querySelectorAll('[data-share] .share-menu .mk').length
+);
+
+if (marksAtLoad !== 5) {
+  failures.push(
+    `one menu: ${marksAtLoad} destination marks in the menu before any interaction, ` +
+      `expected 5. Decision 128 puts one on each of the four platforms and a link icon ` +
+      `on copy.`
+  );
+}
+
 /* One menu, the page as it actually ships. */
 expectOne(await share(0, 'x'), 'one menu', 'x', firstKey);
 expectOne(await share(0, 'bluesky'), 'one menu', 'bluesky', firstKey);
@@ -140,7 +158,8 @@ expectOne(await share(0, 'copy'), 'one menu', 'copy', firstKey);
 
 const copiedLabel = await page.evaluate(() => {
   const copy = document.querySelector('[data-share] .copy');
-  return { text: copy.textContent.trim(), done: copy.getAttribute('data-done'), hidden: copy.hidden };
+  const label = copy.querySelector('.copy-label') || copy;
+  return { text: label.textContent.trim(), done: copy.getAttribute('data-done'), hidden: copy.hidden };
 });
 
 if (copiedLabel.hidden) {
@@ -152,6 +171,62 @@ if (copiedLabel.text !== 'Copied' || copiedLabel.done !== '1') {
     `one menu: after copying, the button reads ${JSON.stringify(copiedLabel.text)} ` +
       `with data-done ${JSON.stringify(copiedLabel.done)}. Decision 121 says the label is ` +
       `the feedback, so if it does not change the reader gets nothing at all.`
+  );
+}
+
+/*
+  Decision 128 put a mark inside the copy button, and the label swap is what threatens it.
+
+  The button reports by changing its own words to "Copied" and back 1600ms later. An
+  element whose text is replaced wholesale loses every child it had, so a swap written to
+  the button rather than to a span inside it deletes the mark on first press and restores
+  the words without it. Nothing fails. No error, no broken layout, no wrong count. The
+  control keeps working and quietly stops having an icon, once, and only for the readers
+  who actually used it, which is the subset least likely to mention it.
+
+  Two moments are checked rather than one. Straight after the click, because the first
+  write is what deletes a child and therefore the exact instant the mark goes. And after
+  the timer has reverted the label, because that is the state the reader is left with for
+  the rest of the session. Checking only the second would still catch it, checking only
+  the first would not tell you whether the revert put anything back.
+*/
+const marksWhileCopied = await page.evaluate(
+  () => document.querySelectorAll('[data-share] .share-menu .mk').length
+);
+
+if (marksWhileCopied !== 5) {
+  failures.push(
+    `one menu: ${marksWhileCopied} destination marks while the button reads Copied, expected 5. ` +
+      `The first write is the one that deletes a child, so this is the moment the mark ` +
+      `disappears rather than the moment a reader would notice.`
+  );
+}
+
+await page.waitForFunction(
+  () => !document.querySelector('[data-share] .copy').hasAttribute('data-done'),
+  null,
+  { timeout: 5000 }
+);
+
+const afterTimer = await page.evaluate(() => {
+  const copy = document.querySelector('[data-share] .copy');
+  const label = copy.querySelector('.copy-label') || copy;
+  return { marks: copy.querySelectorAll('.mk').length, text: label.textContent.trim() };
+});
+
+if (afterTimer.marks !== 1) {
+  failures.push(
+    `one menu: the copy button has ${afterTimer.marks} marks once its label has reverted, ` +
+      `expected 1. The label swap took the icon with it, which is what happens when the ` +
+      `text of an element that owns children is replaced wholesale. Write to a span inside ` +
+      `the button, not to the button.`
+  );
+}
+
+if (afterTimer.text !== 'Copy link') {
+  failures.push(
+    `one menu: the copy button reads ${JSON.stringify(afterTimer.text)} after the timer, ` +
+      `expected "Copy link".`
   );
 }
 
@@ -170,7 +245,13 @@ const added = await page.evaluate(() => {
 
   const copy = clone.querySelector('.copy');
   copy.hidden = true;
-  copy.textContent = 'Copy link';
+  /*
+    Written to the span rather than the button for the same reason the component is: this
+    reset is what a freshly rendered menu looks like, and a reset that deletes the mark
+    would hand the second menu a state Astro never produces, then test that.
+  */
+  const label = copy.querySelector('.copy-label') || copy;
+  label.textContent = 'Copy link';
   copy.removeAttribute('data-done');
 
   host.parentNode.appendChild(clone);
@@ -240,6 +321,8 @@ if (clicks === 0) {
 }
 
 console.log(
-  `share is clean across ${clicks} clicks on ${path}, one intent each, with a second ` +
-    `menu and a second copy of its script on the page.`
+  `share is clean across ${clicks} clicks on ${path}, one intent each, with ${marksAtLoad} ` +
+    `destination marks at load, ${marksWhileCopied} while the button reads Copied and the ` +
+    `link icon still there after it reverts, and a second menu and a second copy of its ` +
+    `script on the page.`
 );

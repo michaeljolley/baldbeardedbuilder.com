@@ -570,11 +570,6 @@ html:not(.js) .themer { display: none; }
   padding: .4rem;
   box-shadow: 0 12px 32px rgba(0, 0, 0, .28);
 }
-.share-menu .menu-label {
-  font-family: var(--mono); font-size: .625rem; font-weight: 500;
-  letter-spacing: .16em; text-transform: uppercase;
-  color: var(--fg-dim); padding: .6rem .6rem .35rem; margin: 0;
-}
 .share-menu ul { list-style: none; margin: 0; padding: 0; }
 .share-menu a,
 .share-menu button {
@@ -582,10 +577,42 @@ html:not(.js) .themer { display: none; }
   background: none; border: 0; border-radius: 3px;
   padding: .45rem .6rem; cursor: pointer;
   font-family: var(--mono); font-size: .8125rem;
+  /* A button takes line-height: normal from the user agent while the anchors above it
+     inherit the page value, which made the copy row 31px against their 35. Invisible
+     while every row was words, obvious once all five carry a mark on the same baseline. */
+  line-height: inherit;
   color: var(--fg-dim); text-align: left; text-decoration: none;
 }
 .share-menu a:hover,
 .share-menu button:hover { background: var(--bg-inset); color: var(--fg); }
+
+/*
+  Decision 128. The destination marks.
+
+  No colour anywhere in here, which is the whole point. The svg takes currentColor, so a
+  row is --fg-dim at rest and lifts to --fg with its label from the two rules above. That
+  is why brand marks are allowed at all: the objection to them was never the shape, it was
+  that drawing them in brand colour means the first literal colours in this codebase and
+  two of them fight fifteen of the sixteen themes.
+
+  A fixed box rather than intrinsic width, so five shapes of different proportions share
+  one left edge and five labels start in the same place.
+*/
+.share-menu .mk {
+  box-sizing: border-box;
+  width: 15px; height: 15px;
+  flex: none;
+}
+
+/*
+  Optical sizing. A solid rounded square and a solid disc carry far more ink than an X of
+  thin diagonals at the same box size, so at a flat 15px those two read as bold and the X
+  reads as faint. Padding insets the artwork without moving the layout box, so the weights
+  even out and the labels still start on one line. Judged by eye at 1280 and 390, which is
+  the only way this can be judged.
+*/
+.share-menu .mk-linkedin { padding: 1.5px; }
+.share-menu .mk-facebook { padding: 1px; }
 .share-menu .sep {
   height: 1px; background: var(--line);
   margin: .35rem .6rem;

@@ -20,6 +20,7 @@ import {
   shareIntentUrl,
   shareableUrl
 } from '../src/lib/share-links.ts';
+import { SHARE_MARKS } from '../src/lib/share-marks.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
@@ -159,4 +160,88 @@ test('the outbound destinations are anchors with hrefs', () => {
   assert.match(menu, /<details/);
   /* Copy is the one that genuinely cannot work without a script, so it starts hidden. */
   assert.match(menu, /class="copy"[\s\S]{0,80}hidden/);
+});
+
+/* ------------------------------------------------------------------ *
+   Decision 128. The destination marks.
+ * ------------------------------------------------------------------ */
+
+test('every share platform has a mark and every mark draws something', () => {
+  for (const p of SHARE_PLATFORMS) {
+    const mark = SHARE_MARKS[p];
+    assert.ok(mark, `${p} has no mark`);
+    assert.ok(mark.paths.length > 0, `${p} has no path data`);
+    for (const d of mark.paths) {
+      assert.ok(d.trim().length > 0, `${p} has an empty path`);
+    }
+  }
+  assert.deepEqual(Object.keys(SHARE_MARKS).sort(), [...SHARE_PLATFORMS].sort());
+});
+
+/*
+  The reason brand marks are allowed at all.
+
+  Decision 121 refused them, and the reason it gave was that drawing them properly means
+  hardcoding X black and Bluesky #0285FF, which would be the first literal colours in a
+  codebase that has none and which fight fifteen of the sixteen themes. 128 reversed it on
+  the condition that the marks take the row colour. This is that condition, asserted
+  against the exported data rather than the file text, so the explanation above can name
+  the hex value that must never appear in a path.
+*/
+test('no mark carries a colour of its own', () => {
+  for (const p of SHARE_PLATFORMS) {
+    for (const d of SHARE_MARKS[p].paths) {
+      assert.ok(!/#|rgb\(|hsl\(|var\(/.test(d), `${p} path data carries a colour`);
+    }
+  }
+});
+
+test('copy link is the only mark that is not a brand mark', () => {
+  assert.equal(SHARE_MARKS.copy.kind, 'stroked');
+  for (const p of OUTBOUND_PLATFORMS) {
+    assert.equal(SHARE_MARKS[p].kind, 'solid', `${p} should be a solid brand mark`);
+  }
+});
+
+test('the mark component paints with currentColor and nothing else', () => {
+  const mark = read('src/components/ShareMark.astro');
+  assert.match(mark, /currentColor/);
+  assert.ok(!/#[0-9a-fA-F]{3,8}\b/.test(mark), 'ShareMark.astro carries a hex colour');
+  assert.ok(!/rgb\(|hsl\(/.test(mark), 'ShareMark.astro carries a colour function');
+  assert.match(mark, /aria-hidden="true"/);
+});
+
+/*
+  The defect decision 128 arrived with, kept out by a test rather than by memory.
+
+  The copy button reports by swapping its own words to "Copied" and back on a timer. An
+  element whose text is replaced wholesale loses every child it had, so once that button
+  owns a mark, a swap written to the button deletes the icon on first press and the
+  timeout restores the words without it. Nothing fails and nothing looks wrong. The
+  control keeps working and quietly stops having an icon, once, for the readers who used
+  it.
+
+  The general rule is the part worth keeping: an element whose content is swapped on a
+  timer cannot also be an element that owns children.
+*/
+test('the copy label swap targets a span rather than the button', () => {
+  const menu = read('src/components/ShareMenu.astro');
+  assert.match(menu, /class="copy-label"/);
+  assert.ok(
+    !/\bcopy\.textContent\s*=/.test(menu),
+    'ShareMenu writes textContent to the copy button, which deletes the mark inside it'
+  );
+  assert.match(menu, /label\.textContent\s*=\s*'Copied'/);
+  assert.match(menu, /label\.textContent\s*=\s*'Copy link'/);
+});
+
+test('the gate that would catch it is still asking the question', () => {
+  const gate = read('scripts/check-share.mjs');
+  /* Waits the revert out, because checking straight after the click passes either way. */
+  assert.match(gate, /data-done/);
+  assert.match(gate, /\.mk/);
+  assert.ok(
+    !/\bcopy\.textContent\s*=/.test(gate),
+    'the gate resets the cloned button in the way the component must not'
+  );
 });
