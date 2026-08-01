@@ -1,0 +1,169 @@
+---
+import { OUTBOUND_PLATFORMS, SHARE_LABELS, shareIntentUrl, shareableUrl } from '../lib/share-links';
+import type { TargetKind } from '../lib/reader';
+
+/*
+  Decision 121. The share menu.
+
+  Not an island, for the same reason the theme picker is not one: this is a disclosure
+  with five destinations and one clipboard write, and Preact would be paying framework
+  rent for a control that has no state worth managing. The five links are real HTML.
+
+  It is a details element rather than a button and a hidden div, which is the one place
+  this leaves the mockup. A details disclosure opens with no JavaScript at all, so four of
+  the five destinations work for a reader who has it turned off. The mockup could not have
+  known that, because it built its urls from location.href at click time and therefore had
+  nothing to put in an href.
+
+  Building them here instead of at click time also fixes something that would have been
+  found much later. location.href on the Netlify branch deploy is a preview address, so
+  every share taken from staging would have pointed at staging. These are built from
+  Astro.site, so a share always points at the real page.
+
+  No platform logos and no brand colours. Five marks at 14px in an 11rem rail is noise,
+  and doing them properly means hardcoding X black and Bluesky #0285FF, which would be
+  the first literal colours anywhere in this codebase and would look wrong in fifteen of
+  the sixteen themes. Names in mono read as a command palette, which is the voice the site
+  already speaks.
+*/
+
+interface Props {
+  /** Site relative path of the page being shared, like /csharp/some-post/. */
+  path: string;
+  /** What goes in the compose box on the platforms that take text. */
+  title: string;
+  kind: TargetKind;
+  targetKey: string;
+}
+
+const { path, title, kind, targetKey } = Astro.props;
+
+/*
+  Made absolute here rather than by the caller, so no page can pass a relative url into a
+  compose box and produce a share that points at nothing. Astro.site is configured, and
+  the fallback exists only so a misconfigured build fails as a wrong hostname rather than
+  as a crash during getStaticPaths.
+*/
+const url = shareableUrl(new URL(path, Astro.site ?? 'https://baldbeardedbuilder.com').href);
+---
+
+<details class="share" data-share data-kind={kind} data-key={targetKey} data-url={url}>
+  <summary class="share-btn">
+    <span>Share</span>
+    <span class="caret" aria-hidden="true">&#9662;</span>
+  </summary>
+
+  <div class="share-menu">
+    {/*
+      A paragraph rather than a heading. It labels a control group, not a section of the
+      document, and an h4 sitting between the page h1 and the h2s in the article body is
+      a skipped level that axe is right to complain about.
+    */}
+    <p class="menu-label" id={`share-label-${targetKey}`}>Share this</p>
+
+    <ul aria-labelledby={`share-label-${targetKey}`}>
+      {
+        OUTBOUND_PLATFORMS.map((platform) => (
+          <li>
+            <a
+              href={shareIntentUrl(platform, url, title)}
+              data-share-platform={platform}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {SHARE_LABELS[platform]}
+              <span class="vh"> (opens in a new tab)</span>
+            </a>
+          </li>
+        ))
+      }
+      <li class="sep" aria-hidden="true"></li>
+      {/*
+        Hidden until the script has confirmed there is a clipboard to write to. A copy
+        button in a page with no JavaScript, or on an insecure origin where the clipboard
+        API does not exist, is a control that cannot do its job, which is the same rule
+        the like button follows before it hydrates.
+      */}
+      <li>
+        <button type="button" class="copy" data-share-platform="copy" hidden>
+          {SHARE_LABELS.copy}
+        </button>
+      </li>
+    </ul>
+  </div>
+</details>
+
+<script is:inline>
+  (() => {
+    const host = document.querySelector('[data-share]');
+    if (!host) return;
+
+    const url = host.dataset.url;
+    const body = (platform) =>
+      JSON.stringify({ kind: host.dataset.kind, key: host.dataset.key, platform });
+
+    /*
+      Fire and forget, per decision 122. A share must never wait on our analytics and must
+      still work when the endpoint is down or the reader has blocked it. sendBeacon is the
+      only thing here that survives the page being replaced by the link the reader just
+      followed, which is exactly what happens on the four outbound ones.
+    */
+    const record = (platform) => {
+      if (!navigator.sendBeacon) return;
+      try {
+        navigator.sendBeacon('/api/share/', new Blob([body(platform)], { type: 'application/json' }));
+      } catch {
+        /* Blocked, offline, or a browser that dislikes the type. Nothing to tell anybody. */
+      }
+    };
+
+    /*
+      The anchors are left to navigate on their own rather than being intercepted into a
+      sized popup. A popup can be blocked, it breaks middle click and open in new window,
+      and it buys a window shape nobody asked for. The listener only records.
+    */
+    for (const link of host.querySelectorAll('a[data-share-platform]')) {
+      link.addEventListener('click', () => record(link.dataset.sharePlatform));
+    }
+
+    const copy = host.querySelector('.copy');
+    if (copy && navigator.clipboard) {
+      copy.hidden = false;
+      copy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(url);
+        } catch {
+          return;
+        }
+        record('copy');
+        /*
+          The label is the feedback. A toast is a notification about a thing the reader
+          just did on purpose, and it would arrive somewhere other than where they are
+          looking.
+        */
+        copy.textContent = 'Copied';
+        copy.setAttribute('data-done', '1');
+        setTimeout(() => {
+          copy.textContent = 'Copy link';
+          copy.removeAttribute('data-done');
+        }, 1600);
+      });
+    }
+
+    /* A menu that stays open after you have looked away is a menu covering the page. */
+    document.addEventListener(
+      'click',
+      (e) => {
+        if (host.open && !host.contains(e.target)) host.open = false;
+      },
+      true
+    );
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && host.open) {
+        host.open = false;
+        host.querySelector('summary').focus();
+      }
+    });
+  })();
+</script>

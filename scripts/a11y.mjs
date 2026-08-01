@@ -117,6 +117,7 @@ const TARGETS = [
 
 const failures = [];
 let checks = 0;
+let disclosuresOpened = 0;
 
 for (const [vpName, viewport] of VIEWPORTS) {
   const context = await browser.newContext({ viewport, reducedMotion: 'reduce' });
@@ -140,6 +141,36 @@ for (const [vpName, viewport] of VIEWPORTS) {
        this the gate fails a handful of runs in a hundred with a wall of target-size
        violations nobody changed anything to cause. */
     await page.evaluate(() => document.fonts.ready);
+
+    /*
+      Open every disclosure before auditing.
+
+      Found while adding the share menu. A closed disclosure is display: none, so axe walks
+      straight past it, which means the theme picker menu has been on every page of this
+      site since phase one and has never once been audited. Sixteen swatch rows and two
+      group labels, in three themes, checked by nothing.
+
+      The panels are opened rather than the triggers clicked, because a click that lands on
+      the wrong element navigates and the audit then reports on a different page. Every
+      disclosure on this site is either a details element or a panel hidden by the hidden
+      attribute, and both open the same way from here.
+    */
+    const opened = await page.evaluate(() => {
+      let count = 0;
+      for (const d of document.querySelectorAll('details')) {
+        d.open = true;
+        count++;
+      }
+      for (const trigger of document.querySelectorAll('[aria-expanded="false"][aria-controls]')) {
+        const panel = document.getElementById(trigger.getAttribute('aria-controls'));
+        if (!panel) continue;
+        panel.hidden = false;
+        trigger.setAttribute('aria-expanded', 'true');
+        count++;
+      }
+      return count;
+    });
+    disclosuresOpened += opened;
 
     for (const theme of THEMES) {
       await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
@@ -201,4 +232,14 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`axe clean across ${checks} audits and ${TARGETS.length * VIEWPORTS.length} page loads.`);
+if (disclosuresOpened === 0) {
+  /*
+    Fail closed. Every page carries the theme picker, so zero here means the opening step
+    stopped matching anything and the gate has gone back to auditing only what was already
+    on screen, which is the state this was written to end.
+  */
+  console.error('no disclosures were opened, so their contents were never audited.');
+  process.exit(1);
+}
+
+console.log(`axe clean across ${checks} audits, ${TARGETS.length * VIEWPORTS.length} page loads and ${disclosuresOpened} opened disclosures.`);

@@ -11,7 +11,8 @@
   project this file is deleted and the casts come out with it. If it is still here in six
   months, that is the smell it is meant to be.
 
-  Covers 20260801000000_notifications.sql and 20260802000000_video_pages.sql only.
+  Covers 20260801000000_notifications.sql, 20260802000000_video_pages.sql and
+  20260804000000_share_intents.sql only.
 */
 
 import type { Json } from './database.types';
@@ -83,6 +84,25 @@ export interface PendingDatabase {
           story_featured?: boolean;
           comment_reply?: boolean;
         };
+        Relationships: [];
+      };
+      share_intents: {
+        Row: {
+          id: number;
+          target_kind: string;
+          target_key: string;
+          platform: string;
+          ip_hash: string;
+          created_at: string;
+        };
+        Insert: {
+          target_kind: string;
+          target_key: string;
+          platform: string;
+          ip_hash: string;
+        };
+        /* No Update. Nothing edits an intent. It happened or it did not. */
+        Update: Record<string, never>;
         Relationships: [];
       };
     };

@@ -14,6 +14,7 @@ import { topicBySlug } from '../../config/site';
 import { pagedItems, type Item } from '../../lib/content';
 import LikeButton from '../../components/islands/LikeButton';
 import CommentThread from '../../components/islands/CommentThread';
+import ShareMenu from '../../components/ShareMenu.astro';
 import { bakedLike } from '../../lib/likes';
 import { bakedReplies } from '../../lib/comments';
 import { videoPages } from '../../lib/video-pages';
@@ -127,6 +128,7 @@ const replies = await bakedReplies('content', item.key);
             initial={likes}
             label="this piece"
           />
+          <ShareMenu path={pageUrl} title={item.title} kind="content" targetKey={item.key} />
         </div>
 
         {/*

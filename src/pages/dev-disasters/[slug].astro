@@ -11,6 +11,7 @@ import Base from '../../layouts/Base.astro';
 import { sevClass, sevLabel } from '../../config/site';
 import LikeButton from '../../components/islands/LikeButton';
 import CommentThread from '../../components/islands/CommentThread';
+import ShareMenu from '../../components/ShareMenu.astro';
 import { allDisasters, disasterBySlug, disasterCode, countsBySeverity } from '../../lib/disasters';
 import { bakedReplies } from '../../lib/comments';
 
@@ -59,6 +60,12 @@ const filed = d.date.toLocaleDateString('en-GB', {
             initial={d.likes}
             label="this story"
           />
+          {/*
+            A disaster gets the share menu too. The line is the thing people quote at each
+            other, so the title is what goes in the compose box rather than the AI written
+            label, which reads as a filename.
+          */}
+          <ShareMenu path={d.url} title={d.line} kind="disaster" targetKey={String(d.id)} />
         </div>
         <a
           class="fine"
