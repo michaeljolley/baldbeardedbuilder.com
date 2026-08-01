@@ -242,6 +242,121 @@ if (deadSpace.skipped) {
   );
 }
 
+/*
+  EMPTY CELLS AND SHORT CARDS. Decision 106.
+
+  .grid is display:grid with gap 1px and background var(--line), and every card paints
+  var(--bg) over its own cell. The seams between cards are not borders, they are the grid's
+  background showing through one pixel gaps. That makes the divider system elegant and it
+  makes one thing dangerous: anything that does not cover its cell shows up as divider
+  colour, at full strength, in the shape of whatever is missing.
+
+  Two shapes of the same defect, and both are measured here.
+
+  A SHORT CARD leaves a horizontal band. That is what a lead card with align-content start
+  produced: the card stopped at its content while the row carried on, and the difference
+  drew as a coloured bar.
+
+  AN EMPTY CELL is worse and is the one nothing on this branch could see. The lead spans two
+  columns and the rest span one, so the number of cards that tiles cleanly is fixed by the
+  column count. Miss it and a whole cell of var(--line) lands on the page as a solid block.
+  Adding one curated pick to a config file is enough to cause it, and no data test, no
+  markup test and no accessibility gate can see a rectangle of the wrong colour.
+
+  Measured per row rather than per grid, because a hole in the middle of a grid and a hole
+  at the end are the same defect and only the last row is intuitive.
+*/
+let cellsMeasured = 0;
+const cellFailures = [];
+
+for (const [name, url] of PAGES) {
+  for (const width of WIDTHS) {
+    const page = await browser.newPage({ viewport: { width, height: 1200 } });
+    await page.goto(base + url, { waitUntil: 'networkidle' });
+
+    const grids = await page.evaluate(() => {
+      const out = [];
+
+      for (const grid of document.querySelectorAll('.grid')) {
+        const cs = getComputedStyle(grid);
+        const tracks = cs.gridTemplateColumns.split(' ').filter(Boolean);
+        const cols = tracks.length;
+        const colW = parseFloat(tracks[0]) || 0;
+        const gap = parseFloat(cs.columnGap) || 0;
+        if (!cols || !colW) continue;
+
+        const cards = [...grid.children]
+          .map((el) => {
+            const r = el.getBoundingClientRect();
+            return {
+              top: r.top,
+              bottom: r.bottom,
+              height: r.height,
+              span: Math.max(1, Math.round((r.width + gap) / (colW + gap))),
+              label: (el.querySelector('h3')?.textContent || el.className || '').trim().slice(0, 44)
+            };
+          })
+          .filter((c) => c.height > 0);
+        if (!cards.length) continue;
+
+        /* Group into rows by top edge, with a couple of pixels of tolerance for rounding. */
+        const rows = [];
+        for (const c of [...cards].sort((a, b) => a.top - b.top)) {
+          const row = rows.find((r) => Math.abs(r.top - c.top) <= 2);
+          if (row) row.cards.push(c);
+          else rows.push({ top: c.top, cards: [c] });
+        }
+
+        const holes = [];
+        const short = [];
+        for (const [i, row] of rows.entries()) {
+          const spans = row.cards.reduce((n, c) => n + c.span, 0);
+          if (spans < cols) holes.push({ row: i + 1, missing: cols - spans, spans });
+
+          const rowBottom = Math.max(...row.cards.map((c) => c.bottom));
+          for (const c of row.cards) {
+            const below = rowBottom - c.bottom;
+            if (below > 1) {
+              short.push({ row: i + 1, label: c.label, below: Math.round(below) });
+            }
+          }
+        }
+
+        out.push({ cols, cards: cards.length, rows: rows.length, holes, short });
+      }
+
+      return out;
+    });
+
+    for (const g of grids) {
+      cellsMeasured += g.cards;
+
+      for (const h of g.holes) {
+        cellFailures.push(
+          `${name} at ${width}px: row ${h.row} of a ${g.cols} column grid fills only ` +
+            `${h.spans} of ${g.cols} columns, so ${h.missing} cell` +
+            `${h.missing === 1 ? '' : 's'} of divider colour ` +
+            `${h.missing === 1 ? 'is' : 'are'} drawn as a solid block. The grid paints ` +
+            `var(--line) behind cards that paint var(--bg), so an unoccupied cell is not ` +
+            `empty space, it is a coloured rectangle.`
+        );
+      }
+
+      for (const s of g.short) {
+        cellFailures.push(
+          `${name} at ${width}px: the card "${s.label}" ends ${s.below}px above the bottom ` +
+            `of row ${s.row}, so a band of divider colour shows under it. A card has to ` +
+            `cover its own cell, because the seams are grid background rather than borders.`
+        );
+      }
+    }
+
+    await page.close();
+  }
+}
+
+failures.push(...cellFailures);
+
 await browser.close();
 server.close();
 
@@ -261,8 +376,13 @@ if (measured === 0) {
   process.exit(1);
 }
 
+if (cellsMeasured === 0) {
+  console.error('no grid cells were measured, so the cell fill check proved nothing. Check the .grid selector.');
+  process.exit(1);
+}
+
 console.log(
-  `layout is clean across ${measured} thumbnail measurements, the wide card's thumb ` +
-    `held its ratio with a 2000px neighbour, and the lead card has ${deadSpace.trailing}px ` +
-    `below its last text.`
+  `layout is clean across ${measured} thumbnail measurements and ${cellsMeasured} grid ` +
+    `cells, the wide card's thumb held its ratio with a 2000px neighbour, and the lead ` +
+    `card has ${deadSpace.trailing}px below its last text.`
 );
