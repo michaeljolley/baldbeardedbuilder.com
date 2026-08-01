@@ -95,39 +95,54 @@ const url = shareableUrl(new URL(path, Astro.site ?? 'https://baldbeardedbuilder
 
 <script is:inline>
   (() => {
-    const host = document.querySelector('[data-share]');
-    if (!host) return;
-
-    const url = host.dataset.url;
-    const body = (platform) =>
-      JSON.stringify({ kind: host.dataset.kind, key: host.dataset.key, platform });
-
     /*
-      Fire and forget, per decision 122. A share must never wait on our analytics and must
-      still work when the endpoint is down or the reader has blocked it. sendBeacon is the
-      only thing here that survives the page being replaced by the link the reader just
-      followed, which is exactly what happens on the four outbound ones.
+      Astro emits an is:inline script once per component instance, not once per page, so a
+      page carrying two share menus runs this twice.
+
+      It used to open with document.querySelector('[data-share]'), singular. Both copies
+      would then wire the first menu: every share taken from it recorded twice, and the
+      second menu got no listeners at all and never unhid its copy button. Nothing on the
+      site has two menus today, so nothing was broken, and that is the reason to fix it
+      now rather than later. The failure has no symptom. No error, nothing wrong in the
+      markup, nothing a reader would notice. share_intents exists so Michael can read a
+      number and believe it, and a count that silently doubles is the one bug shape that
+      table must not have.
+
+      Each menu is claimed before it is wired, so a second copy of the script finds nothing
+      left to do and the count cannot depend on how many menus a page happens to carry.
     */
-    const record = (platform) => {
-      if (!navigator.sendBeacon) return;
-      try {
-        navigator.sendBeacon('/api/share/', new Blob([body(platform)], { type: 'application/json' }));
-      } catch {
-        /* Blocked, offline, or a browser that dislikes the type. Nothing to tell anybody. */
+    const wire = (host) => {
+      const url = host.dataset.url;
+      const body = (platform) =>
+        JSON.stringify({ kind: host.dataset.kind, key: host.dataset.key, platform });
+
+      /*
+        Fire and forget, per decision 122. A share must never wait on our analytics and must
+        still work when the endpoint is down or the reader has blocked it. sendBeacon is the
+        only thing here that survives the page being replaced by the link the reader just
+        followed, which is exactly what happens on the four outbound ones.
+      */
+      const record = (platform) => {
+        if (!navigator.sendBeacon) return;
+        try {
+          navigator.sendBeacon('/api/share/', new Blob([body(platform)], { type: 'application/json' }));
+        } catch {
+          /* Blocked, offline, or a browser that dislikes the type. Nothing to tell anybody. */
+        }
+      };
+
+      /*
+        The anchors are left to navigate on their own rather than being intercepted into a
+        sized popup. A popup can be blocked, it breaks middle click and open in new window,
+        and it buys a window shape nobody asked for. The listener only records.
+      */
+      for (const link of host.querySelectorAll('a[data-share-platform]')) {
+        link.addEventListener('click', () => record(link.dataset.sharePlatform));
       }
-    };
 
-    /*
-      The anchors are left to navigate on their own rather than being intercepted into a
-      sized popup. A popup can be blocked, it breaks middle click and open in new window,
-      and it buys a window shape nobody asked for. The listener only records.
-    */
-    for (const link of host.querySelectorAll('a[data-share-platform]')) {
-      link.addEventListener('click', () => record(link.dataset.sharePlatform));
-    }
+      const copy = host.querySelector('.copy');
+      if (!copy || !navigator.clipboard) return;
 
-    const copy = host.querySelector('.copy');
-    if (copy && navigator.clipboard) {
       copy.hidden = false;
       copy.addEventListener('click', async () => {
         try {
@@ -148,22 +163,48 @@ const url = shareableUrl(new URL(path, Astro.site ?? 'https://baldbeardedbuilder
           copy.removeAttribute('data-done');
         }, 1600);
       });
+    };
+
+    for (const host of document.querySelectorAll('[data-share]:not([data-share-ready])')) {
+      host.setAttribute('data-share-ready', '');
+      wire(host);
     }
+
+    /*
+      Dismissal is a page level concern rather than a per menu one, so it is installed once
+      however many menus went through the loop above. Binding it per instance would be
+      harmless and invisible, which is how the bug above got in.
+    */
+    if (document.documentElement.hasAttribute('data-share-dismiss')) return;
+    document.documentElement.setAttribute('data-share-dismiss', '');
 
     /* A menu that stays open after you have looked away is a menu covering the page. */
     document.addEventListener(
       'click',
       (e) => {
-        if (host.open && !host.contains(e.target)) host.open = false;
+        for (const host of document.querySelectorAll('[data-share][open]')) {
+          if (!host.contains(e.target)) host.open = false;
+        }
       },
       true
     );
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && host.open) {
-        host.open = false;
-        host.querySelector('summary').focus();
-      }
+      if (e.key !== 'Escape') return;
+
+      const open = document.querySelectorAll('[data-share][open]');
+      if (!open.length) return;
+
+      /*
+        Focus returns to the menu the reader was actually in, not to whichever comes first
+        in the document, so Escape out of the second menu does not throw them back up the
+        page to the first.
+      */
+      const inside = document.activeElement && document.activeElement.closest('[data-share][open]');
+      const returnTo = inside || open[0];
+
+      for (const host of open) host.open = false;
+      returnTo.querySelector('summary').focus();
     });
   })();
 </script>

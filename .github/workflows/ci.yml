@@ -168,6 +168,11 @@ jobs:
       - name: Layout geometry
         run: pnpm check:layout
 
+      # Counts intents rather than measuring anything, so it is its own step: a doubled
+      # count has no visible symptom, and a failure here should not read as a layout one.
+      - name: Share intents
+        run: pnpm check:share
+
   perf:
     name: Performance budget
     runs-on: ubuntu-latest

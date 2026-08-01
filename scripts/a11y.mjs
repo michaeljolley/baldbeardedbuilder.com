@@ -11,30 +11,9 @@
 
 import { chromium } from 'playwright';
 import { AxeBuilder } from '@axe-core/playwright';
-import { readdirSync, existsSync } from 'node:fs';
 import { serveDist } from './lib/serve-dist.mjs';
 import { serveDev } from './lib/serve-dev.mjs';
-
-/**
- * The first published disaster's own page, or nothing when none have been published.
- *
- * Returns a list so it can be spread into PAGES, which is how "no archetype yet" is said
- * without a conditional in the middle of the table. The archive's own severity and sort
- * views live under the same directory and are listed explicitly above, so they are
- * excluded here rather than audited twice under the wrong label.
- */
-function firstDisasterPage() {
-  const dir = 'dist/dev-disasters';
-  if (!existsSync(dir)) return [];
-
-  const views = new Set(['all', 'error', 'warning', 'info', 'hint']);
-  const slug = readdirSync(dir, { withFileTypes: true })
-    .filter((e) => e.isDirectory() && !views.has(e.name))
-    .map((e) => e.name)
-    .sort()[0];
-
-  return slug ? [['disaster', `/dev-disasters/${slug}/`]] : [];
-}
+import { firstArticlePage, firstDisasterPage } from './lib/archetypes.mjs';
 
 /* One of each archetype rather than all 199 pages. Adding a new archetype means adding
    a line here, which is the point. */
@@ -44,7 +23,14 @@ const PAGES = [
   ['topic index', '/csharp/'],
   ['topic filtered', '/csharp/articles/'],
   ['empty topic', '/mcp/'],
-  ['article', '/csharp/the-traps-of-nullable-in-c-sharp/'],
+  /*
+    The article archetype is discovered rather than named. It used to be a hardcoded slug
+    sitting six lines above the disaster function that exists to avoid exactly that, and it
+    named a post in the src/content submodule, which Michael edits without touching this
+    repo. One rename for SEO and this gate went red on a build where no site code changed,
+    which is decision 117 straight through the middle.
+  */
+  ...firstArticlePage(),
   /*
     A video detail page exists only when there is a video_pages row for it, and there are
     none until Michael writes one. So there is no video page archetype to audit yet, and
@@ -56,13 +42,8 @@ const PAGES = [
   /*
     The disaster detail archetype is discovered rather than named, for the same reason the
     video page above is absent: it only exists once somebody has told a story and Michael
-    has published it, and there are none yet.
-
-    This used to be a hardcoded seed slug. When src/config/disasters.seed.json was deleted
-    and the wall started reading Supabase, that URL stopped existing and the accessibility
-    gate failed on a 404, reporting it as two axe problems. A gate that breaks because its
-    fixture data went away is testing the fixture. Reading dist means the archetype is
-    audited the day a real story is published, without anybody remembering to come back.
+    has published it, and there are none yet. Both discoveries live in scripts/lib/archetypes.mjs
+    with the history of why.
   */
   ...firstDisasterPage(),
   ['about', '/about/'],
@@ -73,6 +54,20 @@ const PAGES = [
   ['search', '/search/'],
   ['not found', '/404.html']
 ];
+
+/*
+  Fail closed on the article. Discovery is the fix for a hardcoded slug, but a discovery
+  that quietly finds nothing is worse than the slug was: the gate would go green having
+  skipped the most read page type on the site, and its summary line would not change.
+  There is no state of this repo where zero articles are built.
+*/
+if (!PAGES.some(([label]) => label === 'article')) {
+  console.error(
+    'no article page was discovered in dist, so the most read page type went unaudited. ' +
+      'Check src/config/taxonomy.json has entries and that pnpm build ran first.'
+  );
+  process.exit(1);
+}
 
 /*
   Pages that are rendered on demand, so they are not in dist and a static audit cannot see
