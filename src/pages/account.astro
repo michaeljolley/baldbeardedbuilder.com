@@ -127,8 +127,9 @@ const linkRows = Array.from({ length: LINKS_MAX }, (_, i) => account?.links[i] ?
             <div class="check">
               <input id="is_private" name="is_private" type="checkbox" checked={account.isPrivate} />
               <label for="is_private">
-                Hide my profile. Your stories and comments stay where they are, your
-                profile page returns a 404.
+                Hide my profile. Your profile page returns a 404, and your name comes off
+                your stories and comments, which stay published. Untick this and your name
+                comes back.
               </label>
             </div>
 

@@ -21,6 +21,24 @@ import { bakedLikes } from './likes';
 import { bakedRepliesFor } from './comments';
 import { serviceClient, supabaseWritable } from './supabase';
 
+/**
+ * Who told a story, and what the byline is allowed to say about them.
+ *
+ * A discriminated union rather than a nullable handle, because null was carrying three
+ * meanings and only two of them are decisions. Somebody chose to tell it anonymously,
+ * somebody went private or deleted their account, and the lookup failed. The first two
+ * render identically and the third must not, since drawing "anonymous" over a failed
+ * lookup states something false about a person's stated choice and is indistinguishable
+ * from them having made it.
+ *
+ * `why` is kept even though nothing branches on it today. The distinction is the reason
+ * this type exists, so collapsing it back to a boolean would undo the fix quietly.
+ */
+export type Teller =
+  | { shown: 'handle'; handle: string }
+  | { shown: 'anonymous'; why: 'chosen' | 'private' }
+  | { shown: 'nothing' };
+
 export interface Disaster {
   /** Sequential, shown as the diagnostic code. Stable, never reused. */
   id: number;
@@ -31,8 +49,8 @@ export interface Disaster {
   title: string;
   /** The line people remember. This is the headline on the wall and in the panel. */
   line: string;
-  /** GitHub handle, or null when told anonymously. */
-  teller: string | null;
+  /** Who the byline names, or why it does not. */
+  teller: Teller;
   likes: number;
   replies: number;
   date: Date;
@@ -105,13 +123,65 @@ const repliesById = await bakedRepliesFor('disaster');
  * A second query rather than a PostgREST embed. The embed would be one round trip instead
  * of two, and at build time on a table this size that saving is not worth depending on a
  * relationship name that cannot be checked without a live database in front of you.
+ *
+ * Decision 104. This runs through serviceClient(), which bypasses RLS by design, so it
+ * has to restate the visibility rule the database would otherwise apply. The public read
+ * policy on profiles is `using (is_private = false and deleted_at is null)`, and this is
+ * the query that reads handles for public display, so without the restatement it was the
+ * one place that rule did not hold. Do not delete this as redundant. It is not inherited.
+ *
+ * The predicate is applied here rather than in the .in() filter on purpose. Filtering in
+ * the query would turn a private profile into a row that is simply absent, which is the
+ * same shape as a profile that does not exist, and those two must stay distinguishable:
+ * one is somebody's decision and the other is damage.
  */
-async function tellersFor(rows: Row[]): Promise<Map<string, string>> {
+async function tellersFor(rows: Row[]): Promise<Map<string, Teller>> {
   const ids = [...new Set(rows.filter((r) => !r.is_anonymous && r.author_id).map((r) => r.author_id!))];
   if (ids.length === 0) return new Map();
 
-  const { data } = await serviceClient().from('profiles').select('id, handle').in('id', ids);
-  return new Map((data ?? []).map((p) => [p.id as string, p.handle as string]));
+  const { data, error } = await serviceClient()
+    .from('profiles')
+    .select('id, handle, is_private, deleted_at')
+    .in('id', ids);
+
+  /*
+    Same reasoning as the read above. Swallowing this would draw every named story as
+    anonymous over a healthy database, which misreports what every one of those people
+    chose, and it would do it without a mark anywhere.
+  */
+  if (error) throw new Error(`Could not read profiles for dev disaster bylines: ${error.message}`);
+
+  const out = new Map<string, Teller>();
+  for (const p of data ?? []) {
+    const hidden = p.is_private || p.deleted_at !== null;
+    out.set(
+      p.id as string,
+      hidden ? { shown: 'anonymous', why: 'private' } : { shown: 'handle', handle: p.handle as string }
+    );
+  }
+  return out;
+}
+
+/**
+ * What a story's byline is allowed to say, given the row and the profiles that resolved.
+ *
+ * A map miss is deliberately not treated as anonymity. Every hidden profile is present in
+ * the map already, marked hidden, so a miss can only mean the row points at a profile that
+ * is not there. That is damage rather than a decision, so it draws no byline and says so
+ * in the build log.
+ */
+function tellerFor(r: Row, tellers: Map<string, Teller>): Teller {
+  if (r.is_anonymous) return { shown: 'anonymous', why: 'chosen' };
+
+  const found = r.author_id ? tellers.get(r.author_id) : undefined;
+  if (found) return found;
+
+  console.warn(
+    `Dev disaster ${r.id} is not anonymous but its author_id ${r.author_id ?? 'null'} ` +
+      'matched no profile. Drawing it with no byline, because calling it anonymous would ' +
+      'misreport a choice the teller did not make.'
+  );
+  return { shown: 'nothing' };
 }
 
 async function load(): Promise<Disaster[]> {
@@ -181,7 +251,7 @@ async function load(): Promise<Disaster[]> {
       severity: r.severity as SeverityId,
       title: r.title,
       line: r.line,
-      teller: r.is_anonymous ? null : (tellers.get(r.author_id ?? '') ?? null),
+      teller: tellerFor(r, tellers),
       likes: likesById.get(String(r.id)) ?? 0,
       replies: repliesById.get(String(r.id)) ?? 0,
       date: new Date(r.published_at),

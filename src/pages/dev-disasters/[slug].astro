@@ -6,6 +6,7 @@
   this page is currently the story and its counts and nothing that pretends to be
   interactive. A dead control is worse than an absent one.
 */
+import Teller from '../../components/Teller.astro';
 import Base from '../../layouts/Base.astro';
 import { sevClass, sevLabel } from '../../config/site';
 import LikeButton from '../../components/islands/LikeButton';
@@ -43,7 +44,7 @@ const filed = d.date.toLocaleDateString('en-GB', {
           </div>
           <div>
             <dt>Told by</dt>
-            <dd>{d.teller ? <a href={`/builders/${d.teller}/`}>{d.teller}</a> : 'anonymous'}</dd>
+            <dd><Teller teller={d.teller} /></dd>
           </div>
           <div>
             <dt>Filed</dt>

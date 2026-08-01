@@ -10,6 +10,7 @@
   rather than a rotator, which keeps decision 24 and decision 32 from fighting: it works
   with scripting off and it has nothing to respect prefers-reduced-motion about.
 */
+import Teller from '../components/Teller.astro';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Drip from '../components/Drip.astro';
@@ -97,7 +98,7 @@ const dripDay = latestDrip
                 )}
                 <span class="by">
                   told by{' '}
-                  {lead.teller ? <a href={`/builders/${lead.teller}/`}>{lead.teller}</a> : 'anonymous'}
+                  <Teller teller={lead.teller} />
                   {leadStats.map((s) => (
                     <Fragment> &middot; {s}</Fragment>
                   ))}

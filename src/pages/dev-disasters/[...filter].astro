@@ -13,6 +13,7 @@
     /dev-disasters/[severity]/[sort]/  one severity, one sort
   Every one of those segments is reserved so no disaster slug can shadow it.
 */
+import Teller from '../../components/Teller.astro';
 import Base from '../../layouts/Base.astro';
 import Drip from '../../components/Drip.astro';
 import { SEVERITIES, DISASTER_SORTS, sevClass, sevLabel, wqClass, type SeverityId } from '../../config/site';
@@ -190,7 +191,7 @@ const isDefault = scope === 'all' && sort === 'liked';
                 </p>
                 <span class="wq-f">
                   {d.title} &middot; told by{' '}
-                  {d.teller ? <a href={`/builders/${d.teller}/`}>{d.teller}</a> : 'anonymous'}
+                  <Teller teller={d.teller} />
                 </span>
               </article>
             ))}
