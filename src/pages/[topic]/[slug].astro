@@ -39,7 +39,7 @@ const Content = post ? (await render(post)).Content : null;
 
 const dateLabel = item.date.toLocaleDateString('en-US', {
   year: 'numeric',
-  month: 'long',
+  month: 'short',
   day: 'numeric'
 });
 
@@ -71,7 +71,77 @@ const replies = await bakedReplies('content', item.key);
   canonical={post?.data.canonicalUrl}
 >
   <main id="main">
-    <div class="shell">
+    <div class="shell read">
+      {/*
+        Decision 119. Ten page types carried this rail and the one people actually read
+        did not, so its metadata was scattered across a breadcrumb, an unstyled stat
+        line and a chip block at the bottom of the article. The rail is the one place
+        that says what a piece is, and it matches dev-disasters/[slug].astro.
+      */}
+      <aside class="rail">
+        <dl>
+          <div>
+            <dt>Topic</dt>
+            <dd><a href={`/${topic.slug}/`}>{topic.slug}</a></dd>
+          </div>
+          <div>
+            <dt>Published</dt>
+            <dd><time datetime={item.date.toISOString()}>{dateLabel}</time></dd>
+          </div>
+          <div>
+            <dt>{item.kind === 'video' ? 'Run time' : 'Read time'}</dt>
+            <dd>{item.length}</dd>
+          </div>
+          {
+            /*
+              Views are not in decision 119's list because the mockup's article had none.
+              They are real data on a video and the stat line was the only place carrying
+              them, so they move here rather than being dropped on the way.
+            */
+            item.views !== null && (
+              <div>
+                <dt>Views</dt>
+                <dd>{item.views.toLocaleString('en-US')}</dd>
+              </div>
+            )
+          }
+          {
+            alsoFiled.length > 0 && (
+              <div>
+                <dt>Also filed</dt>
+                <dd>
+                  {alsoFiled.map((t) => (
+                    <a href={`/${t!.slug}/`}>{t!.slug}</a>
+                  ))}
+                </dd>
+              </div>
+            )
+          }
+        </dl>
+
+        <div class="rail-acts">
+          <LikeButton
+            client:visible
+            kind="content"
+            targetKey={item.key}
+            initial={likes}
+            label="this piece"
+          />
+        </div>
+
+        {/*
+          Navigation to a section further down this page, not a control, so it wears no
+          border, background or radius. // is how a C# reader already spells a comment.
+        */}
+        <a class="jump replies" href="#comments">
+          <span class="cmark">//</span> {replies === 1 ? '1 reply' : `${replies} replies`}
+        </a>
+
+        <a class="fine" href={`/report/?type=${item.kind}&target=${encodeURIComponent(pageUrl)}`}>
+          Report a problem with this page
+        </a>
+      </aside>
+
       {/*
         One filter per element. Pagefind reads the whole attribute value as a single
         "name:value" pair, so putting two pairs in one attribute silently produces one
@@ -88,11 +158,6 @@ const replies = await bakedReplies('content', item.key);
           </span>
           <h1>{item.title}</h1>
           {item.description && <p class="lede">{item.description}</p>}
-          <p class="stat">
-            <time datetime={item.date.toISOString()}>{dateLabel}</time>
-            <span>{item.length}</span>
-            {item.views !== null && <span>{item.views.toLocaleString('en-US')} views</span>}
-          </p>
         </header>
 
         {
@@ -117,33 +182,6 @@ const replies = await bakedReplies('content', item.key);
           )
         }
 
-        <div class="rail-acts article-acts">
-          <LikeButton
-            client:visible
-            kind="content"
-            targetKey={item.key}
-            initial={likes}
-            label="this piece"
-          />
-          <a class="fine" href={`/report/?type=${item.kind}&target=${encodeURIComponent(pageUrl)}`}>
-            Report a problem with this page
-          </a>
-        </div>
-
-        {
-          alsoFiled.length > 0 && (
-            <div class="below">
-              <div class="rule"><h2>Also filed under</h2></div>
-              <div class="chips">
-                {alsoFiled.map((t) => (
-                  <a class="chip" href={`/${t!.slug}/`}>
-                    {t!.slug}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )
-        }
       </article>
     </div>
 

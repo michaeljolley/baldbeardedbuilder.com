@@ -497,18 +497,47 @@ html:not(.js) .themer { display: none; }
   color: var(--fg); padding: .5rem .8rem; cursor: pointer;
 }
 .like:hover { border-color: var(--sev-error); color: var(--sev-error); }
+/* The count is the content, so it carries the weight. The word is what makes 318 mean
+   something rather than being read as views or replies. */
+.like .lbl { color: var(--fg-dim); }
+.like b { font-weight: 600; }
+.like:hover .lbl { color: inherit; }
 /* Before the island wakes up, and forever for anybody with JavaScript off. The count is
    content and stays on screen, but nothing about it should invite a press it cannot
    answer. */
 .like-idle { cursor: default; color: var(--fg-dim); }
 .like-idle:hover { border-color: var(--line); color: var(--fg-dim); }
-/* The like is a control and the reply count is navigation, so they sit on the same row
-   but only one of them is a button. // is how a C# reader already spells "comment". */
-.rail-acts { display: grid; gap: .5rem; margin-top: 1.75rem; }
+/*
+  Decision 120. Wrap rather than stack.
+
+  This was display: grid, which stretched both children to the full width of whatever
+  held them. In the 11rem rail the buttons now sit at their content width and drop to
+  the next row when they run out; under the article on a phone the rail is full width
+  and they sit side by side. align-items is the entire fix, and one rule is correct at
+  both sizes.
+*/
+.rail-acts {
+  display: flex; flex-wrap: wrap; align-items: flex-start;
+  gap: .5rem; margin-top: 1.75rem;
+}
 .rail-acts .like { margin-top: 0; }
+/*
+  The reply count is navigation to a section further down this page, not a control, so
+  it wears no border, background or radius. // is how a C# reader already spells a
+  comment.
+*/
 .jump { text-decoration: none; }
 .jump .cmark { color: var(--tok-com); font-style: italic; }
 .jump:hover { border-color: var(--accent); color: var(--accent); }
+.rail .jump.replies {
+  display: inline-flex; align-items: center; gap: .45rem;
+  min-height: 24px;
+  margin-top: .9rem;
+  padding: 0; border: 0; background: none;
+  font-family: var(--mono); font-size: .8125rem;
+  color: var(--fg-dim);
+}
+.rail .jump.replies:hover { color: var(--accent); border-color: transparent; }
 
 .rail .fine { display: block; font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim); margin-top: .5rem; }
 

@@ -7,6 +7,12 @@
   honestly a little stale. It reconciles against the live number as soon as it wakes up.
   Showing a stale number briefly is better than showing a spinner where a number goes,
   because the number is the content and the spinner is not.
+
+  Decision 120. The word Like is on screen and not only in the accessible name. A heart
+  and a bare number could be likes, views or replies, so the accessible name was correct
+  and a sighted reader had no label at all. The visible word is also what keeps the
+  accessible name legal under WCAG 2.5.3, which wants the name to contain the visible
+  text, and it is why the name reads a little redundantly.
 */
 
 import { useEffect, useState } from 'preact/hooks';
@@ -107,7 +113,8 @@ export default function LikeButton({ kind, targetKey, initial, label, compact }:
         aria-disabled={!ready}
         aria-busy={busy}
       >
-        <span aria-hidden="true">{liked ? '\u2665' : '\u2661'}</span> {likes}
+        <span aria-hidden="true">{liked ? '\u2665' : '\u2661'}</span>{' '}
+        <span class="lbl">Like</span> <b>{likes}</b>
         <span class="vh">
           {ready ? ` likes on ${label}` : ` likes on ${label}. Liking needs JavaScript.`}
         </span>
