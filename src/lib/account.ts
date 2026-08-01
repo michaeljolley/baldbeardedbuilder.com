@@ -11,6 +11,14 @@
 import type { APIContext } from 'astro';
 import { serviceClient, supabaseWritable } from './supabase';
 import type { Submission, SubmissionStatus } from './submissions';
+import {
+  normalizeHandle,
+  handleProblem,
+  linksFrom,
+  textField,
+  BIO_MAX,
+  DISPLAY_NAME_MAX
+} from './profile-fields';
 
 export interface AccountView {
   id: string;
@@ -23,24 +31,12 @@ export interface AccountView {
   twitchLogin: string | null;
 }
 
-export const HANDLE_RE = /^[a-z0-9][a-z0-9-]{1,30}[a-z0-9]$/;
-export const BIO_MAX = 280;
-export const LINKS_MAX = 4;
-export const LABEL_MAX = 40;
-
-/** Keeps only http and https. A javascript: or data: URL in a profile link is an attack. */
-export function safeUrl(raw: string): string | null {
-  const trimmed = raw.trim();
-  if (!trimmed) return null;
-  const withScheme = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
-  try {
-    const u = new URL(withScheme);
-    if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
-    return u.toString();
-  } catch {
-    return null;
-  }
-}
+/*
+  The field rules live in profile-fields.ts so a test can run them. This file cannot be
+  imported by one: it reaches ./supabase, which is a directory, and node refuses that
+  before any assertion runs. Re-exported here so call sites import one thing.
+*/
+export * from './profile-fields';
 
 export async function readAccount(profileId: string): Promise<AccountView | null> {
   if (!supabaseWritable) return null;
@@ -126,13 +122,9 @@ export async function saveAccount(profileId: string, form: FormData): Promise<Sa
 
   const db = serviceClient();
 
-  const handle = String(form.get('handle') ?? '').trim().toLowerCase();
-  if (!HANDLE_RE.test(handle)) {
-    return {
-      ok: false,
-      error: 'A handle is 3 to 32 characters, lower case letters, numbers and hyphens, and cannot start or end with a hyphen.'
-    };
-  }
+  const handle = normalizeHandle(form.get('handle'));
+  const handleError = handleProblem(handle);
+  if (handleError) return { ok: false, error: handleError };
 
   const { data: reserved } = await db
     .from('reserved_handles')
@@ -149,16 +141,10 @@ export async function saveAccount(profileId: string, form: FormData): Promise<Sa
 
   if (reserved || taken) return { ok: false, error: 'That handle is taken.' };
 
-  const displayName = String(form.get('display_name') ?? '').trim().slice(0, 60);
-  const bio = String(form.get('bio') ?? '').trim().slice(0, BIO_MAX);
+  const displayName = textField(form.get('display_name'), DISPLAY_NAME_MAX);
+  const bio = textField(form.get('bio'), BIO_MAX);
 
-  const links: { label: string; url: string }[] = [];
-  for (let i = 0; i < LINKS_MAX; i++) {
-    const url = safeUrl(String(form.get(`link_url_${i}`) ?? ''));
-    if (!url) continue;
-    const label = String(form.get(`link_label_${i}`) ?? '').trim().slice(0, LABEL_MAX);
-    links.push({ label: label || new URL(url).hostname.replace(/^www\./, ''), url });
-  }
+  const links = linksFrom((name) => form.get(name));
 
   const { error: profileError } = await db
     .from('profiles')
