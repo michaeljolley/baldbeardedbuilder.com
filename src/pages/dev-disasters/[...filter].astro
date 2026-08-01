@@ -77,6 +77,19 @@ const scopeLabel = scope === 'all' ? '' : sevLabel(scope);
 const title = scope === 'all' ? 'dev disasters' : `${scopeLabel} dev disasters`;
 
 /*
+  The empty wall, worded for the view it is on.
+
+  "Nothing filed under Error yet" needs a noun, and on the all scope scopeLabel is the
+  empty string, so this read "Nothing filed under  yet" with a hole in it. That was
+  unreachable while a committed seed file guaranteed sixteen rows across all four
+  severities, because the only way to reach the empty branch was a severity that happened
+  to have none. With the seed gone and the table empty, this is the default view of the
+  section and the first sentence a visitor reads.
+*/
+const emptyLine =
+  scope === 'all' ? 'Nothing here yet.' : `Nothing filed under ${scopeLabel} yet.`;
+
+/*
   Only the default view is indexable. The other fourteen are the same stories in a
   different order, which is the textbook definition of duplicate content.
 */
@@ -143,7 +156,7 @@ const isDefault = scope === 'all' && sort === 'liked';
       {
         rows.length === 0 ? (
           <p class="notice">
-            Nothing filed under {scopeLabel} yet. That is either good news or a sign that
+            {emptyLine} That is either good news or a sign that
             people only write these down when it really hurt.
           </p>
         ) : (

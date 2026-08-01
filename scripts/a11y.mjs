@@ -11,8 +11,30 @@
 
 import { chromium } from 'playwright';
 import { AxeBuilder } from '@axe-core/playwright';
+import { readdirSync, existsSync } from 'node:fs';
 import { serveDist } from './lib/serve-dist.mjs';
 import { serveDev } from './lib/serve-dev.mjs';
+
+/**
+ * The first published disaster's own page, or nothing when none have been published.
+ *
+ * Returns a list so it can be spread into PAGES, which is how "no archetype yet" is said
+ * without a conditional in the middle of the table. The archive's own severity and sort
+ * views live under the same directory and are listed explicitly above, so they are
+ * excluded here rather than audited twice under the wrong label.
+ */
+function firstDisasterPage() {
+  const dir = 'dist/dev-disasters';
+  if (!existsSync(dir)) return [];
+
+  const views = new Set(['all', 'error', 'warning', 'info', 'hint']);
+  const slug = readdirSync(dir, { withFileTypes: true })
+    .filter((e) => e.isDirectory() && !views.has(e.name))
+    .map((e) => e.name)
+    .sort()[0];
+
+  return slug ? [['disaster', `/dev-disasters/${slug}/`]] : [];
+}
 
 /* One of each archetype rather than all 199 pages. Adding a new archetype means adding
    a line here, which is the point. */
@@ -31,7 +53,18 @@ const PAGES = [
   */
   ['disaster archive', '/dev-disasters/'],
   ['disaster filtered', '/dev-disasters/error/newest/'],
-  ['disaster', '/dev-disasters/a-regex-ate-the-payroll-run/'],
+  /*
+    The disaster detail archetype is discovered rather than named, for the same reason the
+    video page above is absent: it only exists once somebody has told a story and Michael
+    has published it, and there are none yet.
+
+    This used to be a hardcoded seed slug. When src/config/disasters.seed.json was deleted
+    and the wall started reading Supabase, that URL stopped existing and the accessibility
+    gate failed on a 404, reporting it as two axe problems. A gate that breaks because its
+    fixture data went away is testing the fixture. Reading dist means the archetype is
+    audited the day a real story is published, without anybody remembering to come back.
+  */
+  ...firstDisasterPage(),
   ['about', '/about/'],
   ['conduct', '/conduct/'],
   ['privacy', '/privacy/'],

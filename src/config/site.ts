@@ -177,8 +177,13 @@ export const DISASTER_SORTS = [
 
 /**
  * Words a dev disaster slug can never be, because the archive serves its severity and
- * sort views from those same segments. The submit API checks this before it accepts an
- * AI written slug, and tests/disasters.test.mjs checks the seed.
+ * sort views from those same segments.
+ *
+ * src/pages/api/disasters.ts folds this into the set of taken slugs before it accepts an
+ * AI written one, so a story that drafts as "newest" gets "newest-2" instead of landing
+ * on top of the archive. tests/disasters.test.mjs asserts that wiring still exists, which
+ * it does because for a while it did not: this list was exported and imported by nothing,
+ * and the only thing keeping a slug off a reserved word was a test over a seed file.
  */
 export const RESERVED_DISASTER_SLUGS = [
   'all',
