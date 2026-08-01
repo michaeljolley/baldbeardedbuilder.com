@@ -22,6 +22,7 @@
 import { chromium } from 'playwright';
 import { serveDist } from './lib/serve-dist.mjs';
 import { firstArticlePage } from './lib/archetypes.mjs';
+import { provenanceSuffix } from './lib/provenance.mjs';
 
 const [article] = firstArticlePage();
 
@@ -324,5 +325,6 @@ console.log(
   `share is clean across ${clicks} clicks on ${path}, one intent each, with ${marksAtLoad} ` +
     `destination marks at load, ${marksWhileCopied} while the button reads Copied and the ` +
     `link icon still there after it reverts, and a second menu and a second copy of its ` +
-    `script on the page.`
+    `script on the page.` +
+    provenanceSuffix()
 );

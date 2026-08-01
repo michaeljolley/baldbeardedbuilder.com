@@ -31,6 +31,7 @@
 
 import { chromium } from 'playwright';
 import { serveDist } from './lib/serve-dist.mjs';
+import { provenanceSuffix } from './lib/provenance.mjs';
 
 /* Pages that carry thumbnails, one per layout that can produce them. */
 const PAGES = [
@@ -507,5 +508,6 @@ console.log(
     `cells on ${GRID_PAGES.length} page(s) found by walking dist and ${navMeasured} topic ` +
     `reaches at phone width, the wide card's thumb ` +
     `held its ratio with a 2000px neighbour, and the lead card has ` +
-    `${deadSpace.trailing}px below its last text.`
+    `${deadSpace.trailing}px below its last text.` +
+    provenanceSuffix()
 );

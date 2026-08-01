@@ -29,6 +29,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { provenanceSuffix } from './lib/provenance.mjs';
 
 const DIST = path.resolve('dist');
 
@@ -139,5 +140,6 @@ if (problems.length) {
 }
 
 console.log(
-  `check:aria clean across ${references} id references and ${duplicateIds} duplicate ids on ${pages.length} pages.`,
+  `check:aria clean across ${references} id references and ${duplicateIds} duplicate ids on ${pages.length} pages.` +
+    provenanceSuffix(),
 );

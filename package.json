@@ -21,7 +21,7 @@
     "check": "astro check",
     "types": "node scripts/gen-types.mjs",
     "astro": "astro",
-    "postbuild": "pagefind --site dist --exclude-selectors \"[data-pagefind-ignore]\"",
+    "postbuild": "pagefind --site dist --exclude-selectors \"[data-pagefind-ignore]\" && node scripts/stamp-build.mjs",
     "a11y": "node scripts/a11y.mjs",
     "perf": "node scripts/lighthouse.mjs",
     "video:meta": "node --env-file-if-exists=.env scripts/gen-video-meta.mjs",

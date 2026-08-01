@@ -18,6 +18,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
+import { provenanceSuffix } from './lib/provenance.mjs';
 
 const DIST = 'dist';
 
@@ -119,5 +120,6 @@ if (problems.length) {
 console.log(
   `dist is clean of ${PARKED.length} parked route(s) across ${pages.length} pages, ` +
     `${sitemaps.length} sitemap file(s) with ${sitemapUrls.length} urls, and ` +
-    `${indexed} indexed documents.`
+    `${indexed} indexed documents.` +
+    provenanceSuffix()
 );

@@ -14,6 +14,7 @@ import { AxeBuilder } from '@axe-core/playwright';
 import { serveDist } from './lib/serve-dist.mjs';
 import { serveDev } from './lib/serve-dev.mjs';
 import { firstArticlePage, firstDisasterPage } from './lib/archetypes.mjs';
+import { provenanceSuffix } from './lib/provenance.mjs';
 
 /* One of each archetype rather than all 199 pages. Adding a new archetype means adding
    a line here, which is the point. */
@@ -290,5 +291,6 @@ if (disclosuresOpened === 0) {
 
 console.log(
   `axe clean across ${checks} audits, ${TARGETS.length * VIEWPORTS.length} page loads and ` +
-    `${disclosuresOpened} disclosure audits, each scoped to the panel and shut again after.`
+    `${disclosuresOpened} disclosure audits, each scoped to the panel and shut again after.` +
+    provenanceSuffix()
 );

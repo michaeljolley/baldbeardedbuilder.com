@@ -15,6 +15,7 @@ import { chromium } from 'playwright';
 import { launch } from 'chrome-launcher';
 import lighthouse from 'lighthouse';
 import { serveDist } from './lib/serve-dist.mjs';
+import { provenanceSuffix } from './lib/provenance.mjs';
 
 /* A smaller list than the accessibility gate because each run takes several seconds.
    These cover the shapes that differ: a heavy homepage, a paginated index, a code heavy
@@ -128,4 +129,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Lighthouse clean across ${PAGES.length} pages.`);
+console.log(`Lighthouse clean across ${PAGES.length} pages.` + provenanceSuffix());
