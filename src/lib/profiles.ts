@@ -26,6 +26,7 @@ export interface ProfileDisaster {
 }
 
 export interface BuilderProfile {
+  id: string;
   handle: string;
   displayName: string;
   avatarUrl: string | null;
@@ -126,6 +127,7 @@ export async function getBuilderProfile(handle: string): Promise<BuilderProfile 
   }));
 
   return {
+    id: profile.id,
     handle: profile.handle,
     displayName: profile.display_name || profile.handle,
     avatarUrl: profile.avatar_url,
@@ -169,6 +171,14 @@ function normaliseLinks(raw: unknown): { label: string; url: string }[] {
 }
 
 /** Two letters for the avatar fallback, which is what the mockup draws. */
+/**
+ * Whether a viewer is looking at their own profile.
+ *
+ * Re-exported rather than defined here so it can be tested without loading the Supabase
+ * client. The rule and its reasoning live in ownership.ts.
+ */
+export * from './ownership';
+
 export function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return '??';

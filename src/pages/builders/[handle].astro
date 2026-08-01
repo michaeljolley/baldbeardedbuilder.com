@@ -12,7 +12,9 @@
 */
 import Base from '../../layouts/Base.astro';
 import { sevClass, sevLabel } from '../../config/site';
-import { getBuilderProfile, initials } from '../../lib/profiles';
+import { getBuilderProfile, initials, ownsProfile } from '../../lib/profiles';
+import { readOwnSubmissions } from '../../lib/account';
+import SubmissionList from '../../components/SubmissionList.astro';
 
 export const prerender = false;
 
@@ -22,6 +24,15 @@ const profile = handle ? await getBuilderProfile(handle) : null;
 if (!profile) {
   return new Response(null, { status: 404, statusText: 'Not found' });
 }
+
+/*
+  The submissions block is the owner's own view of their profile, so it is fetched only
+  when the person reading is the person described. Gating the fetch rather than the render
+  means a story waiting on a look never reaches the page for anybody else, so no later
+  markup change can leak one.
+*/
+const isOwner = ownsProfile(Astro.locals.profile?.id, profile.id);
+const submissions = isOwner ? await readOwnSubmissions(profile.id) : [];
 
 const joined = profile.joined.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
 
@@ -165,6 +176,16 @@ const n = (v: number) => v.toLocaleString('en-GB');
           ))
         )}
       </div>
+
+      {isOwner && (
+        <div style="margin-top:2rem;">
+          <SubmissionList submissions={submissions} />
+          <p class="fine">
+            Only you can see this block. Everybody else sees the published stories above and
+            nothing else.
+          </p>
+        </div>
+      )}
 
       <div class="below" style="padding-top:2.5rem;">
         <p class="notice">
