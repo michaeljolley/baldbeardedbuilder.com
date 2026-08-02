@@ -25,6 +25,7 @@
     "a11y": "node scripts/a11y.mjs",
     "perf": "node scripts/lighthouse.mjs",
     "video:meta": "node --env-file-if-exists=.env scripts/gen-video-meta.mjs",
+    "transcripts:csv": "node scripts/gen-video-transcripts.mjs",
     "check:migrations": "node scripts/check-migrations.mjs",
     "check:dist": "node scripts/check-dist.mjs",
     "check:layout": "node scripts/check-layout.mjs",

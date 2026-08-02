@@ -86,20 +86,6 @@ export const TOPICS: Topic[] = [
       'Everything that is not code. Reviews, postmortems, burnout, teaching, and ' +
       'learning out loud where people can watch you get it wrong.',
     visible: true
-  },
-  {
-    slug: 'blazor',
-    label: 'blazor',
-    title: 'Blazor',
-    blurb: 'Components, render modes, and where the interactivity boundary actually sits.',
-    visible: false
-  },
-  {
-    slug: 'mcp',
-    label: 'mcp',
-    title: 'MCP',
-    blurb: 'Model Context Protocol servers, tools, and wiring an agent into real systems.',
-    visible: false
   }
 ];
 

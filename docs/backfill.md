@@ -275,6 +275,46 @@ on conflict (video_id) do update
                                        public.video_transcripts.transcript_updated_at);
 ```
 
+### Build the import CSV
+
+`pnpm transcripts:csv` reads every YAML file in `src/content/videos`, skips rows where
+`short: true`, and uses `yt-dlp` to fetch the best English caption track. Manual captions
+win when both manual and generated tracks exist. It writes:
+
+- `backfill/video-transcripts/video_transcripts.csv`, ready for a Supabase table import
+- `backfill/video-transcripts/rows/<video id>.json`, one resumable cache entry per video
+- `backfill/video-transcripts/failures.json`, only when one or more videos need attention
+
+Install `yt-dlp` before the first run. The `backfill/` directory is ignored by git because
+the transcript bodies are large generated artifacts, not application source.
+
+```sh
+pnpm transcripts:csv
+```
+
+The command is resumable. A second run reuses successful row files and fetches only missing
+videos. Use `--refresh` to replace every cached transcript, or target one video while
+diagnosing it:
+
+```sh
+pnpm transcripts:csv -- --only=dQw4w9WgXcQ --refresh
+```
+
+YouTube may throttle a large caption batch with HTTP 429. Leave the successful row files in
+place and rerun later. If YouTube requires an authenticated session, set
+`YOUTUBE_TRANSCRIPT_COOKIES_FROM_BROWSER` to a browser name accepted by `yt-dlp`, such as
+`firefox`, before running the command. Cookie values are read by `yt-dlp` and are never
+written to the CSV or cache.
+
+Import the CSV into `public.video_transcripts` with the Supabase dashboard table importer.
+The JSON arrays are RFC 4180 quoted so embedded quotes and commas remain one CSV field.
+After import, verify that every long-form catalogue item landed and has a body:
+
+```sql
+select count(*) as videos, count(*) filter (where nullif(trim(body), '') is not null) as with_body
+from public.video_transcripts;
+```
+
 ## 5. Run the badge sweep
 
 After steps 1, 2 and 3:

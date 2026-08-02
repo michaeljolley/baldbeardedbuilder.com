@@ -57,7 +57,7 @@ const held = [
   },
   {
     tag: 'Email',
-    what: 'Your email address, as GitHub supplied it',
+    what: 'Your email address, as your auth source supplied it',
     when: 'You sign in',
     why: 'Because sign in comes with one. Nothing is sent to it',
     gone: 'Delete your account and it goes with it'
@@ -82,12 +82,8 @@ const held = [
         <dl>
           <div><dt>Who runs this</dt><dd><a href="/about/">Michael Jolley</a></dd></div>
           <div><dt>Ad trackers</dt><dd>None</dd></div>
-          <div><dt>Analytics</dt><dd>None on this site</dd></div>
-          <div><dt>Email sent</dt><dd>None</dd></div>
           <div><dt>Last changed</dt><dd>{lastChanged}</dd></div>
         </dl>
-        <a class="btn" href={`mailto:${SITE.privacyEmail}`}>Ask me about your data</a>
-        <span class="fine">Goes straight to me</span>
       </aside>
 
       <article data-pagefind-body data-pagefind-filter="kind:page">
@@ -170,10 +166,10 @@ const held = [
             where their rules apply and mine stop.
           </p>
           <p>
-            Signing in sends you to GitHub, and linking Twitch sends you to Twitch. Both see
-            that you came from here. The pages are hosted by Netlify and the database is
-            Supabase, both of whom process requests on my behalf and neither of whom get
-            anything to use for themselves.
+            Signing in sends you to the auth provider you chose, and linking Twitch sends 
+						you to Twitch. Both see that you came from here. The pages are hosted by
+						Netlify and the database is Supabase, both of whom process requests on my
+						behalf and neither of whom get anything to use for themselves.
           </p>
 
           <h2>Deleting your account</h2>
@@ -201,11 +197,10 @@ const held = [
           <p>
             The .NET Drip is the one exception and it is opt in. Its signup box sits on the
             front page and a handful of others, and it is the only thing here that asks you
-            to type an address. If you use it, that address goes to Netlify Forms and from
-            there onto the Drip list, which is a newsletter I send from somewhere else. It
-            is not joined to your account, signing in does not put you on it, having an
-            account does not put you on it, and every issue carries its own unsubscribe
-            link.
+            to type an address. If you use it, that address goes onto the Drip list, which
+						is a newsletter I send from somewhere else. It is not joined to your account,
+						signing in does not put you on it, having an account does not put you on it,
+						and every issue carries its own unsubscribe link.
           </p>
 
           <h2>Where you live</h2>
@@ -218,8 +213,8 @@ const held = [
 
           <h2>Children</h2>
           <p>
-            This is a site about professional software failure. It is not aimed at children
-            and accounts are not intended for anybody under 16.
+            This is a site about professional software. It is not aimed at children
+            and accounts are not intended for anyone under 16.
           </p>
 
           <h2>When this changes</h2>
