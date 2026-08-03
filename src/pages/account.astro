@@ -46,6 +46,7 @@ const account = profile ? await readAccount(profile.id) : null;
 const submissions = profile ? await readOwnSubmissions(profile.id) : [];
 const saved = Astro.url.searchParams.has('saved');
 const linkRows = Array.from({ length: LINKS_MAX }, (_, i) => account?.links[i] ?? { label: '', url: '' });
+const linkLabelExamples = ['Website', 'GitHub', 'YouTube', 'Bluesky'];
 const accountName = account ? account.displayName || account.handle : '';
 const accountInitial = accountName.trim().charAt(0).toUpperCase() || '@';
 ---
@@ -198,7 +199,7 @@ const accountInitial = accountName.trim().charAt(0).toUpperCase() || '@';
                                 id={`link_label_${i}`}
                                 name={`link_label_${i}`}
                                 type="text"
-                                placeholder="GitHub"
+                                placeholder={linkLabelExamples[i] ?? 'Website'}
                                 maxlength="40"
                                 value={l.label}
                                 aria-describedby="links-help"
