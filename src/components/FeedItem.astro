@@ -24,6 +24,7 @@ interface Props {
 
 const { item, level = 3 } = Astro.props;
 const Title = `h${level}` as 'h3' | 'h4';
+const opensYouTube = item.kind === 'video' && item.offsite;
 
 const stats: string[] = [item.length];
 if (item.views !== null) {
@@ -34,7 +35,12 @@ if (item.offsite) {
 }
 ---
 
-<a class="fitem" href={item.href} rel={item.offsite ? 'noopener' : undefined}>
+<a
+  class="fitem"
+  href={item.href}
+  target={opensYouTube ? '_blank' : undefined}
+  rel={opensYouTube ? 'noopener noreferrer' : undefined}
+>
   <span class="kind">{item.kind === 'video' ? 'Video' : 'Article'}</span>
   <span>
     <Title>{item.title}</Title>

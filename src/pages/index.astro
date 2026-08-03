@@ -58,13 +58,21 @@ const dripDay = latestDrip
   Four rows across two columns, the drip taking the last slot when there is one. Split by
   halves rather than by column index so an odd count leaves the shorter column second.
 */
-const alsoRows: Array<{ href: string; title: string; kindLabel: string; meta: string; offsite: boolean }> =
+const alsoRows: Array<{
+  href: string;
+  title: string;
+  kindLabel: string;
+  meta: string;
+  offsite: boolean;
+  opensYouTube: boolean;
+}> =
   alsoNew.map((i) => ({
     href: i.href,
     title: i.title,
     kindLabel: i.kind === 'video' ? (i.short ? 'Short' : 'Video') : 'Article',
     meta: i.length,
-    offsite: i.offsite
+    offsite: i.offsite,
+    opensYouTube: i.kind === 'video' && i.offsite
   }));
 
 if (latestDrip) {
@@ -73,7 +81,8 @@ if (latestDrip) {
     title: 'The links that were worth reading this week',
     kindLabel: 'Drip',
     meta: dripDay,
-    offsite: true
+    offsite: true,
+    opensYouTube: false
   });
 }
 
@@ -114,7 +123,14 @@ const heroMeta = hero
             */
           }
           {hero.thumbnail && (
-            <a class="shot" href={hero.href} rel={hero.offsite ? 'noopener' : undefined} tabindex="-1" aria-hidden="true">
+            <a
+              class="shot"
+              href={hero.href}
+              target={hero.kind === 'video' && hero.offsite ? '_blank' : undefined}
+              rel={hero.offsite ? 'noopener noreferrer' : undefined}
+              tabindex="-1"
+              aria-hidden="true"
+            >
               <img src={hero.thumbnail} alt="" width="640" height="360" />
               {hero.kind === 'video' && <span class="play" aria-hidden="true">&#9654;</span>}
               <span class="dur">{hero.length}</span>
@@ -137,7 +153,12 @@ const heroMeta = hero
             <p class="excerpt">{leadSentences(hero.description)}</p>
 
             <div class="acts">
-              <a class="btn primary" href={hero.href} rel={hero.offsite ? 'noopener' : undefined}>
+              <a
+                class="btn primary"
+                href={hero.href}
+                target={hero.kind === 'video' && hero.offsite ? '_blank' : undefined}
+                rel={hero.offsite ? 'noopener noreferrer' : undefined}
+              >
                 {hero.kind === 'video' ? 'Watch it' : 'Read it'}
               </a>
               <a class="btn" href={`/${hero.topic}/`}>
@@ -176,7 +197,12 @@ const heroMeta = hero
               {alsoColumns.map((column) => (
                 <div>
                   {column.map((r) => (
-                    <a class="row" href={r.href} rel={r.offsite ? 'noopener' : undefined}>
+                    <a
+                      class="row"
+                      href={r.href}
+                      target={r.opensYouTube ? '_blank' : undefined}
+                      rel={r.offsite ? 'noopener noreferrer' : undefined}
+                    >
                       <h3>{r.title}</h3>
                       <span class="meta">
                         <span class="k">{r.kindLabel}</span> {r.meta}
@@ -202,7 +228,12 @@ const heroMeta = hero
         {
           starters.map((i, n) =>
             n === 0 ? (
-              <a class="card wide" href={i.href} rel={i.offsite ? 'noopener' : undefined}>
+              <a
+                class="card wide"
+                href={i.href}
+                target={i.kind === 'video' && i.offsite ? '_blank' : undefined}
+                rel={i.offsite ? 'noopener noreferrer' : undefined}
+              >
                 <span class="thumb">
                   {i.thumbnail ? (
                     <img src={i.thumbnail} alt="" width="480" height="270" loading="lazy" />
@@ -221,7 +252,12 @@ const heroMeta = hero
                 </span>
               </a>
             ) : (
-              <a class="card" href={i.href} rel={i.offsite ? 'noopener' : undefined}>
+              <a
+                class="card"
+                href={i.href}
+                target={i.kind === 'video' && i.offsite ? '_blank' : undefined}
+                rel={i.offsite ? 'noopener noreferrer' : undefined}
+              >
                 <h3>{i.title}</h3>
                 {i.description && <p>{i.description}</p>}
                 <span class="foot">

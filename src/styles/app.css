@@ -1089,6 +1089,8 @@ footer.foot .tagline { color: var(--fg-dim); font-size: .875rem; margin: 0; max-
 .pagehead { padding: 0rem 0 1.5rem; }
 .pagehead h1 { font-size: clamp(2rem, 4vw, 3rem); margin: .9rem 0; }
 .pagehead h1 .slash { color: var(--accent); font-weight: 400; }
+.pagehead h1 .squiggle { color: var(--sev-error); }
+.pagehead h1 .squiggle > span { color: var(--fg); }
 .pagehead .lede { max-width: 44rem; }
 
 .topichead { margin-top: 2.5rem; }
