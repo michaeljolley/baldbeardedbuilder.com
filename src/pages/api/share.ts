@@ -16,8 +16,6 @@ import type { APIRoute } from 'astro';
 import { clientIp, hashIp, isTargetKey, isTargetKind } from '../../lib/reader';
 import { isSharePlatform } from '../../lib/share-links';
 import { serviceClient, supabaseWritable } from '../../lib/supabase';
-import type { PendingDatabase } from '../../lib/supabase/pending.types';
-import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const prerender = false;
 
@@ -56,8 +54,7 @@ export const POST: APIRoute = async (context) => {
     return new Response(null, { status: 400 });
   }
 
-  /* See supabase/pending.types.ts. The cast goes when the types can be generated. */
-  const db = serviceClient() as unknown as SupabaseClient<PendingDatabase>;
+  const db = serviceClient();
 
   const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
   const ipHash = hashIp(clientIp(context));

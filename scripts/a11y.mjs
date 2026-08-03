@@ -82,13 +82,12 @@ const ON_DEMAND = [
   ['report refused', '/report/?sent=slow'],
   ['submit', '/submit/'],
   ['submit sent', '/submit/?sent=1'],
-  ['submit refused', '/submit/?sent=consent']
-  /*
-    Unsubscribe used to sit here, both halves of it. v1 sends no email, so the page is not
-    a route: it lives at src/pages/_unwired/unsubscribe.astro and Astro will not build it.
-    Auditing a 404 would pass and prove nothing. Put both entries back when the page comes
-    back, per docs/notifications.md.
-  */
+  ['submit refused', '/submit/?sent=consent'],
+  ['unsubscribe missing token', '/unsubscribe/'],
+  [
+    'unsubscribe confirmation',
+    '/unsubscribe/?token=00000000-0000-4000-8000-000000000000&kind=comment_reply'
+  ]
 ];
 
 const VIEWPORTS = [

@@ -1,9 +1,4 @@
 /*
-  DELIBERATELY NOT WIRED FOR V1. Nothing renders these. This site sends no email of any
-  kind. The file stays because it is pure and its tests still run, so the copy cannot rot
-  while it waits. Note that unsubscribeUrl() builds a path that is not currently a route:
-  src/pages/unsubscribe.astro moved to src/pages/_unwired/. Read docs/notifications.md.
-
   What the three notification emails say.
 
   Separate from the drain on purpose. Everything here is pure: a kind, a payload and a
@@ -70,6 +65,17 @@ function esc(raw: string): string {
     .replace(/"/g, '&quot;');
 }
 
+function linked(raw: string): string {
+  return raw
+    .split(/(https?:\/\/\S+)/)
+    .map((part) =>
+      /^https?:\/\//.test(part)
+        ? `<a href="${esc(part)}" style="color:#915f0f;text-decoration:underline">${esc(part)}</a>`
+        : esc(part)
+    )
+    .join('');
+}
+
 export interface Rendered {
   subject: string;
   text: string;
@@ -95,12 +101,36 @@ function render(
   const text = [...body, '', `${cta.label}: ${cta.url}`, '', ...footer].join('\n');
 
   const html = [
-    '<!doctype html><html><body style="font-family:system-ui,sans-serif;line-height:1.6;color:#1a1a1a">',
-    ...body.map((l) => `<p>${esc(l)}</p>`),
-    `<p><a href="${esc(cta.url)}">${esc(cta.label)}</a></p>`,
-    '<hr style="border:none;border-top:1px solid #ddd;margin:24px 0">',
-    ...footer.map((l) => `<p style="font-size:13px;color:#666">${esc(l)}</p>`),
-    '</body></html>'
+    '<!doctype html>',
+    '<html lang="en">',
+    '<head>',
+    '<meta charset="utf-8">',
+    '<meta name="viewport" content="width=device-width,initial-scale=1">',
+    '<meta name="color-scheme" content="light">',
+    `<title>${esc(subject)}</title>`,
+    '</head>',
+    '<body style="margin:0;background:#fbfaf8;color:#1b1a18;font-family:Atkinson Hyperlegible,Segoe UI,Arial,sans-serif;line-height:1.6">',
+    `<div role="article" aria-roledescription="email" aria-label="${esc(subject)}">`,
+    '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;background:#fbfaf8">',
+    '<tr><td align="center" style="padding:32px 16px">',
+    '<table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%;max-width:600px;background:#ffffff;border:1px solid #ddd9d2;border-top:6px solid #915f0f">',
+    '<tr><td style="padding:32px 32px 12px">',
+    '<p style="margin:0 0 16px;color:#5f5c57;font-family:Consolas,Monaco,monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase">bbb / notification</p>',
+    `<h1 style="margin:0;color:#111111;font-family:Georgia,Times New Roman,serif;font-size:30px;line-height:1.2;font-weight:700">${esc(subject)}</h1>`,
+    '</td></tr>',
+    '<tr><td style="padding:8px 32px 32px">',
+    ...body.map((line) => `<p style="margin:16px 0;font-size:17px">${esc(line)}</p>`),
+    `<table role="presentation" cellspacing="0" cellpadding="0" style="margin:26px 0"><tr><td style="background:#915f0f;border-radius:3px"><a href="${esc(cta.url)}" style="display:inline-block;padding:12px 18px;color:#ffffff;font-weight:700;text-decoration:none">${esc(cta.label)}</a></td></tr></table>`,
+    '</td></tr>',
+    '<tr><td style="padding:24px 32px;background:#f3f1ed;border-top:1px solid #ddd9d2">',
+    ...footer.map((line) => `<p style="margin:7px 0;color:#5f5c57;font-size:13px;line-height:1.5">${linked(line)}</p>`),
+    '</td></tr>',
+    '</table>',
+    '</td></tr>',
+    '</table>',
+    '</div>',
+    '</body>',
+    '</html>'
   ].join('\n');
 
   return { subject, text, html, unsubscribeUrl: unsub };
@@ -150,10 +180,14 @@ export function renderNotification(
       );
     }
 
+    const publishedTogether = payload.published_together === true;
+
     return render(
       'Your dev disaster is on the front page',
       [
-        'Michael put your story on the front page.',
+        publishedTogether
+          ? 'Your story is published, and Michael put it on the front page.'
+          : 'Michael put your story on the front page.',
         line,
         'There is a Featured badge on your profile now as well.'
       ],

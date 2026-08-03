@@ -1,21 +1,15 @@
 /*
-  Email notifications. Decision 15.
+  Email notifications. Decision 15. Applied after the v2 grants migration.
 
-  DELIBERATELY HELD OUT OF THE APPLIED CHAIN. This file is in supabase/deferred/ rather
-  than supabase/migrations/ so that db push cannot pick it up, the same reason the
-  reversal lives in supabase/reversal/. v1 sends no email of any kind. Read
-  docs/notifications.md before applying this, because turning the schema on without the
-  copy changes leaves the site promising email it does not send.
+  Three types, opt out per type, one click unsubscribe. This migration adds the queue,
+  the atomic claim function and the triggers that fill it. Rendering and sending live in
+  the site, in src/lib/notifications.ts, because an email template written in SQL is a
+  template nobody will ever change.
 
   What is NOT in here any more: the disasters.featured_at column and its index, which
   moved to supabase/migrations/20260801000000_featured.sql. Featuring is what the front
   page reads, not an email feature, and it was the one thing in this file that would have
   broken the site by being held back.
-
-  Three types, opt out per type, one click unsubscribe. This migration adds the queue and
-  the triggers that fill it. Rendering and sending live in the site, in
-  src/lib/notifications.ts, because an email template written in SQL is a template nobody
-  will ever change.
 
   Two shapes matter here.
 
@@ -64,10 +58,23 @@ create table public.email_outbox (
   */
   attempts integer not null default 0,
   last_error text,
-  last_attempt_at timestamptz
+  last_attempt_at timestamptz,
+  next_attempt_at timestamptz not null default now(),
+
+  /*
+    A lease rather than a boolean. If a drain dies, another may reclaim the row after ten
+    minutes. The token makes every settle conditional on still owning the lease.
+  */
+  claim_token uuid,
+  claimed_at timestamptz,
+
+  constraint email_outbox_claim_pair check (
+    (claim_token is null and claimed_at is null) or
+    (claim_token is not null and claimed_at is not null)
+  )
 );
 
-create index email_outbox_pending_idx on public.email_outbox (created_at)
+create index email_outbox_pending_idx on public.email_outbox (next_attempt_at, created_at)
   where sent_at is null;
 
 alter table public.email_outbox enable row level security;
@@ -77,6 +84,94 @@ alter table public.email_outbox enable row level security;
   can do nothing here. Only the service role touches this table. Spelled out rather than
   left implicit because an empty policy list reads like an oversight.
 */
+
+-- Atomic claims --------------------------------------------------------------------------
+
+/*
+  Select and claim happen in one statement under row locks. SKIP LOCKED lets overlapping
+  drains take different rows rather than waiting on one another or sending the same row.
+
+  A row older than 48 hours is settled before claims are made. A publication or reply
+  alert that stale is more confusing than useful, and settling preserves the reason.
+*/
+create or replace function public.claim_email_batch(
+  p_now timestamptz default now(),
+  p_limit integer default 25
+)
+returns table (
+  id bigint,
+  kind text,
+  profile_id uuid,
+  payload jsonb,
+  dedupe_key text,
+  created_at timestamptz,
+  attempts integer,
+  last_attempt_at timestamptz,
+  claim_token uuid
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  lease_token uuid := gen_random_uuid();
+begin
+  update public.email_outbox q
+  set
+    sent_at = p_now,
+    last_error = 'expired: older than 48 hours',
+    claim_token = null,
+    claimed_at = null
+  where q.sent_at is null
+    and q.created_at <= p_now - interval '48 hours'
+    and (q.claimed_at is null or q.claimed_at < p_now - interval '10 minutes');
+
+  return query
+  with candidates as (
+    select q.id
+    from public.email_outbox q
+    where q.sent_at is null
+      and q.attempts < 5
+      and q.next_attempt_at <= p_now
+      and q.created_at > p_now - interval '48 hours'
+      and (q.claimed_at is null or q.claimed_at < p_now - interval '10 minutes')
+    order by q.created_at
+    for update skip locked
+    limit greatest(1, least(coalesce(p_limit, 25), 100))
+  ),
+  claimed as (
+    update public.email_outbox q
+    set claim_token = lease_token, claimed_at = p_now
+    from candidates c
+    where q.id = c.id
+    returning
+      q.id,
+      q.kind,
+      q.profile_id,
+      q.payload,
+      q.dedupe_key,
+      q.created_at,
+      q.attempts,
+      q.last_attempt_at,
+      q.claim_token
+  )
+  select
+    c.id,
+    c.kind,
+    c.profile_id,
+    c.payload,
+    c.dedupe_key,
+    c.created_at,
+    c.attempts,
+    c.last_attempt_at,
+    c.claim_token
+  from claimed c;
+end;
+$$;
+
+revoke all on function public.claim_email_batch(timestamptz, integer)
+  from public, anon, authenticated;
+grant execute on function public.claim_email_batch(timestamptz, integer) to service_role;
 
 -- Enqueue --------------------------------------------------------------------------------
 
@@ -145,7 +240,24 @@ declare
   was_published boolean := tg_op = 'UPDATE' and old.status = 'published';
   was_featured boolean := tg_op = 'UPDATE' and old.featured_at is not null;
 begin
-  if new.status = 'published' and not was_published then
+  /*
+    Publishing a story that is already featured is one outcome, not two inbox messages.
+    The featured template says both things happened. A later feature remains its own event.
+  */
+  if new.status = 'published' and not was_published and new.featured_at is not null then
+    perform public.enqueue_email(
+      'story_featured',
+      new.author_id,
+      'story_featured:' || new.id::text,
+      jsonb_build_object(
+        'disaster_id', new.id,
+        'slug', new.slug,
+        'title', new.title,
+        'line', new.line,
+        'published_together', true
+      )
+    );
+  elsif new.status = 'published' and not was_published then
     perform public.enqueue_email(
       'story_published',
       new.author_id,
@@ -154,12 +266,22 @@ begin
     );
   end if;
 
-  if new.featured_at is not null and not was_featured then
+  if new.status = 'published'
+    and new.featured_at is not null
+    and not was_featured
+    and not (new.status = 'published' and not was_published)
+  then
     perform public.enqueue_email(
       'story_featured',
       new.author_id,
       'story_featured:' || new.id::text,
-      jsonb_build_object('disaster_id', new.id, 'slug', new.slug, 'title', new.title, 'line', new.line)
+      jsonb_build_object(
+        'disaster_id', new.id,
+        'slug', new.slug,
+        'title', new.title,
+        'line', new.line,
+        'published_together', false
+      )
     );
   end if;
 
@@ -271,3 +393,4 @@ end;
 $$;
 
 revoke all on function public.unsubscribe_by_token(uuid, text) from public, anon, authenticated;
+grant execute on function public.unsubscribe_by_token(uuid, text) to service_role;

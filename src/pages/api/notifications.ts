@@ -1,22 +1,8 @@
 /*
-  DELIBERATELY NOT WIRED FOR V1. This route exists but cannot do anything. NOTIFY_SECRET
-  is not set, so authorised() returns false for every request and the route 404s. The
-  table it would drain is not in the applied chain either: the migration is held in
-  supabase/deferred/. Read docs/notifications.md before setting the secret, because the
-  copy on submit, terms, privacy and account all say plainly that nothing is sent.
-
-  It stays as a route rather than moving under an underscore, unlike the unsubscribe
-  page, because nobody can browse into it and be misled. A person landing on a page that
-  says "that is switched off" for a thing that never sends is a control that appears to
-  work. A machine endpoint that refuses everything is just closed.
-
   Draining the email queue.
 
-  Nothing on the site calls this. It is called on a timer, by pg_cron through net.http_post
-  or by a Netlify scheduled function, whichever is cheaper to keep alive. The endpoint
-  exists rather than the drain living in a database function because these emails are
-  rendered from the same content helpers the pages use, and rebuilding that in SQL would
-  guarantee the email and the page eventually disagree about a URL.
+  Called every five minutes by the Netlify scheduled function. It stays in the Astro
+  runtime because notification URLs use the same content helpers as the pages.
 
   Guarded by a shared secret rather than a session, because the caller is a machine. Set
   NOTIFY_SECRET, send it as a bearer token. With no secret set the route refuses
@@ -56,6 +42,9 @@ export const POST: APIRoute = async (context) => {
 
   return new Response(JSON.stringify(result), {
     status: 200,
-    headers: { 'content-type': 'application/json' }
+    headers: {
+      'content-type': 'application/json',
+      'cache-control': 'no-store'
+    }
   });
 };

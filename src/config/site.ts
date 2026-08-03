@@ -79,6 +79,24 @@ export const TOPICS: Topic[] = [
     visible: true
   },
   {
+    slug: 'blazor',
+    label: 'blazor',
+    title: 'Blazor',
+    blurb:
+      'Server, WebAssembly, components, rendering modes, and the browser boundary that ' +
+      'changes shape every release.',
+    visible: false
+  },
+  {
+    slug: 'mcp',
+    label: 'mcp',
+    title: 'Model Context Protocol',
+    blurb:
+      'Tools, resources, transports, and the protocol boundary between an AI client and ' +
+      'the systems it needs to use.',
+    visible: false
+  },
+  {
     slug: 'dev-life',
     label: 'dev-life',
     title: 'Dev life',
@@ -189,8 +207,8 @@ export const SITE = {
   /** Shown on the code of conduct. Bump it whenever the rules actually change. */
   conductUpdated: '2026-02-02',
   /** Shown on the privacy and terms pages. Bump both when either actually changes. */
-  privacyUpdated: '2026-02-02',
-  termsUpdated: '2026-02-02',
+  privacyUpdated: '2026-08-03',
+  termsUpdated: '2026-08-03',
   /*
     Two role addresses, deliberately not one.
 

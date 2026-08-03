@@ -57,18 +57,16 @@ Both tables arrive empty. Michael loads them. `docs/backfill.md` is the spec.
 | `20260710001200_badge_backfill_schedule` | Nightly `pg_cron` sweep at 01:30 UTC |
 | `20260710001300_video_transcripts` | Transcripts and chapters, read at build time |
 | `20260801000000_featured` | `disasters.featured_at`, its index, and the trigger that grants the Featured badge |
+| `20260806000000_notifications` | Durable email queue, atomic claims, notification triggers, and unsubscribe RPC |
 
 `supabase/reversal/` is not part of the chain and `db push` never sees it. That is
 deliberate: a file that drops the whole v2 schema must not be able to run against the new
 project by accident.
 
-`supabase/deferred/` is not part of the chain either, for the same mechanical reason and a
-different one. `20260801000100_notifications.sql` creates the `email_outbox` queue and the
-triggers that fill it, and v1 sends no email of any kind. Applying it would give the site
-a queue nothing drains while the copy on submit, terms and privacy says plainly that
-nothing is sent. `docs/notifications.md` is the instruction sheet for turning it on, copy
-included. Note that `disasters.featured_at` was split out of it and stays in the chain,
-because featuring is what the front page reads rather than an email feature.
+`supabase/deferred/` is not part of the chain. It is reserved for complete migrations that
+are intentionally held from production. Email notifications moved into the applied chain
+as `20260806000000_notifications.sql`. `docs/notifications.md` describes its rollout and
+operating model.
 
 `pnpm check:migrations` proves the chain is self contained, which matters now that the
 baseline no longer carries the rest of the legacy schema.
@@ -106,12 +104,12 @@ The build and the routes need these. Never commit them.
 | `PUBLIC_SUPABASE_ANON_KEY` | Netlify, local `.env` | Client reads |
 | `SUPABASE_SERVICE_ROLE_KEY` | Netlify only, never `PUBLIC_` | Route writes |
 | `LIKE_IP_SECRET` | Netlify only | HMAC key for `likes.ip_hash` |
+| `RESEND_API_KEY` | Netlify production only | Resend delivery credential |
+| `MAIL_DELIVERY_ENABLED` | Netlify production only | Must be exactly `true` to allow delivery |
+| `MAIL_FROM` / `MAIL_REPLY_TO` | Netlify production only | Notification sender and reply inbox |
+| `NOTIFY_SECRET` | Netlify production only | Scheduled drain bearer secret |
 | `SUPABASE_AUTH_GITHUB_CLIENT_ID` / `_SECRET` | Supabase dashboard | Sign in |
 | `SUPABASE_AUTH_TWITCH_CLIENT_ID` / `_SECRET` | Supabase dashboard | Link only identity |
-
-Three more exist in the code and are deliberately unset for v1, because this site sends no
-email: `RESEND_API_KEY`, `MAIL_FROM` and `NOTIFY_SECRET`. Setting any of them is step one
-of `docs/notifications.md` and must not be done on its own.
 
 `LIKE_IP_SECRET` is rotatable. Rotating it does not lose any likes, it just means the
 people who already liked something could like it once more. That is the intended
@@ -119,12 +117,7 @@ tradeoff: the column is a dedupe token with a shelf life, not a stored IP addres
 
 ## Draining the email queue
 
-Not in v1. This site sends no email, `supabase/deferred/20260801000100_notifications.sql`
-is held out of the chain, so `email_outbox` does not exist and there is nothing to drain.
-The rest of this section describes how it works when it comes back. See
-`docs/notifications.md`.
-
-`20260801000100_notifications.sql` fills `email_outbox` from triggers. It does not empty
+`20260806000000_notifications.sql` fills `email_outbox` from triggers. It does not empty
 it, and it deliberately does not schedule anything.
 
 The drain is `POST /api/notifications/` on the site, guarded by `NOTIFY_SECRET` as a
@@ -133,19 +126,13 @@ rendered from the same content helpers the pages use, and rebuilding topic first
 SQL would guarantee that an email and a page eventually disagree about where something
 is.
 
-Something has to call it, roughly every five minutes. Either works:
+The Netlify scheduled function calls it every five minutes on published deploys. Queue rows
+are claimed atomically with `FOR UPDATE SKIP LOCKED`, and every settle checks the claim
+token. Resend receives the queue dedupe key as an idempotency key.
 
-- a Netlify scheduled function, which keeps the secret in Netlify with the others,
-- or `pg_cron` plus `net.http_post`, which means the secret also lives in the database.
-
-The first is preferred for exactly that reason. Whichever is chosen, run one at a time.
-The queue's unique dedupe key stops the same event being queued twice, but it cannot stop
-two concurrent drains reading the same row before either marks it.
-
-With no `RESEND_API_KEY` set the queue would still fill, and the drain would log what it
-would have sent rather than failing. That is the right default: the reply that triggers an
-email is on the same request as the comment that caused it, and a missing key must never
-turn somebody's comment into a 500.
+Delivery also requires `MAIL_DELIVERY_ENABLED=true`, `RESEND_API_KEY`, and Netlify's
+production context. Without all three, the drain does not claim anything. See
+`docs/notifications.md` for retry, expiry, unsubscribe, and rollout details.
 
 ## Things worth knowing
 

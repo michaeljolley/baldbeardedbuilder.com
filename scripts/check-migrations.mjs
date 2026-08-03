@@ -35,6 +35,19 @@ const files = fs.readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();
 
 const created = new Set();
 const problems = [];
+const versions = new Map();
+
+for (const file of files) {
+  const version = file.match(/^(\d+)_/)?.[1];
+  if (!version) {
+    problems.push(`${file}: filename has no numeric migration version`);
+    continue;
+  }
+
+  const first = versions.get(version);
+  if (first) problems.push(`${file}: migration version ${version} is already used by ${first}`);
+  else versions.set(version, file);
+}
 
 /*
   Comments are stripped first. Every migration in this repo explains itself at length and

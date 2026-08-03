@@ -1,45 +1,26 @@
 /*
-  DELIBERATELY NOT WIRED FOR V1. Nothing calls drain(). This site sends no email of any
-  kind, and the migration that creates the table this file reads is held out of the
-  applied chain in supabase/deferred/. Read docs/notifications.md before changing that:
-  turning the schema on without the copy changes leaves the site promising email it does
-  not send.
+  Draining the notification queue.
 
-  Draining the email queue.
-
-  The queue is filled by triggers in supabase/deferred/20260801000100_notifications.sql
-  and emptied here. What the emails say lives in notify-templates.ts, which is pure and
-  tested. This file is the part that talks to the database and to the mail provider, and
-  it is careful in three specific ways, all of them the same worry from different angles:
-  an email is the one thing on this site that cannot be taken back.
-
-  The address is read here, from auth.users, and never stored in the queue. A row that
-  outlives the account it belongs to therefore cannot be sent, because the lookup returns
-  nothing.
-
-  Preferences are read here too, a second time. The trigger checked them at enqueue and
-  somebody can change their mind while a row waits, and the later answer is the right one.
-
-  A failed send is written back with its error and retried with a widening gap, and a row
-  that has failed enough times stops being tried. A queue that retries forever is a queue
-  that mails somebody forty times the day the provider recovers.
+  The database claims rows atomically before this code sees them. Every update includes
+  the claim token, so an expired worker cannot settle a row another worker now owns.
+  Resend also receives the queue dedupe key as its idempotency key, closing the remaining
+  crash window between provider acceptance and the sent_at update.
 */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { allDisasters } from './disasters';
 import { itemByKey } from './content';
-import { sendMail, type Mail } from './mail';
+import { mailDeliveryEnabled, sendMail, type Mail } from './mail';
 import {
   absolute,
-  isDue,
+  backoffMinutes,
   renderNotification,
   MAX_ATTEMPTS,
   type NotificationKind
 } from './notify-templates';
 import { serviceClient, supabaseWritable } from './supabase';
-import type { PendingDatabase } from './supabase/pending.types';
+import type { Database } from './supabase/database.types';
 
-/** How many rows one drain handles. Small, because the drain runs often. */
 export const BATCH = 25;
 
 interface OutboxRow {
@@ -47,86 +28,159 @@ interface OutboxRow {
   kind: NotificationKind;
   profile_id: string;
   payload: Record<string, unknown>;
+  dedupe_key: string;
+  created_at: string;
   attempts: number;
   last_attempt_at: string | null;
+  claim_token: string;
 }
 
-/**
- * Where a reply lives, worked out with the same helpers the pages use.
- *
- * This is the reason the drain is an endpoint on the site rather than a database
- * function. Rebuilding topic first URLs in SQL would guarantee that the email and the
- * page eventually disagree about where something is.
- */
 async function urlForComment(kind: string, key: string): Promise<string | null> {
   if (kind === 'disaster') {
-    const found = allDisasters().find((d) => String(d.id) === key);
+    const found = allDisasters().find((disaster) => String(disaster.id) === key);
     return found ? absolute(`${found.url}#comments`) : null;
   }
 
-  /*
-    No page, no link. A video with no video_pages row has no comment thread to point at,
-    so there is nothing to say here. renderNotification treats null as "this event no
-    longer resolves" and settles the row rather than retrying it forever.
-
-    itemByKey and not itemsByKeys, which throws on an unpublished item under decision 111.
-    That throw is right for a curated list and wrong here: a draft has a real page, somebody
-    can comment on it, and the notification for that comment has to resolve.
-  */
   const item = await itemByKey(key);
   return item?.url ? absolute(`${item.url}#comments`) : null;
 }
 
+async function currentEventPayload(
+  db: SupabaseClient<Database>,
+  row: OutboxRow
+): Promise<Record<string, unknown> | null> {
+  if (row.kind === 'comment_reply') {
+    const commentId = String(row.payload.comment_id ?? '');
+    if (!commentId) return null;
+
+    const { data: comment, error } = await db
+      .from('comments')
+      .select('status, parent_id, target_kind, target_key, body_markdown')
+      .eq('id', commentId)
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(`Could not verify comment for email row ${row.id}: ${error.code}`);
+    }
+    if (
+      !comment ||
+      comment.status !== 'visible' ||
+      comment.parent_id !== String(row.payload.parent_id ?? '') ||
+      comment.target_kind !== row.payload.target_kind ||
+      comment.target_key !== row.payload.target_key
+    ) {
+      return null;
+    }
+
+    return {
+      ...row.payload,
+      target_kind: comment.target_kind,
+      target_key: comment.target_key,
+      excerpt: comment.body_markdown.slice(0, 280)
+    };
+  }
+
+  const disasterId = Number(row.payload.disaster_id);
+  if (!Number.isSafeInteger(disasterId)) return null;
+
+  const { data: disaster, error } = await db
+    .from('disasters')
+    .select('status, featured_at, slug, title, line')
+    .eq('id', disasterId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`Could not verify story for email row ${row.id}: ${error.code}`);
+  }
+  if (
+    !disaster ||
+    disaster.status !== 'published' ||
+    (row.kind === 'story_featured' && !disaster.featured_at)
+  ) {
+    return null;
+  }
+
+  return {
+    ...row.payload,
+    slug: disaster.slug,
+    title: disaster.title,
+    line: disaster.line
+  };
+}
+
 export interface DrainResult {
+  enabled: boolean;
   considered: number;
   sent: number;
   skipped: number;
   failed: number;
+  deadLetterIds: number[];
 }
 
-/**
- * Send what is waiting.
- *
- * Two drains running at once can duplicate a send in the window between reading a row and
- * marking it, which is why the schedule is one call at a time rather than one per
- * instance. The queue's unique dedupe key stops the same event being queued twice, but it
- * cannot stop the same row being read twice.
- */
-export async function drain(now = new Date()): Promise<DrainResult> {
-  const result: DrainResult = { considered: 0, sent: 0, skipped: 0, failed: 0 };
-  if (!supabaseWritable) return result;
+type OutboxUpdate = Database['public']['Tables']['email_outbox']['Update'];
 
-  /* See supabase/pending.types.ts. The cast goes when the types can be generated. */
-  const db = serviceClient() as unknown as SupabaseClient<PendingDatabase>;
-  const auth = serviceClient();
-
-  const settle = (id: number, why: string) =>
-    db.from('email_outbox').update({ sent_at: now.toISOString(), last_error: why }).eq('id', id);
-
-  const { data: rows } = await db
+async function updateClaim(
+  db: SupabaseClient<Database>,
+  row: OutboxRow,
+  values: OutboxUpdate
+): Promise<void> {
+  const { data, error } = await db
     .from('email_outbox')
-    .select('id, kind, profile_id, payload, attempts, last_attempt_at')
-    .is('sent_at', null)
-    .lt('attempts', MAX_ATTEMPTS)
-    .order('created_at', { ascending: true })
-    .limit(BATCH);
+    .update({ ...values, claim_token: null, claimed_at: null })
+    .eq('id', row.id)
+    .eq('claim_token', row.claim_token)
+    .select('id')
+    .maybeSingle();
 
-  if (!rows?.length) return result;
+  if (error) throw new Error(`Could not update claimed email row ${row.id}: ${error.code}`);
+  if (!data) throw new Error(`Email row ${row.id} is no longer owned by this drain.`);
+}
 
-  for (const raw of rows) {
+function nextAttemptAt(now: Date, attempts: number, retryAfterSeconds?: number): string {
+  const backoffSeconds = backoffMinutes(attempts) * 60;
+  const waitSeconds = Math.max(backoffSeconds, retryAfterSeconds ?? 0);
+  return new Date(now.getTime() + waitSeconds * 1000).toISOString();
+}
+
+export async function drain(now = new Date()): Promise<DrainResult> {
+  const result: DrainResult = {
+    enabled: mailDeliveryEnabled,
+    considered: 0,
+    sent: 0,
+    skipped: 0,
+    failed: 0,
+    deadLetterIds: []
+  };
+
+  if (!mailDeliveryEnabled) return result;
+  if (!supabaseWritable) {
+    throw new Error('Email delivery is enabled without Supabase service access.');
+  }
+
+  const db = serviceClient();
+  const auth = serviceClient();
+  const nowIso = now.toISOString();
+
+  const { data: claimed, error: claimError } = await db.rpc('claim_email_batch', {
+    p_now: nowIso,
+    p_limit: BATCH
+  });
+
+  if (claimError) throw new Error(`Could not claim email rows: ${claimError.code}`);
+
+  for (const raw of claimed ?? []) {
     const row = raw as unknown as OutboxRow;
     result.considered++;
 
-    if (!isDue(row.attempts, row.last_attempt_at, now)) {
-      result.skipped++;
-      continue;
-    }
-
-    const { data: prefs } = await db
+    const { data: prefs, error: prefsError } = await db
       .from('notification_prefs')
       .select('story_published, story_featured, comment_reply, unsubscribe_token')
       .eq('profile_id', row.profile_id)
       .maybeSingle();
+
+    if (prefsError) {
+      throw new Error(`Could not read preferences for email row ${row.id}: ${prefsError.code}`);
+    }
 
     const wants = prefs
       ? row.kind === 'story_published'
@@ -136,22 +190,36 @@ export async function drain(now = new Date()): Promise<DrainResult> {
           : prefs.comment_reply
       : false;
 
-    /*
-      Opted out, or the profile is gone. Either way this is settled rather than failed, so
-      it is marked sent and never looked at again. Leaving it pending would mean somebody
-      who unsubscribed keeps a row that something later decides to retry.
-    */
     if (!prefs || !wants) {
-      await settle(row.id, 'skipped: opted out or no profile');
+      await updateClaim(db, row, {
+        sent_at: nowIso,
+        last_error: 'skipped: opted out or no profile'
+      });
       result.skipped++;
       continue;
     }
 
-    const { data: user } = await auth.auth.admin.getUserById(row.profile_id);
-    const to = user?.user?.email;
+    const payload = await currentEventPayload(db, row);
+    if (!payload) {
+      await updateClaim(db, row, {
+        sent_at: nowIso,
+        last_error: 'skipped: event no longer resolves'
+      });
+      result.skipped++;
+      continue;
+    }
 
+    const { data: user, error: userError } = await auth.auth.admin.getUserById(row.profile_id);
+    if (userError) {
+      throw new Error(`Could not read recipient for email row ${row.id}: ${userError.status ?? 'unknown'}`);
+    }
+
+    const to = user.user?.email;
     if (!to) {
-      await settle(row.id, 'skipped: no address');
+      await updateClaim(db, row, {
+        sent_at: nowIso,
+        last_error: 'skipped: no address'
+      });
       result.skipped++;
       continue;
     }
@@ -159,15 +227,17 @@ export async function drain(now = new Date()): Promise<DrainResult> {
     const commentUrl =
       row.kind === 'comment_reply'
         ? await urlForComment(
-            String(row.payload.target_kind ?? ''),
-            String(row.payload.target_key ?? '')
+            String(payload.target_kind ?? ''),
+            String(payload.target_key ?? '')
           )
         : null;
 
-    const built = renderNotification(row.kind, row.payload, prefs.unsubscribe_token, commentUrl);
-
+    const built = renderNotification(row.kind, payload, prefs.unsubscribe_token, commentUrl);
     if (!built) {
-      await settle(row.id, 'skipped: event no longer resolves');
+      await updateClaim(db, row, {
+        sent_at: nowIso,
+        last_error: 'skipped: event no longer resolves'
+      });
       result.skipped++;
       continue;
     }
@@ -177,26 +247,43 @@ export async function drain(now = new Date()): Promise<DrainResult> {
       subject: built.subject,
       text: built.text,
       html: built.html,
-      unsubscribeUrl: built.unsubscribeUrl
+      unsubscribeUrl: built.unsubscribeUrl,
+      idempotencyKey: `bbb:${row.dedupe_key}`
     };
 
     const sent = await sendMail(mail);
-
     if (sent.ok) {
-      await db.from('email_outbox').update({ sent_at: now.toISOString() }).eq('id', row.id);
+      await updateClaim(db, row, {
+        sent_at: nowIso,
+        last_error: null,
+        last_attempt_at: nowIso
+      });
       result.sent++;
-    } else {
-      await db
-        .from('email_outbox')
-        .update({
-          attempts: row.attempts + 1,
-          last_error: sent.error ?? 'unknown',
-          last_attempt_at: now.toISOString()
-        })
-        .eq('id', row.id);
-      result.failed++;
+      continue;
     }
+
+    const attempts = row.attempts + 1;
+    await updateClaim(db, row, {
+      attempts,
+      last_error: sent.error ?? 'provider_unknown',
+      last_attempt_at: nowIso,
+      next_attempt_at: nextAttemptAt(now, attempts, sent.retryAfterSeconds)
+    });
+    result.failed++;
   }
 
+  const { data: deadLetters, error: deadLetterError } = await db
+    .from('email_outbox')
+    .select('id')
+    .is('sent_at', null)
+    .gte('attempts', MAX_ATTEMPTS)
+    .order('created_at', { ascending: true })
+    .limit(BATCH);
+
+  if (deadLetterError) {
+    throw new Error(`Could not inspect exhausted email rows: ${deadLetterError.code}`);
+  }
+
+  result.deadLetterIds = (deadLetters ?? []).map((row) => row.id);
   return result;
 }

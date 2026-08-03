@@ -65,21 +65,20 @@ leaves those tables missing and every badge migration lands on nothing.
 Both tables arrive empty. `docs/backfill.md` is the spec for filling them, and it is worth
 reading before the load rather than during it.
 
-**Check it worked:** the dashboard table editor should show fifteen tables, and seventeen
-migrations applied.
+**Check it worked:** the dashboard table editor should include the tables below, including
+the email outbox.
 
 ```
 badges            badge_rules       badge_grants      bans
 comments          disasters         likes
-notification_prefs                  profiles          reports
+notification_prefs email_outbox     profiles          reports
 reserved_handles  streamEvents      streamUsers
 video_pages       video_transcripts
 ```
 
-No `email_outbox`, and that is correct. v1 sends no email, so
-`supabase/deferred/20260801000100_notifications.sql` is held out of the chain. See
-`docs/notifications.md`. `notification_prefs` is in the base schema and does arrive: it
-gets a row per profile and nothing reads or writes it.
+`email_outbox` and `notification_prefs` arrive together with the rest of the applied chain.
+The queue remains inert until the production delivery variables are configured. See
+`docs/notifications.md`.
 
 `streamEvents` and `streamUsers` keep their camel case quoting from the legacy schema.
 That is not a slip, it is what the columns the badge engine queries are actually called.
@@ -202,6 +201,11 @@ posted on the branch deploy is a real comment on the real site. Test with that i
 | `PUBLIC_SUPABASE_ANON_KEY` | the `anon` key from step 3 | No |
 | `SUPABASE_SERVICE_ROLE_KEY` | the `service_role` key from step 3 | **Yes** |
 | `LIKE_IP_SECRET` | any long random string you generate | **Yes** |
+| `RESEND_API_KEY` | a sending-only Resend key | **Yes** |
+| `MAIL_DELIVERY_ENABLED` | `true` in production only | No |
+| `MAIL_FROM` | `Bald Bearded Builder <hello@baldbeardedbuilder.com>` | No |
+| `MAIL_REPLY_TO` | `hello@baldbeardedbuilder.com` | No |
+| `NOTIFY_SECRET` | a separate long random string | **Yes** |
 
 Mark the secret ones as secret in Netlify so their values are hidden after saving.
 
@@ -209,11 +213,9 @@ Mark the secret ones as secret in Netlify so their values are hidden after savin
 loses nothing: it just means somebody who already liked a thing could like it once more.
 The column is a dedupe token with a shelf life, not a stored IP address.
 
-`NOTIFY_SECRET`, `RESEND_API_KEY` and `MAIL_FROM` are deliberately not on this list. v1
-sends no email of any kind, so there is nothing to configure and nothing for you to
-choose a sender for. Setting any of them on its own turns on half a feature whose other
-half is the copy on submit, terms and privacy saying plainly that nothing is sent.
-`docs/notifications.md` is the whole procedure if that ever changes.
+Scope the mail variables to production. Delivery still requires Netlify's production
+context in code, but correct scoping prevents a preview from holding credentials it cannot
+use. Follow `docs/notifications.md` for the staged enablement sequence.
 
 ---
 
@@ -242,15 +244,13 @@ pnpm types
 pnpm check
 ```
 
-`database.types.ts` is currently stale and cannot be regenerated until the project exists,
-which is why new schema lives in `src/lib/supabase/pending.types.ts` with a cast at each
-call site. Once `pnpm types` has run for real, those casts come out.
+`database.types.ts` is generated from the live v2 project after every migration. The
+project ref is not committed into the script, so set `SUPABASE_PROJECT_REF` first.
 
 Commit the result. CI and a fresh clone must never need a Supabase login.
 
-**Do not run `pnpm types` between now and the reversal migration executing against
-`bvyerlczpakdlfvybkev`.** A types file regenerated from that project after the reversal
-shows every v2 table missing, which looks exactly like somebody deleted the schema.
+The generator refuses the legacy `bvyerlczpakdlfvybkev` project. A types file generated
+there would describe the old production schema rather than v2.
 
 ---
 

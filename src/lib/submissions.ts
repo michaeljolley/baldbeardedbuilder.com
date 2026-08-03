@@ -1,8 +1,8 @@
 /*
   Your own submissions, and where each one stands.
 
-  This exists because v1 sends no email. Somebody hands over the worst thing that ever
-  happened to them at work and, with nothing landing in their inbox, has no way of
+  This remains the full record even with publication email. Somebody hands over the worst
+  thing that ever happened to them at work and, if it is not published, has no way of
   learning what became of it. Email was carrying that loop and nothing else was.
 
   It closes by letting a person look. No sender, no address, no unsubscribe, no consent

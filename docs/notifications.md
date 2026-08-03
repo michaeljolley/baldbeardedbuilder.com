@@ -1,115 +1,83 @@
-# Notifications, and why none of it is running
+# Email notifications
 
-v1 sends no email. Not a notification, not a digest, not a reply alert, not a welcome.
-There is no sender, no address to send from, and nothing draining the queue.
+The site sends three transactional notifications:
 
-The code is still here, complete and unwired. This file is the reason, and it is the
-instruction sheet for turning it on.
+| Type | Recipient | Event |
+| --- | --- | --- |
+| Story published | Story author | A submitted dev disaster first becomes published |
+| Story featured | Story author | A published story first reaches the front page |
+| Direct reply | Parent comment author | A visible comment directly replies to their comment |
 
-## Why it is here rather than deleted
+Publishing and featuring in the same database change produces one featured message that
+says both happened. Each type is sent at most once per story or reply. Notifications default
+on for new accounts and can be changed separately on `/account/`.
 
-Two reasons.
+The .NET Drip newsletter is separate. Signing in never subscribes somebody to it, and these
+settings never change it.
 
-The thinking is worth more than the diff that removes it. Deciding that unsubscribe has
-to work with no session, that a queue beats a direct send, that the address never gets
-copied into a queue row so a deleted account cannot be emailed by a row that outlived
-it, that the drain endpoint compares its secret in constant time. None of that is
-obvious a second time.
+## Delivery locks
 
-And absent is a different problem to solve than broken. Somebody finding half a
-notification system and no explanation concludes it is broken and starts debugging. The
-headers on each file, and this page, say plainly that it is switched off on purpose.
+Real delivery requires all of the following in the Netlify production context:
 
-## What is switched off
+- `MAIL_DELIVERY_ENABLED=true`
+- `RESEND_API_KEY`
+- `CONTEXT=production`, supplied by Netlify
 
-| Thing | State |
-| --- | --- |
-| `src/lib/mail.ts` | Present, unwired. `mailConfigured` is false with no `RESEND_API_KEY` |
-| `src/lib/notify-templates.ts` | Present, unwired. Pure functions, still tested |
-| `src/lib/notifications.ts` | Present, unwired. Nothing calls `drain()` |
-| `src/pages/api/notifications.ts` | Present as a route, but refuses everything with no `NOTIFY_SECRET` set |
-| `src/pages/_unwired/unsubscribe.astro` | Not a route. Astro excludes anything under an underscore prefixed directory |
-| `supabase/deferred/20260801000100_notifications.sql` | Held out of the applied chain. `db push` reads `supabase/migrations/` only |
-| `notification_prefs` | In the base schema, one row per profile, every column defaulting to true. Nothing reads it and nothing writes it |
+`MAIL_FROM` defaults to `Bald Bearded Builder <hello@baldbeardedbuilder.com>`.
+`MAIL_REPLY_TO` defaults to `hello@baldbeardedbuilder.com`.
 
-`notification_prefs` staying is deliberate. An empty table promises nobody anything as
-long as no interface reads it, and the defaults sitting at true mean whoever turns this
-back on starts from the state that was designed.
+Deploy previews and local development cannot send real notification email even if an API
+key is accidentally available. When delivery is disabled, `drain()` returns before claiming
+rows, so queued events remain available for a later production run.
 
-## What did not come with it
+## Queue
 
-Two things, and the second one nearly did.
+`supabase/migrations/20260806000000_notifications.sql` creates `email_outbox`, the enqueue
+triggers, `claim_email_batch`, and `unsubscribe_by_token`.
 
-`disasters.featured_at` was the first half of the notifications migration, because the
-`story_featured` email needed something to key off. It is now
-`supabase/migrations/20260801000000_featured.sql` and it stays in the applied chain.
+The queue stores a profile id, event payload and dedupe key. It never stores the email
+address. The drain reads the current address from Supabase Auth immediately before sending,
+so deleting an account also removes its queue rows and its destination.
 
-Featuring is what the front page reads. `leadDisaster()` in `src/lib/disasters.ts` takes
-the most recently featured published story and falls back to the newest. Holding that
-column back would have quietly taken the front page lead with it, which is the kind of
-thing a scope cut breaks by accident.
+Claims use `FOR UPDATE SKIP LOCKED`, a claim token and a ten-minute lease. This prevents
+overlapping drains from selecting the same row. Resend receives the queue dedupe key as an
+idempotency key, which covers a worker dying after Resend accepts a message but before
+`sent_at` is written.
 
-**The Featured badge grant went with it, and had to be pulled back separately.** It sat
-inside `notify_disaster_change`, in the same branch that enqueued the `story_featured`
-email, so deferring the email deferred the grant. The badge is seeded in
-`20260710000200_v2_seed.sql`, so the result would have been a badge on the shelf that no
-action could ever earn.
+Failures retry five times with widening backoff. Resend rate-limit delays are honored when
+they exceed the normal backoff. Unsent messages expire after 48 hours. Provider response
+bodies and recipient addresses are never written to the queue or logs.
 
-It is now its own trigger, `disasters_grant_featured`, keyed off the timestamp and
-knowing nothing about mail. When the notifications migration comes back it must **not**
-bring the grant with it: the deferred file has the branch removed and a comment saying
-so, and `tests/no-email.test.mjs` asserts both halves. A duplicate grant would be hidden
-by `on conflict do nothing` rather than reported.
+## Schedule
 
-This is the same shape as the bug that started all of this. A `story_featured` preference
-existed for an event that no code path could produce, because the front page lead was
-simply the newest row. Fixing that put the cause in the same function as the email, which
-then made the cause deferrable. Worth remembering when reading the rest of this file:
-what looks like an email feature here mostly is not.
+`netlify/functions/drain-notifications.mts` runs every five minutes on published deploys.
+It calls `POST /api/notifications/` with `NOTIFY_SECRET` as a bearer token. Netlify scheduled
+functions do not run on deploy previews or branch deploys.
 
-## Turning it on
+The scheduled run fails when a current send fails or an exhausted queue row exists. The
+error names queue row ids only. Use the stored sanitized `last_error` and the Resend
+dashboard to diagnose delivery.
 
-In this order.
+## Unsubscribe
 
-1. **Choose a sender.** A domain, a from address, and an account at whoever sends it.
-   `mail.ts` is written for Resend over plain `fetch`, so swapping the provider is one
-   function. Set `RESEND_API_KEY` and `MAIL_FROM` in Netlify, scoped to production and
-   to deploy previews if you want to test there.
-2. **Apply the migration.** `supabase/deferred/20260801000100_notifications.sql`. Move it
-   into `supabase/migrations/` first so it joins the chain properly rather than being
-   run by hand, then `pnpm check:migrations` and `supabase db push`.
-3. **Put the unsubscribe page back.** Move `src/pages/_unwired/unsubscribe.astro` to
-   `src/pages/unsubscribe.astro`, and restore its two entries in `ON_DEMAND` in
-   `scripts/a11y.mjs`, one with a token and one without.
-4. **Wire the drain.** Set `NOTIFY_SECRET` and point a timer at `POST /api/notifications/`,
-   either pg_cron through `net.http_post` or a Netlify scheduled function.
-5. **Restore `saveAccount`.** `src/lib/account.ts` deliberately no longer writes
-   `notification_prefs`, because a form with no switches posts no fields and reading them
-   anyway turns every save into three falses nobody chose. Put the switches back in
-   `src/pages/account.astro` and the upsert back in `saveAccount` in the same change.
+Every message has two paths to the same per-type setting:
 
-## And change the copy back at the same time
+- The visible link opens `/unsubscribe/` and asks for confirmation before changing anything.
+- RFC 8058 clients POST `List-Unsubscribe=One-Click` and are processed immediately.
 
-This is the half that gets forgotten, so it is written out in full. Every one of these
-currently says plainly that nothing is sent, and every one of them becomes a lie the
-moment mail starts going out.
+The confirmation protects against mail security scanners that prefetch ordinary links.
+Neither path requires a session. A valid-looking unknown token and a real token produce the
+same response, so the route does not reveal which tokens exist.
 
-| File | What says it |
-| --- | --- |
-| `src/pages/submit.astro` | The `SENT` outcome map, the signed out sign in notice, the anonymous switch help text, and the "here's what happens next" panel |
-| `src/pages/terms.astro` | The "What happens to a story after you send it" section |
-| `src/pages/privacy.astro` | The `Email` row of the data table, the "Email sent: None" line in the summary rail, and the whole `Email` section |
-| `src/pages/account.astro` | The switches, which were removed rather than disabled |
-| `src/lib/account.ts` | `saveAccount`, and the `AccountView` type, which no longer carries `prefs` |
+## Production rollout
 
-Copy that promises email while nothing sends it is the exact failure this scope cut
-exists to avoid, at the exact moment somebody is deciding whether to hand over the worst
-thing that ever happened to them at work. Do not restore one half without the other.
+1. Deploy with `MAIL_DELIVERY_ENABLED` unset or false.
+2. Apply the migration and regenerate `database.types.ts`.
+3. Set production-scoped `RESEND_API_KEY`, `MAIL_FROM`, `MAIL_REPLY_TO`, and `NOTIFY_SECRET`.
+4. Confirm the scheduled endpoint reports delivery disabled.
+5. Set `MAIL_DELIVERY_ENABLED=true`, which creates a new production deploy.
+6. Insert one synthetic queue event for the owner profile and confirm it is sent once.
+7. Remove the synthetic row after recording the result.
 
-## The loop that email was carrying
-
-Worth naming, because it is the real cost of the cut rather than the notifications
-themselves. With no email, somebody submits a story and never learns what happened to
-it. That closes without email by showing a person their own submissions and where each
-one stands, which is why `disasters_own_read` exists in the RLS. See
-`supabase/migrations/20260710000100_v2_rls.sql`.
+Do not enable delivery before the migration is applied. Do not apply the migration without
+deploying the account controls, unsubscribe route, and updated privacy and submission copy.

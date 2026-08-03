@@ -11,7 +11,16 @@
   "here is the button" belong on the same screen.
 */
 import Base from '../layouts/Base.astro';
-import { readAccount, saveAccount, deleteAccount, clearSession, readOwnSubmissions, BIO_MAX, LINKS_MAX } from '../lib/account';
+import {
+  readAccount,
+  saveAccount,
+  saveNotificationPrefs,
+  deleteAccount,
+  clearSession,
+  readOwnSubmissions,
+  BIO_MAX,
+  LINKS_MAX
+} from '../lib/account';
 import SubmissionList from '../components/SubmissionList.astro';
 import { supabaseWritable } from '../lib/supabase';
 
@@ -24,7 +33,9 @@ let error: string | null = null;
 if (Astro.request.method === 'POST' && profile) {
   const form = await Astro.request.formData();
 
-  if (form.get('intent') === 'delete') {
+  const intent = form.get('intent');
+
+  if (intent === 'delete') {
     if (String(form.get('confirm') ?? '').trim().toLowerCase() !== profile.handle) {
       error = 'Type your handle exactly to confirm.';
     } else {
@@ -35,20 +46,25 @@ if (Astro.request.method === 'POST' && profile) {
       }
       error = result.error ?? 'Could not delete the account.';
     }
+  } else if (intent === 'notifications') {
+    const result = await saveNotificationPrefs(profile.id, form);
+    if (result.ok) return Astro.redirect('/account/?saved=notifications#email-notifications', 303);
+    error = result.error ?? 'Could not save email settings.';
   } else {
     const result = await saveAccount(profile.id, form);
-    if (result.ok) return Astro.redirect('/account/?saved=1', 303);
+    if (result.ok) return Astro.redirect('/account/?saved=profile', 303);
     error = result.error ?? 'Could not save that.';
   }
 }
 
 const account = profile ? await readAccount(profile.id) : null;
 const submissions = profile ? await readOwnSubmissions(profile.id) : [];
-const saved = Astro.url.searchParams.has('saved');
+const saved = Astro.url.searchParams.get('saved');
 const linkRows = Array.from({ length: LINKS_MAX }, (_, i) => account?.links[i] ?? { label: '', url: '' });
 const linkLabelExamples = ['Website', 'GitHub', 'YouTube', 'Bluesky'];
 const accountName = account ? account.displayName || account.handle : '';
 const accountInitial = accountName.trim().charAt(0).toUpperCase() || '@';
+const canEmail = Boolean(account?.email && account.preferences);
 ---
 
 <Base title="Account settings" description="Settings for your Bald Bearded Builder account." noindex>
@@ -118,6 +134,7 @@ const accountInitial = accountName.trim().charAt(0).toUpperCase() || '@';
               <nav aria-label="Account sections">
                 <a href="#public-details">Public details</a>
                 <a href="#privacy">Privacy</a>
+                <a href="#email-notifications">Email notifications</a>
                 <a href="#stories">Your stories</a>
                 <a href="#connections">Connections</a>
                 <a class="danger-link" href="#delete-account">Delete account</a>
@@ -129,7 +146,11 @@ const accountInitial = accountName.trim().charAt(0).toUpperCase() || '@';
             </aside>
 
             <div class="account-content">
-              {saved && <p class="notice account-notice ok" role="status">Profile saved.</p>}
+              {saved && (
+                <p class="notice account-notice ok" role="status">
+                  {saved === 'notifications' ? 'Email settings saved.' : 'Profile saved.'}
+                </p>
+              )}
               {error && <p class="notice account-notice bad" role="alert">{error}</p>}
 
               <form class="account-form form" method="post" action="/account/">
@@ -264,6 +285,105 @@ const accountInitial = accountName.trim().charAt(0).toUpperCase() || '@';
                   </button>
                 </div>
               </form>
+
+              <section
+                class="setting-shell email-settings"
+                id="email-notifications"
+                aria-labelledby="email-heading"
+              >
+                <div class="setting-card">
+                  <header class="setting-head">
+                    <div>
+                      <p class="eyebrow">Your inbox</p>
+                      <h2 id="email-heading">Email notifications</h2>
+                    </div>
+                    <span class="section-mark" aria-hidden="true">@</span>
+                  </header>
+
+                  {
+                    canEmail ? (
+                      <>
+                        <p class="email-destination">
+                          Sent to <code class="notification-address">{account.email}</code>.
+                          This address comes from your auth provider and cannot be changed here.
+                        </p>
+
+                        <form
+                          class="form notification-form"
+                          method="post"
+                          action="/account/#email-notifications"
+                        >
+                          <input type="hidden" name="intent" value="notifications" />
+                          <fieldset class="notification-options">
+                            <legend class="vh">Choose which email notifications to receive</legend>
+
+                            <div class="switch-row">
+                              <input
+                                class="switch"
+                                type="checkbox"
+                                id="story_published"
+                                name="story_published"
+                                checked={account.preferences?.storyPublished}
+                              />
+                              <div>
+                                <label class="switch-label" for="story_published">Story published</label>
+                                <span class="switch-help">
+                                  Hear when a dev disaster you sent is published, including one
+                                  published without your name.
+                                </span>
+                              </div>
+                            </div>
+
+                            <div class="switch-row">
+                              <input
+                                class="switch"
+                                type="checkbox"
+                                id="story_featured"
+                                name="story_featured"
+                                checked={account.preferences?.storyFeatured}
+                              />
+                              <div>
+                                <label class="switch-label" for="story_featured">Story featured</label>
+                                <span class="switch-help">
+                                  Hear when one of your stories reaches the front page.
+                                </span>
+                              </div>
+                            </div>
+
+                            <div class="switch-row">
+                              <input
+                                class="switch"
+                                type="checkbox"
+                                id="comment_reply"
+                                name="comment_reply"
+                                checked={account.preferences?.commentReply}
+                              />
+                              <div>
+                                <label class="switch-label" for="comment_reply">Direct replies</label>
+                                <span class="switch-help">
+                                  Hear when somebody replies directly to one of your comments.
+                                </span>
+                              </div>
+                            </div>
+                          </fieldset>
+
+                          <div class="save-bar email-save">
+                            <span>These settings do not affect the separate .NET Drip newsletter.</span>
+                            <button class="btn primary" type="submit">
+                              Save email settings <span aria-hidden="true">&rarr;</span>
+                            </button>
+                          </div>
+                        </form>
+                      </>
+                    ) : (
+                      <p class="notice">
+                        Your auth provider has not supplied a deliverable email address. No
+                        notification can be sent, so these controls are unavailable.
+                      </p>
+                    )
+                  }
+                </div>
+              </section>
 
               <section class="setting-shell" id="stories" aria-label="Your stories">
                 <div class="setting-card stories-card">
@@ -847,5 +967,33 @@ const accountInitial = accountName.trim().charAt(0).toUpperCase() || '@';
     .profile-ticket:hover {
       transform: none;
     }
+  }
+
+  .email-settings {
+    scroll-margin-top: 2rem;
+  }
+
+  .email-destination {
+    margin: 0 0 1.5rem;
+  }
+
+  .notification-address {
+    overflow-wrap: anywhere;
+    color: var(--fg-strong);
+  }
+
+  .notification-form {
+    margin-top: 1.5rem;
+  }
+
+  .notification-options {
+    display: grid;
+    gap: 0.75rem;
+    border: 0;
+    min-inline-size: 0;
+  }
+
+  .email-save {
+    margin-top: 1.5rem;
   }
 </style>
