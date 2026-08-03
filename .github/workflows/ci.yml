@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [main, 'dev/**']
   pull_request:
   workflow_dispatch:
 
@@ -17,33 +16,11 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      # The submodule is deliberately NOT checked out here. src/content points at
-      # michaeljolley/content, which is private, and the default GITHUB_TOKEN is scoped to
-      # this repository alone. Asking actions/checkout to do it fails inside git submodule
-      # output with "Repository not found", which is how this job failed on every run of
-      # its life while looking like an ordinary red cross. Doing it in a step below turns
-      # that into an instruction.
-      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v7
         with:
           submodules: false
-
-      # A deploy key rather than a personal access token, which is decision 101.
-      #
-      # A fine grained PAT expires at twelve months at the most and dies with the account
-      # that issued it, so both of those bring this exact failure back later and quietly, on
-      # a timer. A deploy key does not expire, is scoped to one repository rather than to a
-      # person, and needs no decision about who owns it. Netlify solved the same problem on
-      # this same repository pair in 2024 with a read only deploy key on the content repo,
-      # so the precedent is already live.
-      #
-      # It is also less machinery than the token was. .gitmodules already asks for
-      # git@github.com:michaeljolley/content.git, so the old step had to rewrite SSH into
-      # HTTPS to get a token into the URL. With a key the native URL is simply correct and
-      # the rewrite goes away.
-      #
-      # The secret is named for what it holds. Calling an SSH private key CONTENT_TOKEN
-      # would be the same defect this branch has now caught three times, where a name goes
-      # on describing what something used to be.
+					
       - name: Check out the content submodule
         env:
           CONTENT_DEPLOY_KEY: ${{ secrets.CONTENT_DEPLOY_KEY }}
@@ -82,11 +59,11 @@ jobs:
           fi
           echo "src/content present, $(find src/content -name '*.md' | wc -l) markdown files."
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
@@ -140,7 +117,7 @@ jobs:
       # Both browser gates need dist, and a build is slow enough that handing it over
       # beats building it three times.
       - name: Upload dist
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist
@@ -153,15 +130,15 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: dist
           path: dist
@@ -187,9 +164,9 @@ jobs:
         run: pnpm check:aria
 
       # Rides along here because it needs a browser and a built dist. Sixteen themes times
-      # five heading levels is 96 computed colours, and the failure being guarded is a
+      # five heading levels is 96 computed colors, and the failure being guarded is a
       # heading that reads as body text or as a link rather than one that looks broken.
-      - name: Prose heading colour
+      - name: Prose heading color
         run: pnpm check:headings
 
   perf:
@@ -199,15 +176,15 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: dist
           path: dist
