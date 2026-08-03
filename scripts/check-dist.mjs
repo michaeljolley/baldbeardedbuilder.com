@@ -1,15 +1,6 @@
 /*
   Nothing parked may reach the shipped site.
 
-  A route file moved to src/pages/_unwired/ stops being built, and that is easy to check.
-  What is not obvious is everything downstream of it. The sitemap lists what is in dist,
-  Pagefind indexes what is in dist, and both are generated rather than written, so neither
-  gets reviewed. A page can be gone from the route table and still be a search result.
-
-  That is the concrete risk with unsubscribe. v1 sends no email, so a person landing on
-  /unsubscribe/ from a search result would be told something about an email preference
-  they do not have, on a site that never wrote to them. Confusing at best.
-
   Runs after astro build, in the same job, because it reads dist.
 
   Pagefind fragments are gzipped JSON, so this decompresses them and reads the indexed
@@ -26,7 +17,7 @@ const DIST = 'dist';
   Route segments that must not ship. Add to this when a feature is parked, and delete the
   entry in the same commit that unparks it.
 */
-const PARKED = [{ route: 'unsubscribe', why: 'v1 sends no email. See docs/notifications.md.' }];
+const PARKED = [];
 
 const problems = [];
 

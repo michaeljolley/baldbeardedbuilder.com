@@ -792,17 +792,6 @@
       "slug": "net-blazor-movie-trailer",
       "url": "/blazor/net-blazor-movie-trailer/"
     },
-    "videos:aqAJhgTAJFI": {
-      "primaryTopic": "csharp",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 3,
-      "needsReview": false,
-      "reviewed": false,
-      "title": "Stack vs. Heap in .NET",
-      "slug": "stack-vs-heap-in-net",
-      "url": "/csharp/stack-vs-heap-in-net/"
-    },
     "videos:Au-mvccHuC8": {
       "primaryTopic": "windows",
       "alsoFiled": [],
@@ -825,17 +814,6 @@
       "slug": "soft-deletes-the-upgrade-your-ef-core-needs",
       "url": "/data/soft-deletes-the-upgrade-your-ef-core-needs/"
     },
-    "videos:BdnpTrviJko": {
-      "primaryTopic": "csharp",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 2,
-      "needsReview": true,
-      "reviewed": false,
-      "title": "Should you await Inside Your C# Loops?",
-      "slug": "should-you-await-inside-your-csharp-loops",
-      "url": "/csharp/should-you-await-inside-your-csharp-loops/"
-    },
     "videos:BGvYjLgo-Uk": {
       "primaryTopic": "dev-life",
       "alsoFiled": [],
@@ -844,17 +822,6 @@
       "title": "Bongo cat loves my code! ",
       "slug": "bongo-cat-loves-my-code",
       "url": "/dev-life/bongo-cat-loves-my-code/"
-    },
-    "videos:bKdu1eDFu04": {
-      "primaryTopic": "csharp",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 3,
-      "needsReview": false,
-      "reviewed": false,
-      "title": "C# Has New Primary Constructors",
-      "slug": "csharp-has-new-primary-constructors",
-      "url": "/csharp/csharp-has-new-primary-constructors/"
     },
     "videos:BKeaojX45w0": {
       "primaryTopic": "copilot",
@@ -867,17 +834,6 @@
       "slug": "building-ai-with-net-chatgpt-4o-dall-e-3-and-whisper",
       "url": "/copilot/building-ai-with-net-chatgpt-4o-dall-e-3-and-whisper/"
     },
-    "videos:Bwp7PxsfMCI": {
-      "primaryTopic": "csharp",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 2,
-      "needsReview": true,
-      "reviewed": false,
-      "title": "Should LINQ Be Banned from C#!?",
-      "slug": "should-linq-be-banned-from-csharp",
-      "url": "/csharp/should-linq-be-banned-from-csharp/"
-    },
     "videos:BWSX0cQEh8k": {
       "primaryTopic": "csharp",
       "alsoFiled": [],
@@ -888,6 +844,28 @@
       "title": "How to Create a Custom HttpClient Logger (2024)",
       "slug": "how-to-create-a-custom-httpclient-logger-2024",
       "url": "/csharp/how-to-create-a-custom-httpclient-logger-2024/"
+    },
+    "videos:BdnpTrviJko": {
+      "primaryTopic": "csharp",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 2,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "Should you await Inside Your C# Loops?",
+      "slug": "should-you-await-inside-your-csharp-loops",
+      "url": "/csharp/should-you-await-inside-your-csharp-loops/"
+    },
+    "videos:Bwp7PxsfMCI": {
+      "primaryTopic": "csharp",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 2,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "Should LINQ Be Banned from C#!?",
+      "slug": "should-linq-be-banned-from-csharp",
+      "url": "/csharp/should-linq-be-banned-from-csharp/"
     },
     "videos:CFKhuEGY8IU": {
       "primaryTopic": "dev-life",
@@ -931,28 +909,6 @@
       "slug": "why-net-ai-smart-components-are-game-changing",
       "url": "/copilot/why-net-ai-smart-components-are-game-changing/"
     },
-    "videos:cu4CUJAcJ-4": {
-      "primaryTopic": "aspnetcore",
-      "alsoFiled": [
-        "csharp"
-      ],
-      "source": "ai",
-      "reviewed": false,
-      "title": "Building Custom Middleware for ASP.NET Core",
-      "slug": "building-custom-middleware-for-asp-net-core",
-      "url": "/aspnetcore/building-custom-middleware-for-asp-net-core/"
-    },
-    "videos:d0Eah9-t9tY": {
-      "primaryTopic": "aspnetcore",
-      "alsoFiled": [
-        "csharp"
-      ],
-      "source": "ai",
-      "reviewed": false,
-      "title": "Handle ASP.NET Core Exceptions Globally",
-      "slug": "handle-asp-net-core-exceptions-globally",
-      "url": "/aspnetcore/handle-asp-net-core-exceptions-globally/"
-    },
     "videos:DNzAoLwXLzc": {
       "primaryTopic": "csharp",
       "alsoFiled": [],
@@ -963,17 +919,6 @@
       "title": "Stop Using ToLower() for Comparisons! The Fast, Correct Way in C#",
       "slug": "stop-using-tolower-for-comparisons-the-fast-correct-way-in-csharp",
       "url": "/csharp/stop-using-tolower-for-comparisons-the-fast-correct-way-in-csharp/"
-    },
-    "videos:eq3z_ZiLraw": {
-      "primaryTopic": "data",
-      "alsoFiled": [
-        "csharp"
-      ],
-      "source": "ai",
-      "reviewed": false,
-      "title": "You Won't Believe The Hidden Dangers Of Lazy Loading",
-      "slug": "you-wont-believe-the-hidden-dangers-of-lazy-loading",
-      "url": "/data/you-wont-believe-the-hidden-dangers-of-lazy-loading/"
     },
     "videos:Fi5bTG7yqsM": {
       "primaryTopic": "windows",
@@ -1007,6 +952,275 @@
       "slug": "csharp-class-struct-or-record-which-should-you-choose",
       "url": "/csharp/csharp-class-struct-or-record-which-should-you-choose/"
     },
+    "videos:IZveVNSzrqY": {
+      "primaryTopic": "data",
+      "alsoFiled": [
+        "csharp"
+      ],
+      "source": "ai",
+      "reviewed": false,
+      "title": "Don't Make These Entity Framework Core Mistakes",
+      "slug": "dont-make-these-entity-framework-core-mistakes",
+      "url": "/data/dont-make-these-entity-framework-core-mistakes/"
+    },
+    "videos:JkvYc1u9Fl4": {
+      "primaryTopic": "dev-life",
+      "alsoFiled": [],
+      "source": "ai",
+      "reviewed": false,
+      "title": "What is GitHub Gist?",
+      "slug": "what-is-github-gist",
+      "url": "/dev-life/what-is-github-gist/"
+    },
+    "videos:KQtYl4tIivI": {
+      "primaryTopic": "windows",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "HTML in VS Code = Easy Mode",
+      "slug": "html-in-vs-code-easy-mode",
+      "url": "/windows/html-in-vs-code-easy-mode/"
+    },
+    "videos:MQciYVuS6cM": {
+      "primaryTopic": "dev-life",
+      "alsoFiled": [
+        "copilot"
+      ],
+      "source": "ai",
+      "reviewed": false,
+      "title": "I Tried Voice Coding, It Was A Disaster!",
+      "slug": "i-tried-voice-coding-it-was-a-disaster",
+      "url": "/dev-life/i-tried-voice-coding-it-was-a-disaster/"
+    },
+    "videos:Mccqa_Z8-DY": {
+      "primaryTopic": "aspnetcore",
+      "alsoFiled": [
+        "csharp"
+      ],
+      "source": "ai",
+      "reviewed": false,
+      "title": "Fix Ambiguous Constructors in ASP.NET Dependency Injection!",
+      "slug": "fix-ambiguous-constructors-in-asp-net-dependency-injection",
+      "url": "/aspnetcore/fix-ambiguous-constructors-in-asp-net-dependency-injection/"
+    },
+    "videos:NNvuABk_XtY": {
+      "primaryTopic": "csharp",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "How has .NET not had this before!?",
+      "slug": "how-has-net-not-had-this-before",
+      "url": "/csharp/how-has-net-not-had-this-before/"
+    },
+    "videos:NZ-4z3J2xy0": {
+      "primaryTopic": "aspnetcore",
+      "alsoFiled": [
+        "csharp"
+      ],
+      "source": "ai",
+      "reviewed": false,
+      "title": "Dependency Injection Mistakes You Need to Avoid!",
+      "slug": "dependency-injection-mistakes-you-need-to-avoid",
+      "url": "/aspnetcore/dependency-injection-mistakes-you-need-to-avoid/"
+    },
+    "videos:NfgYfqQBc_8": {
+      "primaryTopic": "windows",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "Lint Markdown in VS Code",
+      "slug": "lint-markdown-in-vs-code",
+      "url": "/windows/lint-markdown-in-vs-code/"
+    },
+    "videos:OBcWUJZuceA": {
+      "primaryTopic": "windows",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "Build Unity games in VS Code!",
+      "slug": "build-unity-games-in-vs-code",
+      "url": "/windows/build-unity-games-in-vs-code/"
+    },
+    "videos:OjkbonKOzec": {
+      "primaryTopic": "windows",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "VSCode's New YAML Support is AWESOME",
+      "slug": "vscodes-new-yaml-support-is-awesome",
+      "url": "/windows/vscodes-new-yaml-support-is-awesome/"
+    },
+    "videos:ToFqISWq4is": {
+      "primaryTopic": "aspnetcore",
+      "alsoFiled": [
+        "csharp"
+      ],
+      "source": "ai",
+      "reviewed": false,
+      "title": "Should my Services be Transient, Scoped, or Singleton?",
+      "slug": "should-my-services-be-transient-scoped-or-singleton",
+      "url": "/aspnetcore/should-my-services-be-transient-scoped-or-singleton/"
+    },
+    "videos:U3u4PEkW33E": {
+      "primaryTopic": "csharp",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "Stop Using == null: The Safer C# Pattern You Need Today!",
+      "slug": "stop-using-null-the-safer-csharp-pattern-you-need-today",
+      "url": "/csharp/stop-using-null-the-safer-csharp-pattern-you-need-today/"
+    },
+    "videos:VWbHiXN3mno": {
+      "primaryTopic": "windows",
+      "alsoFiled": [
+        "dev-life"
+      ],
+      "source": "ai",
+      "reviewed": false,
+      "title": "Manage GitHub Pull Requests & Issues with VS Code",
+      "slug": "manage-github-pull-requests-and-issues-with-vs-code",
+      "url": "/windows/manage-github-pull-requests-and-issues-with-vs-code/"
+    },
+    "videos:VYKtLWCv0tY": {
+      "primaryTopic": "dev-life",
+      "alsoFiled": [],
+      "source": "ai",
+      "reviewed": false,
+      "title": "What is git clean 🤯",
+      "slug": "what-is-git-clean",
+      "url": "/dev-life/what-is-git-clean/"
+    },
+    "videos:VwIf_3TN3Us": {
+      "primaryTopic": "csharp",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "Reference Types in C#",
+      "slug": "reference-types-in-csharp",
+      "url": "/csharp/reference-types-in-csharp/"
+    },
+    "videos:X2DlvgynJpM": {
+      "primaryTopic": "windows",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "Navigate faster in VS Code with Footsteps",
+      "slug": "navigate-faster-in-vs-code-with-footsteps",
+      "url": "/windows/navigate-faster-in-vs-code-with-footsteps/"
+    },
+    "videos:Xw66RmohdeU": {
+      "primaryTopic": "aspnetcore",
+      "alsoFiled": [
+        "csharp"
+      ],
+      "source": "ai",
+      "reviewed": false,
+      "title": "IExceptionHandler Makes ASP.NET Exceptions Easy",
+      "slug": "iexceptionhandler-makes-asp-net-exceptions-easy",
+      "url": "/aspnetcore/iexceptionhandler-makes-asp-net-exceptions-easy/"
+    },
+    "videos:Yo4wKXlnLMc": {
+      "primaryTopic": "windows",
+      "alsoFiled": [
+        "cloud"
+      ],
+      "source": "ai",
+      "reviewed": false,
+      "title": "Write Code in Containers with VS Code and Remote Containers",
+      "slug": "write-code-in-containers-with-vs-code-and-remote-containers",
+      "url": "/windows/write-code-in-containers-with-vs-code-and-remote-containers/"
+    },
+    "videos:ZxNnOjWetH4": {
+      "primaryTopic": "windows",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "Spell Check in VS Code with Code Spell Checker",
+      "slug": "spell-check-in-vs-code-with-code-spell-checker",
+      "url": "/windows/spell-check-in-vs-code-with-code-spell-checker/"
+    },
+    "videos:_8FeXuoYcqU": {
+      "primaryTopic": "dev-life",
+      "alsoFiled": [],
+      "source": "ai",
+      "reviewed": false,
+      "title": "What is Git Cherry-Pick?",
+      "slug": "what-is-git-cherry-pick",
+      "url": "/dev-life/what-is-git-cherry-pick/"
+    },
+    "videos:aqAJhgTAJFI": {
+      "primaryTopic": "csharp",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 3,
+      "needsReview": false,
+      "reviewed": false,
+      "title": "Stack vs. Heap in .NET",
+      "slug": "stack-vs-heap-in-net",
+      "url": "/csharp/stack-vs-heap-in-net/"
+    },
+    "videos:bKdu1eDFu04": {
+      "primaryTopic": "csharp",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 3,
+      "needsReview": false,
+      "reviewed": false,
+      "title": "C# Has New Primary Constructors",
+      "slug": "csharp-has-new-primary-constructors",
+      "url": "/csharp/csharp-has-new-primary-constructors/"
+    },
+    "videos:cu4CUJAcJ-4": {
+      "primaryTopic": "aspnetcore",
+      "alsoFiled": [
+        "csharp"
+      ],
+      "source": "ai",
+      "reviewed": false,
+      "title": "Building Custom Middleware for ASP.NET Core",
+      "slug": "building-custom-middleware-for-asp-net-core",
+      "url": "/aspnetcore/building-custom-middleware-for-asp-net-core/"
+    },
+    "videos:d0Eah9-t9tY": {
+      "primaryTopic": "aspnetcore",
+      "alsoFiled": [
+        "csharp"
+      ],
+      "source": "ai",
+      "reviewed": false,
+      "title": "Handle ASP.NET Core Exceptions Globally",
+      "slug": "handle-asp-net-core-exceptions-globally",
+      "url": "/aspnetcore/handle-asp-net-core-exceptions-globally/"
+    },
+    "videos:eq3z_ZiLraw": {
+      "primaryTopic": "data",
+      "alsoFiled": [
+        "csharp"
+      ],
+      "source": "ai",
+      "reviewed": false,
+      "title": "You Won't Believe The Hidden Dangers Of Lazy Loading",
+      "slug": "you-wont-believe-the-hidden-dangers-of-lazy-loading",
+      "url": "/data/you-wont-believe-the-hidden-dangers-of-lazy-loading/"
+    },
     "videos:hF4rRRQDY1g": {
       "primaryTopic": "windows",
       "alsoFiled": [],
@@ -1029,17 +1243,6 @@
       "slug": "what-if-ai-takes-developer-jobs",
       "url": "/dev-life/what-if-ai-takes-developer-jobs/"
     },
-    "videos:IZveVNSzrqY": {
-      "primaryTopic": "data",
-      "alsoFiled": [
-        "csharp"
-      ],
-      "source": "ai",
-      "reviewed": false,
-      "title": "Don't Make These Entity Framework Core Mistakes",
-      "slug": "dont-make-these-entity-framework-core-mistakes",
-      "url": "/data/dont-make-these-entity-framework-core-mistakes/"
-    },
     "videos:jDb8WXFqqFQ": {
       "primaryTopic": "aspnetcore",
       "alsoFiled": [
@@ -1050,15 +1253,6 @@
       "title": "How I Added a Full eSignature Workflow to my ASP.NET Core App",
       "slug": "how-i-added-a-full-esignature-workflow-to-my-asp-net-core-app",
       "url": "/aspnetcore/how-i-added-a-full-esignature-workflow-to-my-asp-net-core-app/"
-    },
-    "videos:JkvYc1u9Fl4": {
-      "primaryTopic": "dev-life",
-      "alsoFiled": [],
-      "source": "ai",
-      "reviewed": false,
-      "title": "What is GitHub Gist?",
-      "slug": "what-is-github-gist",
-      "url": "/dev-life/what-is-github-gist/"
     },
     "videos:jqG5hYArC_Q": {
       "primaryTopic": "csharp",
@@ -1081,17 +1275,6 @@
       "title": "Format Your Code in VS Code with Prettier",
       "slug": "format-your-code-in-vs-code-with-prettier",
       "url": "/windows/format-your-code-in-vs-code-with-prettier/"
-    },
-    "videos:KQtYl4tIivI": {
-      "primaryTopic": "windows",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 1,
-      "needsReview": true,
-      "reviewed": false,
-      "title": "HTML in VS Code = Easy Mode",
-      "slug": "html-in-vs-code-easy-mode",
-      "url": "/windows/html-in-vs-code-easy-mode/"
     },
     "videos:ku2K9mTMJBU": {
       "primaryTopic": "windows",
@@ -1126,39 +1309,6 @@
       "slug": "why-your-onmodelcreating-is-a-hot-mess-and-how-to-fix-it",
       "url": "/data/why-your-onmodelcreating-is-a-hot-mess-and-how-to-fix-it/"
     },
-    "videos:Mccqa_Z8-DY": {
-      "primaryTopic": "aspnetcore",
-      "alsoFiled": [
-        "csharp"
-      ],
-      "source": "ai",
-      "reviewed": false,
-      "title": "Fix Ambiguous Constructors in ASP.NET Dependency Injection!",
-      "slug": "fix-ambiguous-constructors-in-asp-net-dependency-injection",
-      "url": "/aspnetcore/fix-ambiguous-constructors-in-asp-net-dependency-injection/"
-    },
-    "videos:MQciYVuS6cM": {
-      "primaryTopic": "dev-life",
-      "alsoFiled": [
-        "copilot"
-      ],
-      "source": "ai",
-      "reviewed": false,
-      "title": "I Tried Voice Coding, It Was A Disaster!",
-      "slug": "i-tried-voice-coding-it-was-a-disaster",
-      "url": "/dev-life/i-tried-voice-coding-it-was-a-disaster/"
-    },
-    "videos:NfgYfqQBc_8": {
-      "primaryTopic": "windows",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 1,
-      "needsReview": true,
-      "reviewed": false,
-      "title": "Lint Markdown in VS Code",
-      "slug": "lint-markdown-in-vs-code",
-      "url": "/windows/lint-markdown-in-vs-code/"
-    },
     "videos:nIq2YPPm6es": {
       "primaryTopic": "windows",
       "alsoFiled": [],
@@ -1167,50 +1317,6 @@
       "title": "I Don't Hate YAML Anymore! ",
       "slug": "i-dont-hate-yaml-anymore",
       "url": "/windows/i-dont-hate-yaml-anymore/"
-    },
-    "videos:NNvuABk_XtY": {
-      "primaryTopic": "csharp",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 1,
-      "needsReview": true,
-      "reviewed": false,
-      "title": "How has .NET not had this before!?",
-      "slug": "how-has-net-not-had-this-before",
-      "url": "/csharp/how-has-net-not-had-this-before/"
-    },
-    "videos:NZ-4z3J2xy0": {
-      "primaryTopic": "aspnetcore",
-      "alsoFiled": [
-        "csharp"
-      ],
-      "source": "ai",
-      "reviewed": false,
-      "title": "Dependency Injection Mistakes You Need to Avoid!",
-      "slug": "dependency-injection-mistakes-you-need-to-avoid",
-      "url": "/aspnetcore/dependency-injection-mistakes-you-need-to-avoid/"
-    },
-    "videos:OBcWUJZuceA": {
-      "primaryTopic": "windows",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 1,
-      "needsReview": true,
-      "reviewed": false,
-      "title": "Build Unity games in VS Code!",
-      "slug": "build-unity-games-in-vs-code",
-      "url": "/windows/build-unity-games-in-vs-code/"
-    },
-    "videos:OjkbonKOzec": {
-      "primaryTopic": "windows",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 1,
-      "needsReview": true,
-      "reviewed": false,
-      "title": "VSCode's New YAML Support is AWESOME",
-      "slug": "vscodes-new-yaml-support-is-awesome",
-      "url": "/windows/vscodes-new-yaml-support-is-awesome/"
     },
     "videos:p24vnBYWSQQ": {
       "primaryTopic": "windows",
@@ -1254,6 +1360,17 @@
       "slug": "are-people-wrong-about-net",
       "url": "/csharp/are-people-wrong-about-net/"
     },
+    "videos:tP5bhciEyHE": {
+      "primaryTopic": "windows",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "Take Me Home VS Code",
+      "slug": "take-me-home-vs-code",
+      "url": "/windows/take-me-home-vs-code/"
+    },
     "videos:tgEBSuqD4w4": {
       "primaryTopic": "dev-life",
       "alsoFiled": [],
@@ -1272,39 +1389,6 @@
       "slug": "its-always-cors",
       "url": "/aspnetcore/its-always-cors/"
     },
-    "videos:ToFqISWq4is": {
-      "primaryTopic": "aspnetcore",
-      "alsoFiled": [
-        "csharp"
-      ],
-      "source": "ai",
-      "reviewed": false,
-      "title": "Should my Services be Transient, Scoped, or Singleton?",
-      "slug": "should-my-services-be-transient-scoped-or-singleton",
-      "url": "/aspnetcore/should-my-services-be-transient-scoped-or-singleton/"
-    },
-    "videos:tP5bhciEyHE": {
-      "primaryTopic": "windows",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 1,
-      "needsReview": true,
-      "reviewed": false,
-      "title": "Take Me Home VS Code",
-      "slug": "take-me-home-vs-code",
-      "url": "/windows/take-me-home-vs-code/"
-    },
-    "videos:U3u4PEkW33E": {
-      "primaryTopic": "csharp",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 1,
-      "needsReview": true,
-      "reviewed": false,
-      "title": "Stop Using == null: The Safer C# Pattern You Need Today!",
-      "slug": "stop-using-null-the-safer-csharp-pattern-you-need-today",
-      "url": "/csharp/stop-using-null-the-safer-csharp-pattern-you-need-today/"
-    },
     "videos:v-nKgRil02A": {
       "primaryTopic": "dev-life",
       "alsoFiled": [],
@@ -1314,37 +1398,6 @@
       "note": "Reads as a git video from the neighbouring titles. Worth a human look.",
       "slug": "wheres-my-code",
       "url": "/dev-life/wheres-my-code/"
-    },
-    "videos:VWbHiXN3mno": {
-      "primaryTopic": "windows",
-      "alsoFiled": [
-        "dev-life"
-      ],
-      "source": "ai",
-      "reviewed": false,
-      "title": "Manage GitHub Pull Requests & Issues with VS Code",
-      "slug": "manage-github-pull-requests-and-issues-with-vs-code",
-      "url": "/windows/manage-github-pull-requests-and-issues-with-vs-code/"
-    },
-    "videos:VwIf_3TN3Us": {
-      "primaryTopic": "csharp",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 1,
-      "needsReview": true,
-      "reviewed": false,
-      "title": "Reference Types in C#",
-      "slug": "reference-types-in-csharp",
-      "url": "/csharp/reference-types-in-csharp/"
-    },
-    "videos:VYKtLWCv0tY": {
-      "primaryTopic": "dev-life",
-      "alsoFiled": [],
-      "source": "ai",
-      "reviewed": false,
-      "title": "What is git clean 🤯",
-      "slug": "what-is-git-clean",
-      "url": "/dev-life/what-is-git-clean/"
     },
     "videos:wUSoZ3Bw_xY": {
       "primaryTopic": "windows",
@@ -1356,17 +1409,6 @@
       "title": "Manage GitHub Gists in VS Code",
       "slug": "manage-github-gists-in-vs-code",
       "url": "/windows/manage-github-gists-in-vs-code/"
-    },
-    "videos:X2DlvgynJpM": {
-      "primaryTopic": "windows",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 1,
-      "needsReview": true,
-      "reviewed": false,
-      "title": "Navigate faster in VS Code with Footsteps",
-      "slug": "navigate-faster-in-vs-code-with-footsteps",
-      "url": "/windows/navigate-faster-in-vs-code-with-footsteps/"
     },
     "videos:x53lUlTml5k": {
       "primaryTopic": "windows",
@@ -1396,48 +1438,6 @@
       "title": "What is GitHub Gist? (Explained)",
       "slug": "what-is-github-gist-explained",
       "url": "/dev-life/what-is-github-gist-explained/"
-    },
-    "videos:Xw66RmohdeU": {
-      "primaryTopic": "aspnetcore",
-      "alsoFiled": [
-        "csharp"
-      ],
-      "source": "ai",
-      "reviewed": false,
-      "title": "IExceptionHandler Makes ASP.NET Exceptions Easy",
-      "slug": "iexceptionhandler-makes-asp-net-exceptions-easy",
-      "url": "/aspnetcore/iexceptionhandler-makes-asp-net-exceptions-easy/"
-    },
-    "videos:Yo4wKXlnLMc": {
-      "primaryTopic": "windows",
-      "alsoFiled": [
-        "cloud"
-      ],
-      "source": "ai",
-      "reviewed": false,
-      "title": "Write Code in Containers with VS Code and Remote Containers",
-      "slug": "write-code-in-containers-with-vs-code-and-remote-containers",
-      "url": "/windows/write-code-in-containers-with-vs-code-and-remote-containers/"
-    },
-    "videos:ZxNnOjWetH4": {
-      "primaryTopic": "windows",
-      "alsoFiled": [],
-      "source": "keyword",
-      "confidence": 1,
-      "needsReview": true,
-      "reviewed": false,
-      "title": "Spell Check in VS Code with Code Spell Checker",
-      "slug": "spell-check-in-vs-code-with-code-spell-checker",
-      "url": "/windows/spell-check-in-vs-code-with-code-spell-checker/"
-    },
-    "videos:_8FeXuoYcqU": {
-      "primaryTopic": "dev-life",
-      "alsoFiled": [],
-      "source": "ai",
-      "reviewed": false,
-      "title": "What is Git Cherry-Pick?",
-      "slug": "what-is-git-cherry-pick",
-      "url": "/dev-life/what-is-git-cherry-pick/"
     }
   }
 }

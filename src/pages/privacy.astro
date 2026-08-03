@@ -59,7 +59,7 @@ const held = [
     tag: 'Email',
     what: 'Your email address, as your auth source supplied it',
     when: 'You sign in',
-    why: 'Because sign in comes with one. Nothing is sent to it',
+    why: 'To send the story and direct reply notifications you control',
     gone: 'Delete your account and it goes with it'
   },
   {
@@ -184,15 +184,24 @@ const held = [
             conversation makes nonsense of the replies around it, and those replies belong
             to other people. Stories you have already had published stay published, because
             they are articles on a public site by then. If you want a published story taken
-            down as well, email me and I will take it down.
+            down as well, <a href={`mailto:${SITE.privacyEmail}`}>email the privacy inbox</a>
+            and I will take it down.
           </p>
 
           <h2>Email</h2>
           <p>
-            This site does not send email. Not a notification, not a digest, not a reply
-            alert, not a welcome. Your address is here because GitHub hands one over when
-            you sign in, and it sits in the account table and does nothing. Nothing is ever
-            sent to it and there is nothing to unsubscribe from.
+            This site can send three account notifications: when a dev disaster you sent is
+            published, when it reaches the front page, and when somebody replies directly to
+            one of your comments. All three start on. Each has its own switch on
+            <a href="/account/#email-notifications">your account page</a>, and every message
+            has a link that turns off that type without asking you to sign in.
+          </p>
+          <p>
+            The delivery queue stores your account id and the details needed to write the
+            message, but not your email address. The address is read from your auth account
+            at send time and handed to Resend, the delivery provider. Delete the account and
+            its queued messages are deleted with it. The site sends no welcome email, digest
+            or marketing email from that account address.
           </p>
           <p>
             The .NET Drip is the one exception and it is opt in. Its signup box sits on the
@@ -207,8 +216,9 @@ const held = [
           <p>
             If you are in the UK, the EU, or somewhere with similar law, you have rights to
             see what I hold, correct it, take it elsewhere and have it deleted. Most of that
-            is a button here already. For anything a button does not cover, email me and I
-            will do it by hand.
+            is a button here already. For anything a button does not cover,
+            <a href={`mailto:${SITE.privacyEmail}`}>email the privacy inbox</a> and I will do
+            it by hand.
           </p>
 
           <h2>Children</h2>

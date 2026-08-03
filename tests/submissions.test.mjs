@@ -1,8 +1,9 @@
 /*
   Your own submissions, as a test.
 
-  v1 sends no email, so this list is the entire feedback loop for somebody who handed
-  over the worst thing that ever happened to them at work. If it says the wrong thing, or
+  Publication email does not cover a story that remains in review, so this list is still
+  the entire feedback loop for somebody who handed over the worst thing that ever happened
+  to them at work. If it says the wrong thing, or
   links somewhere that is not there, nothing else corrects it. There is no inbox holding
   a second copy of the truth.
 

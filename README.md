@@ -102,4 +102,4 @@ else passes happily on a machine where those settings do not apply.
 - `docs/new-project.md` for standing up the Supabase project, including the
   GitHub OAuth callback trap that repoints production sign in if you get it
   wrong.
-- `docs/backfill.md` and `docs/notifications.md` for the parked pieces.
+- `docs/backfill.md` for data imports and `docs/notifications.md` for email operations.

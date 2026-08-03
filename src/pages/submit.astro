@@ -33,7 +33,7 @@ const signedIn = Astro.locals.profile !== null;
 const SENT: Record<string, { tone: 'ok' | 'bad'; text: string }> = {
   '1': {
     tone: 'ok',
-    text: "Got it. It's in the queue with a title drafted for it. I read everything that comes in."
+    text: "Got it. It's in the queue with a title drafted for it. I read everything that comes in. If story notifications are on, you'll hear when it publishes."
   },
   signin: { tone: 'bad', text: 'That needs a sign in. Sign in and send it again, the box will still be there.' },
   consent: { tone: 'bad', text: 'Both boxes at the bottom need ticking before I can run it.' },
@@ -89,7 +89,7 @@ const sent = SENT[params.get('sent') ?? ''] ?? null;
                 <a href="/auth/signin/?next=%2Fsubmit%2F">Sign in with GitHub</a> before you
                 send it. Not so I know who you are on the page, because you can still publish
                 anonymously, but so the story is attached to an account and the badge has
-                somewhere to land. Nothing gets sent to your inbox.
+                somewhere to land. That account is also where you control story notifications.
               </p>
             )
           }
@@ -116,7 +116,8 @@ const sent = SENT[params.get('sent') ?? ''] ?? null;
               <label class="switch-label" for="anon">Publish anonymously</label>
               <span class="switch-help">
                 Your name and handle stay off the page. The badge still lands on your
-                profile, because that follows the account rather than the byline.
+                profile, and story notifications can still reach you, because both follow
+                the account rather than the byline.
               </span>
             </div>
           </div>
@@ -144,9 +145,9 @@ const sent = SENT[params.get('sent') ?? ''] ?? null;
             Here's what happens next. It lands in a queue only I can see, with a title and
             a web address drafted for it automatically. I read it, fix the title if the
             machine got it wrong, check it for anything that identifies somebody, and file
-            it under a severity. This site does not send email, so nothing about any of
-            that arrives in your inbox. If you want to know whether it ran, come back and
-            look.
+            it under a severity. If story notifications are on, the site emails you when it
+            publishes and if it reaches the front page. A story I do not publish does not
+            send an email, so your account still shows every submission and where it stands.
           </p>
 
           <div class="form-foot">

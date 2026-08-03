@@ -11,6 +11,16 @@ interface ImportMetaEnv {
   readonly AI_API_KEY?: string;
   readonly AI_API_URL?: string;
   readonly AI_MODEL?: string;
+  /** Server only. Resend credential used by the production notification drain. */
+  readonly RESEND_API_KEY?: string;
+  readonly MAIL_FROM?: string;
+  readonly MAIL_REPLY_TO?: string;
+  /** Delivery remains closed unless this is exactly "true" in production. */
+  readonly MAIL_DELIVERY_ENABLED?: string;
+  /** Netlify deploy context. Real delivery requires "production". */
+  readonly CONTEXT?: string;
+  /** Bearer secret shared by the scheduled function and the drain endpoint. */
+  readonly NOTIFY_SECRET?: string;
 }
 
 interface ImportMeta {

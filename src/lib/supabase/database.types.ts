@@ -22,141 +22,10 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.15"
   }
   public: {
     Tables: {
-      analytics_events: {
-        Row: {
-          browser: string | null
-          browser_version: string | null
-          country: string | null
-          created_at: string
-          device_type: string | null
-          domain: string
-          id: string
-          os: string | null
-          path: string
-          querystring: string | null
-          referrer: string | null
-          screen_height: number | null
-          screen_width: number | null
-          session_id: string | null
-          timezone: string | null
-          user_id: string | null
-          utm_campaign: string | null
-          utm_content: string | null
-          utm_medium: string | null
-          utm_source: string | null
-          utm_term: string | null
-          viewport_height: number | null
-          viewport_width: number | null
-        }
-        Insert: {
-          browser?: string | null
-          browser_version?: string | null
-          country?: string | null
-          created_at?: string
-          device_type?: string | null
-          domain: string
-          id?: string
-          os?: string | null
-          path: string
-          querystring?: string | null
-          referrer?: string | null
-          screen_height?: number | null
-          screen_width?: number | null
-          session_id?: string | null
-          timezone?: string | null
-          user_id?: string | null
-          utm_campaign?: string | null
-          utm_content?: string | null
-          utm_medium?: string | null
-          utm_source?: string | null
-          utm_term?: string | null
-          viewport_height?: number | null
-          viewport_width?: number | null
-        }
-        Update: {
-          browser?: string | null
-          browser_version?: string | null
-          country?: string | null
-          created_at?: string
-          device_type?: string | null
-          domain?: string
-          id?: string
-          os?: string | null
-          path?: string
-          querystring?: string | null
-          referrer?: string | null
-          screen_height?: number | null
-          screen_width?: number | null
-          session_id?: string | null
-          timezone?: string | null
-          user_id?: string | null
-          utm_campaign?: string | null
-          utm_content?: string | null
-          utm_medium?: string | null
-          utm_source?: string | null
-          utm_term?: string | null
-          viewport_height?: number | null
-          viewport_width?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "analytics_events_session_id_fkey"
-            columns: ["session_id"]
-            isOneToOne: false
-            referencedRelation: "analytics_sessions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      analytics_sessions: {
-        Row: {
-          created_at: string
-          id: string
-          last_seen_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          last_seen_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          last_seen_at?: string
-        }
-        Relationships: []
-      }
-      announcements: {
-        Row: {
-          command: string | null
-          expiration_date: string | null
-          id: number
-          message: string | null
-          subtitle: string | null
-          title: string
-        }
-        Insert: {
-          command?: string | null
-          expiration_date?: string | null
-          id?: number
-          message?: string | null
-          subtitle?: string | null
-          title: string
-        }
-        Update: {
-          command?: string | null
-          expiration_date?: string | null
-          id?: number
-          message?: string | null
-          subtitle?: string | null
-          title?: string
-        }
-        Relationships: []
-      }
       badge_grants: {
         Row: {
           badge_id: string
@@ -304,107 +173,6 @@ export type Database = {
           },
         ]
       }
-      batches: {
-        Row: {
-          created_at: string
-          id: number
-          openAIBatchId: string | null
-          openAIFileId: string | null
-          status: string
-          type: string
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          openAIBatchId?: string | null
-          openAIFileId?: string | null
-          status: string
-          type: string
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          openAIBatchId?: string | null
-          openAIFileId?: string | null
-          status?: string
-          type?: string
-        }
-        Relationships: []
-      }
-      blogs: {
-        Row: {
-          batchId: number | null
-          blog_image: string | null
-          blog_image_alt: string | null
-          created_at: string
-          genBody: string | null
-          genDescription: string | null
-          genTitles: string | null
-          id: number
-          isShared: boolean
-          pageBody: string
-          pageTitle: string
-          pageUrl: string
-          releaseDate: string | null
-          slug: string | null
-          social_bluesky_summary: string | null
-          social_linkedin_summary: string | null
-          social_summary: string | null
-          social_x_summary: string | null
-          status: string
-        }
-        Insert: {
-          batchId?: number | null
-          blog_image?: string | null
-          blog_image_alt?: string | null
-          created_at?: string
-          genBody?: string | null
-          genDescription?: string | null
-          genTitles?: string | null
-          id?: number
-          isShared?: boolean
-          pageBody: string
-          pageTitle: string
-          pageUrl: string
-          releaseDate?: string | null
-          slug?: string | null
-          social_bluesky_summary?: string | null
-          social_linkedin_summary?: string | null
-          social_summary?: string | null
-          social_x_summary?: string | null
-          status?: string
-        }
-        Update: {
-          batchId?: number | null
-          blog_image?: string | null
-          blog_image_alt?: string | null
-          created_at?: string
-          genBody?: string | null
-          genDescription?: string | null
-          genTitles?: string | null
-          id?: number
-          isShared?: boolean
-          pageBody?: string
-          pageTitle?: string
-          pageUrl?: string
-          releaseDate?: string | null
-          slug?: string | null
-          social_bluesky_summary?: string | null
-          social_linkedin_summary?: string | null
-          social_summary?: string | null
-          social_x_summary?: string | null
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "blogs_batchId_fkey"
-            columns: ["batchId"]
-            isOneToOne: false
-            referencedRelation: "batches"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       comments: {
         Row: {
           author_id: string | null
@@ -477,6 +245,7 @@ export type Database = {
           author_id: string | null
           blast_radius: string | null
           body: string
+          featured_at: string | null
           id: number
           is_anonymous: boolean
           line: string | null
@@ -495,6 +264,7 @@ export type Database = {
           author_id?: string | null
           blast_radius?: string | null
           body: string
+          featured_at?: string | null
           id?: number
           is_anonymous?: boolean
           line?: string | null
@@ -513,6 +283,7 @@ export type Database = {
           author_id?: string | null
           blast_radius?: string | null
           body?: string
+          featured_at?: string | null
           id?: number
           is_anonymous?: boolean
           line?: string | null
@@ -537,243 +308,58 @@ export type Database = {
           },
         ]
       }
-      domains: {
+      email_outbox: {
         Row: {
+          attempts: number
+          claim_token: string | null
+          claimed_at: string | null
           created_at: string
-          domain: string
+          dedupe_key: string
           id: number
-          isBBB: boolean
-          isLowQuality: boolean
-          isLowSocial: boolean
+          kind: string
+          last_attempt_at: string | null
+          last_error: string | null
+          next_attempt_at: string
+          payload: Json
+          profile_id: string
+          sent_at: string | null
         }
         Insert: {
+          attempts?: number
+          claim_token?: string | null
+          claimed_at?: string | null
           created_at?: string
-          domain: string
+          dedupe_key: string
           id?: number
-          isBBB?: boolean
-          isLowQuality?: boolean
-          isLowSocial?: boolean
+          kind: string
+          last_attempt_at?: string | null
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          profile_id: string
+          sent_at?: string | null
         }
         Update: {
+          attempts?: number
+          claim_token?: string | null
+          claimed_at?: string | null
           created_at?: string
-          domain?: string
+          dedupe_key?: string
           id?: number
-          isBBB?: boolean
-          isLowQuality?: boolean
-          isLowSocial?: boolean
-        }
-        Relationships: []
-      }
-      dripEmails: {
-        Row: {
-          batchId: number | null
-          bodyHTML: string | null
-          bodyMarkdown: string | null
-          created_at: string
-          dripDate: string
-          id: number
-          isApproved: boolean
-          isFull: boolean
-          isGenerated: boolean
-          isScheduled: boolean | null
-          isShared: boolean
-          oneLiner: string | null
-          openingMarkdown: string | null
-          social_bluesky_summary: string | null
-          social_linkedin_summary: string | null
-          social_summary: string | null
-          social_x_summary: string | null
-        }
-        Insert: {
-          batchId?: number | null
-          bodyHTML?: string | null
-          bodyMarkdown?: string | null
-          created_at?: string
-          dripDate: string
-          id?: number
-          isApproved?: boolean
-          isFull?: boolean
-          isGenerated?: boolean
-          isScheduled?: boolean | null
-          isShared?: boolean
-          oneLiner?: string | null
-          openingMarkdown?: string | null
-          social_bluesky_summary?: string | null
-          social_linkedin_summary?: string | null
-          social_summary?: string | null
-          social_x_summary?: string | null
-        }
-        Update: {
-          batchId?: number | null
-          bodyHTML?: string | null
-          bodyMarkdown?: string | null
-          created_at?: string
-          dripDate?: string
-          id?: number
-          isApproved?: boolean
-          isFull?: boolean
-          isGenerated?: boolean
-          isScheduled?: boolean | null
-          isShared?: boolean
-          oneLiner?: string | null
-          openingMarkdown?: string | null
-          social_bluesky_summary?: string | null
-          social_linkedin_summary?: string | null
-          social_summary?: string | null
-          social_x_summary?: string | null
+          kind?: string
+          last_attempt_at?: string | null
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          profile_id?: string
+          sent_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "dripEmails_batchId_fkey"
-            columns: ["batchId"]
+            foreignKeyName: "email_outbox_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
-            referencedRelation: "batches"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      drips: {
-        Row: {
-          batchId: number | null
-          blueskyUrl: string | null
-          created_at: string
-          dripEmailId: number | null
-          emailUrl: string | null
-          id: number
-          isDotNet: boolean
-          isHot: boolean
-          isShared: boolean
-          linkedinUrl: string | null
-          pageBody: string
-          pageTitle: string
-          pageUrl: string
-          social_body: string | null
-          status: string
-          summary: string | null
-          webUrl: string | null
-          xUrl: string | null
-        }
-        Insert: {
-          batchId?: number | null
-          blueskyUrl?: string | null
-          created_at?: string
-          dripEmailId?: number | null
-          emailUrl?: string | null
-          id?: number
-          isDotNet?: boolean
-          isHot?: boolean
-          isShared?: boolean
-          linkedinUrl?: string | null
-          pageBody: string
-          pageTitle: string
-          pageUrl: string
-          social_body?: string | null
-          status?: string
-          summary?: string | null
-          webUrl?: string | null
-          xUrl?: string | null
-        }
-        Update: {
-          batchId?: number | null
-          blueskyUrl?: string | null
-          created_at?: string
-          dripEmailId?: number | null
-          emailUrl?: string | null
-          id?: number
-          isDotNet?: boolean
-          isHot?: boolean
-          isShared?: boolean
-          linkedinUrl?: string | null
-          pageBody?: string
-          pageTitle?: string
-          pageUrl?: string
-          social_body?: string | null
-          status?: string
-          summary?: string | null
-          webUrl?: string | null
-          xUrl?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "drips_batchId_fkey"
-            columns: ["batchId"]
-            isOneToOne: false
-            referencedRelation: "batches"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "drips_dripEmailId_fkey"
-            columns: ["dripEmailId"]
-            isOneToOne: false
-            referencedRelation: "dripEmails"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      ideas: {
-        Row: {
-          batchId: number | null
-          cleanPageUrl: string
-          created_at: string
-          giveaway_link: string | null
-          id: number
-          isApproved: boolean
-          isBlog: boolean
-          isDrip: boolean
-          isProcessed: boolean
-          isVideo: boolean
-          pageBody: string | null
-          pageTitle: string | null
-          pageUrl: string
-          source: string
-          submitted_email: string | null
-          submitted_name: string | null
-          thankyou_sent: boolean
-        }
-        Insert: {
-          batchId?: number | null
-          cleanPageUrl: string
-          created_at?: string
-          giveaway_link?: string | null
-          id?: number
-          isApproved?: boolean
-          isBlog?: boolean
-          isDrip?: boolean
-          isProcessed?: boolean
-          isVideo?: boolean
-          pageBody?: string | null
-          pageTitle?: string | null
-          pageUrl: string
-          source: string
-          submitted_email?: string | null
-          submitted_name?: string | null
-          thankyou_sent?: boolean
-        }
-        Update: {
-          batchId?: number | null
-          cleanPageUrl?: string
-          created_at?: string
-          giveaway_link?: string | null
-          id?: number
-          isApproved?: boolean
-          isBlog?: boolean
-          isDrip?: boolean
-          isProcessed?: boolean
-          isVideo?: boolean
-          pageBody?: string | null
-          pageTitle?: string | null
-          pageUrl?: string
-          source?: string
-          submitted_email?: string | null
-          submitted_name?: string | null
-          thankyou_sent?: boolean
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ideas_batchId_fkey"
-            columns: ["batchId"]
-            isOneToOne: false
-            referencedRelation: "batches"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -851,45 +437,6 @@ export type Database = {
           },
         ]
       }
-      productions: {
-        Row: {
-          created_at: string
-          id: string
-          issue_number: number
-          release_date: string | null
-          short_index: number | null
-          sort_order: number
-          status: string
-          title: string
-          type: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          issue_number: number
-          release_date?: string | null
-          short_index?: number | null
-          sort_order?: number
-          status?: string
-          title?: string
-          type: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          issue_number?: number
-          release_date?: string | null
-          short_index?: number | null
-          sort_order?: number
-          status?: string
-          title?: string
-          type?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -944,21 +491,6 @@ export type Database = {
           twitch_login?: string | null
           twitch_user_id?: string | null
           updated_at?: string
-        }
-        Relationships: []
-      }
-      replacements: {
-        Row: {
-          fromWord: string
-          toWord: string
-        }
-        Insert: {
-          fromWord: string
-          toWord: string
-        }
-        Update: {
-          fromWord?: string
-          toWord?: string
         }
         Relationships: []
       }
@@ -1024,54 +556,30 @@ export type Database = {
         }
         Relationships: []
       }
-      shorturls: {
+      share_intents: {
         Row: {
-          slug: string
-          target: string
+          created_at: string
+          id: number
+          ip_hash: string
+          platform: string
+          target_key: string
+          target_kind: string
         }
         Insert: {
-          slug: string
-          target: string
+          created_at?: string
+          id?: never
+          ip_hash: string
+          platform: string
+          target_key: string
+          target_kind: string
         }
         Update: {
-          slug?: string
-          target?: string
-        }
-        Relationships: []
-      }
-      social_contacts: {
-        Row: {
-          bluesky_did: string | null
-          bluesky_handle: string | null
-          created_at: string | null
-          id: string
-          linkedin_handle: string | null
-          linkedin_urn: string | null
-          name: string
-          updated_at: string | null
-          x_handle: string | null
-        }
-        Insert: {
-          bluesky_did?: string | null
-          bluesky_handle?: string | null
-          created_at?: string | null
-          id?: string
-          linkedin_handle?: string | null
-          linkedin_urn?: string | null
-          name: string
-          updated_at?: string | null
-          x_handle?: string | null
-        }
-        Update: {
-          bluesky_did?: string | null
-          bluesky_handle?: string | null
-          created_at?: string | null
-          id?: string
-          linkedin_handle?: string | null
-          linkedin_urn?: string | null
-          name?: string
-          updated_at?: string | null
-          x_handle?: string | null
+          created_at?: string
+          id?: never
+          ip_hash?: string
+          platform?: string
+          target_key?: string
+          target_kind?: string
         }
         Relationships: []
       }
@@ -1082,7 +590,6 @@ export type Database = {
           id: number
           login: string
           message: string | null
-          platform: string
           quantity: number | null
           streamDate: string
         }
@@ -1092,7 +599,6 @@ export type Database = {
           id?: number
           login: string
           message?: string | null
-          platform?: string
           quantity?: number | null
           streamDate: string
         }
@@ -1102,63 +608,8 @@ export type Database = {
           id?: number
           login?: string
           message?: string | null
-          platform?: string
           quantity?: number | null
           streamDate?: string
-        }
-        Relationships: []
-      }
-      streams: {
-        Row: {
-          created_at: string | null
-          stream_date: string
-          total_chats: number | null
-          total_cheer_bits: number | null
-          total_cheers: number | null
-          total_events: number | null
-          total_follows: number | null
-          total_giftsub_count: number | null
-          total_giftsubs: number | null
-          total_raid_viewers: number | null
-          total_raids: number | null
-          total_subs: number | null
-          unique_chatters: number | null
-          unique_viewers: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          stream_date: string
-          total_chats?: number | null
-          total_cheer_bits?: number | null
-          total_cheers?: number | null
-          total_events?: number | null
-          total_follows?: number | null
-          total_giftsub_count?: number | null
-          total_giftsubs?: number | null
-          total_raid_viewers?: number | null
-          total_raids?: number | null
-          total_subs?: number | null
-          unique_chatters?: number | null
-          unique_viewers?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          stream_date?: string
-          total_chats?: number | null
-          total_cheer_bits?: number | null
-          total_cheers?: number | null
-          total_events?: number | null
-          total_follows?: number | null
-          total_giftsub_count?: number | null
-          total_giftsubs?: number | null
-          total_raid_viewers?: number | null
-          total_raids?: number | null
-          total_subs?: number | null
-          unique_chatters?: number | null
-          unique_viewers?: number | null
-          updated_at?: string | null
         }
         Relationships: []
       }
@@ -1168,7 +619,6 @@ export type Database = {
           display_name: string | null
           lastUpdated: string | null
           login: string
-          platform: string
           twitch_user_id: string | null
         }
         Insert: {
@@ -1176,7 +626,6 @@ export type Database = {
           display_name?: string | null
           lastUpdated?: string | null
           login: string
-          platform?: string
           twitch_user_id?: string | null
         }
         Update: {
@@ -1184,63 +633,75 @@ export type Database = {
           display_name?: string | null
           lastUpdated?: string | null
           login?: string
-          platform?: string
           twitch_user_id?: string | null
         }
         Relationships: []
       }
-      videos: {
+      video_pages: {
         Row: {
-          batchId: number | null
           created_at: string
-          genDescription: string | null
-          genScript: string | null
-          genShortScripts: string | null
-          genTags: string | null
-          genTitles: string | null
-          id: number
-          pageBody: string
-          pageTitle: string
-          pageUrl: string
-          status: string | null
+          intro_markdown: string | null
+          published_at: string
+          summary: string | null
+          updated_at: string
+          video_id: string
         }
         Insert: {
-          batchId?: number | null
           created_at?: string
-          genDescription?: string | null
-          genScript?: string | null
-          genShortScripts?: string | null
-          genTags?: string | null
-          genTitles?: string | null
-          id?: number
-          pageBody: string
-          pageTitle: string
-          pageUrl: string
-          status?: string | null
+          intro_markdown?: string | null
+          published_at?: string
+          summary?: string | null
+          updated_at?: string
+          video_id: string
         }
         Update: {
-          batchId?: number | null
           created_at?: string
-          genDescription?: string | null
-          genScript?: string | null
-          genShortScripts?: string | null
-          genTags?: string | null
-          genTitles?: string | null
-          id?: number
-          pageBody?: string
-          pageTitle?: string
-          pageUrl?: string
-          status?: string | null
+          intro_markdown?: string | null
+          published_at?: string
+          summary?: string | null
+          updated_at?: string
+          video_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "videos_batchId_fkey"
-            columns: ["batchId"]
-            isOneToOne: false
-            referencedRelation: "batches"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
+      }
+      video_transcripts: {
+        Row: {
+          body: string | null
+          chapters: Json | null
+          chapters_updated_at: string | null
+          created_at: string
+          duration: number | null
+          language: string
+          segments: Json | null
+          source: string | null
+          transcript_updated_at: string | null
+          video_id: string
+        }
+        Insert: {
+          body?: string | null
+          chapters?: Json | null
+          chapters_updated_at?: string | null
+          created_at?: string
+          duration?: number | null
+          language?: string
+          segments?: Json | null
+          source?: string | null
+          transcript_updated_at?: string | null
+          video_id: string
+        }
+        Update: {
+          body?: string | null
+          chapters?: Json | null
+          chapters_updated_at?: string | null
+          created_at?: string
+          duration?: number | null
+          language?: string
+          segments?: Json | null
+          source?: string | null
+          transcript_updated_at?: string | null
+          video_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -1329,49 +790,28 @@ export type Database = {
           threshold: number
         }[]
       }
-      compute_all_stream_stats: { Args: never; Returns: undefined }
-      compute_stream_stats: {
-        Args: { target_date: string }
-        Returns: undefined
+      claim_email_batch: {
+        Args: { p_limit?: number; p_now?: string }
+        Returns: {
+          attempts: number
+          claim_token: string
+          created_at: string
+          dedupe_key: string
+          id: number
+          kind: string
+          last_attempt_at: string
+          payload: Json
+          profile_id: string
+        }[]
       }
-      get_analytics_summary: {
+      enqueue_email: {
         Args: {
-          end_date: string
-          filter_browser?: string
-          filter_device?: string
-          filter_domain?: string
-          filter_path?: string
-          filter_referrer?: string
-          filter_utm_campaign?: string
-          filter_utm_content?: string
-          filter_utm_medium?: string
-          filter_utm_source?: string
-          start_date: string
+          p_dedupe_key: string
+          p_kind: string
+          p_payload: Json
+          p_profile_id: string
         }
-        Returns: Json
-      }
-      get_dashboard_counts: { Args: never; Returns: Json }
-      get_distinct_event_types: {
-        Args: never
-        Returns: {
-          event_type: string
-        }[]
-      }
-      get_user_leaderboard: {
-        Args: never
-        Returns: {
-          cheer_count: number
-          cheer_total: number
-          event_count: number
-          giftsub_count: number
-          giftsub_total: number
-          last_active: string
-          login: string
-          message_count: number
-          raid_count: number
-          raid_total: number
-          sub_count: number
-        }[]
+        Returns: undefined
       }
       grant_badges: {
         Args: { p_profile: string; p_source?: string }
@@ -1379,6 +819,10 @@ export type Database = {
       }
       streams_watched: { Args: { p_login: string }; Returns: number }
       twitch_first_seen: { Args: { p_login: string }; Returns: string }
+      unsubscribe_by_token: {
+        Args: { p_kind: string; p_token: string }
+        Returns: boolean
+      }
     }
     Enums: {
       like_target: "content" | "disaster" | "comment"

@@ -1,23 +1,9 @@
 /*
-  DELIBERATELY NOT WIRED FOR V1. Nothing calls send(). There is no sender, no from
-  address and no API key, so mailConfigured is false and the log provider is the only one
-  that can be reached. Read docs/notifications.md before wiring it up, because the copy on
-  submit, terms, privacy and account all say plainly that nothing is sent, and all of it
-  has to change back in the same commit.
+  Sending notification email through Resend.
 
-  Sending mail.
-
-  One interface, two providers, and the second one does not send anything.
-
-  The log provider is the default whenever no API key is set, which covers a fork, a
-  contributor, a preview build and every local run. That matters more here than elsewhere
-  in the codebase: a notification path that throws on missing configuration turns a
-  perfectly ordinary comment into a 500, because the reply that triggers the email is on
-  the same request as the comment that caused it.
-
-  Provider choice is Resend, and the reasoning is short. It is a plain REST call, so there
-  is no SDK to keep current, it supports the unsubscribe headers RFC 8058 asks for, and
-  swapping it is the one function below. Nothing else in the codebase knows the name.
+  Delivery has three locks: a production deploy context, an explicit enable flag and an
+  API key. A key accidentally exposed to a preview is therefore not enough to mail real
+  users. Disabled environments leave the queue untouched in notifications.ts.
 */
 
 export interface Mail {
@@ -25,51 +11,63 @@ export interface Mail {
   subject: string;
   text: string;
   html: string;
+  idempotencyKey: string;
   /** The URL a mail client hits for one click unsubscribe, per RFC 8058. */
   unsubscribeUrl?: string;
 }
 
 export interface MailResult {
   ok: boolean;
-  /** Present when the send failed, and written to the queue row so a stuck queue says why. */
+  /** Sanitized for storage and logs. Never contains an address or provider response body. */
   error?: string;
+  retryAfterSeconds?: number;
 }
 
 const KEY = import.meta.env.RESEND_API_KEY;
 const FROM = import.meta.env.MAIL_FROM ?? 'Bald Bearded Builder <hello@baldbeardedbuilder.com>';
+const REPLY_TO = import.meta.env.MAIL_REPLY_TO ?? 'hello@baldbeardedbuilder.com';
+const DELIVERY_REQUESTED = import.meta.env.MAIL_DELIVERY_ENABLED === 'true';
+const PRODUCTION = import.meta.env.CONTEXT === 'production';
 
-/**
- * True when mail can actually leave the building.
- *
- * Always false in v1, because no key is set anywhere. Read this before offering anything
- * that promises an email.
- *
- * The queue would still fill when this is false, which is deliberate: the events are real,
- * and a project that gains a key later should find its history waiting rather than lost.
- * In v1 nothing fills it either, because the enqueue trigger and email_outbox are both
- * held in supabase/deferred/.
- */
-export const mailConfigured = Boolean(KEY);
+export const mailDeliveryEnabled = Boolean(KEY && DELIVERY_REQUESTED && PRODUCTION);
 
-async function sendViaResend(mail: Mail): Promise<MailResult> {
+function retryAfterSeconds(value: string | null): number | undefined {
+  if (!value) return undefined;
+
+  const seconds = Number(value);
+  if (Number.isFinite(seconds) && seconds >= 0) return Math.ceil(seconds);
+
+  const date = Date.parse(value);
+  if (Number.isNaN(date)) return undefined;
+  return Math.max(0, Math.ceil((date - Date.now()) / 1000));
+}
+
+function providerError(status: number): string {
+  if (status === 401 || status === 403) return 'resend_auth';
+  if (status === 429) return 'resend_rate_limited';
+  if (status === 422) return 'resend_rejected';
+  if (status >= 500) return 'resend_unavailable';
+  return `resend_http_${status}`;
+}
+
+export async function sendMail(mail: Mail): Promise<MailResult> {
+  if (!mailDeliveryEnabled || !KEY) return { ok: false, error: 'delivery_disabled' };
+
   const headers: Record<string, string> = {
     Authorization: `Bearer ${KEY}`,
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Idempotency-Key': mail.idempotencyKey
   };
 
   const body: Record<string, unknown> = {
     from: FROM,
     to: [mail.to],
+    reply_to: [REPLY_TO],
     subject: mail.subject,
     text: mail.text,
     html: mail.html
   };
 
-  /*
-    Both headers or neither. List-Unsubscribe on its own gets a mail client to draw the
-    button, and then the click opens a browser tab, which is the thing the reader was
-    trying to avoid. List-Unsubscribe-Post is what makes it a single silent POST.
-  */
   if (mail.unsubscribeUrl) {
     body.headers = {
       'List-Unsubscribe': `<${mail.unsubscribeUrl}>`,
@@ -78,30 +76,28 @@ async function sendViaResend(mail: Mail): Promise<MailResult> {
   }
 
   try {
-    const res = await fetch('https://api.resend.com/emails', {
+    const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers,
-      body: JSON.stringify(body)
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(20_000)
     });
 
-    if (!res.ok) {
-      const detail = await res.text().catch(() => '');
-      return { ok: false, error: `resend ${res.status} ${detail.slice(0, 400)}` };
+    if (!response.ok) {
+      return {
+        ok: false,
+        error: providerError(response.status),
+        retryAfterSeconds: retryAfterSeconds(response.headers.get('retry-after'))
+      };
     }
 
     return { ok: true };
-  } catch (err) {
-    return { ok: false, error: `resend request failed: ${String(err).slice(0, 400)}` };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof DOMException && error.name === 'TimeoutError'
+        ? 'resend_timeout'
+        : 'resend_network'
+    };
   }
-}
-
-function sendViaLog(mail: Mail): MailResult {
-  /* eslint-disable-next-line no-console */
-  console.log(`[mail] would send to ${mail.to}: ${mail.subject}`);
-  return { ok: true };
-}
-
-export async function sendMail(mail: Mail): Promise<MailResult> {
-  if (!KEY) return sendViaLog(mail);
-  return sendViaResend(mail);
 }

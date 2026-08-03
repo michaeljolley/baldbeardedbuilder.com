@@ -22,7 +22,7 @@
 */
 
 import { serviceClient, supabaseWritable } from './supabase';
-import type { PendingDatabase } from './supabase/pending.types';
+import type { Database } from './supabase/database.types';
 
 export interface VideoPage {
   /** Card summary in a feed and lede on the page. Null until somebody writes one. */
@@ -32,7 +32,7 @@ export interface VideoPage {
   publishedAt: Date;
 }
 
-type VideoPageRow = PendingDatabase['public']['Tables']['video_pages']['Row'];
+type VideoPageRow = Database['public']['Tables']['video_pages']['Row'];
 
 let cache: Map<string, VideoPage> | null = null;
 
@@ -50,10 +50,10 @@ export async function videoPages(): Promise<Map<string, VideoPage>> {
 
   if (supabaseWritable) {
     const { data } = await serviceClient()
-      .from('video_pages' as never)
+      .from('video_pages')
       .select('video_id, summary, intro_markdown, published_at');
 
-    for (const row of (data ?? []) as unknown as VideoPageRow[]) {
+    for (const row of (data ?? []) as VideoPageRow[]) {
       if (!row.video_id) continue;
       built.set(row.video_id, {
         summary: row.summary,

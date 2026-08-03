@@ -29,6 +29,12 @@ export interface AccountView {
   isPrivate: boolean;
   githubLogin: string | null;
   twitchLogin: string | null;
+  email: string | null;
+  preferences: {
+    storyPublished: boolean;
+    storyFeatured: boolean;
+    commentReply: boolean;
+  } | null;
 }
 
 /*
@@ -43,11 +49,29 @@ export async function readAccount(profileId: string): Promise<AccountView | null
 
   const db = serviceClient();
 
-  const { data: profile } = await db
-    .from('profiles')
-    .select('id, handle, display_name, bio, links, is_private, github_login, twitch_login')
-    .eq('id', profileId)
-    .maybeSingle();
+  const [
+    { data: profile, error: profileError },
+    { data: preferences, error: preferencesError },
+    { data: authUser, error: authError }
+  ] = await Promise.all([
+    db
+      .from('profiles')
+      .select('id, handle, display_name, bio, links, is_private, github_login, twitch_login')
+      .eq('id', profileId)
+      .maybeSingle(),
+    db
+      .from('notification_prefs')
+      .select('story_published, story_featured, comment_reply')
+      .eq('profile_id', profileId)
+      .maybeSingle(),
+    db.auth.admin.getUserById(profileId)
+  ]);
+
+  if (profileError) throw new Error(`Could not read account profile: ${profileError.code}`);
+  if (preferencesError) {
+    throw new Error(`Could not read notification preferences: ${preferencesError.code}`);
+  }
+  if (authError) throw new Error(`Could not read account email: ${authError.status ?? 'unknown'}`);
 
   if (!profile) return null;
 
@@ -65,17 +89,25 @@ export async function readAccount(profileId: string): Promise<AccountView | null
     links,
     isPrivate: profile.is_private,
     githubLogin: profile.github_login,
-    twitchLogin: profile.twitch_login
+    twitchLogin: profile.twitch_login,
+    email: authUser.user?.email ?? null,
+    preferences: preferences
+      ? {
+          storyPublished: preferences.story_published,
+          storyFeatured: preferences.story_featured,
+          commentReply: preferences.comment_reply
+        }
+      : null
   };
 }
 
 /*
   Your own submissions, newest first, every status.
 
-  This is the whole feedback loop for a submitted story, because v1 sends no email.
-  disasters_own_read in the RLS already allows a person to see their own rows in any
-  state, and its comment already says "so the submit flow can say so", so this needed no
-  migration and no policy change. disasters_author_idx already covers the filter.
+  This remains the complete feedback loop for a submitted story. Email reports publication
+  and featuring when enabled, but a submission that is not published sends nothing.
+  disasters_own_read in the RLS already allows a person to see their own rows in any state,
+  and disasters_author_idx already covers the filter.
 
   What a person is told about each row lives in submissions.ts, which imports nothing so
   the copy can be tested without a database.
@@ -159,16 +191,41 @@ export async function saveAccount(profileId: string, form: FormData): Promise<Sa
 
   if (profileError) return { ok: false, error: 'Could not save that. Try again in a moment.' };
 
-  /*
-    notification_prefs is deliberately not written here. v1 sends no email, so the
-    settings form has no switches, and a form with no switches posts no fields. Reading
-    them anyway would turn every ordinary save into "off, off, off", because a missing
-    checkbox and an unticked one are the same absence in form data.
+  return { ok: true };
+}
 
-    The row still exists, created with every column defaulting to true by the profile
-    trigger, so whoever turns notifications back on starts from the state that was
-    designed rather than from three falses nobody chose. See src/lib/notifications.ts.
-  */
+export async function saveNotificationPrefs(
+  profileId: string,
+  form: FormData
+): Promise<SaveResult> {
+  if (!supabaseWritable) {
+    return { ok: false, error: 'Email settings are not available right now.' };
+  }
+
+  const db = serviceClient();
+  const { data: authUser, error: authError } = await db.auth.admin.getUserById(profileId);
+
+  if (authError || !authUser.user?.email) {
+    return {
+      ok: false,
+      error: 'Your auth provider has not supplied an email address for notifications.'
+    };
+  }
+
+  const { data, error } = await db
+    .from('notification_prefs')
+    .update({
+      story_published: form.get('story_published') === 'on',
+      story_featured: form.get('story_featured') === 'on',
+      comment_reply: form.get('comment_reply') === 'on'
+    })
+    .eq('profile_id', profileId)
+    .select('profile_id')
+    .maybeSingle();
+
+  if (error || !data) {
+    return { ok: false, error: 'Could not save email settings. Try again in a moment.' };
+  }
 
   return { ok: true };
 }

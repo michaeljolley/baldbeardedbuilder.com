@@ -85,6 +85,19 @@ test('a featured story email is not the published one wearing a different subjec
   assert.match(featured.unsubscribeUrl, /kind=story_featured/);
 });
 
+test('a story published and featured together produces one message that says both', () => {
+  const mail = renderNotification(
+    'story_featured',
+    { slug: 'x', line: 'y', published_together: true },
+    TOKEN,
+    null
+  );
+
+  assert.ok(mail);
+  assert.match(mail.text, /published/i);
+  assert.match(mail.text, /front page/i);
+});
+
 test('a story with no slug renders nothing rather than a broken link', () => {
   assert.equal(renderNotification('story_published', { line: 'no slug here' }, TOKEN, null), null);
 });
@@ -143,4 +156,12 @@ test('the text and the HTML say the same things', () => {
     const escaped = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     assert.ok(mail.html.includes(escaped), `the HTML version is missing: ${line}`);
   }
+});
+
+test('HTML email is image free and carries the site visual signature', () => {
+  const mail = renderNotification('story_published', { slug: 'a', line: 'b' }, TOKEN, null);
+  assert.ok(mail);
+  assert.doesNotMatch(mail.html, /<img/i);
+  assert.match(mail.html, /bbb \/ notification/i);
+  assert.match(mail.html, /#915f0f/i);
 });
