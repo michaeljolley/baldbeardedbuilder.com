@@ -18,6 +18,7 @@ import ShareMenu from '../../components/ShareMenu.astro';
 import { bakedLike } from '../../lib/likes';
 import { bakedReplies } from '../../lib/comments';
 import { videoPages } from '../../lib/video-pages';
+import { videoTranscripts } from '../../lib/video-transcripts';
 import { renderComment } from '../../lib/markdown';
 
 export async function getStaticPaths() {
@@ -56,6 +57,25 @@ const alsoFiled = item.alsoFiled.map((slug) => topicBySlug(slug)).filter(Boolean
 */
 const page = item.kind === 'video' ? (await videoPages()).get(item.key.slice(7)) : undefined;
 const intro = page?.intro ? await renderComment(page.intro) : null;
+const transcript = item.kind === 'video'
+  ? (await videoTranscripts()).get(item.key.slice(7))
+  : undefined;
+
+function timestamp(seconds: number): string {
+  const whole = Math.floor(seconds);
+  const hours = Math.floor(whole / 3600);
+  const minutes = Math.floor((whole % 3600) / 60);
+  const remainder = whole % 60;
+  return hours
+    ? `${hours}:${String(minutes).padStart(2, '0')}:${String(remainder).padStart(2, '0')}`
+    : `${minutes}:${String(remainder).padStart(2, '0')}`;
+}
+
+function videoAt(href: string, seconds: number): string {
+  const url = new URL(href);
+  url.searchParams.set('t', `${Math.floor(seconds)}s`);
+  return url.toString();
+}
 
 /* Baked at build time and honestly a little stale, per conflict 6. The island reconciles
    it against the live count the moment it hydrates. */
@@ -171,6 +191,38 @@ const replies = await bakedReplies('content', item.key);
         {Content && <div class="prose"><Content /></div>}
 
         {intro && <div class="prose" set:html={intro} />}
+
+        {
+          transcript && (
+            <details class="transcript" open>
+              <summary>
+                Transcript
+                <span class="hint">
+                  {transcript.blocks.length} {transcript.blocks.length === 1 ? 'section' : 'sections'}
+                </span>
+              </summary>
+              <div class="tbody">
+                {transcript.blocks.map((block) => (
+                  <div class="tline">
+                    <div class="tmeta">
+                      <span class="speaker">{block.speaker}</span>
+                      <a
+                        class="t"
+                        href={videoAt(item.external!, block.start)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Watch on YouTube at ${timestamp(block.start)}`}
+                      >
+                        {timestamp(block.start)}
+                      </a>
+                    </div>
+                    <p>{block.text}</p>
+                  </div>
+                ))}
+              </div>
+            </details>
+          )
+        }
 
         {
           item.kind === 'video' && (

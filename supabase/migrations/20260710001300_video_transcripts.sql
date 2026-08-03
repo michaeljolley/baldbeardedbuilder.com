@@ -43,9 +43,10 @@ create table public.video_transcripts (
   language text not null default 'en',
 
   /*
-    Timed segments, as [{ t: <seconds>, text: "..." }]. Seconds rather than milliseconds
-    because the only thing that consumes them is a YouTube deep link, which takes seconds,
-    and storing a unit that has to be divided on the way out is how a rounding bug gets in.
+    Timed segments, as [{ start: <seconds>, end: <seconds>, speaker: "...", text: "..." }].
+    Speaker is optional. Seconds rather than milliseconds because the only thing that consumes
+    them is a YouTube deep link, which takes seconds, and storing a unit that has to be divided
+    on the way out is how a rounding bug gets in.
   */
   segments jsonb,
 

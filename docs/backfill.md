@@ -246,7 +246,7 @@ so the size of this table is the size of the video catalogue at launch.
 | `video_id` | `text` | no | Primary key. The YouTube id, which is also the content collection id |
 | `source` | `text` | yes | One of `youtube`, `whisper`, `manual`. Checked |
 | `language` | `text` | no | Defaults to `en` |
-| `segments` | `jsonb` | yes | Array of `{ start, end, text }`, seconds as numbers |
+| `segments` | `jsonb` | yes | Array of `{ start, end, speaker?, text }`, seconds as numbers |
 | `body` | `text` | yes | Flat transcript. **This is the field that decides whether a page exists.** Null or empty means no page |
 | `chapters` | `jsonb` | yes | Array of `{ start, title }`, seconds as numbers |
 | `duration` | `integer` | yes | Seconds |

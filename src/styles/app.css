@@ -1191,10 +1191,24 @@ footer.foot .tagline { color: var(--fg-dim); font-size: .875rem; margin: 0; max-
 .transcript[open] summary::before { content: "\25BE"; }
 .transcript summary:hover { color: var(--fg); }
 .transcript summary .hint { margin-left: auto; text-transform: none; letter-spacing: .02em; }
-.transcript .tbody { padding: .35rem 1.15rem 1.15rem; border-top: 1px solid var(--line); }
-.tline { display: grid; grid-template-columns: 3.5rem 1fr; gap: 1rem; padding: .45rem 0; }
-.tline .t { font-family: var(--mono); font-size: .75rem; color: var(--accent); }
-.tline p { margin: 0; color: var(--fg-dim); font-size: .9375rem; }
+.transcript .tbody { border-top: 1px solid var(--line); }
+.tline {
+  display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 1.5rem;
+  padding: 1.15rem; border-bottom: 1px solid var(--line);
+}
+.tline:last-child { border-bottom: 0; }
+.tmeta { display: grid; align-content: start; gap: .3rem; }
+.tline .speaker {
+  font-family: var(--mono); font-size: .6875rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--fg);
+}
+.tline .t {
+  width: fit-content; min-height: 24px; display: inline-flex; align-items: center;
+  font-family: var(--mono); font-size: .75rem; color: var(--accent);
+  font-variant-numeric: tabular-nums; text-decoration: none;
+}
+.tline .t:hover { text-decoration: underline; }
+.tline p { margin: 0; color: var(--fg-dim); font-size: .9375rem; white-space: pre-line; }
 
 .chapters { display: grid; gap: .1rem; }
 .chapters a {
@@ -1567,6 +1581,8 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
   .prose th { white-space: normal; padding-right: .6rem; }
   .prose td { padding-right: .6rem; }
   .crow { grid-template-columns: 1fr; gap: .6rem; }
+  .tline { grid-template-columns: minmax(0, 1fr); gap: .65rem; }
+  .tmeta { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
