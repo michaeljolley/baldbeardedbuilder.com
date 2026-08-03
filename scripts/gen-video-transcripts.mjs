@@ -9,6 +9,9 @@ import YAML from 'yaml';
 const exec = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const videosDir = path.join(root, 'src', 'content', 'videos');
+const curatedTopics = JSON.parse(
+  fs.readFileSync(path.join(root, 'src', 'config', 'video-transcript-topics.json'), 'utf8')
+);
 const outputDir = path.join(root, 'backfill', 'video-transcripts');
 const rowsDir = path.join(outputDir, 'rows');
 const csvPath = path.join(outputDir, 'video_transcripts.csv');
@@ -154,13 +157,14 @@ async function buildRow(video) {
 
   const duration = Math.round(Number(info.duration) || durationSeconds(video.duration) || 0) || null;
   const updatedAt = new Date().toISOString();
+  const youtubeChapters = chapters(info, duration);
   return {
     video_id: video.id,
     source: 'youtube',
     language: track.language,
     segments,
     body: segments.map((segment) => segment.text).join(' '),
-    chapters: chapters(info, duration),
+    chapters: youtubeChapters.length ? youtubeChapters : curatedTopics[video.id] ?? [],
     duration,
     transcript_updated_at: updatedAt,
     chapters_updated_at: updatedAt

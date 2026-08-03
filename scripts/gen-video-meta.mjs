@@ -24,6 +24,9 @@ import { fileURLToPath } from 'node:url';
 import { Innertube } from 'youtubei.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const curatedTopics = JSON.parse(
+  fs.readFileSync(path.join(root, 'src', 'config', 'video-transcript-topics.json'), 'utf8')
+);
 
 const SUPABASE_URL = process.env.PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -119,7 +122,8 @@ async function main() {
   for (const [i, id] of ids.entries()) {
     try {
       const info = await yt.getInfo(id);
-      const chapters = chaptersFrom(info);
+      const youtubeChapters = chaptersFrom(info);
+      const chapters = youtubeChapters.length ? youtubeChapters : curatedTopics[id] ?? [];
       const duration = Number(info.basic_info?.duration ?? 0) || null;
 
       if (chapters.length) withChapters += 1;
@@ -128,14 +132,21 @@ async function main() {
       if (DRY) {
         console.log(`video-meta: ${id} ${chapters.length} chapters, ${duration ?? '?'}s`);
       } else {
+        /*
+          An empty YouTube result is not evidence that a manually curated outline should be
+          deleted. Only send the chapter fields when YouTube supplied chapters, so authored
+          transcript topics survive later metadata refreshes.
+        */
+        const chapterFields = chapters.length
+          ? { chapters, chapters_updated_at: new Date().toISOString() }
+          : {};
         await rest('video_transcripts?on_conflict=video_id', {
           method: 'POST',
           headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
           body: JSON.stringify({
             video_id: id,
-            chapters: chapters.length ? chapters : null,
             duration,
-            chapters_updated_at: new Date().toISOString()
+            ...chapterFields
           })
         });
       }
