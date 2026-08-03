@@ -465,6 +465,81 @@ for (const width of NAV_WIDTHS) {
   }
 }
 
+/*
+  The reading layout is also a shell, so it has to keep the shell's inline gutter.
+
+  A padding shorthand on .read erased .shell's padding-inline at every width above the
+  phone breakpoint. At 1200px, which is also what a zoomed desktop commonly resolves to,
+  the metadata rail touched the viewport edge. At the 1080px stack breakpoint the article
+  did the same. Measure the geometry rather than the declaration so another selector can
+  never recreate the defect unnoticed.
+*/
+const READ_WIDTHS = [1200, 1080, 720, 390];
+let readLayoutsMeasured = 0;
+
+for (const width of READ_WIDTHS) {
+  const page = await browser.newPage({ viewport: { width, height: 1000 } });
+  await page.goto(
+    `${base}/aspnetcore/tame-configuration-in-aspnet-core-with-ivalidateoptions/`,
+    { waitUntil: 'networkidle' }
+  );
+
+  const reading = await page.evaluate(() => {
+    const shell = document.querySelector('.shell.read');
+    const rail = shell?.querySelector(':scope > .rail');
+    const article = shell?.querySelector(':scope > article');
+    if (!shell || !rail || !article) return null;
+
+    const shellBox = shell.getBoundingClientRect();
+    const railBox = rail.getBoundingClientRect();
+    const articleBox = article.getBoundingClientRect();
+    const style = getComputedStyle(shell);
+
+    return {
+      paddingLeft: parseFloat(style.paddingLeft),
+      paddingRight: parseFloat(style.paddingRight),
+      contentLeft: shellBox.left + parseFloat(style.paddingLeft),
+      contentRight: shellBox.right - parseFloat(style.paddingRight),
+      railLeft: railBox.left,
+      railRight: railBox.right,
+      articleLeft: articleBox.left,
+      articleRight: articleBox.right
+    };
+  });
+
+  await page.close();
+
+  if (!reading) {
+    failures.push(
+      `article at ${width}px has no .shell.read with direct rail and article children, ` +
+        `so the reading gutter check proved nothing.`
+    );
+    continue;
+  }
+
+  readLayoutsMeasured += 1;
+  if (reading.paddingLeft < 20 || reading.paddingRight < 20) {
+    failures.push(
+      `article at ${width}px has ${reading.paddingLeft}px left and ` +
+        `${reading.paddingRight}px right shell padding. Reading pages need at least a ` +
+        `20px gutter so the rail or article never touches the viewport edge.`
+    );
+  }
+
+  const tolerance = 1;
+  const outside =
+    reading.railLeft < reading.contentLeft - tolerance ||
+    reading.railRight > reading.contentRight + tolerance ||
+    reading.articleLeft < reading.contentLeft - tolerance ||
+    reading.articleRight > reading.contentRight + tolerance;
+  if (outside) {
+    failures.push(
+      `article at ${width}px places the rail or article outside the shell's padded content ` +
+        `box (${Math.round(reading.contentLeft)}-${Math.round(reading.contentRight)}px).`
+    );
+  }
+}
+
 await browser.close();
 server.close();
 
@@ -503,10 +578,15 @@ if (navMeasured === 0) {
   process.exit(1);
 }
 
+if (readLayoutsMeasured === 0) {
+  console.error('no reading layouts were measured, so the article gutter check proved nothing.');
+  process.exit(1);
+}
+
 console.log(
   `layout is clean across ${measured} thumbnail measurements, ${cellsMeasured} grid ` +
     `cells on ${GRID_PAGES.length} page(s) found by walking dist and ${navMeasured} topic ` +
-    `reaches at phone width, the wide card's thumb ` +
+    `reaches at phone width, ${readLayoutsMeasured} reading layouts, the wide card's thumb ` +
     `held its ratio with a 2000px neighbour, and the lead card has ` +
     `${deadSpace.trailing}px below its last text.` +
     provenanceSuffix()
