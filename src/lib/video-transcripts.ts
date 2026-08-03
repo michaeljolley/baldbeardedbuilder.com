@@ -12,10 +12,7 @@ import type { Database } from './supabase/database.types';
 import curatedTopics from '../config/video-transcript-topics.json';
 
 const DEFAULT_SPEAKER = 'Michael Jolley';
-const MAX_CUE_GAP_SECONDS = 8;
-const MAX_PARAGRAPH_LENGTH = 520;
-const MIN_SENTENCES_PER_PARAGRAPH = 2;
-const MAX_SENTENCES_PER_PARAGRAPH = 4;
+const MAX_SENTENCES_PER_PARAGRAPH = 5;
 const sentenceSegmenter = new Intl.Segmenter('en', { granularity: 'sentence' });
 const topicOverrides: Record<string, unknown> = curatedTopics;
 
@@ -41,7 +38,6 @@ export interface VideoTranscript {
 
 interface CaptionCue {
   start: number;
-  end: number;
   speaker: string;
   text: string;
 }
@@ -59,11 +55,9 @@ interface Sentence {
 
 interface Paragraph {
   chapterIndex: number;
-  sentenceCount: number;
   start: number | null;
   speaker: string;
   text: string;
-  turnIndex: number;
 }
 
 type TranscriptRow = Pick<
@@ -92,12 +86,11 @@ function cue(value: unknown): CaptionCue | null {
   if (!text) return null;
 
   const start = seconds(item.start ?? item.t, 0);
-  const end = Math.max(start, seconds(item.end, start));
   const speaker = typeof item.speaker === 'string' && item.speaker.trim()
     ? item.speaker.trim()
     : DEFAULT_SPEAKER;
 
-  return { start, end, speaker, text };
+  return { start, speaker, text };
 }
 
 function chapterMarkers(value: unknown): ChapterMarker[] {
@@ -152,7 +145,7 @@ function sentencesForCues(cues: CaptionCue[]): Sentence[] {
 function cueSentences(
   value: unknown,
   markers: ChapterMarker[]
-): (Sentence & { chapterIndex: number; turnIndex: number })[] {
+): (Sentence & { chapterIndex: number })[] {
   if (!Array.isArray(value)) return [];
 
   const cues = value
@@ -164,11 +157,8 @@ function cueSentences(
   for (const item of cues) {
     const current = turns.at(-1);
     const previous = current?.at(-1);
-    const gap = previous ? item.start - previous.end : Number.POSITIVE_INFINITY;
     const belongsWithCurrent = current && previous
-      && previous.speaker === item.speaker
-      && gap <= MAX_CUE_GAP_SECONDS
-      && gap >= 0;
+      && previous.speaker === item.speaker;
 
     if (belongsWithCurrent) {
       current.push(item);
@@ -177,39 +167,45 @@ function cueSentences(
     }
   }
 
-  return turns.flatMap((turn, turnIndex) => (
+  return turns.flatMap((turn) => (
     sentencesForCues(turn).map((sentence) => ({
       ...sentence,
-      chapterIndex: chapterAt(markers, sentence.start ?? 0),
-      turnIndex
+      chapterIndex: chapterAt(markers, sentence.start ?? 0)
     }))
   ));
 }
 
-function paragraphs(
-  sentences: (Sentence & { chapterIndex: number; turnIndex: number })[]
-): Paragraph[] {
+function paragraphs(sentences: (Sentence & { chapterIndex: number })[]): Paragraph[] {
   const built: Paragraph[] = [];
 
-  for (const sentence of sentences) {
-    const current = built.at(-1);
-    const combinedLength = current ? current.text.length + sentence.text.length + 1 : 0;
-    const belongsWithCurrent = current
-      && current.chapterIndex === sentence.chapterIndex
-      && current.speaker === sentence.speaker
-      && current.turnIndex === sentence.turnIndex
-      && (
-        current.sentenceCount < MIN_SENTENCES_PER_PARAGRAPH
-        || combinedLength <= MAX_PARAGRAPH_LENGTH
-      )
-      && current.sentenceCount < MAX_SENTENCES_PER_PARAGRAPH;
-
-    if (belongsWithCurrent) {
-      current.text = `${current.text} ${sentence.text}`;
-      current.sentenceCount += 1;
-    } else {
-      built.push({ ...sentence, sentenceCount: 1 });
+  for (let index = 0; index < sentences.length;) {
+    let groupEnd = index + 1;
+    while (
+      groupEnd < sentences.length
+      && sentences[groupEnd].chapterIndex === sentences[index].chapterIndex
+      && sentences[groupEnd].speaker === sentences[index].speaker
+    ) {
+      groupEnd += 1;
     }
+
+    const group = sentences.slice(index, groupEnd);
+    for (let cursor = 0; cursor < group.length;) {
+      const remaining = group.length - cursor;
+      let size = Math.min(MAX_SENTENCES_PER_PARAGRAPH, remaining);
+      // Six sentences balance as four plus two instead of leaving a one-sentence orphan.
+      if (remaining - size === 1 && size > 2) size -= 1;
+
+      const paragraphSentences = group.slice(cursor, cursor + size);
+      built.push({
+        chapterIndex: paragraphSentences[0].chapterIndex,
+        start: paragraphSentences[0].start,
+        speaker: paragraphSentences[0].speaker,
+        text: paragraphSentences.map((sentence) => sentence.text).join(' ')
+      });
+      cursor += size;
+    }
+
+    index = groupEnd;
   }
 
   return built;
@@ -220,8 +216,7 @@ function bodyParagraphs(body: string): Paragraph[] {
     chapterIndex: -1,
     start: null,
     speaker: DEFAULT_SPEAKER,
-    text: part.segment.trim(),
-    turnIndex: 0
+    text: part.segment.trim()
   })).filter((sentence) => sentence.text);
   return paragraphs(sentences);
 }

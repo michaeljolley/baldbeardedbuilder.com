@@ -78,12 +78,9 @@ function videoAt(href: string, seconds: number): string {
 }
 
 const transcriptHint = transcript
-  ? [
-      transcript.soloSpeaker,
-      transcript.topicCount
-        ? `${transcript.topicCount} ${transcript.topicCount === 1 ? 'topic' : 'topics'}`
-        : `${transcript.paragraphCount} paragraphs`
-    ].filter(Boolean).join(' / ')
+  ? transcript.topicCount
+    ? `${transcript.topicCount} ${transcript.topicCount === 1 ? 'topic' : 'topics'}`
+    : `${transcript.paragraphCount} paragraphs`
   : '';
 
 /* Baked at build time and honestly a little stale, per conflict 6. The island reconciles
@@ -230,22 +227,11 @@ const replies = await bakedReplies('content', item.key);
                     <div class="tblocks">
                       {chapter.blocks.map((block) => (
                         <div class="tline">
-                          <div class="tmeta">
-                            {!transcript.soloSpeaker && block.speakerChanged && (
+                          {!transcript.soloSpeaker && block.speakerChanged && (
+                            <div class="tmeta">
                               <span class="speaker">{block.speaker}</span>
-                            )}
-                            {block.start !== null && (
-                              <a
-                                class="t"
-                                href={videoAt(item.external!, block.start)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label={`Watch on YouTube at ${timestamp(block.start)}`}
-                              >
-                                {timestamp(block.start)}
-                              </a>
-                            )}
-                          </div>
+                            </div>
+                          )}
                           <p>{block.text}</p>
                         </div>
                       ))}

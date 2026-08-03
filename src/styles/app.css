@@ -1202,11 +1202,8 @@ footer.foot .tagline { color: var(--fg-dim); font-size: .875rem; margin: 0; max-
   font-variation-settings: "SOFT" 35, "WONK" 1;
 }
 .tblocks { padding: .2rem 0 .7rem; }
-.tline {
-  display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: 1rem;
-  padding: .75rem 1.15rem;
-}
-.tmeta { display: grid; align-content: start; gap: .3rem; }
+.tline { padding: .75rem 1.15rem; }
+.tmeta { margin-bottom: .35rem; }
 .tline .speaker {
   font-family: var(--mono); font-size: .6875rem; font-weight: 600;
   letter-spacing: .08em; text-transform: uppercase; color: var(--fg);
@@ -1590,8 +1587,6 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
   .prose th { white-space: normal; padding-right: .6rem; }
   .prose td { padding-right: .6rem; }
   .crow { grid-template-columns: 1fr; gap: .6rem; }
-  .tline { grid-template-columns: minmax(0, 1fr); gap: .65rem; }
-  .tmeta { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
   .tchapter-head { padding-top: 1rem; }
 }
 
