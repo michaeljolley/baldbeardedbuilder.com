@@ -405,20 +405,14 @@ for (const [name, url] of GRID_PAGES) {
 failures.push(...cellFailures);
 
 /*
-  Every topic has to be on screen at phone width.
-
-  This gate exists because the nav was overflow-x: auto with the scrollbar hidden, so
-  two of seven topics sat off the right edge with nothing on screen saying they were
-  there. Dev disasters was last in the list, so the section the site leads with was the
-  one item a phone never showed. Nothing could see it: the markup was complete, the
-  page was accessible, and the items existed at a scroll position nobody knew to reach.
-
-  It measures reach rather than the rule, so it fails for any future cause. A row that
-  clips because somebody added a ninth topic is the same defect as a row that clips
-  because somebody restored the overflow.
+  The topic nav keeps one row and reveals fewer destinations as the viewport narrows.
+  Dev disasters stays visible at the end rather than being sacrificed with the
+  lower-priority topics. Measure the geometry so clipping, scrolling, or wrapping
+  cannot make a nominally visible topic unreachable.
 */
-const NAV_WIDTHS = [390, 360];
+const NAV_WIDTHS = [1024, 640, 560, 480, 420, 390, 360];
 let navMeasured = 0;
+let previousVisibleCount;
 
 for (const width of NAV_WIDTHS) {
   const page = await browser.newPage({ viewport: { width, height: 844 } });
@@ -428,15 +422,19 @@ for (const width of NAV_WIDTHS) {
     const list = document.querySelector('.nav');
     if (!list) return null;
     const box = list.getBoundingClientRect();
-    const items = [...list.querySelectorAll('li')].map((li) => {
-      const r = li.getBoundingClientRect();
-      return { label: li.textContent.trim(), right: r.right, left: r.left };
-    });
+    const items = [...list.querySelectorAll('li')]
+      .filter((li) => li.getClientRects().length > 0)
+      .map((li) => {
+        const r = li.getBoundingClientRect();
+        return { label: li.textContent.trim(), right: r.right, left: r.left, top: r.top };
+      });
     return {
       count: items.length,
+      labels: items.map((i) => i.label),
       /* One pixel of tolerance, because a subpixel layout can round a flush edge over. */
       clipped: items.filter((i) => i.right > box.right + 1 || i.left < box.left - 1).map((i) => i.label),
-      scrollable: list.scrollWidth > list.clientWidth + 1
+      scrollable: list.scrollWidth > list.clientWidth + 1,
+      rows: new Set(items.map((i) => Math.round(i.top))).size
     };
   });
 
@@ -449,6 +447,25 @@ for (const width of NAV_WIDTHS) {
 
   navMeasured += nav.count;
 
+  if (previousVisibleCount !== undefined && nav.count > previousVisibleCount) {
+    failures.push(
+      `front page at ${width}px shows ${nav.count} topics after the wider viewport showed ` +
+        `${previousVisibleCount}. Topic visibility must only decrease as space tightens.`
+    );
+  }
+  previousVisibleCount = nav.count;
+
+  if (nav.labels.at(-1) !== 'dev disasters') {
+    failures.push(
+      `front page at ${width}px ends its visible topic nav with "${nav.labels.at(-1)}" ` +
+        `instead of dev disasters.`
+    );
+  }
+
+  if (nav.rows !== 1) {
+    failures.push(`front page at ${width}px wraps its visible topics across ${nav.rows} rows.`);
+  }
+
   if (nav.clipped.length) {
     failures.push(
       `front page at ${width}px: ${nav.clipped.length} topic` +
@@ -459,10 +476,13 @@ for (const width of NAV_WIDTHS) {
 
   if (nav.scrollable) {
     failures.push(
-      `front page at ${width}px: the nav scrolls horizontally. The topics wrap by decision ` +
-        `123, and a hidden scrollbar is how two of them went missing in the first place.`
+      `front page at ${width}px: the nav scrolls horizontally instead of showing fewer topics.`
     );
   }
+}
+
+if (previousVisibleCount === undefined || previousVisibleCount >= 8) {
+  failures.push('the narrowest viewport did not reduce the number of visible topics.');
 }
 
 /*
@@ -585,8 +605,8 @@ if (readLayoutsMeasured === 0) {
 
 console.log(
   `layout is clean across ${measured} thumbnail measurements, ${cellsMeasured} grid ` +
-    `cells on ${GRID_PAGES.length} page(s) found by walking dist and ${navMeasured} topic ` +
-    `reaches at phone width, ${readLayoutsMeasured} reading layouts, the wide card's thumb ` +
+    `cells on ${GRID_PAGES.length} page(s) found by walking dist and ${navMeasured} visible ` +
+    `topic placements across responsive widths, ${readLayoutsMeasured} reading layouts, the wide card's thumb ` +
     `held its ratio with a 2000px neighbour, and the lead card has ` +
     `${deadSpace.trailing}px below its last text.` +
     provenanceSuffix()

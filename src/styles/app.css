@@ -1520,35 +1520,43 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
   .masthead .shell { flex-wrap: wrap; height: auto; padding-top: .75rem; padding-bottom: .75rem; gap: .75rem 1.25rem; }
   .masthead nav { order: 3; width: 100%; margin-left: 0; }
   /*
-    Decision 123. The topics wrap. They do not scroll.
-
-    This was overflow-x: auto with the scrollbar hidden, so five of the seven items fit
-    at 390px and the other two sat off the right edge with nothing on screen saying they
-    were there. Dev disasters is last in the list, so the section this site leads with
-    was the one item a phone never showed. The overflow was how it looked. That was the
-    defect.
-
-    Wrapping costs a row and needs no JavaScript, no new component and no affordance to
-    teach, and a wrapped tag row is already the vernacular for editor chrome. Measured
-    at 390 it gives two rows: csharp through windows, then cloud and dev disasters.
+    Topics stay on one line and leave from the right as space tightens. Dev disasters is
+    the final item and is never part of that priority ladder, so it remains the last
+    visible destination at every width.
   */
   .nav {
     order: 3; width: 100%; margin-left: 0;
-    flex-wrap: wrap; overflow: visible;
+    flex-wrap: nowrap; overflow: visible;
     gap: .55rem 1.15rem;
   }
+  .nav li { flex: none; }
   .nav a { white-space: nowrap; }
   .themer { margin-left: auto; }
   .foot-grid { grid-template-columns: 1fr 1fr; }
 }
 
+@media (max-width: 640px) {
+  .nav li:nth-last-child(2) { display: none; }
+}
+
+@media (max-width: 560px) {
+  .nav li:nth-last-child(3) { display: none; }
+}
+
+@media (max-width: 480px) {
+  .nav li:nth-last-child(4) { display: none; }
+}
+
+@media (max-width: 420px) {
+  .nav li:nth-last-child(5) { display: none; }
+}
+
 @media (max-width: 720px) {
   .shell { padding-inline: 1.25rem; }
   /*
-    The wrapped topic row costs the masthead a line, and the masthead already takes
-    139px of an 844px phone. While somebody is reading, that space is worth more as
-    page than as chrome, and the theme picker is a set once control rather than
-    something a reader reaches for mid article.
+    The masthead already takes two rows on a phone. While somebody is reading, that
+    space is worth more as page than as sticky chrome, and the theme picker is a set
+    once control rather than something a reader reaches for mid article.
   */
   .masthead { position: static; }
   .hero { padding: 2.5rem 0 2rem; }
