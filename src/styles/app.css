@@ -297,6 +297,16 @@ html:not(.js) .themer { display: none; }
 }
 .panel-bar .count { margin-left: auto; letter-spacing: .04em; text-transform: none; }
 
+.panel-empty {
+  margin: 0;
+  padding: 1.1rem .9rem 1.2rem;
+  background: var(--bg-raised);
+  color: var(--fg-dim);
+  font-family: var(--mono);
+  font-size: .8125rem;
+  line-height: 1.65;
+}
+
 .prow {
   display: grid;
   grid-template-columns: 7.5rem 1fr auto;
