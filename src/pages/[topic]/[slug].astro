@@ -77,6 +77,15 @@ function videoAt(href: string, seconds: number): string {
   return url.toString();
 }
 
+const transcriptHint = transcript
+  ? [
+      transcript.soloSpeaker,
+      transcript.topicCount
+        ? `${transcript.topicCount} ${transcript.topicCount === 1 ? 'topic' : 'topics'}`
+        : `${transcript.paragraphCount} paragraphs`
+    ].filter(Boolean).join(' / ')
+  : '';
+
 /* Baked at build time and honestly a little stale, per conflict 6. The island reconciles
    it against the live count the moment it hydrates. */
 const likes = await bakedLike('content', item.key);
@@ -194,30 +203,54 @@ const replies = await bakedReplies('content', item.key);
 
         {
           transcript && (
-            <details class="transcript" open>
+            <details class="transcript">
               <summary>
                 Transcript
-                <span class="hint">
-                  {transcript.blocks.length} {transcript.blocks.length === 1 ? 'section' : 'sections'}
-                </span>
+                <span class="hint">{transcriptHint}</span>
               </summary>
               <div class="tbody">
-                {transcript.blocks.map((block) => (
-                  <div class="tline">
-                    <div class="tmeta">
-                      <span class="speaker">{block.speaker}</span>
-                      <a
-                        class="t"
-                        href={videoAt(item.external!, block.start)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`Watch on YouTube at ${timestamp(block.start)}`}
-                      >
-                        {timestamp(block.start)}
-                      </a>
+                {transcript.chapters.map((chapter) => (
+                  <section class="tchapter">
+                    {chapter.title && (
+                      <header class="tchapter-head">
+                        <h2>{chapter.title}</h2>
+                        {chapter.start !== null && (
+                          <a
+                            class="t"
+                            href={videoAt(item.external!, chapter.start)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`Watch ${chapter.title} on YouTube at ${timestamp(chapter.start)}`}
+                          >
+                            {timestamp(chapter.start)}
+                          </a>
+                        )}
+                      </header>
+                    )}
+                    <div class="tblocks">
+                      {chapter.blocks.map((block) => (
+                        <div class="tline">
+                          <div class="tmeta">
+                            {!transcript.soloSpeaker && block.speakerChanged && (
+                              <span class="speaker">{block.speaker}</span>
+                            )}
+                            {block.start !== null && (
+                              <a
+                                class="t"
+                                href={videoAt(item.external!, block.start)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`Watch on YouTube at ${timestamp(block.start)}`}
+                              >
+                                {timestamp(block.start)}
+                              </a>
+                            )}
+                          </div>
+                          <p>{block.text}</p>
+                        </div>
+                      ))}
                     </div>
-                    <p>{block.text}</p>
-                  </div>
+                  </section>
                 ))}
               </div>
             </details>

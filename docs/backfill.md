@@ -260,6 +260,12 @@ body without a proof of origin token. The route that works is the YouTube Data A
 authenticated as the channel owner, downloading captions from his own videos. So a row may
 carry chapters long before it carries a body, and only the body gates the page.
 
+When YouTube has no chapters, topics may be curated in
+`src/config/video-transcript-topics.json`. Both backfill scripts use that outline as their
+fallback. The metadata refresh only replaces an existing chapter field when YouTube or the
+curated file supplies a nonempty list, so an empty player response cannot erase an authored
+transcript outline.
+
 ```sql
 insert into public.video_transcripts
   (video_id, source, language, body, chapters, duration, transcript_updated_at, chapters_updated_at)
