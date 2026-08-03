@@ -264,7 +264,9 @@ const canEmail = Boolean(account?.email && account.preferences);
                         checked={account.isPrivate}
                       />
                       <div>
-                        <label class="switch-label" for="is_private">Hide my profile</label>
+                        <label class="switch-label" for="is_private">
+                          Hide my profile. When hidden, your name comes off stories and comments.
+                        </label>
                         <span class="switch-help">
                           Your profile returns a 404 and your name comes off stories and
                           comments. The content stays published. Turn this off and your name
