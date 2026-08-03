@@ -18,9 +18,6 @@ jobs:
     steps:
 
       - uses: actions/checkout@v7
-        with:
-          submodules: false
-					
       - name: Check out the content submodule
         env:
           CONTENT_DEPLOY_KEY: ${{ secrets.CONTENT_DEPLOY_KEY }}
