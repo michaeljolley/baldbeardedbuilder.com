@@ -483,7 +483,7 @@ html:not(.js) .themer { display: none; }
   display: grid;
   grid-template-columns: var(--gutter) minmax(0, var(--measure)) 1fr;
   gap: 3rem;
-  padding: 3rem 0 4rem;
+  padding-block: 3rem 4rem;
 }
 .rail { position: sticky; top: 5.5rem; align-self: start; }
 .rail dl { margin: 0; display: grid; gap: 1.15rem; }
