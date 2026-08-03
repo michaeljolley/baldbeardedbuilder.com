@@ -216,6 +216,7 @@ function readCollection(name) {
   if (!fs.existsSync(dir)) return [];
   return fs
     .readdirSync(dir)
+    .sort()
     .filter((f) => /\.(md|mdx)$/.test(f))
     .map((f) => {
       const parsed = matter(fs.readFileSync(path.join(dir, f), 'utf8'));
@@ -236,6 +237,7 @@ function readVideos() {
   // That is exactly why so many of them come back flagged.
   return fs
     .readdirSync(dir)
+    .sort()
     .filter((f) => /\.ya?ml$/.test(f))
     .map((f) => {
       const v = YAML.parse(fs.readFileSync(path.join(dir, f), 'utf8')) ?? {};
