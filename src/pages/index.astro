@@ -14,7 +14,7 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Drip from '../components/Drip.astro';
 import { SITE, VISIBLE_TOPICS, sevClass, sevLabel } from '../config/site';
-import { allItems, itemsInTopic } from '../lib/content';
+import { allItems, isVideoKind, itemKindLabel, itemsInTopic } from '../lib/content';
 import { starterItems, fillSpans } from '../lib/starters';
 import { freshnessKicker, postedOn } from '../lib/freshness';
 import { leadSentences } from '../lib/excerpt';
@@ -69,10 +69,10 @@ const alsoRows: Array<{
   alsoNew.map((i) => ({
     href: i.href,
     title: i.title,
-    kindLabel: i.kind === 'video' ? (i.short ? 'Short' : 'Video') : 'Article',
+    kindLabel: itemKindLabel(i.kind),
     meta: i.length,
     offsite: i.offsite,
-    opensYouTube: i.kind === 'video' && i.offsite
+    opensYouTube: isVideoKind(i.kind) && i.offsite
   }));
 
 if (latestDrip) {
@@ -126,13 +126,13 @@ const heroMeta = hero
             <a
               class="shot"
               href={hero.href}
-              target={hero.kind === 'video' && hero.offsite ? '_blank' : undefined}
+              target={isVideoKind(hero.kind) && hero.offsite ? '_blank' : undefined}
               rel={hero.offsite ? 'noopener noreferrer' : undefined}
               tabindex="-1"
               aria-hidden="true"
             >
               <img src={hero.thumbnail} alt="" width="640" height="360" />
-              {hero.kind === 'video' && <span class="play" aria-hidden="true">&#9654;</span>}
+              {isVideoKind(hero.kind) && <span class="play" aria-hidden="true">&#9654;</span>}
               <span class="dur">{hero.length}</span>
             </a>
           )}
@@ -142,7 +142,7 @@ const heroMeta = hero
               <span class="path">
                 {hero.topic}
                 <span class="sep">/</span>
-                <b>{hero.kind === 'video' ? 'video' : 'article'}</b>
+                <b>{hero.kind}</b>
               </span>
               <span class="spacer" />
               <span class="kick">{freshnessKicker(hero.date)}</span>
@@ -156,10 +156,10 @@ const heroMeta = hero
               <a
                 class="btn primary"
                 href={hero.href}
-                target={hero.kind === 'video' && hero.offsite ? '_blank' : undefined}
+                target={isVideoKind(hero.kind) && hero.offsite ? '_blank' : undefined}
                 rel={hero.offsite ? 'noopener noreferrer' : undefined}
               >
-                {hero.kind === 'video' ? 'Watch it' : 'Read it'}
+                {isVideoKind(hero.kind) ? 'Watch it' : 'Read it'}
               </a>
               <a class="btn" href={`/${hero.topic}/`}>
                 Everything on {hero.topic}
@@ -231,7 +231,7 @@ const heroMeta = hero
               <a
                 class="card wide"
                 href={i.href}
-                target={i.kind === 'video' && i.offsite ? '_blank' : undefined}
+                target={isVideoKind(i.kind) && i.offsite ? '_blank' : undefined}
                 rel={i.offsite ? 'noopener noreferrer' : undefined}
               >
                 <span class="thumb">
@@ -245,7 +245,7 @@ const heroMeta = hero
                   <h3>{i.title}</h3>
                   {i.description && <p>{i.description}</p>}
                   <span class="foot">
-                    <span class="k">{i.kind === 'video' ? 'Video' : 'Article'}</span> {i.topic}{' '}
+                    <span class="k">{itemKindLabel(i.kind)}</span> {i.topic}{' '}
                     &middot; {i.length}
                     {i.offsite && <Fragment> &middot; YouTube</Fragment>}
                   </span>
@@ -255,13 +255,13 @@ const heroMeta = hero
               <a
                 class="card"
                 href={i.href}
-                target={i.kind === 'video' && i.offsite ? '_blank' : undefined}
+                target={isVideoKind(i.kind) && i.offsite ? '_blank' : undefined}
                 rel={i.offsite ? 'noopener noreferrer' : undefined}
               >
                 <h3>{i.title}</h3>
                 {i.description && <p>{i.description}</p>}
                 <span class="foot">
-                  <span class="k">{i.kind === 'video' ? 'Video' : 'Article'}</span> {i.topic}{' '}
+                  <span class="k">{itemKindLabel(i.kind)}</span> {i.topic}{' '}
                   &middot; {i.length}
                   {i.offsite && <Fragment> &middot; YouTube</Fragment>}
                 </span>

@@ -14,7 +14,7 @@
 import Base from '../../layouts/Base.astro';
 import FeedItem from '../../components/FeedItem.astro';
 import { TOPICS, VISIBLE_TOPICS } from '../../config/site';
-import { topicView, TOPIC_FILTERS, type TopicFilter } from '../../lib/content';
+import { isVideoKind, topicView, TOPIC_FILTERS, type TopicFilter } from '../../lib/content';
 
 export async function getStaticPaths() {
   const paths: Array<{ params: { topic: string; filter?: string }; props: { filter: TopicFilter | null } }> = [];
@@ -39,7 +39,7 @@ const shown =
   filter === 'articles'
     ? items.filter((i) => i.kind === 'article')
     : filter === 'videos'
-      ? items.filter((i) => i.kind === 'video')
+      ? items.filter((i) => isVideoKind(i.kind))
       : items;
 
 const base = `/${topic.slug}/`;

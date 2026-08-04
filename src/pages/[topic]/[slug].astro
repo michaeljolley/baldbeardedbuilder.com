@@ -11,7 +11,7 @@ import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import VideoEmbed from '../../components/VideoEmbed.astro';
 import { topicBySlug } from '../../config/site';
-import { pagedItems, type Item } from '../../lib/content';
+import { isVideoKind, itemKindLabel, pagedItems, type Item } from '../../lib/content';
 import LikeButton from '../../components/islands/LikeButton';
 import CommentThread from '../../components/islands/CommentThread';
 import ShareMenu from '../../components/ShareMenu.astro';
@@ -45,7 +45,7 @@ const dateLabel = item.date.toLocaleDateString('en-US', {
 
 const alsoFiled = item.alsoFiled.map((slug) => topicBySlug(slug)).filter(Boolean);
 
-const transcript = item.kind === 'video'
+const transcript = isVideoKind(item.kind)
   ? (await videoTranscripts()).get(item.key.slice(7))
   : undefined;
 
@@ -79,7 +79,7 @@ const replies = await bakedReplies('content', item.key);
 
 <Base
   title={item.title}
-  description={item.description || `${item.kind === 'video' ? 'Video' : 'Article'} by Michael Jolley.`}
+  description={item.description || `${itemKindLabel(item.kind)} by Michael Jolley.`}
   active={item.topic}
   image={item.thumbnail ?? undefined}
   noindex={item.draft}
@@ -104,7 +104,7 @@ const replies = await bakedReplies('content', item.key);
             <dd><time datetime={item.date.toISOString()}>{dateLabel}</time></dd>
           </div>
           <div>
-            <dt>{item.kind === 'video' ? 'Run time' : 'Read time'}</dt>
+            <dt>{isVideoKind(item.kind) ? 'Run time' : 'Read time'}</dt>
             <dd>{item.length}</dd>
           </div>
           {
@@ -177,7 +177,7 @@ const replies = await bakedReplies('content', item.key);
         </header>
 
         {
-          item.kind === 'video' && item.external && (
+          isVideoKind(item.kind) && item.external && (
             <VideoEmbed id={item.key.slice(7)} title={item.title} href={item.external} />
           )
         }
@@ -230,7 +230,7 @@ const replies = await bakedReplies('content', item.key);
         }
 
         {
-          item.kind === 'video' && (
+          isVideoKind(item.kind) && (
             <div class="note">
               <p>
                 <a class="btn" href={item.external!} rel="noopener">
