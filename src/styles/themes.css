@@ -400,3 +400,28 @@
   --tok-com: #b0aea0;
   --tok-num: #c09dff;
 }
+
+[data-theme="panda-syntax"] {
+  color-scheme: dark;
+  --bg: #292a2b;
+  --bg-raised: #323334;
+  --bg-inset: #3a3b3c;
+  --fg: #e6e6e6;
+  --fg-dim: #a4a6af;
+  --fg-strong: #ffffff;
+  --h2-fg: #ff75b5;
+  --h3-fg: #b993ed;
+  --h4-fg: #ffb86c;
+  --line: #4b4c4d;
+  --accent: #49abf9;
+  --sev-error: #f58585;
+  --sev-warn: #b993ed;
+  --sev-info: #49abf9;
+  --sev-hint: #a4a6af;
+  --tok-key: #ff75b5;
+  --tok-str: #19f9d8;
+  --tok-fn: #49abf9;
+  --tok-type: #b993ed;
+  --tok-com: #a4a6af;
+  --tok-num: #ffb86c;
+}

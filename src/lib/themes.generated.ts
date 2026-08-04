@@ -104,6 +104,12 @@ export const THEMES: ThemeEntry[] = [
     "name": "Monokai",
     "scheme": "dark",
     "house": false
+  },
+  {
+    "id": "panda-syntax",
+    "name": "Panda Syntax",
+    "scheme": "dark",
+    "house": false
   }
 ];
 
