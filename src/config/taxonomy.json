@@ -292,7 +292,7 @@
       "url": "/cloud/how-to-update-notion-cover-image-with-javascript/"
     },
     "blog:how-to-use-whisper-openais-speech-recognition-model-in-1-minute": {
-      "primaryTopic": "copilot",
+      "primaryTopic": "copilot-ai",
       "alsoFiled": [],
       "source": "keyword",
       "confidence": 12,
@@ -300,7 +300,7 @@
       "reviewed": false,
       "title": "Try Whisper: OpenAI's Speech Recognition Model in 1 Minute",
       "slug": "how-to-use-whisper-openais-speech-recognition-model-in-1-minute",
-      "url": "/copilot/how-to-use-whisper-openais-speech-recognition-model-in-1-minute/"
+      "url": "/copilot-ai/how-to-use-whisper-openais-speech-recognition-model-in-1-minute/"
     },
     "blog:integrating-notion-with-astro-sites": {
       "primaryTopic": "dev-life",
@@ -826,7 +826,7 @@
       "url": "/dev-life/bongo-cat-loves-my-code/"
     },
     "videos:BKeaojX45w0": {
-      "primaryTopic": "copilot",
+      "primaryTopic": "copilot-ai",
       "alsoFiled": [
         "csharp"
       ],
@@ -834,7 +834,7 @@
       "reviewed": false,
       "title": "Building AI with .NET: ChatGPT 4o, Dall-E 3 & Whisper",
       "slug": "building-ai-with-net-chatgpt-4o-dall-e-3-and-whisper",
-      "url": "/copilot/building-ai-with-net-chatgpt-4o-dall-e-3-and-whisper/"
+      "url": "/copilot-ai/building-ai-with-net-chatgpt-4o-dall-e-3-and-whisper/"
     },
     "videos:BWSX0cQEh8k": {
       "primaryTopic": "csharp",
@@ -901,7 +901,7 @@
       "url": "/vscode/testing-apis-with-rest-client-in-vs-code/"
     },
     "videos:CR2Kigxx2rM": {
-      "primaryTopic": "copilot",
+      "primaryTopic": "copilot-ai",
       "alsoFiled": [
         "csharp"
       ],
@@ -909,7 +909,7 @@
       "reviewed": false,
       "title": "Why .NET AI Smart Components are game-changing",
       "slug": "why-net-ai-smart-components-are-game-changing",
-      "url": "/copilot/why-net-ai-smart-components-are-game-changing/"
+      "url": "/copilot-ai/why-net-ai-smart-components-are-game-changing/"
     },
     "videos:DNzAoLwXLzc": {
       "primaryTopic": "csharp",
@@ -988,7 +988,7 @@
     "videos:MQciYVuS6cM": {
       "primaryTopic": "dev-life",
       "alsoFiled": [
-        "copilot"
+        "copilot-ai"
       ],
       "source": "ai",
       "reviewed": false,
@@ -1237,7 +1237,7 @@
     "videos:i4jsvC_mzPI": {
       "primaryTopic": "dev-life",
       "alsoFiled": [
-        "copilot"
+        "copilot-ai"
       ],
       "source": "ai",
       "reviewed": false,

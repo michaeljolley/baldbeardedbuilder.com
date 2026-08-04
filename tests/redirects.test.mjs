@@ -59,7 +59,8 @@ const pages = new Set([
   */
   ...Object.entries(taxonomy.entries)
     .filter(([key]) => key.startsWith('blog:'))
-    .map(([, e]) => e.url)
+    .map(([, e]) => e.url),
+  ...Object.values(taxonomy.entries).map((e) => `/${e.primaryTopic}/`)
 ]);
 
 test('every redirect has a source, a destination and a 301', () => {
@@ -126,6 +127,21 @@ test('every article has a redirect from its old blog URL', () => {
     .map((k) => `/blog/${k.slice(5)}/`)
     .filter((u) => !sources.has(u));
   assert.deepEqual(missing, [], `articles with no redirect:\n  ${missing.join('\n  ')}`);
+});
+
+test('renamed copilot topic URLs resolve without chains', () => {
+  const rules = new Map(explicit.map((r) => [r.from, r.to]));
+  const topicUrl = '/copilot-ai/';
+
+  assert.equal(rules.get('/copilot/'), topicUrl);
+  assert.equal(rules.get('/copilot'), topicUrl);
+
+  for (const [key, entry] of Object.entries(taxonomy.entries)) {
+    if (entry.primaryTopic !== 'copilot-ai') continue;
+    const expected = key.startsWith('blog:') ? entry.url : topicUrl;
+    assert.equal(rules.get(`/copilot/${entry.slug}/`), expected);
+    assert.equal(rules.get(`/copilot/${entry.slug}`), expected);
+  }
 });
 
 test('the legacy posts aliases measured on production are all still covered', () => {
