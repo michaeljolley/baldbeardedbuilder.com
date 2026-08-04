@@ -2,7 +2,7 @@
   Sign in.
 
   A GET, not a POST, so it works as a plain link from anywhere including a page that
-  shipped no JavaScript. It hands off to GitHub and comes back at /auth/callback.
+  shipped no JavaScript. It hands off to GitHub and comes back at /auth/callback/.
 
   `next` carries where the reader was, so signing in to leave a comment returns them to
   the comment box rather than to the front page. It is checked rather than trusted: an
@@ -26,7 +26,7 @@ export const GET: APIRoute = async ({ url, cookies, request, redirect }) => {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'github',
     options: {
-      redirectTo: new URL(`/auth/callback?next=${encodeURIComponent(next)}`, url.origin).toString(),
+      redirectTo: new URL(`/auth/callback/?next=${encodeURIComponent(next)}`, url.origin).toString(),
       /*
         Decision 4 wants a sign in, not an integration. read:user is what the profile
         needs and user:email is what a notification needs somewhere to go. Nothing here
