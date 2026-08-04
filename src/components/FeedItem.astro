@@ -30,6 +30,14 @@ const stats: string[] = [item.length];
 if (item.views !== null) {
   stats.push(`${item.views.toLocaleString('en-US')} views`);
 }
+if (item.engagementLikes !== null) {
+  const label = item.engagementLikes === 1 ? 'like' : 'likes';
+  stats.push(`${item.engagementLikes.toLocaleString('en-US')} ${label}`);
+}
+if (item.kind === 'article' && item.engagementComments !== null) {
+  const label = item.engagementComments === 1 ? 'comment' : 'comments';
+  stats.push(`${item.engagementComments.toLocaleString('en-US')} ${label}`);
+}
 if (item.offsite) {
   stats.push('YouTube');
 }

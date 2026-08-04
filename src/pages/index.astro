@@ -102,6 +102,16 @@ const topicCounts = await Promise.all(
 const heroMeta = hero
   ? [
       hero.views && hero.views > 0 ? `${hero.views.toLocaleString('en-US')} views` : null,
+      hero.engagementLikes !== null
+        ? `${hero.engagementLikes.toLocaleString('en-US')} ${
+            hero.engagementLikes === 1 ? 'like' : 'likes'
+          }`
+        : null,
+      hero.kind === 'article' && hero.engagementComments !== null
+        ? `${hero.engagementComments.toLocaleString('en-US')} ${
+            hero.engagementComments === 1 ? 'comment' : 'comments'
+          }`
+        : null,
       `posted ${postedOn(hero.date)}`,
       hero.thumbnail ? null : hero.length,
       hero.offsite ? 'on YouTube' : null

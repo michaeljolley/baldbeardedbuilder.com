@@ -12,6 +12,8 @@ import taxonomy from '../config/taxonomy.json';
 import { topicBySlug, type Topic } from '../config/site';
 import { isPublished } from './publish';
 import { videoPages } from './video-pages';
+import { bakedLikes } from './likes';
+import { bakedRepliesFor } from './comments';
 
 export type ItemKind = 'article' | 'video' | 'short';
 
@@ -52,8 +54,18 @@ export interface Item {
   date: Date;
   /** Reading time for an article, running time for a video. Already formatted. */
   length: string;
-  /** Views for a video, null for an article until likes land in phase five. */
+  /** YouTube views for a video, null for an article. */
   views: number | null;
+  /**
+   * Likes from the platform where the item is published: this site for articles and
+   * YouTube for videos. Null only when YouTube did not return a count.
+   */
+  engagementLikes: number | null;
+  /**
+   * Comments from the platform where the item is published. The feed currently prints
+   * this for articles only, but preserving the YouTube count keeps the item complete.
+   */
+  engagementComments: number | null;
   thumbnail: string | null;
   /** YouTube watch URL. Only set on videos. */
   external: string | null;
@@ -94,10 +106,12 @@ let cache: Item[] | null = null;
 async function loadItems(): Promise<Item[]> {
   if (cache) return cache;
 
-  const [blog, videos, pages] = await Promise.all([
+  const [blog, videos, pages, likes, comments] = await Promise.all([
     getCollection('blog'),
     getCollection('videos'),
-    videoPages()
+    videoPages(),
+    bakedLikes('content'),
+    bakedRepliesFor('content')
   ]);
   const now = new Date();
   const items: Item[] = [];
@@ -120,6 +134,8 @@ async function loadItems(): Promise<Item[]> {
       date: post.data.pubDate,
       length: readingTime(post.body ?? ''),
       views: null,
+      engagementLikes: likes.get(key) ?? 0,
+      engagementComments: comments.get(key) ?? 0,
       thumbnail: post.data.image ?? null,
       external: null,
       draft: !isPublished(post.data.pubDate, now)
@@ -158,6 +174,8 @@ async function loadItems(): Promise<Item[]> {
       date: video.data.date,
       length: runtime(video.data.duration),
       views: video.data.views ?? null,
+      engagementLikes: video.data.likes ?? null,
+      engagementComments: video.data.comments ?? null,
       thumbnail: video.data.thumbnail,
       external: video.data.link,
       draft: !isPublished(video.data.date, now)
