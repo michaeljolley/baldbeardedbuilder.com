@@ -15,20 +15,30 @@ import { chromium } from 'playwright';
 import { launch } from 'chrome-launcher';
 import lighthouse from 'lighthouse';
 import { serveDist } from './lib/serve-dist.mjs';
+import { firstArticlePage, firstDisasterPage, firstVideoPage } from './lib/archetypes.mjs';
 import { provenanceSuffix } from './lib/provenance.mjs';
 
+const videoPages = firstVideoPage();
+
 /* A smaller list than the accessibility gate because each run takes several seconds.
-   These cover the shapes that differ: a heavy homepage, a paginated index, a code heavy
-   article, a page carrying a third party embed, an archive, and one detail page that
-   carries an island. */
+   Content-backed detail routes are discovered from dist so a content rename or a keyless
+   CI build cannot turn the performance gate into a 404 audit. */
 const PAGES = [
   ['home', '/'],
   ['topic index', '/csharp/'],
-  ['article', '/csharp/the-traps-of-nullable-in-c-sharp/'],
-  ['video', '/windows/keep-track-of-vs-code-windows-with-peacock/'],
+  ...firstArticlePage(),
+  ...(videoPages.length ? videoPages : [['videos', '/videos/']]),
   ['disaster archive', '/dev-disasters/'],
-  ['disaster', '/dev-disasters/the-raccoon-in-the-server-room-was-not-a-metaphor/']
+  ...firstDisasterPage()
 ];
+
+if (!PAGES.some(([label]) => label === 'article')) {
+  console.error(
+    'no article page was discovered in dist, so the most read page type went unaudited. ' +
+      'Check src/config/taxonomy.json has entries and that pnpm build ran first.'
+  );
+  process.exit(1);
+}
 
 /* Accessibility is deliberately absent. axe already runs across fifteen archetypes under
    three themes at two widths, which is a far stronger check than Lighthouse's subset, and
@@ -49,12 +59,13 @@ const THRESHOLDS = {
   detail pages get room for the one island they are allowed to carry.
 */
 const MAX_SCRIPT_BYTES = {
-  '/': 1_000,
-  '/csharp/': 1_000,
-  '/dev-disasters/': 1_000,
-  '/csharp/the-traps-of-nullable-in-c-sharp/': 30_000,
-  '/windows/keep-track-of-vs-code-windows-with-peacock/': 30_000,
-  '/dev-disasters/the-raccoon-in-the-server-room-was-not-a-metaphor/': 30_000
+  home: 1_000,
+  'topic index': 1_000,
+  videos: 1_000,
+  'disaster archive': 1_000,
+  article: 30_000,
+  video: 30_000,
+  disaster: 30_000
 };
 
 const { server, base } = await serveDist();
@@ -98,7 +109,7 @@ for (const [label, path] of PAGES) {
     .filter((i) => (i.mimeType ?? '').includes('javascript'))
     .reduce((sum, i) => sum + (i.transferSize ?? 0), 0);
 
-  const budget = MAX_SCRIPT_BYTES[path];
+  const budget = MAX_SCRIPT_BYTES[label];
   if (budget !== undefined && scriptBytes > budget) {
     failures.push(`${label} ships ${scriptBytes} bytes of script, budget is ${budget}`);
   }

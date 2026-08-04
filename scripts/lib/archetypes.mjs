@@ -37,6 +37,20 @@ function isBuilt(path) {
   return existsSync(`${DIST}${path}index.html`);
 }
 
+/** Built content URLs of one collection, sorted so the selected fixture is deterministic. */
+function contentUrls(collection) {
+  const file = 'src/config/taxonomy.json';
+  if (!existsSync(file)) return [];
+
+  const { entries } = JSON.parse(readFileSync(file, 'utf8'));
+  return Object.entries(entries ?? {})
+    .filter(([key]) => key.startsWith(`${collection}:`))
+    .map(([, entry]) => entry.url)
+    .filter(Boolean)
+    .filter(isBuilt)
+    .sort();
+}
+
 /**
  * The first published disaster's own page, or nothing when none have been published.
  *
@@ -69,16 +83,7 @@ export function firstDisasterPage() {
  * which prebuild runs, so a renamed post moves the entry and the built page together.
  */
 export function firstArticlePage() {
-  const file = 'src/config/taxonomy.json';
-  if (!existsSync(file)) return [];
-
-  const { entries } = JSON.parse(readFileSync(file, 'utf8'));
-  const urls = Object.values(entries ?? {})
-    .map((e) => e.url)
-    .filter(Boolean)
-    .filter(isBuilt)
-    .sort();
-
+  const urls = contentUrls('blog');
   if (!urls.length) return [];
 
   /*
@@ -94,4 +99,16 @@ export function firstArticlePage() {
   );
 
   return [['article', withCode ?? urls[0]]];
+}
+
+/**
+ * The first built video detail page, or nothing when CI has no video_pages data.
+ *
+ * A catalogue video does not imply a site detail page. The latter is deliberately backed
+ * by Supabase, so a keyless build normally has none and callers must provide an archive
+ * fallback if they always need a video surface.
+ */
+export function firstVideoPage() {
+  const url = contentUrls('videos')[0];
+  return url ? [['video', url]] : [];
 }

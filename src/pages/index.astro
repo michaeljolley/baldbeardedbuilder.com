@@ -18,6 +18,7 @@ import { allItems, isVideoKind, itemKindLabel, itemsInTopic } from '../lib/conte
 import { starterItems, fillSpans } from '../lib/starters';
 import { freshnessKicker, postedOn } from '../lib/freshness';
 import { leadSentences } from '../lib/excerpt';
+import { imageUrlAtWidth } from '../lib/images';
 import {
   allDisasters,
   sortDisasters,
@@ -117,9 +118,41 @@ const heroMeta = hero
       hero.offsite ? 'on YouTube' : null
     ].filter(Boolean)
   : [];
+
+const heroThumbnail = hero?.thumbnail;
+const heroImage = heroThumbnail
+  ? (() => {
+      const src = imageUrlAtWidth(heroThumbnail, 640);
+      const responsive = src !== heroThumbnail;
+      return {
+        src,
+        srcset: responsive
+          ? [640, 1280]
+              .map((width) => `${imageUrlAtWidth(heroThumbnail, width)} ${width}w`)
+              .join(', ')
+          : undefined,
+        cloudinary: responsive
+      };
+    })()
+  : null;
 ---
 
 <Base title={SITE.name} description={SITE.tagline}>
+  {
+    heroImage && (
+      <Fragment slot="head">
+        {heroImage.cloudinary && <link rel="preconnect" href="https://res.cloudinary.com" />}
+        <link
+          rel="preload"
+          as="image"
+          href={heroImage.src}
+          imagesrcset={heroImage.srcset}
+          imagesizes={heroImage.srcset ? '(max-width: 1080px) calc(100vw - 4rem), 592px' : undefined}
+          fetchpriority="high"
+        />
+      </Fragment>
+    )
+  }
   <main id="main">
     {
       hero && (
@@ -132,7 +165,7 @@ const heroMeta = hero
               meta line in that case, since the duration badge lives on the still.
             */
           }
-          {hero.thumbnail && (
+          {heroImage && (
             <a
               class="shot"
               href={hero.href}
@@ -141,7 +174,16 @@ const heroMeta = hero
               tabindex="-1"
               aria-hidden="true"
             >
-              <img src={hero.thumbnail} alt="" width="640" height="360" />
+              <img
+                src={heroImage.src}
+                srcset={heroImage.srcset}
+                sizes={heroImage.srcset ? '(max-width: 1080px) calc(100vw - 4rem), 592px' : undefined}
+                alt=""
+                width="640"
+                height="360"
+                fetchpriority="high"
+                decoding="async"
+              />
               {isVideoKind(hero.kind) && <span class="play" aria-hidden="true">&#9654;</span>}
               <span class="dur">{hero.length}</span>
             </a>
