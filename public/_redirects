@@ -14,7 +14,7 @@
 # Resolving from the id fixes it and stops the same rot recurring, because a
 # destination that stops existing now fails the build test instead of the visitor.
 
-# 147 explicit rules
+# 155 explicit rules
 
 /blog/ef-core-audit-logging-with-interceptors-that-do-not-clutter-your-dbcontext/    /data/ef-core-audit-logging-with-interceptors-that-do-not-clutter-your-dbcontext/    301!
 /blog/virtual-vs-override-vs-partial-in-c-explained-with-small-runnable-examples/    /csharp/virtual-vs-override-vs-partial-in-c-explained-with-small-runnable-examples/  301!
@@ -26,12 +26,14 @@
 /blog/automating-release-notes-with-git-hub-app-veyor-and-octopus-deploy/            /cloud/automating-release-notes-with-git-hub-app-veyor-and-octopus-deploy/           301!
 /blog/stop-parallelizing-everything-a-practical-guide-to-parallelforeach/            /csharp/stop-parallelizing-everything-a-practical-guide-to-parallelforeach/          301!
 /blog/using-azure-file-storage-as-container-volume-mounts-in-app-services            /cloud/using-azure-file-storage-as-container-volume-mounts-in-app-services/          301!
+/copilot/how-to-use-whisper-openais-speech-recognition-model-in-1-minute/            /copilot-ai/how-to-use-whisper-openais-speech-recognition-model-in-1-minute/         301!
 /blog/automating-release-notes-with-git-hub-app-veyor-and-octopus-deploy             /cloud/automating-release-notes-with-git-hub-app-veyor-and-octopus-deploy/           301!
 /blog/stop-parallelizing-everything-a-practical-guide-to-parallelforeach             /csharp/stop-parallelizing-everything-a-practical-guide-to-parallelforeach/          301!
+/copilot/how-to-use-whisper-openais-speech-recognition-model-in-1-minute             /copilot-ai/how-to-use-whisper-openais-speech-recognition-model-in-1-minute/         301!
 /blog/communication-between-containers-using-docker-compose-in-windows/              /cloud/communication-between-containers-using-docker-compose-in-windows/             301!
 /blog/communication-between-containers-using-docker-compose-in-windows               /cloud/communication-between-containers-using-docker-compose-in-windows/             301!
-/blog/how-to-use-whisper-openais-speech-recognition-model-in-1-minute/               /copilot/how-to-use-whisper-openais-speech-recognition-model-in-1-minute/            301!
-/blog/how-to-use-whisper-openais-speech-recognition-model-in-1-minute                /copilot/how-to-use-whisper-openais-speech-recognition-model-in-1-minute/            301!
+/blog/how-to-use-whisper-openais-speech-recognition-model-in-1-minute/               /copilot-ai/how-to-use-whisper-openais-speech-recognition-model-in-1-minute/         301!
+/blog/how-to-use-whisper-openais-speech-recognition-model-in-1-minute                /copilot-ai/how-to-use-whisper-openais-speech-recognition-model-in-1-minute/         301!
 /blog/email-phone-call-transcripts-with-twilio-studio-and-pipedream/                 /cloud/email-phone-call-transcripts-with-twilio-studio-and-pipedream/                301!
 /blog/stop-breaking-clocks-in-aspnet-core-with-utc-and-timezoneinfo/                 /aspnetcore/stop-breaking-clocks-in-aspnet-core-with-utc-and-timezoneinfo/           301!
 /blog/email-phone-call-transcripts-with-twilio-studio-and-pipedream                  /cloud/email-phone-call-transcripts-with-twilio-studio-and-pipedream/                301!
@@ -57,12 +59,14 @@
 /blog/how-net-10-speeds-up-api-validation-without-code-changes                       /aspnetcore/how-net-10-speeds-up-api-validation-without-code-changes/                301!
 /blog/repository-pattern-vs-dbcontext-in-entity-framework-core                       /data/repository-pattern-vs-dbcontext-in-entity-framework-core/                      301!
 /blog/tame-configuration-in-aspnet-core-with-ivalidateoptions/                       /aspnetcore/tame-configuration-in-aspnet-core-with-ivalidateoptions/                 301!
+/copilot/building-ai-with-net-chatgpt-4o-dall-e-3-and-whisper/                       /copilot-ai/                                                                         301!
 /posts/setup-command-aliases-in-powershell-to-make-life-easier                       /windows/adding-command-aliases-to-power-shell/                                      301!
 /blog/cleaner-joins-in-ef-core-10-with-leftjoin-and-rightjoin                        /data/cleaner-joins-in-ef-core-10-with-leftjoin-and-rightjoin/                       301!
 /blog/environment-variables-in-azure-functions-with-key-vault                        /cloud/environment-variables-in-azure-functions-with-key-vault/                      301!
 /blog/from-sln-to-slnx-in-minutes-cleaner-diffs-faster-merges                        /windows/from-sln-to-slnx-in-minutes-cleaner-diffs-faster-merges/                    301!
 /blog/smarter-error-handling-in-c-try-result-and-fewer-tears/                        /csharp/smarter-error-handling-in-c-try-result-and-fewer-tears/                      301!
 /blog/tame-configuration-in-aspnet-core-with-ivalidateoptions                        /aspnetcore/tame-configuration-in-aspnet-core-with-ivalidateoptions/                 301!
+/copilot/building-ai-with-net-chatgpt-4o-dall-e-3-and-whisper                        /copilot-ai/                                                                         301!
 /blog/smarter-error-handling-in-c-try-result-and-fewer-tears                         /csharp/smarter-error-handling-in-c-try-result-and-fewer-tears/                      301!
 /blog/using-sql-server-in-docker-containers-for-basic-tasks/                         /cloud/using-sql-server-in-docker-containers-for-basic-tasks/                        301!
 /blog/building-a-discord-bot-to-improve-inclusive-language/                          /dev-life/building-a-discord-bot-to-improve-inclusive-language/                      301!
@@ -83,9 +87,11 @@
 /posts/release-notes-with-github-appveyor-octopus-deploy                             /cloud/automating-release-notes-with-git-hub-app-veyor-and-octopus-deploy/           301!
 /posts/sql-server-in-a-linux-container-to-do-quick-tasks                             /cloud/using-sql-server-in-docker-containers-for-basic-tasks/                        301!
 /blog/how-to-update-notion-cover-image-with-javascript/                              /cloud/how-to-update-notion-cover-image-with-javascript/                             301!
+/copilot/why-net-ai-smart-components-are-game-changing/                              /copilot-ai/                                                                         301!
 /blog/10-visual-studio-code-extensions-you-need-today/                               /vscode/10-visual-studio-code-extensions-you-need-today/                             301!
 /blog/how-to-update-notion-cover-image-with-javascript                               /cloud/how-to-update-notion-cover-image-with-javascript/                             301!
 /blog/measure-twice-allocate-once-faster-lists-in-net/                               /csharp/measure-twice-allocate-once-faster-lists-in-net/                             301!
+/copilot/why-net-ai-smart-components-are-game-changing                               /copilot-ai/                                                                         301!
 /blog/10-visual-studio-code-extensions-you-need-today                                /vscode/10-visual-studio-code-extensions-you-need-today/                             301!
 /blog/choosing-between-blazor-server-or-web-assembly/                                /blazor/choosing-between-blazor-server-or-web-assembly/                              301!
 /blog/measure-twice-allocate-once-faster-lists-in-net                                /csharp/measure-twice-allocate-once-faster-lists-in-net/                             301!
@@ -154,6 +160,7 @@
 /blog/10/                                                                            /                                                                                    301!
 /blog/11/                                                                            /                                                                                    301!
 /blog/12/                                                                            /                                                                                    301!
+/copilot/                                                                            /copilot-ai/                                                                         301!
 /blog/2/                                                                             /                                                                                    301!
 /blog/3/                                                                             /                                                                                    301!
 /blog/4/                                                                             /                                                                                    301!
@@ -162,6 +169,7 @@
 /blog/7/                                                                             /                                                                                    301!
 /blog/8/                                                                             /                                                                                    301!
 /blog/9/                                                                             /                                                                                    301!
+/copilot                                                                             /copilot-ai/                                                                         301!
 /blog/                                                                               /                                                                                    301!
 
 # Safety net. Anything under these prefixes that is not named above was never a real

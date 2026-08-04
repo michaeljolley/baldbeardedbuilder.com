@@ -29,6 +29,7 @@ const content = read(path.join('src', 'lib', 'content.ts'));
 
 /* Every file that reads the catalogue, so a new consumer is caught by the census below. */
 const consumers = [
+  path.join('src', 'pages', 'all.astro'),
   path.join('src', 'pages', 'index.astro'),
   path.join('src', 'pages', 'videos.astro'),
   path.join('src', 'pages', 'rss.xml.js'),

@@ -66,7 +66,7 @@ const SIGNALS = {
       'dapper', 'supabase', 'mongodb', 'redis', 'cosmos'
     ]
   },
-  copilot: {
+  'copilot-ai': {
     tags: ['ai', 'openai', 'machine-learning', 'whisper', 'copilot', 'mcp'],
     words: [
       'copilot', 'openai', 'chatgpt', 'whisper', 'llm', 'model context protocol',
