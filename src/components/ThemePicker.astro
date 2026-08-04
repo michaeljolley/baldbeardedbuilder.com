@@ -51,16 +51,18 @@ const SCHEMES = [
           <p class="themer-group-label" id={`themer-group-${scheme}`}>
             {label}
           </p>
-          {THEMES.filter((t) => t.scheme === scheme).map((t) => (
-            <button type="button" data-theme-id={t.id} aria-current="false">
-              <span class="swatch" data-theme={t.id}>
-                {SWATCH_VARS.map((v) => (
-                  <i style={`background:var(${v})`} />
-                ))}
-              </span>
-              <span>{t.name}</span>
-            </button>
-          ))}
+          {THEMES.filter((t) => t.scheme === scheme)
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((t) => (
+              <button type="button" data-theme-id={t.id} aria-current="false">
+                <span class="swatch" data-theme={t.id}>
+                  {SWATCH_VARS.map((v) => (
+                    <i style={`background:var(${v})`} />
+                  ))}
+                </span>
+                <span>{t.name}</span>
+              </button>
+            ))}
         </div>
       ))
     }
