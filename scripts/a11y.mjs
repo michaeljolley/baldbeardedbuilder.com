@@ -23,7 +23,6 @@ const PAGES = [
   ['videos', '/videos/'],
   ['topic index', '/csharp/'],
   ['topic filtered', '/csharp/articles/'],
-  ['empty topic', '/mcp/'],
   /*
     The article archetype is discovered rather than named. It used to be a hardcoded slug
     sitting in this file alongside the disaster function that exists to avoid exactly that,

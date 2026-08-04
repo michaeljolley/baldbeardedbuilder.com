@@ -69,15 +69,19 @@
     },
     "blog:automating-release-notes-with-git-hub-app-veyor-and-octopus-deploy": {
       "primaryTopic": "cloud",
-      "alsoFiled": ["dev-life"]
+      "alsoFiled": ["github"]
     },
     "blog:building-404-pages-that-bring-joy": {
       "primaryTopic": "dev-life",
       "alsoFiled": []
     },
     "blog:10-visual-studio-code-extensions-you-need-today": {
-      "primaryTopic": "windows",
+      "primaryTopic": "vscode",
       "alsoFiled": []
+    },
+    "blog:code-of-conduct-and-contributions-in-public-repositories": {
+      "primaryTopic": "github",
+      "alsoFiled": ["dev-life"]
     },
 
     "videos:AFrMhIvvGZU": { "primaryTopic": "blazor", "alsoFiled": ["csharp"] },
@@ -89,12 +93,12 @@
     "videos:ToFqISWq4is": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
     "videos:4YcSDHCttLg": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
     "videos:NZ-4z3J2xy0": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
-    "videos:nIq2YPPm6es": { "primaryTopic": "windows", "alsoFiled": [] },
-    "videos:VWbHiXN3mno": { "primaryTopic": "windows", "alsoFiled": ["dev-life"] },
-    "videos:wUSoZ3Bw_xY": { "primaryTopic": "windows", "alsoFiled": ["dev-life"] },
-    "videos:ku2K9mTMJBU": { "primaryTopic": "windows", "alsoFiled": ["dev-life"] },
-    "videos:s7fK0owVO3s": { "primaryTopic": "windows", "alsoFiled": ["dev-life"] },
-    "videos:Yo4wKXlnLMc": { "primaryTopic": "windows", "alsoFiled": ["cloud"] },
+    "videos:nIq2YPPm6es": { "primaryTopic": "vscode", "alsoFiled": [] },
+    "videos:VWbHiXN3mno": { "primaryTopic": "vscode", "alsoFiled": ["github"] },
+    "videos:wUSoZ3Bw_xY": { "primaryTopic": "vscode", "alsoFiled": ["github"] },
+    "videos:ku2K9mTMJBU": { "primaryTopic": "vscode", "alsoFiled": ["github"] },
+    "videos:s7fK0owVO3s": { "primaryTopic": "dev-life", "alsoFiled": [] },
+    "videos:Yo4wKXlnLMc": { "primaryTopic": "vscode", "alsoFiled": ["cloud"] },
     "videos:i4jsvC_mzPI": { "primaryTopic": "dev-life", "alsoFiled": ["copilot"] },
     "videos:MQciYVuS6cM": { "primaryTopic": "dev-life", "alsoFiled": ["copilot"] },
     "videos:sEZstSgt-vo": { "primaryTopic": "csharp", "alsoFiled": ["dev-life"] },
@@ -112,26 +116,26 @@
       "note": "Title gives nothing away. Best guess from the surrounding C# run. Worth a human look."
     },
     "videos:v-nKgRil02A": {
-      "primaryTopic": "dev-life",
+      "primaryTopic": "git",
       "alsoFiled": [],
-      "note": "Reads as a git video from the neighbouring titles. Worth a human look."
+      "note": "The title is ambiguous, but this is part of the Git command series."
     },
     "videos:tgEBSuqD4w4": { "primaryTopic": "dev-life", "alsoFiled": [] },
-    "videos:CFKhuEGY8IU": { "primaryTopic": "dev-life", "alsoFiled": [] },
-    "videos:VYKtLWCv0tY": { "primaryTopic": "dev-life", "alsoFiled": [] },
-    "videos:xgyclPKGllQ": { "primaryTopic": "dev-life", "alsoFiled": [] },
-    "videos:_8FeXuoYcqU": { "primaryTopic": "dev-life", "alsoFiled": [] },
-    "videos:JkvYc1u9Fl4": { "primaryTopic": "dev-life", "alsoFiled": [] },
-    "videos:xl004KsPKGE": { "primaryTopic": "dev-life", "alsoFiled": [] },
+    "videos:CFKhuEGY8IU": { "primaryTopic": "git", "alsoFiled": [] },
+    "videos:VYKtLWCv0tY": { "primaryTopic": "git", "alsoFiled": [] },
+    "videos:xgyclPKGllQ": { "primaryTopic": "git", "alsoFiled": [] },
+    "videos:_8FeXuoYcqU": { "primaryTopic": "git", "alsoFiled": [] },
+    "videos:JkvYc1u9Fl4": { "primaryTopic": "github", "alsoFiled": [] },
+    "videos:xl004KsPKGE": { "primaryTopic": "github", "alsoFiled": [] },
     "videos:BGvYjLgo-Uk": { "primaryTopic": "dev-life", "alsoFiled": [] },
     "videos:70jllnMbGTY": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
     "videos:cu4CUJAcJ-4": { "primaryTopic": "aspnetcore", "alsoFiled": ["csharp"] },
     "videos:tnTzsR1K8Eo": { "primaryTopic": "aspnetcore", "alsoFiled": [] },
     "videos:q7J050yovuo": { "primaryTopic": "cloud", "alsoFiled": [] },
     "videos:Fi5bTG7yqsM": {
-      "primaryTopic": "windows",
+      "primaryTopic": "vscode",
       "alsoFiled": [],
-      "note": "TailwindCSS, but the video is about the VS Code extension so the tooling topic fits better than a front end topic that does not exist."
+      "note": "TailwindCSS, but the video is about the VS Code extension."
     }
   }
 }

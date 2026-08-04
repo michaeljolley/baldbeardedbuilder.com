@@ -1,7 +1,7 @@
 /*
   Taxonomy, generated once and then hand reviewed.
 
-  Decision 20 gives the site nine topics and decision 18 makes URLs topic first, which
+  Decision 20 gives the site eleven topics and decision 18 makes URLs topic first, which
   means every article and video needs exactly one owning topic. The content submodule is
   read only from this repo and videos carry no tags at all, so the map lives here.
 
@@ -76,13 +76,31 @@ const SIGNALS = {
     ]
   },
   windows: {
-    tags: ['windows', 'powershell', 'vscode', 'vs-code', 'visual-studio', 'terminal', 'avalonia', 'ide', 'extensions', 'keyboard', 'font', 'setup', 'alias'],
+    tags: ['windows', 'powershell', 'visual-studio', 'terminal', 'avalonia', 'keyboard', 'font', 'setup', 'alias'],
     words: [
-      'windows', 'powershell', 'winui', 'wpf', 'visual studio', 'vs code',
-      'vscode', 'terminal', 'command alias', 'slnx', 'winget', 'wsl',
+      'windows', 'powershell', 'winui', 'wpf', 'visual studio', 'terminal',
+      'command alias', 'slnx', 'winget', 'wsl',
       'shortcut', 'keybind', 'snippet', 'debugger', 'breakpoint', 'profiler',
       'editor', 'theme', 'font', 'dev drive'
     ]
+  },
+  vscode: {
+    tags: ['vscode', 'vs-code', 'visual-studio-code'],
+    words: [
+      'vs code', 'vscode', 'visual studio code', 'live share', 'remote containers',
+      'rest client', 'peacock', 'prettier', 'bracket pair colorizer'
+    ]
+  },
+  git: {
+    tags: ['git', 'version-control'],
+    words: [
+      'git ', 'git stash', 'git clean', 'git switch', 'git cherry-pick', 'git rebase',
+      'merge conflict', 'version control'
+    ]
+  },
+  github: {
+    tags: ['github', 'gist'],
+    words: ['github', 'gist', 'pull request', 'github issues', 'github actions']
   },
   cloud: {
     tags: ['azure', 'docker', 'container', 'compose', 'serverless', 'functions', 'devops', 'netlify', 'app-service', 'key-vault', 'appveyor', 'octopus-deploy', 'linux', 'pipedream', 'twilio', 'vonage', 'opentok'],
@@ -98,15 +116,14 @@ const SIGNALS = {
       'oss', 'open-source', 'inclusion', 'diversity', 'parenting', 'family-values',
       'productivity', 'twitch', 'stream', 'livestream', 'coding', 'hacktoberfest',
       'code-of-conduct', 'contributions', 'polywork', 'woodworking', 'diy', 'desk',
-      'hardware', 'developer-experience', 'testing', 'git', 'github', 'notion',
+      'hardware', 'developer-experience', 'testing', 'notion',
       'discord', 'nintendo', 'iot', 'raspberry-pi'
     ],
     words: [
       'live coding', 'stream', 'community', 'code of conduct', 'contributing',
       'girls who code', 'mother', 'lessons learned', 'desk', 'kiosk', 'raspberry pi',
       'inclusive', 'bias', '404 page', 'joy', 'career', 'burnout', 'imposter',
-      'git ', 'github', 'gist', 'pull request', 'commit', 'rebase', 'cherry-pick',
-      'stash', 'branch', 'merge conflict', 'open source', 'maintainer', 'mentor',
+      'open source', 'maintainer', 'mentor',
       'interview', 'salary', 'remote work', 'productivity', 'notion', 'obsidian',
       'bongo cat', 'my setup', 'my desk', 'behind the scenes', 'why i ',
       'i tried', 'disaster', 'mistake', 'lesson'
@@ -115,10 +132,6 @@ const SIGNALS = {
   blazor: {
     tags: ['blazor', 'wasm'],
     words: ['blazor', 'webassembly', 'render mode']
-  },
-  mcp: {
-    tags: ['mcp'],
-    words: ['model context protocol', 'mcp server']
   }
 };
 

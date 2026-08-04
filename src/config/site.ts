@@ -17,8 +17,8 @@ export interface Topic {
   blurb: string;
   /**
    * Hidden topics keep their URL space reserved but stay out of the nav and the chip
-   * rail. blazor and mcp start thin, and a topic page with three items on it reads as
-   * abandoned rather than new.
+   * rail. Blazor starts thin, and a topic page with three items on it reads as abandoned
+   * rather than new.
    */
   visible: boolean;
 }
@@ -70,12 +70,12 @@ export const TOPICS: Topic[] = [
     visible: true
   },
   {
-    slug: 'cloud',
-    label: 'cloud',
-    title: 'Cloud',
+    slug: 'vscode',
+    label: 'vscode',
+    title: 'VS Code',
     blurb:
-      'Azure, containers, deployment, and the bill that shows up when something you ' +
-      'wired at 2am keeps running.',
+      'Extensions, workflows, remote development, and the editor tricks that turn a ' +
+      'fresh install into a place worth spending the day.',
     visible: true
   },
   {
@@ -88,12 +88,30 @@ export const TOPICS: Topic[] = [
     visible: false
   },
   {
-    slug: 'mcp',
-    label: 'mcp',
-    title: 'Model Context Protocol',
+    slug: 'git',
+    label: 'git',
+    title: 'Git',
     blurb:
-      'Tools, resources, transports, and the protocol boundary between an AI client and ' +
-      'the systems it needs to use.',
+      'Branches, commits, rebases, recovery, and the commands that make version control ' +
+      'feel less like defusing a bomb.',
+    visible: false
+  },
+  {
+    slug: 'github',
+    label: 'github',
+    title: 'GitHub',
+    blurb:
+      'Pull requests, issues, Gists, repository workflows, and the collaboration layer ' +
+      'around the code.',
+    visible: false
+  },
+  {
+    slug: 'cloud',
+    label: 'cloud',
+    title: 'Cloud',
+    blurb:
+      'Azure, containers, deployment, and the bill that shows up when something you ' +
+      'wired at 2am keeps running.',
     visible: false
   },
   {
