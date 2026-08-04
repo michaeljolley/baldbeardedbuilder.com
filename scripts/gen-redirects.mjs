@@ -11,10 +11,11 @@
   net for paths that were never real pages.
 
   Sources, in the order they are applied:
-    1. LEGACY_ALIASES below, the pre Astro /posts/ URLs. Hand maintained because there is
+    1. taxonomy.json, which knows the final URL of every article and video.
+    2. TOPIC_ALIASES below, which preserves URLs when a topic slug changes.
+    3. LEGACY_ALIASES below, the pre Astro /posts/ URLs. Hand maintained because there is
        no machine readable record of them anywhere.
-    2. taxonomy.json, which knows the final URL of every article and video.
-    3. Index and pagination routes that no longer exist in v2.
+    4. Index and pagination routes that no longer exist in v2.
 
   Run: pnpm redirects
 */
@@ -63,6 +64,11 @@ const RETIRED = [
   '/posts/cheers-to-2019-bring-on-2020/'
 ];
 
+/** Previous topic slugs that must keep resolving after a taxonomy rename. */
+const TOPIC_ALIASES = {
+  copilot: 'copilot-ai'
+};
+
 const taxonomy = JSON.parse(fs.readFileSync(TAXONOMY, 'utf8'));
 const entries = taxonomy.entries;
 
@@ -105,7 +111,26 @@ for (const [key, e] of Object.entries(entries)) {
 }
 
 /*
-  2. Legacy /posts/ aliases go straight to the final topic first URL, not to /blog/.
+  Topic renames keep old inbound links working without introducing redirect chains.
+  Articles can land on their new permanent URL. Video pages are conditional, so their
+  old URLs land on the renamed topic instead of potentially redirecting to a 404.
+*/
+for (const [from, to] of Object.entries(TOPIC_ALIASES)) {
+  const topicUrl = `/${to}/`;
+  add(`/${from}/`, topicUrl);
+  add(`/${from}`, topicUrl);
+
+  for (const [key, entry] of Object.entries(entries)) {
+    if (entry.primaryTopic !== to) continue;
+    const oldUrl = `/${from}/${entry.slug}`;
+    const destination = key.startsWith('blog:') ? entry.url : topicUrl;
+    add(`${oldUrl}/`, destination);
+    add(oldUrl, destination);
+  }
+}
+
+/*
+  3. Legacy /posts/ aliases go straight to the final topic first URL, not to /blog/.
      This is the chain that decision 19 exists to prevent.
 */
 for (const [from, key] of Object.entries(LEGACY_ALIASES)) {
@@ -121,7 +146,7 @@ for (const from of RETIRED) {
 }
 
 /*
-  3. Index and pagination routes that v2 does not have in the same shape. Topic pages
+  4. Index and pagination routes that v2 does not have in the same shape. Topic pages
      replace the single flat blog index, so a blog index page has no successor and home
      carries the Fresh rail, which makes it the honest destination.
 

@@ -52,9 +52,9 @@ export const TOPICS: Topic[] = [
     visible: true
   },
   {
-    slug: 'copilot',
-    label: 'copilot',
-    title: 'Copilot and AI',
+    slug: 'copilot-ai',
+    label: 'copilot/ai',
+    title: 'Copilot / AI',
     blurb:
       'Getting real work out of AI tooling, and being honest about the parts where it ' +
       'still hands you confident nonsense.',
