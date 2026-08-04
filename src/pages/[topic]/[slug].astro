@@ -17,9 +17,7 @@ import CommentThread from '../../components/islands/CommentThread';
 import ShareMenu from '../../components/ShareMenu.astro';
 import { bakedLike } from '../../lib/likes';
 import { bakedReplies } from '../../lib/comments';
-import { videoPages } from '../../lib/video-pages';
 import { videoTranscripts } from '../../lib/video-transcripts';
-import { renderComment } from '../../lib/markdown';
 
 export async function getStaticPaths() {
   const [items, blog] = await Promise.all([pagedItems(), getCollection('blog')]);
@@ -47,16 +45,6 @@ const dateLabel = item.date.toLocaleDateString('en-US', {
 
 const alsoFiled = item.alsoFiled.map((slug) => topicBySlug(slug)).filter(Boolean);
 
-/*
-  The written intro for a video, run through the comment renderer.
-
-  Michael writes these himself, so trust is not the reason. The reason is that it is the
-  one markdown renderer on the site, it emits the same eight tags and the same themed code
-  blocks as everything else, and a second renderer would be a second set of output to keep
-  matching the first.
-*/
-const page = item.kind === 'video' ? (await videoPages()).get(item.key.slice(7)) : undefined;
-const intro = page?.intro ? await renderComment(page.intro) : null;
 const transcript = item.kind === 'video'
   ? (await videoTranscripts()).get(item.key.slice(7))
   : undefined;
@@ -195,8 +183,6 @@ const replies = await bakedReplies('content', item.key);
         }
 
         {Content && <div class="prose"><Content /></div>}
-
-        {intro && <div class="prose" set:html={intro} />}
 
         {
           transcript && (

@@ -27,8 +27,6 @@ import type { Database } from './supabase/database.types';
 export interface VideoPage {
   /** Card summary in a feed and lede on the page. Null until somebody writes one. */
   summary: string | null;
-  /** The written introduction, markdown. Null when the page is carrying a transcript only. */
-  intro: string | null;
   publishedAt: Date;
 }
 
@@ -51,13 +49,12 @@ export async function videoPages(): Promise<Map<string, VideoPage>> {
   if (supabaseWritable) {
     const { data } = await serviceClient()
       .from('video_pages')
-      .select('video_id, summary, intro_markdown, published_at');
+      .select('video_id, summary, published_at');
 
     for (const row of (data ?? []) as VideoPageRow[]) {
       if (!row.video_id) continue;
       built.set(row.video_id, {
         summary: row.summary,
-        intro: row.intro_markdown,
         publishedAt: new Date(row.published_at)
       });
     }
