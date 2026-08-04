@@ -13,7 +13,19 @@ import { topicBySlug, type Topic } from '../config/site';
 import { isPublished } from './publish';
 import { videoPages } from './video-pages';
 
-export type ItemKind = 'article' | 'video';
+export type ItemKind = 'article' | 'video' | 'short';
+
+export function isVideoKind(kind: ItemKind): boolean {
+  return kind === 'video' || kind === 'short';
+}
+
+export function itemKindLabel(kind: ItemKind): string {
+  return {
+    article: 'Article',
+    video: 'Video',
+    short: 'Short'
+  }[kind];
+}
 
 export interface Item {
   /** collection:id, the key used by taxonomy.json and START_HERE. */
@@ -45,8 +57,6 @@ export interface Item {
   thumbnail: string | null;
   /** YouTube watch URL. Only set on videos. */
   external: string | null;
-  /** A YouTube short. Only meaningful on videos. */
-  short: boolean;
   /**
    * Dated in the future. The nightly bot stages posts ahead of time. They build, so the
    * URL is live and shareable the moment the date passes and nothing 404s in between,
@@ -112,7 +122,6 @@ async function loadItems(): Promise<Item[]> {
       views: null,
       thumbnail: post.data.image ?? null,
       external: null,
-      short: false,
       draft: !isPublished(post.data.pubDate, now)
     });
   }
@@ -129,7 +138,7 @@ async function loadItems(): Promise<Item[]> {
     const live = page ? isPublished(page.publishedAt, now) : false;
     items.push({
       key,
-      kind: 'video',
+      kind: video.data.short ? 'short' : 'video',
       slug: t.slug,
       url: live ? t.url : null,
       href: live ? t.url : video.data.link,
@@ -149,7 +158,6 @@ async function loadItems(): Promise<Item[]> {
       views: video.data.views ?? null,
       thumbnail: video.data.thumbnail,
       external: video.data.link,
-      short: video.data.short,
       draft: !isPublished(video.data.date, now)
     });
   }
@@ -263,7 +271,7 @@ export async function topicView(slug: string): Promise<TopicView | null> {
     topic,
     items,
     articles: items.filter((i) => i.kind === 'article').length,
-    videos: items.filter((i) => i.kind === 'video').length
+    videos: items.filter((i) => isVideoKind(i.kind)).length
   };
 }
 

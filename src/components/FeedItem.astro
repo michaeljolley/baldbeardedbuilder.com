@@ -10,7 +10,7 @@
   most video rows are links to YouTube, and the stat line says so rather than leaving
   somebody to find out by arriving there.
 */
-import type { Item } from '../lib/content';
+import { isVideoKind, itemKindLabel, type Item } from '../lib/content';
 
 interface Props {
   item: Item;
@@ -24,7 +24,7 @@ interface Props {
 
 const { item, level = 3 } = Astro.props;
 const Title = `h${level}` as 'h3' | 'h4';
-const opensYouTube = item.kind === 'video' && item.offsite;
+const opensYouTube = isVideoKind(item.kind) && item.offsite;
 
 const stats: string[] = [item.length];
 if (item.views !== null) {
@@ -41,7 +41,7 @@ if (item.offsite) {
   target={opensYouTube ? '_blank' : undefined}
   rel={opensYouTube ? 'noopener noreferrer' : undefined}
 >
-  <span class="kind">{item.kind === 'video' ? 'Video' : 'Article'}</span>
+  <span class="kind">{itemKindLabel(item.kind)}</span>
   <span>
     <Title>{item.title}</Title>
     {item.description && <p>{item.description}</p>}

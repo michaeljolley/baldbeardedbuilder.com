@@ -40,3 +40,8 @@ test('YouTube video cards open in a new browsing context', { skip: !hasBuild }, 
 
   assert.ok(checked > 0, 'no YouTube video cards were found in the built site');
 });
+
+test('shorts are labeled as their own content kind', { skip: !hasBuild }, () => {
+  const html = fs.readFileSync(path.join(DIST, 'videos', 'index.html'), 'utf8');
+  assert.match(html, /<span class="kind">Short<\/span>/);
+});
