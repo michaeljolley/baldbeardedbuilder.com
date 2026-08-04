@@ -91,11 +91,11 @@ const canEmail = Boolean(account?.email && account.preferences);
             </p>
             <div class="gate-actions">
               <a class="btn primary" href="/auth/signin/?next=/account/" rel="nofollow">
-                Sign in with GitHub <span aria-hidden="true">&rarr;</span>
+                Sign in <span aria-hidden="true">&rarr;</span>
               </a>
               <p class="fine">
-                We read your GitHub username, avatar and account age. Nothing else, and
-                nothing is written back.
+                We read the basic profile details shared by the provider you choose. Nothing
+                is written back.
               </p>
             </div>
           </div>
@@ -405,7 +405,7 @@ const canEmail = Boolean(account?.email && account.preferences);
 
                   <ul class="connection-list">
                     <li>
-                      <span class="connection-name"><b>GitHub</b><span>Identity and sign in</span></span>
+                      <span class="connection-name"><b>GitHub</b><span>Connected account</span></span>
                       <span class={`connection-state ${account.githubLogin ? 'connected' : ''}`}>
                         {account.githubLogin ? `@${account.githubLogin}` : 'Not connected'}
                       </span>
