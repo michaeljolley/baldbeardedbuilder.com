@@ -25,6 +25,8 @@ import { serviceClient, supabaseWritable } from './supabase';
 import type { Database } from './supabase/database.types';
 
 export interface VideoPage {
+  /** False removes the video from every item-backed site surface. */
+  included: boolean;
   /** Card summary in a feed and lede on the page. Null until somebody writes one. */
   summary: string | null;
   publishedAt: Date;
@@ -49,11 +51,12 @@ export async function videoPages(): Promise<Map<string, VideoPage>> {
   if (supabaseWritable) {
     const { data } = await serviceClient()
       .from('video_pages')
-      .select('video_id, summary, published_at');
+      .select('video_id, included, summary, published_at');
 
     for (const row of (data ?? []) as VideoPageRow[]) {
       if (!row.video_id) continue;
       built.set(row.video_id, {
+        included: row.included,
         summary: row.summary,
         publishedAt: new Date(row.published_at)
       });

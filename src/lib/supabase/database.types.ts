@@ -640,6 +640,7 @@ export type Database = {
       video_pages: {
         Row: {
           created_at: string
+          included: boolean
           intro_markdown: string | null
           published_at: string
           summary: string | null
@@ -648,6 +649,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          included?: boolean
           intro_markdown?: string | null
           published_at?: string
           summary?: string | null
@@ -656,6 +658,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          included?: boolean
           intro_markdown?: string | null
           published_at?: string
           summary?: string | null

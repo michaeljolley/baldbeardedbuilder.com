@@ -127,6 +127,9 @@ async function loadItems(): Promise<Item[]> {
   }
 
   for (const video of videos as CollectionEntry<'videos'>[]) {
+    const page = pages.get(video.data.id);
+    if (page?.included === false) continue;
+
     const key = `videos:${video.data.id}`;
     const t = entries[key];
     if (!t) continue;
@@ -134,7 +137,6 @@ async function loadItems(): Promise<Item[]> {
       No row, no page. The card then points at YouTube, which is where the video has been
       the whole time, rather than at a page that would only exist to say so.
     */
-    const page = pages.get(video.data.id);
     const live = page ? isPublished(page.publishedAt, now) : false;
     items.push({
       key,
