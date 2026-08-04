@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import expressiveCode from 'astro-expressive-code';
 import sitemap from '@astrojs/sitemap';
+import pandaSyntax from './src/themes/panda-syntax.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,7 +13,7 @@ export default defineConfig({
   },
   integrations: [
     expressiveCode({
-      themes: ['laserwave'],
+      themes: [pandaSyntax],
       styleOverrides: {
         frames: {
           tooltipSuccessBackground: '#9333ea'
