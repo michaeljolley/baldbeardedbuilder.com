@@ -137,6 +137,7 @@ export const topicBySlug = (slug: string) => TOPICS.find((t) => t.slug === slug)
 export const RESERVED_SLUGS = [
   '404',
   'about',
+  'all',
   'blog',
   'builders',
   'conduct',
