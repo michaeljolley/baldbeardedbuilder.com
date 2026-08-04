@@ -675,6 +675,7 @@ html:not(.js) .themer { display: none; }
   line-height: 1.35;
 }
 .prose code { font-family: var(--mono); font-size: .875em; background: var(--bg-inset); padding: .1em .35em; border-radius: 2px; }
+.prose pre { max-height: min(36rem, 70vh); overflow: auto; }
 
 .code {
   border: 1px solid var(--line); border-radius: var(--r);

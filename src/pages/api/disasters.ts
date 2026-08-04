@@ -8,8 +8,8 @@
 
   Signing in is required. Decision 25 gives the person who sent a story a badge and the
   ability to edit it until it publishes, and neither exists without an account to attach
-  them to. Publishing anonymously is a separate choice, and the default, so the person is
-  known to me and to nobody else.
+  them to. Publishing anonymously is a separate choice, so the person can keep their name
+  and handle off the published story.
 
   Decision 25 also promised an email when the story ran. Notifications were cut from v1,
   so that promise is not made anywhere a person can read it. See docs/notifications.md.
