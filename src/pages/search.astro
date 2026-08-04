@@ -1,18 +1,9 @@
 ---
 /*
-  Search.
-
-  Pagefind builds a static index over dist after the Astro build, so this is a real
-  search with no server and no third party. The Component UI ships as web components,
-  which is why the script is a plain module tag rather than something Vite bundles. It is
-  also the accessible one. The older PagefindUI class is deprecated as of Pagefind 1.5.
-
-  The UI is the only thing on this site that genuinely cannot work without JavaScript,
-  so it says so in a noscript rather than sitting there as an empty box.
-
-  The mockups never drew a search page, so this borrows the reading layout. The whole
-  component set is repainted through its own --pf-* variables, all mapped onto site
-  tokens, so it follows the theme picker like everything else.
+  Search uses Pagefind's browser API rather than its prebuilt components. The component
+  UI owns its shadow DOM, which makes its filter pane and long result excerpts impossible
+  to fit into this site's reading measure reliably. This page keeps the same private,
+  static index while giving every layout boundary an explicit min-width of zero.
 */
 import Base from '../layouts/Base.astro';
 ---
@@ -22,106 +13,1044 @@ import Base from '../layouts/Base.astro';
   description="Search every article, video and dev disaster on the site."
   noindex={true}
 >
-  <link slot="head" rel="stylesheet" href="/pagefind/pagefind-component-ui.css" />
-  <script slot="head" is:inline type="module" src="/pagefind/pagefind-component-ui.js"></script>
-
   <main id="main">
-    <div class="shell read">
-      <aside class="rail">
-        <dl>
-          <div><dt>Covers</dt><dd>Articles, videos, dev disasters</dd></div>
-          <div><dt>Runs</dt><dd>In your browser</dd></div>
-          <div><dt>Sends your query</dt><dd>Nowhere</dd></div>
+    <div class="search-page shell">
+      <header class="search-intro">
+        <span class="path">search<span class="sep">/</span><b>index</b></span>
+        <h1>Find the one where <span class="squiggle"><span>something broke.</span></span></h1>
+        <p class="lede">
+          Search the full text of every article, video transcript, and dev disaster.
+        </p>
+
+        <dl class="search-facts" aria-label="About this search">
+          <div><dt>Index</dt><dd>Runs here</dd></div>
+          <div><dt>Queries sent</dt><dd>Zero</dd></div>
+          <div><dt>Tracking</dt><dd>Also zero</dd></div>
         </dl>
-        <span class="fine">No tracking, no third party, no autocomplete calling home.</span>
-      </aside>
+      </header>
 
-      <article>
-        <header class="storyhead">
-          <span class="path">search</span>
-          <h1>Find the one where <span class="squiggle"><span>something broke.</span></span></h1>
-          <p class="lede">
-            The index is a static file your browser downloads once, so nothing you type
-            here leaves the page.
-          </p>
-        </header>
+      <section class="search-ui" data-search-root aria-labelledby="search-label">
+        <div class="search-console">
+          <form class="search-form" role="search">
+            <label id="search-label" for="site-search">Search everything</label>
+            <div class="search-input-wrap">
+              <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22">
+                <circle cx="11" cy="11" r="6.75"></circle>
+                <path d="m16 16 4.25 4.25"></path>
+              </svg>
+              <input
+                id="site-search"
+                name="q"
+                type="search"
+                autocomplete="off"
+                enterkeyhint="search"
+                placeholder="Try “Blazor”, “async”, or an error message"
+                spellcheck="false"
+              />
+              <button class="search-clear" type="button" aria-label="Clear search" hidden>
+                Clear
+              </button>
+            </div>
+          </form>
 
-        <div class="search-slot">
-          <noscript>
-            <p class="notice">
-              Search needs JavaScript, because the index is queried in your browser rather
-              than on a server. Everything else on this site works without it. If you'd
-              rather browse, start from <a href="/">the front page</a> or pick a topic in
-              the nav.
-            </p>
-          </noscript>
-
-          <pagefind-input instance="bbb"></pagefind-input>
-          <div class="search-meta">
-            <pagefind-summary instance="bbb" default-message="Type to search."
-            ></pagefind-summary>
+          <div class="search-filter-bar" aria-label="Refine results">
+            <div class="search-filter-heading">
+              <span>Refine</span>
+              <button class="filter-reset" type="button" hidden>Clear filters</button>
+            </div>
+            <div class="search-filter-groups">
+              <fieldset>
+                <legend>Kind</legend>
+                <div class="filter-options" data-filter-group="kind">
+                  <span class="filter-loading">Loading kinds...</span>
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend>Topic</legend>
+                <div class="filter-options" data-filter-group="topic">
+                  <span class="filter-loading">Loading topics...</span>
+                </div>
+              </fieldset>
+            </div>
           </div>
-          {/*
-            The filter pane rather than the filter dropdown. The dropdown puts
-            role="combobox" on its trigger button and then names it with the text inside
-            the button, and a combobox does not take its name from its content, so the
-            control ends up with no accessible name at all. The pane is a details element
-            wrapping a real fieldset of checkboxes, which needs no rescuing.
-          */}
-          <pagefind-filter-pane instance="bbb" open="true"></pagefind-filter-pane>
-          <pagefind-results instance="bbb"></pagefind-results>
-          <pagefind-config instance="bbb"></pagefind-config>
         </div>
-      </article>
+
+        <div class="search-results-head">
+          <p class="search-status" role="status" aria-live="polite">
+            Loading the local index...
+          </p>
+          <span class="search-hint"><kbd>/</kbd> focuses search</span>
+        </div>
+
+        <ol class="search-results" id="search-results" aria-busy="true"></ol>
+
+        <div class="search-empty" hidden>
+          <span aria-hidden="true">[ no match ]</span>
+          <h2>Nothing in the index looks like that.</h2>
+          <p>Try fewer words, clear a filter, or search for the error instead of the fix.</p>
+        </div>
+
+        <button class="search-more" type="button" hidden>Show more results</button>
+      </section>
+
+      <noscript>
+        <div class="notice search-noscript">
+          <p>
+            Search needs JavaScript because the index is queried in your browser rather
+            than on a server. Everything else on this site works without it.
+          </p>
+          <p>
+            Start from <a href="/">the front page</a> or pick a topic in the navigation.
+          </p>
+        </div>
+      </noscript>
     </div>
   </main>
 </Base>
 
-<style is:global>
-  .search-slot {
-    margin-top: 2.5rem;
-    display: grid;
-    gap: 1.25rem;
+<script>
+  type FilterCounts = Record<string, Record<string, number>>;
 
-    --pf-font: var(--body);
-    --pf-background: var(--bg-raised);
-    --pf-text: var(--fg);
-    --pf-text-secondary: var(--fg-dim);
-    --pf-text-muted: var(--fg-dim);
-    --pf-border: var(--line);
-    --pf-border-focus: var(--accent);
-    --pf-border-radius: var(--r);
-    --pf-outline-focus: var(--accent);
-    --pf-outline-width: 2px;
-    --pf-outline-offset: 1px;
-    --pf-hover: var(--bg-inset);
-    --pf-mark: var(--accent);
-    --pf-skeleton: var(--bg-inset);
-    --pf-skeleton-shine: var(--line);
-    --pf-error-bg: var(--bg-inset);
-    --pf-error-border: var(--line);
-    --pf-error-text: var(--fg);
-    --pf-error-text-secondary: var(--fg-dim);
-    /* The design language does not use drop shadows anywhere else. */
-    --pf-shadow-sm: none;
-    --pf-shadow-md: none;
-    --pf-shadow-lg: none;
-    --pf-scroll-shadow: none;
+  interface ResultData {
+    url: string;
+    excerpt?: string;
+    plain_excerpt?: string;
+    meta?: Record<string, string>;
   }
 
-  .search-meta {
-    display: flex;
-    flex-wrap: wrap;
+  interface SearchHit {
+    id: string;
+    data: () => Promise<ResultData>;
+  }
+
+  interface SearchResponse {
+    results: SearchHit[];
+  }
+
+  interface PagefindApi {
+    filters: () => Promise<FilterCounts>;
+    preload: (term: string, options?: SearchOptions) => Promise<void>;
+    search: (term: string | null, options?: SearchOptions) => Promise<SearchResponse>;
+    debouncedSearch: (
+      term: string | null,
+      options?: SearchOptions,
+      debounce?: number
+    ) => Promise<SearchResponse | null>;
+  }
+
+  interface SearchOptions {
+    filters?: Record<string, string>;
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-search-root]');
+
+  if (root) {
+    const input = root.querySelector<HTMLInputElement>('#site-search')!;
+    const form = root.querySelector<HTMLFormElement>('.search-form')!;
+    const clearButton = root.querySelector<HTMLButtonElement>('.search-clear')!;
+    const resetButton = root.querySelector<HTMLButtonElement>('.filter-reset')!;
+    const status = root.querySelector<HTMLElement>('.search-status')!;
+    const resultsList = root.querySelector<HTMLOListElement>('.search-results')!;
+    const emptyState = root.querySelector<HTMLElement>('.search-empty')!;
+    const moreButton = root.querySelector<HTMLButtonElement>('.search-more')!;
+    const consoleElement = root.querySelector<HTMLElement>('.search-console')!;
+    const PAGE_SIZE = 10;
+    const PAGEFIND_PATH = '/pagefind/pagefind.js';
+    const params = new URLSearchParams(window.location.search);
+    const selected: Record<'kind' | 'topic', string | null> = {
+      kind: params.get('kind'),
+      topic: params.get('topic')
+    };
+    const resultCache = new Map<string, ResultData>();
+    let pagefind: PagefindApi | null = null;
+    let currentHits: SearchHit[] = [];
+    let renderedCount = 0;
+    let searchVersion = 0;
+
+    const valueLabels: Record<string, string> = {
+      article: 'Articles',
+      video: 'Videos',
+      short: 'Shorts',
+      disaster: 'Dev disasters',
+      page: 'Pages'
+    };
+
+    const labelFor = (value: string) =>
+      valueLabels[value] ??
+      value
+        .replaceAll('-', ' ')
+        .replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+    const filtersForSearch = () => {
+      const filters: Record<string, string> = {};
+      if (selected.kind) filters.kind = selected.kind;
+      if (selected.topic) filters.topic = selected.topic;
+      return Object.keys(filters).length > 0 ? filters : undefined;
+    };
+
+    const syncUrl = () => {
+      const next = new URLSearchParams();
+      const query = input.value.trim();
+      if (query) next.set('q', query);
+      if (selected.kind) next.set('kind', selected.kind);
+      if (selected.topic) next.set('topic', selected.topic);
+      const search = next.toString();
+      history.replaceState(null, '', `${location.pathname}${search ? `?${search}` : ''}`);
+    };
+
+    const setBusy = (busy: boolean) => {
+      consoleElement.classList.toggle('is-busy', busy);
+      resultsList.setAttribute('aria-busy', String(busy));
+    };
+
+    const updateControls = () => {
+      clearButton.hidden = input.value.length === 0;
+      resetButton.hidden = !selected.kind && !selected.topic;
+
+      for (const group of ['kind', 'topic'] as const) {
+        root
+          .querySelectorAll<HTMLButtonElement>(`[data-filter-group="${group}"] button`)
+          .forEach((button) => {
+            const active = (button.dataset.value || null) === selected[group];
+            button.setAttribute('aria-pressed', String(active));
+          });
+      }
+    };
+
+    const formatStatus = (count: number) => {
+      const query = input.value.trim();
+      const noun = count === 1 ? 'result' : 'results';
+      const filterNote =
+        selected.kind || selected.topic
+          ? `, filtered${selected.kind ? ` to ${labelFor(selected.kind).toLowerCase()}` : ''}${
+              selected.topic ? ` in ${labelFor(selected.topic)}` : ''
+            }`
+          : '';
+      return query
+        ? `${count.toLocaleString('en-US')} ${noun} for “${query}”${filterNote}`
+        : `${count.toLocaleString('en-US')} ${noun}${filterNote}`;
+    };
+
+    const createResult = (data: ResultData, index: number) => {
+      const item = document.createElement('li');
+      const link = document.createElement('a');
+      const number = document.createElement('span');
+      const copy = document.createElement('span');
+      const meta = document.createElement('span');
+      const kind = document.createElement('span');
+      const path = document.createElement('span');
+      const title = document.createElement('h2');
+      const excerpt = document.createElement('span');
+      const arrow = document.createElement('span');
+      const resultUrl = new URL(data.url, window.location.origin);
+      const resultPath = resultUrl.pathname.replace(/^\/|\/$/g, '') || 'home';
+      const resultTitle = data.meta?.title || resultPath;
+      const excerptSource = (() => {
+        if (data.plain_excerpt) return data.plain_excerpt.trim();
+        const decoded = document.createElement('span');
+        decoded.innerHTML = data.excerpt ?? '';
+        return decoded.textContent?.trim() ?? '';
+      })();
+      let excerptText = excerptSource;
+
+      for (const prefix of [resultPath, resultTitle, resultTitle]) {
+        if (excerptText.toLocaleLowerCase().startsWith(prefix.toLocaleLowerCase())) {
+          excerptText = excerptText.slice(prefix.length).replace(/^[\s.:/-]+/, '');
+        }
+      }
+
+      item.className = 'search-result';
+      link.className = 'search-result-link';
+      link.href = data.url;
+      number.className = 'search-result-number';
+      number.textContent = String(index + 1).padStart(2, '0');
+      number.setAttribute('aria-hidden', 'true');
+      copy.className = 'search-result-copy';
+      meta.className = 'search-result-meta';
+      kind.className = 'search-result-kind';
+      kind.textContent = labelFor(data.meta?.kind ?? 'page');
+      path.className = 'search-result-path';
+      path.textContent = resultPath;
+      title.textContent = resultTitle;
+      excerpt.className = 'search-result-excerpt';
+      if (excerptText) {
+        const terms = input.value
+          .trim()
+          .split(/\s+/)
+          .filter((term) => term.length > 1);
+        const escapedTerms = terms.map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+        const pattern = escapedTerms.length
+          ? new RegExp(`(${escapedTerms.join('|')})`, 'gi')
+          : null;
+
+        for (const part of pattern ? excerptText.split(pattern) : [excerptText]) {
+          if (pattern && terms.some((term) => term.toLocaleLowerCase() === part.toLocaleLowerCase())) {
+            const mark = document.createElement('mark');
+            mark.textContent = part;
+            excerpt.append(mark);
+          } else {
+            excerpt.append(document.createTextNode(part));
+          }
+        }
+      }
+      arrow.className = 'search-result-arrow';
+      arrow.innerHTML = '&#8599;';
+      arrow.setAttribute('aria-hidden', 'true');
+
+      meta.append(kind, path);
+      copy.append(meta, title);
+      if (excerptText) copy.append(excerpt);
+      link.append(number, copy, arrow);
+      item.append(link);
+      return item;
+    };
+
+    const renderNextPage = async (version: number) => {
+      const nextCount = Math.min(renderedCount + PAGE_SIZE, currentHits.length);
+      const batch = currentHits.slice(renderedCount, nextCount);
+      const data = await Promise.all(
+        batch.map(async (hit) => {
+          const cached = resultCache.get(hit.id);
+          if (cached) return cached;
+          const loaded = await hit.data();
+          resultCache.set(hit.id, loaded);
+          return loaded;
+        })
+      );
+
+      if (version !== searchVersion) return;
+
+      const fragment = document.createDocumentFragment();
+      data.forEach((result, offset) => {
+        fragment.append(createResult(result, renderedCount + offset));
+      });
+      resultsList.append(fragment);
+      renderedCount = nextCount;
+      moreButton.hidden = renderedCount >= currentHits.length;
+      setBusy(false);
+    };
+
+    const showInitialState = () => {
+      searchVersion += 1;
+      currentHits = [];
+      renderedCount = 0;
+      resultsList.replaceChildren();
+      resultsList.setAttribute('aria-busy', 'false');
+      emptyState.hidden = true;
+      moreButton.hidden = true;
+      status.textContent = 'Type a few words, or start with a filter.';
+      setBusy(false);
+    };
+
+    const runSearch = async (debounced = true) => {
+      const query = input.value.trim();
+      const filters = filtersForSearch();
+      syncUrl();
+      updateControls();
+
+      if (!pagefind) {
+        status.textContent = 'Loading the local index...';
+        return;
+      }
+
+      if (!query && !filters) {
+        showInitialState();
+        return;
+      }
+
+      const version = ++searchVersion;
+      setBusy(true);
+      emptyState.hidden = true;
+      moreButton.hidden = true;
+      status.textContent = query ? `Searching for “${query}”...` : 'Applying filters...';
+
+      try {
+        const response = debounced
+          ? await pagefind.debouncedSearch(query || null, { filters }, 180)
+          : await pagefind.search(query || null, { filters });
+
+        if (!response || version !== searchVersion) return;
+
+        currentHits = response.results;
+        renderedCount = 0;
+        resultsList.replaceChildren();
+        status.textContent = formatStatus(currentHits.length);
+        emptyState.hidden = currentHits.length !== 0;
+
+        if (currentHits.length === 0) {
+          setBusy(false);
+          return;
+        }
+
+        await renderNextPage(version);
+      } catch (error) {
+        if (version !== searchVersion) return;
+        currentHits = [];
+        resultsList.replaceChildren();
+        moreButton.hidden = true;
+        emptyState.hidden = true;
+        status.textContent =
+          error instanceof Error
+            ? `The local index could not be read: ${error.message}`
+            : 'The local index could not be read.';
+        setBusy(false);
+      }
+    };
+
+    const renderFilterGroup = (
+      group: 'kind' | 'topic',
+      counts: Record<string, number>
+    ) => {
+      const container = root.querySelector<HTMLElement>(`[data-filter-group="${group}"]`)!;
+      const values = Object.entries(counts).sort(([left], [right]) => {
+        if (group === 'kind') {
+          const order = ['article', 'video', 'short', 'disaster', 'page'];
+          return order.indexOf(left) - order.indexOf(right);
+        }
+        return labelFor(left).localeCompare(labelFor(right));
+      });
+      const allCount = values.reduce((sum, [, count]) => sum + count, 0);
+      const options: Array<[string, number]> = [['', allCount], ...values];
+
+      container.replaceChildren();
+      options.forEach(([value, count]) => {
+        const button = document.createElement('button');
+        const label = document.createElement('span');
+        const number = document.createElement('span');
+        button.type = 'button';
+        button.dataset.value = value;
+        button.setAttribute('aria-controls', 'search-results');
+        label.textContent = value ? labelFor(value) : 'All';
+        number.className = 'filter-count';
+        number.textContent = count.toLocaleString('en-US');
+        button.append(label, number);
+        button.addEventListener('click', () => {
+          selected[group] = value || null;
+          void runSearch(false);
+        });
+        container.append(button);
+      });
+    };
+
+    const initialize = async () => {
+      try {
+        pagefind = (await import(/* @vite-ignore */ PAGEFIND_PATH)) as PagefindApi;
+        const counts = await pagefind.filters();
+
+        for (const group of ['kind', 'topic'] as const) {
+          const groupCounts = counts[group] ?? {};
+          if (selected[group] && !(selected[group]! in groupCounts)) selected[group] = null;
+          renderFilterGroup(group, groupCounts);
+        }
+
+        input.value = params.get('q') ?? '';
+        updateControls();
+
+        if (input.value.trim() || filtersForSearch()) {
+          await runSearch(false);
+        } else {
+          showInitialState();
+        }
+      } catch (error) {
+        root.querySelectorAll('.filter-loading').forEach((element) => {
+          element.textContent = 'Unavailable';
+        });
+        status.textContent =
+          error instanceof Error
+            ? `The local index could not be loaded: ${error.message}`
+            : 'The local index could not be loaded.';
+        setBusy(false);
+      }
+    };
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      void runSearch(false);
+    });
+
+    input.addEventListener('input', () => {
+      clearButton.hidden = input.value.length === 0;
+      if (input.value) void pagefind?.preload(input.value, { filters: filtersForSearch() });
+      void runSearch();
+    });
+
+    clearButton.addEventListener('click', () => {
+      input.value = '';
+      input.focus();
+      void runSearch(false);
+    });
+
+    resetButton.addEventListener('click', () => {
+      selected.kind = null;
+      selected.topic = null;
+      void runSearch(false);
+    });
+
+    moreButton.addEventListener('click', () => {
+      setBusy(true);
+      void renderNextPage(searchVersion);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      const target = event.target as HTMLElement | null;
+      const isEditing =
+        target?.matches('input, textarea, select') || target?.isContentEditable;
+      if (event.key === '/' && !isEditing) {
+        event.preventDefault();
+        input.focus();
+      }
+    });
+
+    void initialize();
+  }
+</script>
+
+<style is:global>
+  .search-page {
+    display: grid;
+    grid-template-columns: minmax(15rem, 18rem) minmax(0, 1fr);
+    gap: clamp(3rem, 7vw, 7.5rem);
+    padding-block: clamp(3rem, 7vw, 6rem) 6rem;
+  }
+
+  .search-intro {
+    min-width: 0;
+  }
+
+  .search-intro h1 {
+    font-size: clamp(2.4rem, 4.5vw, 4.25rem);
+    margin: 1rem 0 1.25rem;
+  }
+
+  .search-intro h1 .squiggle {
+    color: var(--sev-error);
+  }
+
+  .search-intro h1 .squiggle > span {
+    color: var(--fg);
+  }
+
+  .search-intro .lede {
+    font-size: 1.0625rem;
+  }
+
+  .search-facts {
+    display: grid;
     gap: 1rem;
+    margin: 2.5rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .search-facts div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .search-facts dt,
+  .search-facts dd {
+    font-family: var(--mono);
+    font-size: .6875rem;
+  }
+
+  .search-facts dt {
+    color: var(--fg-dim);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .search-facts dd {
+    margin: 0;
+    color: var(--fg);
+  }
+
+  .search-ui {
+    min-width: 0;
+  }
+
+  .search-ui [hidden] {
+    display: none !important;
+  }
+
+  .search-console {
+    position: relative;
+    min-width: 0;
+    padding: .375rem;
+    border: 1px solid var(--line);
+    border-radius: calc(var(--r) + 4px);
+    background: var(--bg-inset);
+    overflow: hidden;
+  }
+
+  .search-console::after {
+    content: "";
+    position: absolute;
+    inset: auto .375rem .375rem;
+    height: 2px;
+    background: var(--accent);
+    opacity: 0;
+    transform: scaleX(.12);
+    transform-origin: left;
+  }
+
+  .search-console.is-busy::after {
+    opacity: 1;
+    animation: search-progress .9s cubic-bezier(.32, .72, 0, 1) infinite alternate;
+  }
+
+  @keyframes search-progress {
+    to { transform: scaleX(1); }
+  }
+
+  .search-form,
+  .search-filter-bar {
+    background: var(--bg-raised);
+  }
+
+  .search-form {
+    padding: 1.25rem;
+    border-radius: var(--r) var(--r) 0 0;
+  }
+
+  .search-form > label,
+  .search-filter-heading,
+  .search-filter-bar legend {
+    font-family: var(--mono);
+    font-size: .6875rem;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+
+  .search-form > label {
+    display: block;
+    margin-bottom: .65rem;
+    color: var(--fg-dim);
+  }
+
+  .search-input-wrap {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: .8rem;
+    min-width: 0;
+    padding-bottom: .65rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .search-input-wrap:focus-within {
+    border-color: var(--accent);
+  }
+
+  .search-input-wrap svg {
+    fill: none;
+    stroke: var(--fg-dim);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  .search-input-wrap:focus-within svg {
+    stroke: var(--accent);
+  }
+
+  .search-input-wrap input {
+    min-width: 0;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--fg);
+    font: 500 clamp(1.125rem, 2.2vw, 1.45rem)/1.35 var(--body);
+  }
+
+  .search-input-wrap input::placeholder {
+    color: var(--fg-dim);
+    font-weight: 400;
+  }
+
+  .search-input-wrap input::-webkit-search-cancel-button {
+    appearance: none;
+  }
+
+  .search-clear,
+  .filter-reset {
+    padding: .35rem .1rem;
+    border: 0;
+    background: transparent;
+    color: var(--fg-dim);
+    font: .6875rem/1 var(--mono);
+    cursor: pointer;
+  }
+
+  .search-clear:hover,
+  .filter-reset:hover {
+    color: var(--accent);
+  }
+
+  .search-filter-bar {
+    padding: 1rem 1.25rem 1.25rem;
+    border-top: 1px solid var(--line);
+    border-radius: 0 0 var(--r) var(--r);
+  }
+
+  .search-filter-heading {
+    display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: .9rem;
+    color: var(--fg-dim);
   }
 
-  /* Web components are unstyled until their bundle lands, which reads as a broken page. */
-  pagefind-input:not(:defined),
-  pagefind-summary:not(:defined),
-  pagefind-filter-pane:not(:defined),
-  pagefind-results:not(:defined) {
-    visibility: hidden;
+  .search-filter-heading .filter-reset {
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .search-filter-groups {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    gap: 1rem 2rem;
+  }
+
+  .search-filter-groups fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .search-filter-bar legend {
+    margin-bottom: .55rem;
+    padding: 0;
+    color: var(--fg);
+    font-weight: 600;
+  }
+
+  .filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    min-width: 0;
+  }
+
+  .filter-options button {
+    display: inline-flex;
+    align-items: baseline;
+    gap: .55rem;
+    min-height: 2rem;
+    padding: .35rem .65rem;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--bg);
+    color: var(--fg-dim);
+    font: .75rem/1.2 var(--mono);
+    cursor: pointer;
+    transition:
+      transform .45s cubic-bezier(.32, .72, 0, 1),
+      border-color .45s cubic-bezier(.32, .72, 0, 1),
+      color .45s cubic-bezier(.32, .72, 0, 1),
+      background-color .45s cubic-bezier(.32, .72, 0, 1);
+  }
+
+  .filter-options button:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .filter-options button[aria-pressed="true"] {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .filter-options button:active {
+    transform: scale(.98);
+  }
+
+  .filter-count {
+    font-size: .625rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .filter-loading {
+    color: var(--fg-dim);
+    font: .75rem/2rem var(--mono);
+  }
+
+  .search-results-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 4.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .search-status {
+    margin: 0;
+    color: var(--fg-dim);
+    font: .75rem/1.4 var(--mono);
+  }
+
+  .search-hint {
+    flex: none;
+    color: var(--fg-dim);
+    font: .6875rem/1 var(--mono);
+  }
+
+  .search-hint kbd {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    margin-right: .3rem;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--bg-raised);
+    color: var(--fg);
+    font: inherit;
+  }
+
+  .search-results {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .search-result {
+    min-width: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .search-result-link {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+    gap: 1.25rem;
+    align-items: start;
+    min-width: 0;
+    padding: 1.5rem .5rem;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      transform .55s cubic-bezier(.32, .72, 0, 1),
+      background-color .55s cubic-bezier(.32, .72, 0, 1);
+  }
+
+  .search-result-link:hover {
+    background: var(--bg-raised);
+    transform: translateX(.25rem);
+  }
+
+  .search-result-number,
+  .search-result-meta,
+  .search-result-arrow {
+    font-family: var(--mono);
+  }
+
+  .search-result-number {
+    padding-top: .15rem;
+    color: var(--fg-dim);
+    font-size: .6875rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .search-result-copy {
+    display: block;
+    min-width: 0;
+  }
+
+  .search-result-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem .8rem;
+    margin-bottom: .45rem;
+    font-size: .6875rem;
+  }
+
+  .search-result-kind {
+    color: var(--accent);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .search-result-path {
+    min-width: 0;
+    color: var(--fg-dim);
+    overflow-wrap: anywhere;
+  }
+
+  .search-result h2 {
+    min-width: 0;
+    font-size: clamp(1.25rem, 2.25vw, 1.65rem);
+    line-height: 1.14;
+    overflow-wrap: anywhere;
+  }
+
+  .search-result-excerpt {
+    display: -webkit-box;
+    min-width: 0;
+    margin-top: .65rem;
+    color: var(--fg-dim);
+    font-size: .9375rem;
+    line-height: 1.5;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .search-result-excerpt mark {
+    background: transparent;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .search-result-arrow {
+    color: var(--fg-dim);
+    font-size: .9rem;
+    transition:
+      color .45s cubic-bezier(.32, .72, 0, 1),
+      transform .45s cubic-bezier(.32, .72, 0, 1);
+  }
+
+  .search-result-link:hover .search-result-arrow {
+    color: var(--accent);
+    transform: translate(.15rem, -.15rem);
+  }
+
+  .search-empty {
+    padding: clamp(2.5rem, 8vw, 5rem) 1rem;
+    text-align: center;
+  }
+
+  .search-empty > span {
+    color: var(--sev-warn);
+    font: .6875rem/1 var(--mono);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .search-empty h2 {
+    margin: .9rem 0 .6rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  .search-empty p {
+    max-width: 34rem;
+    margin: 0 auto;
+    color: var(--fg-dim);
+  }
+
+  .search-more {
+    display: block;
+    width: 100%;
+    margin-top: 1rem;
+    padding: .8rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--bg-raised);
+    color: var(--fg);
+    font: .75rem/1 var(--mono);
+    cursor: pointer;
+  }
+
+  .search-more:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .search-noscript {
+    grid-column: 2;
+    margin: 0;
+  }
+
+  @media (max-width: 980px) {
+    .search-page {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2.5rem;
+    }
+
+    .search-intro {
+      max-width: 44rem;
+    }
+
+    .search-facts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .search-facts div {
+      display: grid;
+      justify-content: start;
+      gap: .2rem;
+    }
+
+    .search-noscript {
+      grid-column: 1;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .search-page {
+      gap: 2rem;
+      padding-block: 2.5rem 4rem;
+    }
+
+    .search-facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+      margin-top: 1.75rem;
+    }
+
+    .search-filter-groups {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .search-results-head {
+      min-height: 4rem;
+    }
+
+    .search-hint {
+      display: none;
+    }
+
+    .search-result-link {
+      grid-template-columns: 1.65rem minmax(0, 1fr);
+      gap: .75rem;
+      padding: 1.25rem .15rem;
+    }
+
+    .search-result-link:hover {
+      transform: none;
+    }
+
+    .search-result-arrow {
+      display: none;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .search-form,
+    .search-filter-bar {
+      padding-inline: .9rem;
+    }
+
+    .search-input-wrap {
+      gap: .55rem;
+    }
+
+    .search-input-wrap input {
+      font-size: 1rem;
+    }
+
+    .search-clear {
+      font-size: .625rem;
+    }
   }
 </style>
