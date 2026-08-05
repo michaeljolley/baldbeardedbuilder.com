@@ -1,0 +1,190 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+
+      - uses: actions/checkout@v7
+      - name: Check out the content submodule
+        env:
+          CONTENT_DEPLOY_KEY: ${{ secrets.CONTENT_DEPLOY_KEY }}
+        run: |
+          if [ -z "$CONTENT_DEPLOY_KEY" ]; then
+            echo "::error::CI cannot read src/content, so no collection would have any entries."
+            echo "src/content is a git submodule pointing at michaeljolley/content, which is"
+            echo "private. The default GITHUB_TOKEN is scoped to this repository only and"
+            echo "cannot clone another one."
+            echo ""
+            echo "Fix, once, by hand:"
+            echo "  1. ssh-keygen -t ed25519 -C 'baldbeardedbuilder.com CI' -f content-ci -N ''"
+            echo "  2. On michaeljolley/content, Settings, Deploy keys, Add deploy key."
+            echo "     Paste content-ci.pub. Leave write access UNCHECKED, a build only reads."
+            echo "  3. On this repository, save the private half, the whole content-ci file"
+            echo "     including its BEGIN and END lines, as the secret CONTENT_DEPLOY_KEY."
+            echo "  4. Delete both local files. GitHub keeps the only copies that matter."
+            echo ""
+            echo "A deploy key rather than a token on purpose. A token expires and is tied to"
+            echo "a person, so it brings this same failure back later without warning."
+            echo ""
+            echo "This job fails rather than building without content, because an empty"
+            echo "collection set makes every gate below pass for the wrong reason."
+            exit 1
+          fi
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          # printf rather than echo, because a key is worthless if its final newline is lost.
+          printf '%s\n' "$CONTENT_DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t rsa,ecdsa,ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
+          git submodule update --init --depth 1 src/content
+          if [ ! -f src/content/content.config.ts ]; then
+            echo "::error::src/content was cloned but content.config.ts is not in it."
+            exit 1
+          fi
+          echo "src/content present, $(find src/content -name '*.md' | wc -l) markdown files."
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Fails if a generated artifact was hand edited. themes.css, the font CSS, the
+      # taxonomy map and _redirects are all outputs, never inputs.
+      - name: Generated artifacts are in sync
+        run: pnpm gen:check
+
+      - name: Unit and redirect tests
+        run: pnpm test
+
+      # The baseline was trimmed to the two legacy tables v2 actually reads, so a
+      # migration leaning on something that went would only fail on a db push against
+      # a fresh project, which is the worst place to find out.
+      - name: Migration chain is self contained
+        run: pnpm check:migrations
+
+      # Catches the class of mistake that a build will happily ship: a Supabase column
+      # that changed shape under a query, a nullable view column read as if it were not.
+      - name: Types
+        run: pnpm check
+
+      - name: Build
+        run: pnpm build
+
+      # The step above is the first thing in this job that produces dist, and four tests
+      # in redirects.build.test.mjs need it. They were only in the run above, before the
+      # build, so they skipped on every run and reported green while asserting nothing.
+      # Run again here, where dist exists. REQUIRE_DIST turns the skip into a failure, so
+      # this cannot quietly stop working again if the steps are ever reordered.
+      - name: Redirect tests against the real build
+        run: pnpm test
+        env:
+          REQUIRE_DIST: '1'
+
+      # Reads the built output rather than the source, because the sitemap and the
+      # Pagefind index are generated and so are never reviewed by a person. Catches a
+      # parked route that still ships, and any page listed in the sitemap whose own
+      # markup says noindex.
+      - name: Shipped output
+        run: pnpm check:dist
+
+      # In this job rather than the browser one because it needs no browser, and it reads
+      # source as well as dist. /report/ is prerender = false, so it writes no file and
+      # every gate that works from the built output is blind to it. a11y is the exception,
+      # since it starts a dev server for exactly that reason.
+      - name: Published addresses
+        run: pnpm check:emails
+
+      # Both browser gates need dist, and a build is slow enough that handing it over
+      # beats building it three times.
+      - name: Upload dist
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist
+          retention-days: 3
+
+  a11y:
+    name: Accessibility and layout
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm a11y
+
+      # Rides along in this job because it is the only one that pays for a browser, and
+      # installing chromium twice to run a second thirty second check is not worth it.
+      # Different question from accessibility, same requirement: a laid out page.
+      - name: Layout geometry
+        run: pnpm check:layout
+
+      # Counts intents rather than measuring anything, so it is its own step: a doubled
+      # count has no visible symptom, and a failure here should not read as a layout one.
+      - name: Share intents
+        run: pnpm check:share
+
+      # Separate from the accessibility job on purpose. axe only reports a missing id when
+      # the element needed a name to be usable, so this catches a class that job is right
+      # to stay quiet about, and a failure here should not read as an axe one.
+      - name: Id references
+        run: pnpm check:aria
+
+      # Rides along here because it needs a browser and a built dist. Sixteen themes times
+      # five heading levels is 96 computed colors, and the failure being guarded is a
+      # heading that reads as body text or as a link rather than one that looks broken.
+      - name: Prose heading color
+        run: pnpm check:headings
+
+  perf:
+    name: Performance budget
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm perf

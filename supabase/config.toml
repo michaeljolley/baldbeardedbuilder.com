@@ -1,0 +1,91 @@
+# Supabase CLI config for baldbeardedbuilder.com.
+#
+# THE PROJECT REF IS NOT SET YET. v2 gets a brand new project and the ref has not been
+# handed over. Do not put the old one back. bvyerlczpakdlfvybkev serves the live site and
+# bbb.dev, it is not v2's, and the v2 schema is scheduled to be removed from it. See
+# supabase/reversal/ and the header of supabase/migrations/20260101000000_baseline.sql.
+#
+# Once the new ref exists:
+#   supabase link --project-ref <new-ref>
+#   supabase db push
+#
+# Push the whole chain, baseline included. The baseline is no longer a copy of a schema
+# that already exists somewhere. It is trimmed down to the two legacy tables v2 actually
+# reads and it has to run. Do NOT run `migration repair` against the new project: marking
+# the baseline applied without executing it leaves streamEvents and streamUsers missing
+# and the badge migrations fail on top of nothing.
+#
+# See supabase/README.md.
+
+project_id = "baldbeardedbuilder"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[studio]
+enabled = true
+port = 54323
+
+[inbucket]
+enabled = true
+port = 54324
+
+[auth]
+enabled = true
+site_url = "http://localhost:4321"
+# The sign in route builds redirectTo from the request origin, so every host that is
+# allowed to be returned to has to be listed. Anything missing here redirects to site_url
+# instead of failing, which reads as "signing in on the branch deploy sends me to
+# production" rather than as a configuration error. The hosted project needs the same list
+# under Authentication, URL Configuration. See docs/new-project.md step 6.
+additional_redirect_urls = [
+  "http://localhost:4321/auth/callback",
+  "http://localhost:4321/auth/link/twitch/callback/",
+  "https://baldbeardedbuilder.com/auth/callback",
+  "https://baldbeardedbuilder.com/auth/link/twitch/callback/",
+]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+
+# Decision 4. Nobody signs up with a password, so there is no password to leak, reset or
+# stuff. Email is off entirely rather than left on and unused.
+enable_signup = true
+[auth.email]
+enable_signup = false
+enable_confirmations = false
+
+# Decision 4. The only way in.
+[auth.external.github]
+enabled = true
+client_id = "env(SUPABASE_AUTH_GITHUB_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_GITHUB_SECRET)"
+redirect_uri = "http://127.0.0.1:54321/auth/v1/callback"
+
+# Decision 13 needs Twitch history attached to a person, and you cannot link an identity
+# for a provider that is switched off. This is enabled as a link only identity: nothing
+# on the site offers "sign in with Twitch", the only entry point is linkIdentity from an
+# already signed in session. Worth knowing that this is a second provider, which is
+# narrower than decision 4 reads but is the only way decision 13 works.
+[auth.external.twitch]
+enabled = true
+client_id = "env(SUPABASE_AUTH_TWITCH_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_TWITCH_SECRET)"
+redirect_uri = "http://127.0.0.1:54321/auth/v1/callback"
+skip_nonce_check = false
+
+[storage]
+enabled = true
+file_size_limit = "5MiB"
+
+[analytics]
+enabled = false

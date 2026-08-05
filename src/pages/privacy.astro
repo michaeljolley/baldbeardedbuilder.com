@@ -1,0 +1,261 @@
+---
+/*
+  Privacy.
+
+  Every claim on this page is checked against the code that makes it true, and where the
+  code does something less flattering than a policy would like to say, the page says the
+  less flattering thing. The two that matter: video thumbnails are served by Google, so
+  the browser does contact them on any page with a video on it, and the like dedupe does
+  involve an address even though it never stores one.
+
+  If a claim here stops matching the code, the code wins and this page is wrong. The
+  places to check are src/lib/reader.ts for the like token and the address hash,
+  src/lib/account.ts for deletion, src/components/VideoEmbed.astro for the thumbnail, and
+  src/layouts/Base.astro for the fonts.
+*/
+import Base from '../layouts/Base.astro';
+import { SITE } from '../config/site';
+
+const lastChanged = new Date(SITE.privacyUpdated).toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric'
+});
+
+/*
+  One row per thing the site stores about a person, so somebody can find the one they
+  care about without reading prose. Ordered by how little you had to do to create it.
+*/
+const held = [
+  {
+    tag: 'Cookie',
+    what: 'A random token in a cookie',
+    when: 'The first time you like anything',
+    why: 'So the same browser cannot like one thing twice',
+    gone: 'Clear your cookies and it is gone. It expires by itself after about 13 months'
+  },
+  {
+    tag: 'Address',
+    what: 'Your address, turned into something that is not your address',
+    when: 'The same moment',
+    why: 'A second dedupe signal, so one person with two browsers is still one like',
+    gone: 'It is never stored as an address and cannot be turned back into one. Rotating the key forgets it entirely'
+  },
+  {
+    tag: 'Auth',
+    what: 'Basic profile details from the sign-in provider you choose',
+    when: 'You sign in',
+    why: 'To put a name on your comments and help review brand-new accounts',
+    gone: 'Delete your account and it goes with it'
+  },
+  {
+    tag: 'Words',
+    what: 'What you wrote, and when you edited it',
+    when: 'You comment or send a story',
+    why: 'It is the thing you asked me to publish',
+    gone: 'Comments become a tombstone. Published stories stay published'
+  },
+  {
+    tag: 'Email',
+    what: 'Your email address, as your auth source supplied it',
+    when: 'You sign in',
+    why: 'To send the story and direct reply notifications you control',
+    gone: 'Delete your account and it goes with it'
+  },
+  {
+    tag: 'Twitch',
+    what: 'Your Twitch user id',
+    when: 'You link Twitch, which is optional',
+    why: 'To match you to stream history for badges, by id rather than by name',
+    gone: 'Unlink it, or delete your account'
+  }
+];
+---
+
+<Base
+  title="Privacy"
+  description="What this site stores about you, why, and how to get rid of it. Short, because there is not much."
+>
+  <main id="main">
+    <div class="shell read">
+      <aside class="rail">
+        <dl>
+          <div><dt>Who runs this</dt><dd><a href="/about/">Michael Jolley</a></dd></div>
+          <div><dt>Ad trackers</dt><dd>None</dd></div>
+          <div><dt>Last changed</dt><dd>{lastChanged}</dd></div>
+        </dl>
+      </aside>
+
+      <article data-pagefind-body data-pagefind-filter="kind:page">
+        <header class="storyhead">
+          <span class="path">privacy</span>
+          <h1>
+            You can read this whole site
+            <span class="squiggle"><span>without telling me anything.</span></span>
+          </h1>
+          <p class="lede">
+            Reading needs no account, no cookie banner and no consent dialog, because
+            reading sets nothing that needs consenting to. Everything below is about what
+            happens when you do something, and there is a short list of somethings.
+          </p>
+        </header>
+
+        <div class="prose privacy-body">
+          <div class="callout">
+            <span class="tag">The short version</span>
+            <p>
+              I keep the least I can get away with, I never sell it, and every piece of it
+              has a way out that you control rather than one that requires emailing me.
+            </p>
+          </div>
+
+          <h2>What I hold, and how to get rid of it</h2>
+          <p>
+            Nothing in this table exists until you do the thing in the second column.
+          </p>
+        </div>
+
+        <div class="crows privacy-rows">
+          {
+            held.map((h) => (
+              <div class="crow">
+                <span class="eyebrow">{h.tag}</span>
+                <div>
+                  <h3>{h.what}</h3>
+                  <p><b>Created when:</b> {h.when}</p>
+                  <p><b>Why:</b> {h.why}</p>
+                  <p><b>Getting rid of it:</b> {h.gone}</p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+
+        <div class="prose privacy-tail">
+          <h2>The like button, in detail</h2>
+          <p>
+            Likes need no account, which means the site has to recognise a browser somehow
+            or the count is meaningless. It does two things. It puts a random identifier in
+            a cookie, which knows nothing about you beyond being the same browser as last
+            time. And it runs your address through a keyed hash and keeps only the result,
+            which is 32 characters that cannot be turned back into an address and cannot be
+            compared against anybody else's records.
+          </p>
+          <p>
+            I want to be straight about the second one rather than hide behind the word
+            hashed: your address is briefly in memory on my server at the moment you press
+            the button, the same as it is for every request to every website. What is
+            different is that it is never written down. Change the key and the site forgets
+            which browsers liked what, permanently, which is the property that makes it a
+            dedupe token rather than a record of where readers live.
+          </p>
+
+          <h2>Who else your browser talks to</h2>
+          <p>
+            Fonts are served from this site, not from Google. There is no analytics script,
+            no advertising network, no session recorder, and no tag manager. The site sets
+            no cookie at all until you like something or sign in.
+          </p>
+          <p>
+            The exception, and it is a real one: video thumbnails are served by Google from
+            <code>i.ytimg.com</code>, so on any page showing a video your browser makes a
+            request to Google to fetch that image, and Google sees it. The player itself is
+            not loaded. A YouTube embed would pull roughly 870 KB of Google script onto the
+            page and start talking to them before you had asked for anything, so instead the
+            page shows a still and a play button, and clicking it takes you to YouTube,
+            where their rules apply and mine stop.
+          </p>
+          <p>
+            Signing in sends you to the auth provider you chose, and linking Twitch sends 
+						you to Twitch. Both see that you came from here. The pages are hosted by
+						Netlify and the database is Supabase, both of whom process requests on my
+						behalf and neither of whom get anything to use for themselves.
+          </p>
+
+          <h2>Deleting your account</h2>
+          <p>
+            It is a button on <a href="/account/">your account page</a>, it works
+            immediately, and it does not route through me. It removes your account, your
+            handle, your badges, your address and any Twitch link.
+          </p>
+          <p>
+            Two things survive it, and you should know which before you press it. Comments
+            become tombstones rather than vanishing, because deleting the middle of a
+            conversation makes nonsense of the replies around it, and those replies belong
+            to other people. Stories you have already had published stay published, because
+            they are articles on a public site by then. If you want a published story taken
+            down as well, <a href={`mailto:${SITE.privacyEmail}`}>email the privacy inbox</a>
+            and I will take it down.
+          </p>
+
+          <h2>Email</h2>
+          <p>
+            This site can send three account notifications: when a dev disaster you sent is
+            published, when it reaches the front page, and when somebody replies directly to
+            one of your comments. All three start on. Each has its own switch on
+            <a href="/account/#email-notifications">your account page</a>, and every message
+            has a link that turns off that type without asking you to sign in.
+          </p>
+          <p>
+            The delivery queue stores your account id and the details needed to write the
+            message, but not your email address. The address is read from your auth account
+            at send time and handed to Resend, the delivery provider. Delete the account and
+            its queued messages are deleted with it. The site sends no welcome email, digest
+            or marketing email from that account address.
+          </p>
+          <p>
+            The .NET Drip is the one exception and it is opt in. Its signup box sits on the
+            front page and a handful of others, and it is the only thing here that asks you
+            to type an address. If you use it, that address goes onto the Drip list, which
+						is a newsletter I send from somewhere else. It is not joined to your account,
+						signing in does not put you on it, having an account does not put you on it,
+						and every issue carries its own unsubscribe link.
+          </p>
+
+          <h2>Where you live</h2>
+          <p>
+            If you are in the UK, the EU, or somewhere with similar law, you have rights to
+            see what I hold, correct it, take it elsewhere and have it deleted. Most of that
+            is a button here already. For anything a button does not cover,
+            <a href={`mailto:${SITE.privacyEmail}`}>email the privacy inbox</a> and I will do
+            it by hand.
+          </p>
+
+          <h2>Children</h2>
+          <p>
+            This is a site about professional software. It is not aimed at children
+            and accounts are not intended for anyone under 16.
+          </p>
+
+          <h2>When this changes</h2>
+          <p>
+            The date is in the sidebar and it only moves when something actually changed.
+            If a change means I hold something new, that is not a quiet edit and I will say
+            so before it starts.
+          </p>
+        </div>
+
+        <div class="hero-actions privacy-acts">
+          <a class="btn primary" href="/account/">Your account</a>
+          <a class="btn" href="/terms/">Terms</a>
+        </div>
+      </article>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .privacy-body {
+    margin-top: 2rem;
+  }
+  .privacy-rows .crow h3 {
+    margin-bottom: 0.4rem;
+  }
+  .privacy-rows .crow p {
+    margin: 0.2rem 0;
+  }
+  .privacy-tail,
+  .privacy-acts {
+    margin-top: 2.5rem;
+  }
+</style>
