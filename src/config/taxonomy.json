@@ -599,6 +599,17 @@
       "slug": "the-best-csharp-collections-explained",
       "url": "/csharp/the-best-csharp-collections-explained/"
     },
+    "videos:1ROCCmAHdNs": {
+      "primaryTopic": "windows",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "You Won't Believe How EASY WinUI XAML Styling Can Be",
+      "slug": "you-wont-believe-how-easy-winui-xaml-styling-can-be",
+      "url": "/windows/you-wont-believe-how-easy-winui-xaml-styling-can-be/"
+    },
     "videos:3Pn1_fHi7mI": {
       "primaryTopic": "csharp",
       "alsoFiled": [],
@@ -922,6 +933,17 @@
       "slug": "stop-using-tolower-for-comparisons-the-fast-correct-way-in-csharp",
       "url": "/csharp/stop-using-tolower-for-comparisons-the-fast-correct-way-in-csharp/"
     },
+    "videos:DUCW0Aeo1AI": {
+      "primaryTopic": "copilot-ai",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 0,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "Understand Retrieval Augmented Generation in Under 8 Minutes",
+      "slug": "understand-retrieval-augmented-generation-in-under-8-minutes",
+      "url": "/copilot-ai/understand-retrieval-augmented-generation-in-under-8-minutes/"
+    },
     "videos:Fi5bTG7yqsM": {
       "primaryTopic": "vscode",
       "alsoFiled": [],
@@ -931,6 +953,17 @@
       "note": "TailwindCSS, but the video is about the VS Code extension.",
       "slug": "write-better-tailwindcss-in-vs-code",
       "url": "/vscode/write-better-tailwindcss-in-vs-code/"
+    },
+    "videos:Fw8hrg5PgrU": {
+      "primaryTopic": "windows",
+      "alsoFiled": ["csharp"],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "Supercharge Your WinForms Projects with .NET 9 Roslyn Analyzers",
+      "slug": "supercharge-your-winforms-projects-with-net-9-roslyn-analyzers",
+      "url": "/windows/supercharge-your-winforms-projects-with-net-9-roslyn-analyzers/"
     },
     "videos:G9ikl4r2ijo": {
       "primaryTopic": "csharp",
@@ -1062,6 +1095,30 @@
       "slug": "vscodes-new-yaml-support-is-awesome",
       "url": "/vscode/vscodes-new-yaml-support-is-awesome/"
     },
+    "videos:SAaDOUhrdXc": {
+      "primaryTopic": "copilot-ai",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 0,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "The 7-Minute Guide to Understanding Artificial Intelligence",
+      "slug": "the-7-minute-guide-to-understanding-artificial-intelligence",
+      "url": "/copilot-ai/the-7-minute-guide-to-understanding-artificial-intelligence/"
+    },
+    "videos:SYZy7fdPEKk": {
+      "primaryTopic": "copilot-ai",
+      "alsoFiled": [
+        "windows"
+      ],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "Windows Devs Rejoice! Building Local AI Just Got Easy!",
+      "slug": "windows-devs-rejoice-building-local-ai-just-got-easy",
+      "url": "/copilot-ai/windows-devs-rejoice-building-local-ai-just-got-easy/"
+    },
     "videos:ToFqISWq4is": {
       "primaryTopic": "aspnetcore",
       "alsoFiled": [
@@ -1083,6 +1140,17 @@
       "title": "Stop Using == null: The Safer C# Pattern You Need Today!",
       "slug": "stop-using-null-the-safer-csharp-pattern-you-need-today",
       "url": "/csharp/stop-using-null-the-safer-csharp-pattern-you-need-today/"
+    },
+    "videos:UQDJ5j8pxBY": {
+      "primaryTopic": "copilot-ai",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 2,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "What are Vector Databases and How Do They Give AI Superpowers?",
+      "slug": "what-are-vector-databases-and-how-do-they-give-ai-superpowers",
+      "url": "/copilot-ai/what-are-vector-databases-and-how-do-they-give-ai-superpowers/"
     },
     "videos:VWbHiXN3mno": {
       "primaryTopic": "vscode",
@@ -1236,9 +1304,7 @@
     },
     "videos:i4jsvC_mzPI": {
       "primaryTopic": "dev-life",
-      "alsoFiled": [
-        "copilot-ai"
-      ],
+      "alsoFiled": [],
       "source": "ai",
       "reviewed": false,
       "title": "What if AI takes developer jobs!?",
@@ -1398,6 +1464,28 @@
       "note": "The title is ambiguous, but this is part of the Git command series.",
       "slug": "wheres-my-code",
       "url": "/git/wheres-my-code/"
+    },
+    "videos:vjGdlcWY1Tg": {
+      "primaryTopic": "copilot-ai",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "How Do Machine Learning Models Actually Work?",
+      "slug": "how-do-machine-learning-models-actually-work",
+      "url": "/copilot-ai/how-do-machine-learning-models-actually-work/"
+    },
+    "videos:vlrHb5sQk-8": {
+      "primaryTopic": "windows",
+      "alsoFiled": [],
+      "source": "keyword",
+      "confidence": 1,
+      "needsReview": true,
+      "reviewed": false,
+      "title": "What Is The BEST Windows UI Framework For Your Project",
+      "slug": "what-is-the-best-windows-ui-framework-for-your-project",
+      "url": "/windows/what-is-the-best-windows-ui-framework-for-your-project/"
     },
     "videos:wUSoZ3Bw_xY": {
       "primaryTopic": "vscode",

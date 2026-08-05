@@ -250,7 +250,10 @@ export const EXTERNAL = {
   youtube: 'https://youtube.com/@baldbeardedbuilder',
   twitch: 'https://twitch.tv/baldbeardedbuilder',
   github: 'https://github.com/michaeljolley',
-  bluesky: 'https://bsky.app/profile/baldbeardedbuilder.com'
+  bluesky: 'https://bsky.app/profile/baldbeardedbuilder.com',
+	x: 'https://x.com/michaeljolley',
+	linkedin: 'https://linkedin.com/in/michaelwjolley',
+	discord: 'https://discord.gg/4TKgK4TGQA'
 } as const;
 
 /**
@@ -293,6 +296,16 @@ export interface Starter {
 }
 
 export const START_HERE: Starter[] = [
+  { 
+		key: 'videos:DNzAoLwXLzc',
+		blurb:
+			'Lowercasing strings to compare them costs allocations and can break under ' +
+			'different cultures (hello, Turkish I). Why .ToLower()/.ToUpper() are the ' +
+			'wrong tools for comparisons and how StringComparison and StringComparer ' +
+			'give you fast, correct behavior'
+	},
+  { key: 'blog:tame-configuration-in-aspnet-core-with-ivalidateoptions' },
+  { key: 'blog:repository-pattern-vs-dbcontext-in-entity-framework-core' },
   {
     key: 'videos:HAybBV-A1Gg',
     blurb:
@@ -300,14 +313,5 @@ export const START_HERE: Starter[] = [
       'in C#, and most advice stops at "records are for data". Under eight minutes on ' +
       'what actually drives the decision.'
   },
-  { key: 'blog:stop-parallelizing-everything-a-practical-guide-to-parallelforeach' },
-  { key: 'blog:repository-pattern-vs-dbcontext-in-entity-framework-core' },
-  /*
-    A fifth pick sat here, blog:tame-configuration-in-aspnet-core-with-ivalidateoptions,
-    dated 2026-08-03. Under decision 111 a curated pick that has not published fails the
-    build rather than being dropped with a warning, so it comes out until its date arrives.
-    Put it back on or after 3 August. It was one of the placeholder picks below, not a
-    choice of Michael's.
-  */
   { key: 'blog:the-traps-of-nullable-in-c-sharp' }
 ];
