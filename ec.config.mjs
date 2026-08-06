@@ -22,12 +22,13 @@ const theme = new ExpressiveCodeTheme(ecThemes[0]);
 
 /*
   Expressive Code's own script promotes a horizontally scrollable code block to a focusable
-  role="region" so it can be reached by keyboard. It gives that region no accessible name,
-  so a page with two scrollable blocks ends up with two identical unnamed landmarks and a
-  screen reader user has no way to tell them apart. The name has to be baked in at build
-  time rather than added by another script, because a content page is meant to ship as
-  little JavaScript as possible, and the attribute is harmless on the blocks that never
-  become regions.
+  role="region" so it can be reached by keyboard. This site also caps tall blocks, so they
+  can scroll vertically without Expressive Code noticing. The companion module below checks
+  both axes and restores keyboard access if Expressive Code removes it.
+
+  Expressive Code gives the region no accessible name, so a page with two scrollable blocks
+  otherwise ends up with two identical unnamed landmarks. The name is baked in at build time
+  and is harmless on blocks that never become regions.
 */
 function findPre(node) {
   if (!node || typeof node !== 'object') return null;
@@ -39,8 +40,52 @@ function findPre(node) {
   return null;
 }
 
-const nameCodeBlocks = {
-  name: 'name-code-blocks',
+const accessibleCodeBlocks = {
+  name: 'accessible-code-blocks',
+  jsModules: [`
+    const selector = '.expressive-code pre > code';
+    const observed = new WeakSet();
+
+    function updateCodeBlock(pre) {
+      const scrollable =
+        pre.scrollWidth > pre.clientWidth || pre.scrollHeight > pre.clientHeight;
+
+      if (scrollable) {
+        if (pre.getAttribute('tabindex') !== '0') pre.setAttribute('tabindex', '0');
+        if (pre.getAttribute('role') !== 'region') pre.setAttribute('role', 'region');
+      } else {
+        if (pre.hasAttribute('tabindex')) pre.removeAttribute('tabindex');
+        if (pre.getAttribute('role') === 'region') pre.removeAttribute('role');
+      }
+    }
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) updateCodeBlock(entry.target);
+    });
+
+    const tabindexObserver = new MutationObserver((entries) => {
+      for (const entry of entries) updateCodeBlock(entry.target);
+    });
+
+    function observeCodeBlocks(root) {
+      root.querySelectorAll?.(selector).forEach((code) => {
+        const pre = code.parentElement;
+        if (!pre || observed.has(pre)) return;
+        observed.add(pre);
+        resizeObserver.observe(pre);
+        tabindexObserver.observe(pre, { attributes: true, attributeFilter: ['tabindex'] });
+        updateCodeBlock(pre);
+      });
+    }
+
+    observeCodeBlocks(document);
+    new MutationObserver((entries) => {
+      for (const entry of entries) {
+        for (const node of entry.addedNodes) observeCodeBlocks(node);
+      }
+    }).observe(document.body, { childList: true, subtree: true });
+    document.addEventListener('astro:page-load', () => observeCodeBlocks(document));
+  `],
   hooks: {
     postprocessRenderedBlock: ({ codeBlock, renderData }) => {
       const pre = findPre(renderData.blockAst);
@@ -68,7 +113,7 @@ theme.bg = 'var(--bg-inset)';
 
 export default defineEcConfig({
   themes: [theme],
-  plugins: [nameCodeBlocks],
+  plugins: [accessibleCodeBlocks],
   // One theme means nothing to scope and nothing to switch, so neither a per theme
   // selector nor the media query default has a job to do. Leaving the selector on would
   // emit a dead [data-theme="bbb"] block that no page ever matches.
