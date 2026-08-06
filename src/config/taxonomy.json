@@ -934,7 +934,7 @@
       "url": "/csharp/stop-using-tolower-for-comparisons-the-fast-correct-way-in-csharp/"
     },
     "videos:DUCW0Aeo1AI": {
-      "primaryTopic": "copilot-ai",
+      "primaryTopic": "dev-life",
       "alsoFiled": [],
       "source": "keyword",
       "confidence": 0,
@@ -942,7 +942,7 @@
       "reviewed": false,
       "title": "Understand Retrieval Augmented Generation in Under 8 Minutes",
       "slug": "understand-retrieval-augmented-generation-in-under-8-minutes",
-      "url": "/copilot-ai/understand-retrieval-augmented-generation-in-under-8-minutes/"
+      "url": "/dev-life/understand-retrieval-augmented-generation-in-under-8-minutes/"
     },
     "videos:Fi5bTG7yqsM": {
       "primaryTopic": "vscode",
@@ -955,15 +955,15 @@
       "url": "/vscode/write-better-tailwindcss-in-vs-code/"
     },
     "videos:Fw8hrg5PgrU": {
-      "primaryTopic": "windows",
-      "alsoFiled": ["csharp"],
+      "primaryTopic": "csharp",
+      "alsoFiled": [],
       "source": "keyword",
       "confidence": 1,
       "needsReview": true,
       "reviewed": false,
       "title": "Supercharge Your WinForms Projects with .NET 9 Roslyn Analyzers",
       "slug": "supercharge-your-winforms-projects-with-net-9-roslyn-analyzers",
-      "url": "/windows/supercharge-your-winforms-projects-with-net-9-roslyn-analyzers/"
+      "url": "/csharp/supercharge-your-winforms-projects-with-net-9-roslyn-analyzers/"
     },
     "videos:G9ikl4r2ijo": {
       "primaryTopic": "csharp",
@@ -1020,9 +1020,7 @@
     },
     "videos:MQciYVuS6cM": {
       "primaryTopic": "dev-life",
-      "alsoFiled": [
-        "copilot-ai"
-      ],
+      "alsoFiled": [],
       "source": "ai",
       "reviewed": false,
       "title": "I Tried Voice Coding, It Was A Disaster!",
@@ -1096,7 +1094,7 @@
       "url": "/vscode/vscodes-new-yaml-support-is-awesome/"
     },
     "videos:SAaDOUhrdXc": {
-      "primaryTopic": "copilot-ai",
+      "primaryTopic": "dev-life",
       "alsoFiled": [],
       "source": "keyword",
       "confidence": 0,
@@ -1104,7 +1102,7 @@
       "reviewed": false,
       "title": "The 7-Minute Guide to Understanding Artificial Intelligence",
       "slug": "the-7-minute-guide-to-understanding-artificial-intelligence",
-      "url": "/copilot-ai/the-7-minute-guide-to-understanding-artificial-intelligence/"
+      "url": "/dev-life/the-7-minute-guide-to-understanding-artificial-intelligence/"
     },
     "videos:SYZy7fdPEKk": {
       "primaryTopic": "copilot-ai",
@@ -1143,7 +1141,9 @@
     },
     "videos:UQDJ5j8pxBY": {
       "primaryTopic": "copilot-ai",
-      "alsoFiled": [],
+      "alsoFiled": [
+        "data"
+      ],
       "source": "keyword",
       "confidence": 2,
       "needsReview": true,
