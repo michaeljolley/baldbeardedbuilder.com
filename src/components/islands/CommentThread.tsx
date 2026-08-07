@@ -62,6 +62,14 @@ function when(iso: string): string {
   return then.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
+/*
+  A notice is either something that went to plan or something that did not, and the two
+  read differently. Carrying the tone alongside the words is what lets the error take the
+  error treatment and the announcement stay quiet, instead of one string doing both jobs
+  and every message looking like a status line.
+*/
+type Notice = { text: string; bad: boolean } | null;
+
 export default function CommentThread({ kind, targetKey, initial, pageUrl }: Props) {
   const [thread, setThread] = useState<Thread | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -69,7 +77,11 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [notice, setNotice] = useState('');
+  const [notice, setNotice] = useState<Notice>(null);
+
+  const say = (text: string) => setNotice({ text, bad: false });
+  const warn = (text: string) => setNotice({ text, bad: true });
+  const quiet = () => setNotice(null);
 
   const composer = useRef<HTMLTextAreaElement>(null);
 
@@ -102,7 +114,7 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
     setEditing(null);
     setReplyTo(id);
     setDraft('');
-    setNotice('');
+    quiet();
     /* Focus after the box exists, so the caret lands where the reader is looking. */
     requestAnimationFrame(() => composer.current?.focus());
   }
@@ -113,7 +125,7 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
     /* The stored markdown is not sent to the browser, so an edit starts from the rendered
        text rather than the source. Better than an empty box, and the window is short. */
     setDraft(comment.html ? htmlToText(comment.html) : '');
-    setNotice('');
+    quiet();
     requestAnimationFrame(() => composer.current?.focus());
   }
 
@@ -121,7 +133,7 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
     setReplyTo(null);
     setEditing(null);
     setDraft('');
-    setNotice('');
+    quiet();
   }
 
   async function submit(event: Event) {
@@ -129,7 +141,7 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
     if (busy || !draft.trim()) return;
 
     setBusy(true);
-    setNotice('');
+    quiet();
 
     try {
       const res = editing
@@ -147,20 +159,17 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
       const payload = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setNotice(payload.error ?? 'That did not post.');
+        warn(payload.error ?? 'That did not post.');
         return;
       }
 
-      if (payload.held) {
-        setNotice('Posted, waiting on a look. Only you can see it for now.');
-      }
-
       const held = Boolean(payload.held);
+      /* cancel() clears the notice, so the hold note is set after it rather than before. */
       cancel();
-      if (held) setNotice('Posted, waiting on a look. Only you can see it for now.');
+      if (held) say('Posted, waiting on a look. Only you can see it for now.');
       await load();
     } catch {
-      setNotice('That did not post.');
+      warn('That did not post.');
     } finally {
       setBusy(false);
     }
@@ -173,12 +182,13 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
       const res = await fetch(`/api/comments/?id=${id}`, { method: 'DELETE' });
       if (!res.ok) {
         const payload = await res.json().catch(() => ({}));
-        setNotice(payload.error ?? 'That did not delete.');
+        warn(payload.error ?? 'That did not delete.');
         return;
       }
+      quiet();
       await load();
     } catch {
-      setNotice('That did not delete.');
+      warn('That did not delete.');
     } finally {
       setBusy(false);
     }
@@ -224,8 +234,17 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
         )}
 
         {notice && (
-          <p class="note c-notice" role="status" aria-live="polite">
-            {notice}
+          /*
+            An error announces itself, a hold note does not. role="alert" interrupts a
+            screen reader, which is right for "that did not delete" and wrong for a line
+            confirming something already worked. Both roles carry their own live region,
+            so aria-live would only argue with them.
+          */
+          <p
+            class={notice.bad ? 'notice c-notice bad' : 'note c-notice'}
+            role={notice.bad ? 'alert' : 'status'}
+          >
+            {notice.text}
           </p>
         )}
 

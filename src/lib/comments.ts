@@ -289,12 +289,14 @@ export async function deleteComment(id: string, authorId: string): Promise<PostR
     .update({
       status: 'deleted',
       deleted_at: new Date().toISOString(),
+      /* Empty rather than a placeholder. comments_body_length drops its floor for a
+         deleted row precisely so this does not have to invent words nobody wrote. */
       body_markdown: '',
       body_html: null
     })
     .eq('id', id);
 
-  if (error) return { ok: false, error: 'That did not save.', status: 500 };
+  if (error) return { ok: false, error: 'That did not delete.', status: 500 };
   return { ok: true, id, held: false };
 }
 
