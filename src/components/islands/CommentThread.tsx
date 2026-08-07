@@ -218,7 +218,7 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
           )
         ) : (
           <p class="note c-signedout">
-            <a href={`/auth/signin/?next=${encodeURIComponent(pageUrl)}`}>Sign in</a>{' '}
+            <a href={`/signin/?next=${encodeURIComponent(pageUrl)}`}>Sign in</a>{' '}
             to join in. Reading needs nothing.
           </p>
         )}

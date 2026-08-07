@@ -19,7 +19,7 @@ export const GET: APIRoute = async ({ cookies, request, redirect }) => {
   const supabase = serverClient(cookies, request.headers);
   const { data, error } = await supabase.auth.getUser();
 
-  if (error || !data.user) return redirect('/auth/signin/?next=/account/', 302);
+  if (error || !data.user) return redirect('/signin/?next=/account/', 302);
 
   const twitch = data.user.identities?.find((i) => i.provider === 'twitch');
   if (!twitch) return redirect('/account/?link=failed', 302);

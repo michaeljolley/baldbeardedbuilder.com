@@ -1,15 +1,21 @@
 /*
   Linking a Twitch account.
 
-  Decision 4 says GitHub is the only way in, and decision 13 says the badge backfill runs
-  off an optional Twitch link. Both are satisfied by treating Twitch as an identity you
-  attach to an account you already have, never as a way to create one. That is why this
-  route refuses anybody who is not already signed in, rather than falling through to a
-  Twitch sign in.
+  Decision 13 used to say Twitch was link only, an identity you attach to an account you
+  already have and never a way to create one. That is revised: Twitch can sign you in now,
+  and doing so fills twitch_user_id on the way past.
+
+  This route survives the change because it is still the only way for somebody whose
+  account came from GitHub or Discord to prove they own a Twitch login. It refuses anybody
+  who is not already signed in, because linking an identity to nothing is not a thing.
 
   Only the identity link starts here. Writing twitch_login and twitch_user_id is the
   callback's job, because the identity does not exist until the reader has said yes on
   Twitch's side.
+
+  Worth knowing: linkIdentity needs manual linking switched on in the project's auth
+  settings. With it off, this fails at the first call and the reader gets ?link=failed
+  with nothing to tell them why.
 */
 
 import type { APIRoute } from 'astro';
@@ -19,7 +25,7 @@ export const prerender = false;
 
 export const GET: APIRoute = async ({ cookies, request, redirect, locals, url }) => {
   if (!supabaseWritable) return redirect('/account/?link=unavailable', 302);
-  if (!locals.profile) return redirect('/auth/signin/?next=/account/', 302);
+  if (!locals.profile) return redirect('/signin/?next=/account/', 302);
 
   const supabase = serverClient(cookies, request.headers);
 
