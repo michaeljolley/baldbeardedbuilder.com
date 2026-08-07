@@ -22,7 +22,8 @@ import { PROVIDER_SCOPES, isProvider } from '../../../lib/providers';
 
 export const prerender = false;
 
-const CONNECTIONS = '/account/?link=ok#connections';
+/* Where a link ends up when it works, naming the provider so the notice can say which. */
+const connections = (provider: string) => `/account/?link=ok&provider=${provider}#connections`;
 
 export const GET: APIRoute = async ({ params, url, cookies, request, redirect, locals }) => {
   if (!supabaseWritable) {
@@ -45,7 +46,7 @@ export const GET: APIRoute = async ({ params, url, cookies, request, redirect, l
     return redirect(`/signin/?next=${encodeURIComponent(back)}`, 302);
   }
 
-  const next = safeReturnPath(url.searchParams.get('next') ?? CONNECTIONS);
+  const next = safeReturnPath(url.searchParams.get('next') ?? connections(requested));
 
   const supabase = serverClient(cookies, request.headers);
 
@@ -67,7 +68,7 @@ export const GET: APIRoute = async ({ params, url, cookies, request, redirect, l
 
   if (error || !data?.url) {
     console.error(`[auth/link] could not start the ${requested} link`, error);
-    return redirect('/account/?link=failed#connections', 302);
+    return redirect(`/account/?link=failed&provider=${requested}#connections`, 302);
   }
 
   return redirect(data.url, 302);

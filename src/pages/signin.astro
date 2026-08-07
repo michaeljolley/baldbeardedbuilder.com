@@ -20,6 +20,14 @@ export const prerender = false;
 
 const next = safeReturnPath(Astro.url.searchParams.get('next'));
 
+/*
+  A sign in that broke on the way out or on the way back comes here rather than to the
+  front page, because this is the only page with the buttons to try it again on. Without
+  the notice, arriving back at the chooser having pressed a button and approved at the
+  provider reads as the button doing nothing.
+*/
+const failed = Astro.url.searchParams.get('auth') === 'failed';
+
 /* Already signed in and following an old link. Send them on rather than asking again. */
 if (Astro.locals.profile) {
   return Astro.redirect(next, 302);
@@ -48,6 +56,13 @@ Astro.response.headers.set('Cache-Control', 'no-store');
       {
         supabaseWritable && (
           <>
+            {failed && (
+              <p class="notice signin-notice" role="status">
+                That did not finish, and you are not signed in. Nothing about your account
+                changed. Try again, or pick a different way in.
+              </p>
+            )}
+
             <p class="lede">
               Three doors, one account. Use whichever you already have, and if you use more
               than one they land on the same profile as long as they share an email address.
@@ -81,6 +96,11 @@ Astro.response.headers.set('Cache-Control', 'no-store');
 </Base>
 
 <style>
+  .signin-notice {
+    margin: 1.25rem 0 0;
+    max-width: 26rem;
+  }
+
   .signin-options {
     list-style: none;
     margin: 1.5rem 0;

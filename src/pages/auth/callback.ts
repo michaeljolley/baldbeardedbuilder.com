@@ -19,7 +19,7 @@
 import type { APIRoute } from 'astro';
 import { serverClient, serviceClient, supabaseWritable } from '../../lib/supabase';
 import type { Database } from '../../lib/supabase/database.types';
-import { safeReturnPath } from '../../lib/auth';
+import { oauthOutcome, safeReturnPath } from '../../lib/auth';
 import { isProvider } from '../../lib/providers';
 
 type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
@@ -37,15 +37,49 @@ export const GET: APIRoute = async ({ url, cookies, request, redirect }) => {
   const isLink = isProvider(linked);
 
   if (!code) {
-    /* The reader pressed cancel on the provider, or somebody hit this URL by hand. */
-    return redirect(isLink ? '/account/?link=cancelled#connections' : next, 302);
+    /*
+      No code means the handshake ended somewhere other than success, and the parameters
+      alongside it say where. Reading all of them as a cancellation is what made an
+      approved Discord link come back claiming the reader had cancelled it, so the reason
+      is classified rather than assumed, and written to the log either way: the reader gets
+      the short version, and whoever has to fix it gets Supabase's own words.
+    */
+    const { outcome, detail } = oauthOutcome(url.searchParams);
+
+    if (detail) {
+      console.error(
+        `[auth/callback] the ${isLink ? `${linked} link` : 'sign in'} came back without a code`,
+        detail
+      );
+    }
+
+    if (isLink) {
+      return redirect(`/account/?link=${outcome}&provider=${linked}#connections`, 302);
+    }
+
+    /*
+      A cancellation goes back where they were, because backing out of a sign in is a
+      decision, not a fault, and there is nothing to say about it. A failure goes to the
+      chooser with `next` still attached, so there is a page that can say something and a
+      button to try again on. It used to go to /?auth=failed, which nothing on the site
+      renders, so a sign in that broke looked exactly like one that never happened.
+    */
+    if (outcome === 'cancelled') return redirect(next, 302);
+
+    return redirect(`/signin/?auth=failed&next=${encodeURIComponent(next)}`, 302);
   }
 
   const supabase = serverClient(cookies, request.headers);
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error || !data.user) {
-    return redirect(isLink ? '/account/?link=failed#connections' : '/?auth=failed', 302);
+    console.error('[auth/callback] the code could not be exchanged for a session', error);
+    return redirect(
+      isLink
+        ? `/account/?link=failed&provider=${linked}#connections`
+        : `/signin/?auth=failed&next=${encodeURIComponent(next)}`,
+      302
+    );
   }
 
   /*

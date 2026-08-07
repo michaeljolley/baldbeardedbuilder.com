@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 
-import { isNewAccount, clearSession, NEW_ACCOUNT_HOLD_DAYS } from '../src/lib/auth.ts';
+import { isNewAccount, clearSession, oauthOutcome, NEW_ACCOUNT_HOLD_DAYS } from '../src/lib/auth.ts';
 import { PROVIDER_LABELS, PROVIDER_NOTES, PROVIDER_SCOPES } from '../src/lib/providers.ts';
 
 const ROOT = process.cwd();
@@ -240,6 +240,110 @@ test('the account read asks for every provider login column', () => {
   for (const column of ['github_login', 'discord_login', 'twitch_login']) {
     assert.match(accountLib, new RegExp(column), `readAccount never selects ${column}`);
   }
+});
+
+/*
+  The bug this set of tests exists for. Approving a Discord link and being returned to
+  /account/?link=cancelled reads as the site calling you a liar, and it happened because
+  the callback treated every code-less return as a cancellation. Supabase reports refusals
+  and cancellations the same way, minus the code, so the parameters beside it are the only
+  thing that can tell them apart.
+*/
+const outcomeOf = (query) => oauthOutcome(new URLSearchParams(query)).outcome;
+
+test('pressing cancel at the provider is the only thing reported as a cancellation', () => {
+  assert.equal(outcomeOf('error=access_denied&error_description=The+user+denied+the+request'), 'cancelled');
+  assert.equal(outcomeOf('error=server_error&error_code=access_denied'), 'cancelled');
+});
+
+test('an identity already attached here is named rather than blamed on the reader', () => {
+  assert.equal(outcomeOf('error=server_error&error_code=identity_already_exists'), 'exists');
+  assert.equal(outcomeOf('error=422&error_code=user_already_exists'), 'exists');
+  assert.equal(
+    outcomeOf('error=server_error&error_description=Identity+is+already+linked+to+another+user'),
+    'exists'
+  );
+});
+
+test('a refusal after approval is a failure, not a cancellation', () => {
+  assert.equal(outcomeOf('error=server_error&error_code=manual_linking_disabled'), 'failed');
+  assert.equal(outcomeOf('error=temporarily_unavailable'), 'failed');
+  assert.equal(outcomeOf('error_description=Something+went+wrong'), 'failed');
+});
+
+/*
+  A cancellation always says so. An empty query string is a hand typed URL or a handshake
+  that lost its parameters, and answering that with "you cancelled" is the guess being
+  removed here.
+*/
+test('nothing at all is not evidence of a cancellation', () => {
+  assert.equal(outcomeOf(''), 'failed');
+});
+
+test('the reason Supabase gave survives for the log', () => {
+  const { detail } = oauthOutcome(
+    new URLSearchParams('error=server_error&error_code=identity_already_exists&error_description=Already+linked')
+  );
+
+  assert.match(detail, /identity_already_exists/);
+  assert.match(detail, /Already linked/);
+});
+
+test('the callback classifies a code-less return rather than assuming it was cancelled', () => {
+  assert.match(callback, /oauthOutcome\(url\.searchParams\)/);
+  assert.doesNotMatch(callback, /link=cancelled/);
+});
+
+/*
+  The reason only reaches a human if something writes it down. Every one of these paths
+  used to redirect in silence, which is why nobody could say why a link had failed.
+*/
+test('a link that comes back without a code says why in the log', () => {
+  assert.match(callback, /console\.error\(/);
+});
+
+test('every outcome the callback can send is one the account page can render', () => {
+  const outcomes = [...callback.matchAll(/\?link=(\w+)/g)].map(([, name]) => name);
+  const sent = [...linkRoute.matchAll(/\?link=(\w+)/g)].map(([, name]) => name);
+
+  for (const outcome of new Set([...outcomes, ...sent])) {
+    assert.match(
+      accountPage,
+      new RegExp(`^\\s*${outcome}:`, 'm'),
+      `the routes send ?link=${outcome} and /account/ has no message for it`
+    );
+  }
+});
+
+/*
+  "That account could not be connected" three times over tells somebody nothing about which
+  of their three buttons just failed, so the provider rides along with the outcome.
+*/
+test('the notice can name the provider the link was for', () => {
+  assert.match(callback, /&provider=\$\{linked\}/);
+  assert.match(linkRoute, /provider=\$\{requested\}/);
+  assert.match(accountPage, /PROVIDER_LABELS\[linkProvider\]/);
+});
+
+/*
+  A broken sign in used to end at /?auth=failed, and nothing on the site reads that
+  parameter, so the front page rendered as though nothing had been attempted. The chooser
+  is the only page holding the buttons to try again with, so that is where a failure goes,
+  and it says so when it gets there.
+*/
+test('a sign in that breaks lands somewhere that admits it', () => {
+  assert.doesNotMatch(callback, /auth=failed'/);
+  assert.match(callback, /\/signin\/\?auth=failed&next=/);
+  assert.match(signin, /\/signin\/\?auth=failed&next=/);
+  assert.match(chooser, /searchParams\.get\('auth'\) === 'failed'/);
+});
+
+/*
+  Backing out of a sign in is a decision rather than a fault. Somebody who changes their
+  mind at the provider goes back to the page they were reading, not to an apology.
+*/
+test('cancelling a sign in returns the reader where they were', () => {
+  assert.match(callback, /outcome === 'cancelled'\) return redirect\(next/);
 });
 
 /*
