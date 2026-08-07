@@ -233,7 +233,7 @@ test('an empty thread with no badge to offer just invites a first reply', () => 
 test('one away names the badge without counting it out', () => {
   assert.equal(
     emptyLine({ label: 'First Reply I', unit: 'reply', remaining: 1 }),
-    'No replies yet. Yours would be the first, and it earns you First Reply I.'
+    "Looks like there aren't any replies yet. That means you have the chance to earn the First Reply I badge."
   );
 });
 

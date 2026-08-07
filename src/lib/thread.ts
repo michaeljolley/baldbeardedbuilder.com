@@ -81,6 +81,10 @@ export function emptyLine(next: { label: string; unit: string | null; remaining:
   if (!next) return `${first}.`;
 
   /* One away is worth saying plainly. Counting it out reads like a progress bar. */
+  if (next.remaining === 1 && next.label === 'First Reply I') {
+    return "Looks like there aren't any replies yet. That means you have the chance to earn the First Reply I badge.";
+  }
+
   if (next.remaining === 1) return `${first}, and it earns you ${next.label}.`;
 
   const unit = next.unit ? ` ${next.unit}s` : '';
