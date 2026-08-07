@@ -289,7 +289,7 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
           >
             <div class={named === HOST ? 'av host' : 'av'} aria-hidden="true">
               {c.authorAvatar && body ? (
-                <img src={c.authorAvatar} alt="" width="36" height="36" loading="lazy" />
+                <img src={c.authorAvatar} alt="" width="32" height="32" loading="lazy" />
               ) : body ? (
                 initials(c.authorName, c.authorHandle)
               ) : (
