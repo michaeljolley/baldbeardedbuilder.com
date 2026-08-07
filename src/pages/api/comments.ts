@@ -40,19 +40,31 @@ export const GET: APIRoute = async (context) => {
 
   if (!isTargetKind(kind) || !isTargetKey(key)) return bad('Unknown target.');
 
-  const viewer = context.locals.profile?.id ?? null;
+  const profile = context.locals.profile;
+
+  /*
+    readThread needs the whole byline rather than just the id, because a held comment
+    comes back from the view unnamed and its own author is the one reader entitled to see
+    who wrote it. is_private travels with it so that a held comment reads the way it will
+    read once it clears.
+  */
+  const viewer = profile
+    ? {
+        id: profile.id,
+        handle: profile.handle,
+        name: profile.display_name,
+        avatar: profile.avatar_url,
+        isPrivate: profile.is_private
+      }
+    : null;
+
   const thread = await readThread(kind, key, viewer);
 
   return json({
     ...thread,
     /* The island needs to know what it is allowed to draw before it draws it. */
-    viewer: context.locals.profile
-      ? {
-          id: context.locals.profile.id,
-          handle: context.locals.profile.handle,
-          name: context.locals.profile.display_name,
-          avatar: context.locals.profile.avatar_url
-        }
+    viewer: viewer
+      ? { id: viewer.id, handle: viewer.handle, name: viewer.name, avatar: viewer.avatar }
       : null,
     limits: { bodyMax: BODY_MAX, editWindowMinutes: EDIT_WINDOW_MINUTES }
   });

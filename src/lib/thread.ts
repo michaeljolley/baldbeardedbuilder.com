@@ -64,6 +64,44 @@ export interface Thread {
   total: number;
 }
 
+/** The signed in reader, as much of them as a byline needs. */
+export interface ThreadViewer {
+  id: string;
+  handle: string;
+  name: string | null;
+  avatar: string | null;
+  isPrivate: boolean;
+}
+
+/**
+ * Give the author of a held comment their own name back.
+ *
+ * comments_public strips the byline off anything not visible, which is right for every
+ * reader but one. The author is shown their own held comment on purpose, so that writing
+ * something does not look like losing it, and a comment you are looking at with an Edit
+ * button under it should not be signed by somebody else. Editing made it obvious: the
+ * row redraws, and the name it redraws with is the one the view handed over.
+ *
+ * The rule is that a held comment reads to its author exactly as it will read to everyone
+ * once it clears, so a private profile stays unnamed here too. That is the same predicate
+ * the view applies, restated for the one row the view cannot apply it to.
+ *
+ * Held only. Hidden and deleted rows draw tombstones, and naming those is the thing the
+ * tombstone exists to avoid.
+ */
+export function nameOwnHeld(comments: CommentView[], viewer: ThreadViewer | null): CommentView[] {
+  if (!viewer || viewer.isPrivate) return comments;
+
+  for (const c of comments) {
+    if (c.status !== 'held' || !c.mine) continue;
+    c.authorHandle = viewer.handle;
+    c.authorName = viewer.name;
+    c.authorAvatar = viewer.avatar;
+  }
+
+  return comments;
+}
+
 /**
  * Whether a comment renders a body, which is the same thing as whether a reader would
  * count it as a reply.

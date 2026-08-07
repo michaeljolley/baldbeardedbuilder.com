@@ -13,6 +13,7 @@ import {
   order,
   initials,
   hasBody,
+  nameOwnHeld,
   withinEditWindow,
   AUTO_HIDE_REPORTS,
   BODY_MAX,
@@ -149,4 +150,75 @@ test('a tombstone is never a reply, whichever kind it is', () => {
   assert.equal(hasBody({ status: 'hidden', mine: true }), false);
   assert.equal(hasBody({ status: 'deleted', mine: false }), false);
   assert.equal(hasBody({ status: 'deleted', mine: true }), false);
+});
+
+/*
+  Held bylines.
+
+  comments_public strips the name off anything not visible, and readThread hands a held
+  comment back to the one person allowed to read it. Those two together signed somebody's
+  own words "somebody", under an Edit button, which is what got reported.
+*/
+const held = (over = {}) => ({
+  ...comment('h'),
+  status: 'held',
+  held: true,
+  mine: true,
+  authorHandle: null,
+  authorName: null,
+  authorAvatar: null,
+  ...over
+});
+
+const reader = (over = {}) => ({
+  id: 'me',
+  handle: 'a-okoro',
+  name: 'Ada Okoro',
+  avatar: 'https://example.com/a.png',
+  isPrivate: false,
+  ...over
+});
+
+test('the author of a held comment is named on it rather than left as somebody', () => {
+  const [row] = nameOwnHeld([held()], reader());
+  assert.equal(row.authorHandle, 'a-okoro');
+  assert.equal(row.authorName, 'Ada Okoro');
+  assert.equal(row.authorAvatar, 'https://example.com/a.png');
+});
+
+test('somebody else with a held comment in the thread is still not named', () => {
+  /* It never reaches them, but if the filter ever changed this is the line that keeps
+     the hold from becoming a list of who is waiting on a look. */
+  const [row] = nameOwnHeld([held({ mine: false })], reader());
+  assert.equal(row.authorHandle, null);
+});
+
+test('going private hides your name from your own held comment too', () => {
+  /* Held has to read the way it will read once it clears, and once it clears the view
+     hides a private byline from everybody. Anything else is a preview of a page that
+     does not exist. */
+  const [row] = nameOwnHeld([held()], reader({ isPrivate: true }));
+  assert.equal(row.authorHandle, null);
+  assert.equal(row.authorAvatar, null);
+});
+
+test('a signed out reader names nothing', () => {
+  const [row] = nameOwnHeld([held()], null);
+  assert.equal(row.authorHandle, null);
+});
+
+test('a tombstone of your own stays unnamed, held or not', () => {
+  /* The tombstone exists so that nobody carries a public marker saying this specific
+     person had something taken down. Handing the name back would undo it. */
+  const rows = nameOwnHeld(
+    [held({ status: 'hidden', held: false }), held({ status: 'deleted', held: false })],
+    reader()
+  );
+  for (const row of rows) assert.equal(row.authorHandle, null);
+});
+
+test('a visible comment keeps the byline the view gave it', () => {
+  const row = { ...comment('v'), mine: true, authorHandle: 'from-the-view' };
+  const [out] = nameOwnHeld([row], reader());
+  assert.equal(out.authorHandle, 'from-the-view');
 });
