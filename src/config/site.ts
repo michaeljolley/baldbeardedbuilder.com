@@ -222,6 +222,16 @@ export const SITE = {
   url: 'https://baldbeardedbuilder.com',
   /** The comment avatar and the host badge key off this handle. */
   hostHandle: 'michaeljolley',
+  /*
+    The host's profile id, by uuid rather than by handle.
+
+    A handle is mutable, which is why the schema says nothing else keys off it, and this
+    is a gate: the submission limit in src/pages/api/disasters.ts is skipped for this id.
+    The limit exists because pre moderation makes every submission cost me a read, and it
+    is not protecting me from myself. A rename should not quietly hand that exemption to
+    whoever claims the handle next.
+  */
+  hostProfileId: '5defcc02-0c5e-4311-82ac-4bf5836ad582',
   hostBadgeLabel: 'The bald one',
   /** Shown on the code of conduct. Bump it whenever the rules actually change. */
   conductUpdated: '2026-02-02',
