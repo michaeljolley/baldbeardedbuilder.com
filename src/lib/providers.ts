@@ -35,3 +35,25 @@ export const PROVIDER_LABELS: Record<Provider, string> = {
   discord: 'Discord',
   twitch: 'Twitch'
 };
+
+/*
+  What each one is actually for, said plainly on /account/.
+
+  A connections list that says "Connected account" three times tells somebody nothing
+  about why they might want to attach the two they have not. GitHub is the only provider
+  that reports when the account was made, which is what decision 16's hold on a first
+  comment reads. Twitch is what the badge backfill matches on. Discord earns nothing yet
+  and says so, because implying otherwise is how a settings screen starts lying.
+*/
+export const PROVIDER_NOTES: Record<Provider, string> = {
+  github: 'Account age, which decides whether a first comment waits',
+  discord: 'Profile only, for now',
+  twitch: 'Chat badges and stream history'
+};
+
+/** The profile column holding the display name for each provider. */
+export const PROVIDER_LOGIN_COLUMNS = {
+  github: 'github_login',
+  discord: 'discord_login',
+  twitch: 'twitch_login'
+} as const satisfies Record<Provider, string>;

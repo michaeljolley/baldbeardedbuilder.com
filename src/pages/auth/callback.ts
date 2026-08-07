@@ -4,6 +4,12 @@
   Exchanges the one time code for a session, sets the cookies, and returns them to
   wherever they were when they decided to sign in.
 
+  Both flows land here. A sign in arrives with no `linked` parameter, and a link started
+  from /auth/link/<provider>/ arrives with one naming the provider that was just attached.
+  They need telling apart, because app_metadata.provider keeps naming whichever provider
+  this person originally signed up with, so a Twitch link on a GitHub account would
+  otherwise refresh the GitHub columns and leave twitch_user_id null.
+
   The profile row is not created here. It is created by the on_auth_user_created trigger
   in the database, in the same transaction as the auth user, so there is no window in
   which somebody is signed in but has no profile. Doing it here would leave that window
@@ -27,17 +33,19 @@ export const GET: APIRoute = async ({ url, cookies, request, redirect }) => {
 
   const code = url.searchParams.get('code');
   const next = safeReturnPath(url.searchParams.get('next'));
+  const linked = url.searchParams.get('linked') ?? '';
+  const isLink = isProvider(linked);
 
   if (!code) {
     /* The reader pressed cancel on the provider, or somebody hit this URL by hand. */
-    return redirect(next, 302);
+    return redirect(isLink ? '/account/?link=cancelled#connections' : next, 302);
   }
 
   const supabase = serverClient(cookies, request.headers);
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error || !data.user) {
-    return redirect('/?auth=failed', 302);
+    return redirect(isLink ? '/account/?link=failed#connections' : '/?auth=failed', 302);
   }
 
   /*
@@ -57,21 +65,34 @@ export const GET: APIRoute = async ({ url, cookies, request, redirect }) => {
   */
   try {
     const meta = data.user.user_metadata ?? {};
-    const provider = data.user.app_metadata?.provider ?? '';
+    const provider = isLink ? linked : (data.user.app_metadata?.provider ?? '');
 
-    const patch: ProfileUpdate = {
-      display_name: (meta.full_name as string) ?? (meta.name as string) ?? null,
-      avatar_url: (meta.avatar_url as string) ?? null
-    };
+    /*
+      A link attaches an identity. It is not a fresh introduction, so it leaves the name
+      and the face alone: somebody who set a display name on /account/ should not lose it
+      for connecting Twitch.
+    */
+    const patch: ProfileUpdate = isLink
+      ? {}
+      : {
+          display_name: (meta.full_name as string) ?? (meta.name as string) ?? null,
+          avatar_url: (meta.avatar_url as string) ?? null
+        };
 
     if (isProvider(provider)) {
       const identity = data.user.identities?.find((i) => i.provider === provider);
       const identityData = (identity?.identity_data ?? {}) as Record<string, unknown>;
 
+      /*
+        The user_metadata fallbacks are for a sign in only. On a link, that object still
+        describes whoever this person signed up as, so falling back to it would copy a
+        GitHub username into twitch_login and call the account linked when it is not.
+        Better to write nothing and leave the row honest.
+      */
       const rawId =
         (identityData.provider_id as string | number | undefined) ??
         (identityData.sub as string | undefined) ??
-        (meta.provider_id as string | number | undefined);
+        (isLink ? undefined : (meta.provider_id as string | number | undefined));
       const providerId = rawId == null || rawId === '' ? null : String(rawId);
 
       const login =
@@ -79,12 +100,13 @@ export const GET: APIRoute = async ({ url, cookies, request, redirect }) => {
           (identityData.user_name as string | undefined) ??
           (identityData.preferred_username as string | undefined) ??
           (identityData.nickname as string | undefined) ??
-          (meta.user_name as string | undefined) ??
+          (isLink ? undefined : (meta.user_name as string | undefined)) ??
           ''
         ).toLowerCase() || null;
 
       const createdAt =
-        (identityData.created_at as string | undefined) ?? (meta.created_at as string | undefined);
+        (identityData.created_at as string | undefined) ??
+        (isLink ? undefined : (meta.created_at as string | undefined));
 
       if (provider === 'github') {
         if (providerId) patch.github_id = Number(providerId);
@@ -107,13 +129,20 @@ export const GET: APIRoute = async ({ url, cookies, request, redirect }) => {
       }
     }
 
-    const { error: writeError } = await serviceClient()
-      .from('profiles')
-      .update(patch)
-      .eq('id', data.user.id);
+    /*
+      An update with no columns is a request PostgREST rejects, and there is nothing to
+      say anyway. It happens when a link comes back for a provider whose identity is not
+      in the response yet.
+    */
+    if (Object.keys(patch).length > 0) {
+      const { error: writeError } = await serviceClient()
+        .from('profiles')
+        .update(patch)
+        .eq('id', data.user.id);
 
-    if (writeError) {
-      console.error('[auth/callback] profile refresh failed', writeError);
+      if (writeError) {
+        console.error('[auth/callback] profile refresh failed', writeError);
+      }
     }
   } catch (err) {
     /* A stale avatar is not a reason to refuse somebody entry. */
