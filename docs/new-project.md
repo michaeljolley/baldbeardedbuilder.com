@@ -178,8 +178,8 @@ already a Twitch app you can add the new callback to it rather than registering 
 and paste each client id and secret.
 
 Then **Authentication**, **Advanced**, and turn on **manual linking**. `linkIdentity`
-refuses to run without it, and it fails quietly, so the Twitch link button on `/account/`
-just returns `?link=failed` with nothing to say why.
+refuses to run without it, and it fails quietly, so the **Link it** buttons on `/account/`
+just return `?link=failed` with nothing to say why.
 
 ---
 
@@ -209,8 +209,9 @@ The wildcard one covers every Netlify branch and deploy preview URL. Replace
 subdomain on the `.netlify.app` URL of the current site, which is not the same as the
 custom domain.
 
-Both callback paths are covered by the `/**` suffix: `/auth/callback` for sign in and
-`/auth/link/twitch/callback/` for the Twitch link.
+One callback covers both flows and is already under the `/**` suffix: `/auth/callback` takes
+the sign in handshake, and a link started at `/auth/link/<provider>/` comes back to the same
+place carrying a `linked` parameter. There is nothing per provider to allow.
 
 ---
 

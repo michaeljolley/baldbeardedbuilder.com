@@ -3,7 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 
-import { isNewAccount, NEW_ACCOUNT_HOLD_DAYS } from '../src/lib/auth.ts';
+import { isNewAccount, clearSession, NEW_ACCOUNT_HOLD_DAYS } from '../src/lib/auth.ts';
+import { PROVIDER_LABELS, PROVIDER_NOTES, PROVIDER_SCOPES } from '../src/lib/providers.ts';
 
 const ROOT = process.cwd();
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), 'utf8');
@@ -12,6 +13,10 @@ const signin = read('src', 'pages', 'auth', 'signin.ts');
 const chooser = read('src', 'pages', 'signin.astro');
 const providers = read('src', 'lib', 'providers.ts');
 const callback = read('src', 'pages', 'auth', 'callback.ts');
+const signout = read('src', 'pages', 'auth', 'signout.ts');
+const linkRoute = read('src', 'pages', 'auth', 'link', '[provider].ts');
+const accountPage = read('src', 'pages', 'account.astro');
+const accountLib = read('src', 'lib', 'account.ts');
 
 test('GitHub OAuth returns to the canonical trailing-slash callback URL', () => {
   assert.match(signin, /`\/auth\/callback\/\?next=\$\{encodeURIComponent\(next\)\}`/);
@@ -84,6 +89,157 @@ test('the callback only writes the columns belonging to the provider just used',
 */
 test('signing in with Twitch counts as linking Twitch', () => {
   assert.match(callback, /patch\.twitch_linked_at/);
+});
+
+/*
+  There was no way to sign out. The route was written, correctly, as a POST, and then
+  nothing on the site ever called it, so the only way to end a session was to clear
+  cookies by hand or wait for the token to expire.
+*/
+test('sign out is reachable from the account page', () => {
+  assert.match(accountPage, /action="\/auth\/signout\/"/);
+});
+
+/*
+  A GET sign out means any image tag on any page, anywhere, signs a reader out. It is a
+  small piece of griefing and it costs one word to prevent, so this checks the word is
+  still there.
+*/
+test('sign out refuses to happen on a GET', () => {
+  assert.match(signout, /export const POST/);
+  assert.doesNotMatch(signout, /export const (GET|ALL)/);
+});
+
+/*
+  signOut is a network call to the auth server, and network calls fail. A browser still
+  holding an sb- cookie after pressing sign out renders as signed in until the token
+  expires, which is the single outcome the button exists to prevent, so the cookies get
+  cleared outside the try rather than inside it.
+*/
+test('sign out clears the cookies even when the auth server does not answer', () => {
+  const afterTheCatch = signout.slice(signout.lastIndexOf('} catch'));
+  assert.match(afterTheCatch, /clearSession\(context\)/);
+});
+
+test('clearing the session drops the Supabase cookies and leaves the rest alone', () => {
+  const deleted = [];
+  clearSession({
+    cookies: {
+      headers: () => [
+        'sb-access-token=one; Path=/',
+        'sb-refresh-token=two; Path=/',
+        'bbb-theme=ember; Path=/'
+      ],
+      delete: (name) => deleted.push(name)
+    }
+  });
+
+  assert.deepEqual(deleted, ['sb-access-token', 'sb-refresh-token']);
+});
+
+/*
+  Every "Link it" on /account/ pointed at /auth/link/<provider>/ and no such route had
+  ever been written, so every one of them was a 404. The href and the route are two places
+  saying the same thing, and this is the second place.
+*/
+test('the link route exists', () => {
+  assert.ok(
+    fs.existsSync(path.join(ROOT, 'src', 'pages', 'auth', 'link', '[provider].ts')),
+    'the Link it buttons on /account/ point at a route that does not exist'
+  );
+});
+
+test('every /auth/link/ href in the source is one the route can answer', () => {
+  const offenders = [];
+
+  for (const file of sourceFiles(path.join(ROOT, 'src'))) {
+    const relative = path.relative(ROOT, file).split(path.sep).join('/');
+    if (relative === 'src/pages/auth/link/[provider].ts') continue;
+
+    /* Quoted, so the prose in a comment that merely names the path is not a link. */
+    for (const [match, target] of fs
+      .readFileSync(file, 'utf8')
+      .matchAll(/["'`]\/auth\/link\/([^'"`\s)/]+)\//g)) {
+      /* The template literal the connections list builds, which covers all of them. */
+      if (target === '${provider}' || target === '${requested}') continue;
+      if (!PROVIDERS.includes(target)) offenders.push(`${relative} links to ${match}`);
+    }
+  }
+
+  assert.deepEqual(offenders, [], `These link to a provider that cannot be linked:\n${offenders.join('\n')}`);
+});
+
+/*
+  linkIdentity, not signInWithOAuth. signInWithOAuth on a browser that already holds a
+  session replaces it, so pressing "Link it" would sign somebody in as a second, empty
+  account rather than attaching an identity to the one they were looking at.
+*/
+test('linking attaches an identity rather than starting a new session', () => {
+  assert.match(linkRoute, /auth\.linkIdentity\(/);
+  assert.doesNotMatch(linkRoute, /auth\.signInWithOAuth\(/);
+});
+
+test('the link route refuses a provider it does not know', () => {
+  assert.match(linkRoute, /isProvider\(requested\)/);
+  assert.match(linkRoute, /provider:\s*requested/);
+});
+
+/*
+  Linking is something done to an account, so there has to be one. Sending somebody
+  through the handshake with no session produces a link that silently attaches to nobody.
+*/
+test('linking without a session goes to the chooser first', () => {
+  assert.match(linkRoute, /locals\.profile/);
+  assert.match(linkRoute, /\/signin\/\?next=/);
+});
+
+/*
+  app_metadata.provider keeps naming whoever this person originally signed up as. Reading
+  it on the way back from a link means a Twitch link on a GitHub account refreshes
+  github_login and leaves twitch_user_id null, which reads as the link doing nothing.
+*/
+test('the callback tells a link apart from a sign in and writes the right columns', () => {
+  assert.match(linkRoute, /linked=\$\{requested\}/);
+  assert.match(callback, /searchParams\.get\('linked'\)/);
+  assert.match(callback, /isLink \? linked :/);
+});
+
+/*
+  user_metadata still describes whoever this person signed up as. Falling back to it on a
+  link copies a GitHub username into twitch_login and calls the account linked when it is
+  not, which is worse than leaving the column empty.
+*/
+test('a link does not fall back to the metadata of the provider already signed in', () => {
+  assert.match(callback, /isLink \? undefined : \(meta\.provider_id/);
+  assert.match(callback, /isLink \? undefined : \(meta\.user_name/);
+});
+
+/*
+  The connections list showed GitHub and Twitch and quietly omitted Discord, which had
+  been a way in for as long as there had been three of them. Two hand written rows for
+  three providers is how that happens, so the list renders from the provider list now.
+*/
+test('the connections list is drawn from the provider list, not written out by hand', () => {
+  assert.match(accountPage, /PROVIDERS\.map/);
+  assert.match(accountPage, /account\.connections\[provider\]/);
+});
+
+test('every provider has a label and a note, so the list has something to draw', () => {
+  for (const provider of PROVIDERS) {
+    assert.ok(PROVIDER_LABELS[provider], `${provider} has no label`);
+    assert.ok(PROVIDER_NOTES[provider], `${provider} has no note saying what it is for`);
+    assert.ok(PROVIDER_SCOPES[provider], `${provider} has no scopes`);
+  }
+});
+
+/*
+  The account read is a literal select, so a provider added to providers.ts without its
+  column added there would compile but come back permanently "not connected".
+*/
+test('the account read asks for every provider login column', () => {
+  for (const column of ['github_login', 'discord_login', 'twitch_login']) {
+    assert.match(accountLib, new RegExp(column), `readAccount never selects ${column}`);
+  }
 });
 
 /*

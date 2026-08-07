@@ -3,6 +3,25 @@
   that they should not be reimplemented per route.
 */
 
+import type { APIContext } from 'astro';
+
+/**
+ * Clears the session cookies Supabase set, so the browser stops presenting a dead token.
+ *
+ * Both sign out and account deletion need this, and neither can rely on the Supabase
+ * client having done it. `signOut` writes the removals through the same `setAll` the
+ * server client was given, so it usually works, but it is a network call to the auth
+ * server and a network call can fail. A browser still holding an `sb-` cookie after
+ * pressing sign out renders as signed in until the token expires, which is the one
+ * outcome the button exists to prevent.
+ */
+export function clearSession(context: APIContext): void {
+  for (const cookie of context.cookies.headers()) {
+    const name = cookie.split('=')[0];
+    if (name.startsWith('sb-')) context.cookies.delete(name, { path: '/' });
+  }
+}
+
 /**
  * Turn an untrusted `next` parameter into a path we are willing to redirect to.
  *

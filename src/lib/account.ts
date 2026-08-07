@@ -8,9 +8,9 @@
   promises anyway.
 */
 
-import type { APIContext } from 'astro';
 import { serviceClient, supabaseWritable } from './supabase';
 import type { Submission, SubmissionStatus } from './submissions';
+import { PROVIDERS, PROVIDER_LOGIN_COLUMNS, type Provider } from './providers';
 import {
   normalizeHandle,
   handleProblem,
@@ -27,8 +27,15 @@ export interface AccountView {
   bio: string;
   links: { label: string; url: string }[];
   isPrivate: boolean;
-  githubLogin: string | null;
-  twitchLogin: string | null;
+  /**
+   * Every way in, connected or not, keyed by provider.
+   *
+   * A record rather than a field per provider, because the connections list on /account/
+   * renders from PROVIDERS. Adding a fourth door should mean adding it to providers.ts
+   * and nothing else, and a hand written pair of fields per provider is exactly how the
+   * list came to be missing Discord for as long as it was.
+   */
+  connections: Record<Provider, string | null>;
   email: string | null;
   preferences: {
     storyPublished: boolean;
@@ -56,7 +63,9 @@ export async function readAccount(profileId: string): Promise<AccountView | null
   ] = await Promise.all([
     db
       .from('profiles')
-      .select('id, handle, display_name, bio, links, is_private, github_login, twitch_login')
+      .select(
+        'id, handle, display_name, bio, links, is_private, github_login, discord_login, twitch_login'
+      )
       .eq('id', profileId)
       .maybeSingle(),
     db
@@ -88,8 +97,15 @@ export async function readAccount(profileId: string): Promise<AccountView | null
     bio: profile.bio ?? '',
     links,
     isPrivate: profile.is_private,
-    githubLogin: profile.github_login,
-    twitchLogin: profile.twitch_login,
+    /*
+      Read through the column map rather than by hand. The select above is a literal, so
+      TypeScript knows exactly which columns came back, and a provider added to
+      providers.ts without being added to that select fails to compile here rather than
+      turning up as a row that is permanently "not connected".
+    */
+    connections: Object.fromEntries(
+      PROVIDERS.map((provider) => [provider, profile[PROVIDER_LOGIN_COLUMNS[provider]] ?? null])
+    ) as Record<Provider, string | null>,
     email: authUser.user?.email ?? null,
     preferences: preferences
       ? {
@@ -265,10 +281,6 @@ export async function deleteAccount(profileId: string): Promise<SaveResult> {
   return { ok: true };
 }
 
-/** Clears the session cookies Supabase set, so the browser stops presenting a dead token. */
-export function clearSession(context: APIContext): void {
-  for (const cookie of context.cookies.headers()) {
-    const name = cookie.split('=')[0];
-    if (name.startsWith('sb-')) context.cookies.delete(name, { path: '/' });
-  }
-}
+/** Clears the session cookies Supabase set. Lives in ./auth so a route can reach it
+    without pulling in the service client. Re-exported so call sites import one thing. */
+export { clearSession } from './auth';
