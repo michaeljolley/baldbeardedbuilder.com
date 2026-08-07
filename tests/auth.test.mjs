@@ -4,7 +4,12 @@ import path from 'node:path';
 import test from 'node:test';
 
 import { isNewAccount, clearSession, oauthOutcome, NEW_ACCOUNT_HOLD_DAYS } from '../src/lib/auth.ts';
-import { PROVIDER_LABELS, PROVIDER_NOTES, PROVIDER_SCOPES } from '../src/lib/providers.ts';
+import {
+  PROVIDER_LABELS,
+  PROVIDER_NOTES,
+  PROVIDER_SCOPES,
+  providerLogin
+} from '../src/lib/providers.ts';
 
 const ROOT = process.cwd();
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), 'utf8');
@@ -211,7 +216,95 @@ test('the callback tells a link apart from a sign in and writes the right column
 */
 test('a link does not fall back to the metadata of the provider already signed in', () => {
   assert.match(callback, /isLink \? undefined : \(meta\.provider_id/);
-  assert.match(callback, /isLink \? undefined : \(meta\.user_name/);
+  assert.match(callback, /isLink \? null : providerLogin\(provider, meta/);
+});
+
+/*
+  The bug. Supabase normalises nothing about identity_data, so the three providers put the
+  login in three different places, and one shared chain of guesses covered two of them.
+  Discord has no user_name, no preferred_username and no nickname, so every Discord link
+  wrote discord_login as null while discord_id filled in beside it. These are the exact
+  payloads supabase/auth's claims mappers emit, so a chain that stops covering one of them
+  fails here rather than on somebody's account page.
+*/
+const GITHUB_IDENTITY = {
+  iss: 'https://api.github.com',
+  sub: '2058493',
+  name: 'Michael Jolley',
+  full_name: 'Michael Jolley',
+  user_name: 'MichaelJolley',
+  preferred_username: 'MichaelJolley',
+  provider_id: '2058493',
+  avatar_url: 'https://avatars.githubusercontent.com/u/2058493'
+};
+
+const DISCORD_IDENTITY = {
+  iss: 'https://discord.com/api',
+  sub: '183580131165601792',
+  name: 'BaldBeardedBuilder#0',
+  full_name: 'BaldBeardedBuilder',
+  custom_claims: { global_name: 'Bald Bearded Builder' },
+  provider_id: '183580131165601792',
+  picture: 'https://cdn.discordapp.com/avatars/183580131165601792/abc.png'
+};
+
+const TWITCH_IDENTITY = {
+  iss: 'https://api.twitch.tv',
+  sub: '473294395',
+  name: 'baldbeardedbuilder',
+  full_name: 'baldbeardedbuilder',
+  nickname: 'BaldBeardedBuilder',
+  slug: 'BaldBeardedBuilder',
+  provider_id: '473294395'
+};
+
+test('every provider has a login the site can find in what it actually sends', () => {
+  assert.equal(providerLogin('github', GITHUB_IDENTITY), 'michaeljolley');
+  assert.equal(providerLogin('discord', DISCORD_IDENTITY), 'baldbeardedbuilder');
+  assert.equal(providerLogin('twitch', TWITCH_IDENTITY), 'baldbeardedbuilder');
+});
+
+/*
+  Discord kept usernames unique and retired discriminators to "0", but an account that has
+  not been migrated still arrives with a real one, and `name` is the only key some of them
+  fill. A stored login of "someone#4821" would never match anything.
+*/
+test('a Discord discriminator is not part of the username', () => {
+  assert.equal(providerLogin('discord', { name: 'someone#4821' }), 'someone');
+  assert.equal(providerLogin('discord', { custom_claims: { global_name: 'Someone' } }), 'someone');
+});
+
+/*
+  Twitch display names are the login recased for almost everybody, and "almost" is not
+  something the badge backfill should be matching on. The login is what streamUsers holds.
+*/
+test('Twitch stores the login rather than the display name', () => {
+  assert.equal(providerLogin('twitch', { name: 'notthesame', nickname: 'DisplayName' }), 'notthesame');
+});
+
+/*
+  GitHub's `name` is the human's real name, which is not a login and is not unique. Reading
+  it would put "michael jolley" in github_login and break every lookup keyed on it.
+*/
+test('GitHub does not mistake a real name for a username', () => {
+  assert.equal(providerLogin('github', { name: 'Michael Jolley', user_name: 'MichaelJolley' }), 'michaeljolley');
+});
+
+/*
+  No name is a real answer. The identity is attached either way, and null is what says so
+  honestly rather than an empty string that renders as a bare "@".
+*/
+test('nothing usable reads as no name rather than an empty one', () => {
+  assert.equal(providerLogin('discord', {}), null);
+  assert.equal(providerLogin('discord', null), null);
+  assert.equal(providerLogin('github', { user_name: '   ' }), null);
+  assert.equal(providerLogin('twitch', { name: 42 }), null);
+});
+
+test('the callback asks the provider list where the login is instead of guessing', () => {
+  assert.match(callback, /providerLogin\(provider, identityData\)/);
+  assert.doesNotMatch(callback, /identityData\.preferred_username/);
+  assert.doesNotMatch(callback, /identityData\.nickname/);
 });
 
 /*
@@ -240,6 +333,35 @@ test('the account read asks for every provider login column', () => {
   for (const column of ['github_login', 'discord_login', 'twitch_login']) {
     assert.match(accountLib, new RegExp(column), `readAccount never selects ${column}`);
   }
+});
+
+/*
+  A login is a display name. It is nullable, it changes, and Discord handed back an
+  identity with no name the site could read for as long as the extraction was wrong, which
+  is how an attached account rendered "Not connected" with a "Link it" beside it that could
+  only ever fail with identity_already_exists. Attached is the id, and the id is the
+  question the list has to ask.
+*/
+test('the account read asks for every provider id column, which is what says connected', () => {
+  for (const column of ['github_id', 'discord_id', 'twitch_user_id']) {
+    assert.match(accountLib, new RegExp(column), `readAccount never selects ${column}`);
+  }
+});
+
+/*
+  auth.identities is what linkIdentity writes and therefore the only thing that actually
+  knows. The profile columns are a projection of it, and a projection written by code that
+  was looking for the wrong keys is exactly the thing that cannot be trusted here.
+*/
+test('connections are read from the identities, not from whether a name was stored', () => {
+  assert.match(accountLib, /identities/);
+  assert.match(accountLib, /connected:/);
+  assert.doesNotMatch(accountLib, /connections: Record<Provider, string \| null>/);
+});
+
+test('the connections list separates being attached from having a name to show', () => {
+  assert.match(accountPage, /connection\.connected/);
+  assert.match(accountPage, /connection\.login/);
 });
 
 /*

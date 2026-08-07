@@ -460,26 +460,37 @@ const canEmail = Boolean(account?.email && account.preferences);
                   )}
 
                   <ul class="connection-list">
-                    {PROVIDERS.map((provider) => (
-                      <li>
-                        <span class="connection-name">
-                          <b>{PROVIDER_LABELS[provider]}</b>
-                          <span>{PROVIDER_NOTES[provider]}</span>
-                        </span>
-                        {account.connections[provider] ? (
-                          <span class="connection-state connected">
-                            @{account.connections[provider]}
+                    {PROVIDERS.map((provider) => {
+                      /*
+                        Attached is one question and what to call it is another. A provider
+                        can be connected and still have no name to show: Discord will hand
+                        over an identity and no username the site can read, and answering
+                        that with "Not connected" next to a "Link it" that can only fail is
+                        how this list spent its time calling people liars.
+                      */
+                      const connection = account.connections[provider];
+
+                      return (
+                        <li>
+                          <span class="connection-name">
+                            <b>{PROVIDER_LABELS[provider]}</b>
+                            <span>{PROVIDER_NOTES[provider]}</span>
                           </span>
-                        ) : (
-                          <span class="connection-state">
-                            Not connected{' '}
-                            <a href={`/auth/link/${provider}/`} rel="nofollow">
-                              Link it<span class="vh"> ({PROVIDER_LABELS[provider]})</span>
-                            </a>
-                          </span>
-                        )}
-                      </li>
-                    ))}
+                          {connection.connected ? (
+                            <span class="connection-state connected">
+                              {connection.login ? `@${connection.login}` : 'Connected'}
+                            </span>
+                          ) : (
+                            <span class="connection-state">
+                              Not connected{' '}
+                              <a href={`/auth/link/${provider}/`} rel="nofollow">
+                                Link it<span class="vh"> ({PROVIDER_LABELS[provider]})</span>
+                              </a>
+                            </span>
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               </section>

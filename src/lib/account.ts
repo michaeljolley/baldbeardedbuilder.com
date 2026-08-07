@@ -10,7 +10,13 @@
 
 import { serviceClient, supabaseWritable } from './supabase';
 import type { Submission, SubmissionStatus } from './submissions';
-import { PROVIDERS, PROVIDER_LOGIN_COLUMNS, type Provider } from './providers';
+import {
+  PROVIDERS,
+  PROVIDER_ID_COLUMNS,
+  PROVIDER_LOGIN_COLUMNS,
+  providerLogin,
+  type Provider
+} from './providers';
 import {
   normalizeHandle,
   handleProblem,
@@ -19,6 +25,13 @@ import {
   BIO_MAX,
   DISPLAY_NAME_MAX
 } from './profile-fields';
+
+export interface Connection {
+  /** Whether this provider is attached at all. Never inferred from the login. */
+  connected: boolean;
+  /** What to call it on screen, or null when the provider never told us a name. */
+  login: string | null;
+}
 
 export interface AccountView {
   id: string;
@@ -35,7 +48,7 @@ export interface AccountView {
    * and nothing else, and a hand written pair of fields per provider is exactly how the
    * list came to be missing Discord for as long as it was.
    */
-  connections: Record<Provider, string | null>;
+  connections: Record<Provider, Connection>;
   email: string | null;
   preferences: {
     storyPublished: boolean;
@@ -51,6 +64,51 @@ export interface AccountView {
 */
 export * from './profile-fields';
 
+/*
+  What is attached, and what to call it.
+
+  Two sources, and they answer different questions. auth.identities is the truth about
+  whether a provider is attached, because linkIdentity is what writes it. The profile
+  columns are a projection of that, kept because the rest of the site reads them without
+  an admin call, and a projection can be stale or half written.
+
+  So: connected comes from the identity, and the name is the stored login when there is
+  one and is read back out of the identity when there is not. Somebody who linked Discord
+  before the login extraction was fixed has a row with discord_id set and discord_login
+  null, and this shows them connected under their Discord name without waiting for a
+  backfill or asking them to link something they already linked.
+
+  A profile column standing alone still counts. docs/backfill.md fills twitch_user_id by
+  hand for badge matching on accounts that never went through the handshake, and telling
+  one of those people they are not connected while their history is being matched on that
+  exact id would be the same lie in the other direction.
+*/
+type ProviderColumn = (typeof PROVIDER_LOGIN_COLUMNS)[Provider] | (typeof PROVIDER_ID_COLUMNS)[Provider];
+
+function connectionsOf(
+  profile: Record<ProviderColumn, unknown>,
+  identities: { provider: string; identity_data?: Record<string, unknown> | null }[] | null | undefined
+): Record<Provider, Connection> {
+  return Object.fromEntries(
+    PROVIDERS.map((provider) => {
+      const identity = (identities ?? []).find((i) => i.provider === provider);
+      const storedId = profile[PROVIDER_ID_COLUMNS[provider]];
+      const storedLogin = profile[PROVIDER_LOGIN_COLUMNS[provider]];
+
+      return [
+        provider,
+        {
+          connected: Boolean(identity) || storedId != null || storedLogin != null,
+          login:
+            (typeof storedLogin === 'string' && storedLogin) ||
+            providerLogin(provider, identity?.identity_data) ||
+            null
+        }
+      ];
+    })
+  ) as Record<Provider, Connection>;
+}
+
 export async function readAccount(profileId: string): Promise<AccountView | null> {
   if (!supabaseWritable) return null;
 
@@ -64,7 +122,7 @@ export async function readAccount(profileId: string): Promise<AccountView | null
     db
       .from('profiles')
       .select(
-        'id, handle, display_name, bio, links, is_private, github_login, discord_login, twitch_login'
+        'id, handle, display_name, bio, links, is_private, github_id, github_login, discord_id, discord_login, twitch_user_id, twitch_login'
       )
       .eq('id', profileId)
       .maybeSingle(),
@@ -97,15 +155,7 @@ export async function readAccount(profileId: string): Promise<AccountView | null
     bio: profile.bio ?? '',
     links,
     isPrivate: profile.is_private,
-    /*
-      Read through the column map rather than by hand. The select above is a literal, so
-      TypeScript knows exactly which columns came back, and a provider added to
-      providers.ts without being added to that select fails to compile here rather than
-      turning up as a row that is permanently "not connected".
-    */
-    connections: Object.fromEntries(
-      PROVIDERS.map((provider) => [provider, profile[PROVIDER_LOGIN_COLUMNS[provider]] ?? null])
-    ) as Record<Provider, string | null>,
+    connections: connectionsOf(profile, authUser.user?.identities),
     email: authUser.user?.email ?? null,
     preferences: preferences
       ? {

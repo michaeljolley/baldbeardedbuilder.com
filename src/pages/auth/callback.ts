@@ -20,7 +20,7 @@ import type { APIRoute } from 'astro';
 import { serverClient, serviceClient, supabaseWritable } from '../../lib/supabase';
 import type { Database } from '../../lib/supabase/database.types';
 import { oauthOutcome, safeReturnPath } from '../../lib/auth';
-import { isProvider } from '../../lib/providers';
+import { isProvider, providerLogin } from '../../lib/providers';
 
 type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 
@@ -122,6 +122,11 @@ export const GET: APIRoute = async ({ url, cookies, request, redirect }) => {
         describes whoever this person signed up as, so falling back to it would copy a
         GitHub username into twitch_login and call the account linked when it is not.
         Better to write nothing and leave the row honest.
+
+        Which keys hold the login is providerLogin's problem, because the answer is
+        different for all three of them. Asking every provider for user_name is how a
+        Discord link came to write a null login on every single attempt: Discord does not
+        have that key, has never had it, and the empty string fell straight through to null.
       */
       const rawId =
         (identityData.provider_id as string | number | undefined) ??
@@ -130,13 +135,8 @@ export const GET: APIRoute = async ({ url, cookies, request, redirect }) => {
       const providerId = rawId == null || rawId === '' ? null : String(rawId);
 
       const login =
-        (
-          (identityData.user_name as string | undefined) ??
-          (identityData.preferred_username as string | undefined) ??
-          (identityData.nickname as string | undefined) ??
-          (isLink ? undefined : (meta.user_name as string | undefined)) ??
-          ''
-        ).toLowerCase() || null;
+        providerLogin(provider, identityData) ??
+        (isLink ? null : providerLogin(provider, meta as Record<string, unknown>));
 
       const createdAt =
         (identityData.created_at as string | undefined) ??
