@@ -317,10 +317,17 @@ export async function deleteAccount(profileId: string): Promise<SaveResult> {
   if (detachStories) return { ok: false, error: 'Could not delete the account. Nothing was changed.' };
 
   /* A comment is a conversation somebody else is still part of, so the thread keeps its
-     shape and the comment becomes a tombstone rather than a hole. */
+     shape and the comment becomes a tombstone rather than a hole. Both bodies go: the
+     markdown and the HTML rendered from it are the same words in two shapes. */
   const { error: tombstoneComments } = await db
     .from('comments')
-    .update({ author_id: null, status: 'deleted', body_markdown: '', deleted_at: new Date().toISOString() })
+    .update({
+      author_id: null,
+      status: 'deleted',
+      body_markdown: '',
+      body_html: null,
+      deleted_at: new Date().toISOString()
+    })
     .eq('author_id', profileId);
 
   if (tombstoneComments) return { ok: false, error: 'Could not delete the account. Nothing was changed.' };

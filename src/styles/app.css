@@ -757,6 +757,26 @@ html:not(.js) .themer { display: none; }
   padding: .85rem 1rem;
 }
 
+/*
+  Something went wrong, said so.
+
+  A notice is dim and dashed because most of them are asides nobody needs to act on. An
+  error is the one kind that has to be noticed, and dropping the same quiet sentence into
+  the page made a failure read as a caption. So it takes the severity colour the rest of
+  the site already uses for wrong, a solid edge with the accent rule down the left that
+  marks every other important block here, and the full foreground weight.
+
+  Colour is not the only signal. The border style changes with it, and the words say what
+  happened, so this still reads as a failure without seeing red.
+*/
+.notice.bad {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--sev-error) 45%, var(--line));
+  border-left: 2px solid var(--sev-error);
+  background: color-mix(in srgb, var(--sev-error) 6%, var(--bg));
+  color: var(--fg);
+}
+
 /* ---------- comments ---------- */
 
 .comments { border-top: 1px solid var(--line); padding: 2.5rem 0 4rem; }
