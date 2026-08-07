@@ -66,6 +66,78 @@ export function numeral(tier: number | null, familySize: number): string | null 
   return NUMERALS[tier] ?? String(tier);
 }
 
+/*
+  What a page needs to nudge somebody towards one badge rather than draw the whole shelf.
+  The label carries its numeral already, because "First Reply II" is the name a reader
+  will see on the shelf and two names for one badge is a bug report waiting to happen.
+*/
+export interface NextStep {
+  id: string;
+  label: string;
+  /** What the threshold counts, so copy can name the unit rather than say "1 more". */
+  unit: string | null;
+  /** How many of that unit are left. Never below one, since an earned step is not next. */
+  remaining: number;
+}
+
+/*
+  Event names are database vocabulary and nobody wants to read "1 more site:comment". The
+  map lives here rather than in a component because it is a rule about the counters, and
+  because here it can be tested without a browser. An event with no entry gets no noun,
+  and the caller writes a sentence that does not need one.
+*/
+const UNITS: Record<string, string> = {
+  'site:comment': 'reply',
+  'site:comment-thread': 'thread',
+  'site:disaster': 'disaster',
+  'site:disaster-error': 'disaster',
+  'stream:attended': 'stream',
+  onChatMessage: 'message'
+};
+
+export function unitFor(event: string | null | undefined): string | null {
+  return (event && UNITS[event]) ?? null;
+}
+
+/**
+ * The lowest step in one family this profile has not earned, and how far off it is.
+ *
+ * Same rule as the shelf's next step in rule 2, narrowed to a single family so a page can
+ * point at one badge. Null once the family is finished, because there is nothing left to
+ * aim at, and null for a family with no counter behind it, because a manual badge has no
+ * honest number to quote.
+ */
+export function nextStep(
+  shelf: ShelfRow[],
+  progress: ProgressRow[],
+  family: string
+): NextStep | null {
+  const byBadge = new Map(progress.map((r) => [r.badge_id, r]));
+
+  const rows = shelf.filter(
+    (row) => row.badge_id && row.name && (row.family ?? row.badge_id) === family
+  );
+  if (rows.length === 0) return null;
+
+  const step = [...rows]
+    .sort((a, b) => (a.tier ?? 0) - (b.tier ?? 0))
+    .find((row) => !byBadge.get(row.badge_id!)?.earned);
+
+  if (!step) return null;
+
+  const p = byBadge.get(step.badge_id!);
+  if (!p) return null;
+
+  const num = numeral(step.tier, rows.length);
+
+  return {
+    id: step.badge_id!,
+    label: num ? `${step.name} ${num}` : step.name!,
+    unit: unitFor(p.event),
+    remaining: Math.max(1, p.threshold - Number(p.n))
+  };
+}
+
 export function shapeShelf(shelf: ShelfRow[], progress: ProgressRow[]): ShelfBadge[] {
   const byBadge = new Map(progress.map((r) => [r.badge_id, r]));
   const earned = new Set(progress.filter((r) => r.earned).map((r) => r.badge_id));

@@ -8,7 +8,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { shapeShelf, numeral } from '../src/lib/shelf.ts';
+import { shapeShelf, numeral, nextStep, unitFor } from '../src/lib/shelf.ts';
 
 const row = (id, family, tier, extra = {}) => ({
   badge_id: id,
@@ -178,6 +178,87 @@ test('a fully earned family shows no progress anywhere', () => {
   const out = shapeShelf(shelf, progress);
   assert.ok(out.every((b) => b.progress === null));
   assert.ok(out.every((b) => b.earned));
+});
+
+/* The next step in one family ------------------------------------------------------- */
+
+const step = (id, n, threshold, earned, event = 'site:comment') => ({
+  badge_id: id,
+  event,
+  n,
+  threshold,
+  earned
+});
+
+const reply = [
+  { ...row('first-reply', 'first-reply', 1), name: 'First Reply' },
+  { ...row('helpful', 'first-reply', 2), name: 'First Reply' }
+];
+
+test('the next step is the lowest tier not earned', () => {
+  const out = nextStep(reply, [
+    step('first-reply', 4, 1, true),
+    step('helpful', 4, 25, false, 'site:comment-thread')
+  ], 'first-reply');
+
+  assert.equal(out.id, 'helpful');
+  assert.equal(out.label, 'First Reply II');
+  assert.equal(out.unit, 'thread');
+  assert.equal(out.remaining, 21);
+});
+
+test('nothing earned yet points at tier one', () => {
+  const out = nextStep(reply, [
+    step('first-reply', 0, 1, false),
+    step('helpful', 0, 25, false, 'site:comment-thread')
+  ], 'first-reply');
+
+  assert.equal(out.id, 'first-reply');
+  assert.equal(out.label, 'First Reply I');
+  assert.equal(out.remaining, 1);
+});
+
+test('a finished family has no next step', () => {
+  const out = nextStep(reply, [
+    step('first-reply', 30, 1, true),
+    step('helpful', 30, 25, true, 'site:comment-thread')
+  ], 'first-reply');
+
+  assert.equal(out, null);
+});
+
+test('a count past the threshold that has not been granted still reads as one away', () => {
+  const out = nextStep(reply, [
+    step('first-reply', 1, 1, false)
+  ], 'first-reply');
+
+  assert.equal(out.remaining, 1, 'never zero, and never negative');
+});
+
+test('a step with no counter behind it is not quoted', () => {
+  const out = nextStep([row('good-neighbour', null, null)], [], 'good-neighbour');
+  assert.equal(out, null);
+});
+
+test('an unknown family has no next step', () => {
+  assert.equal(nextStep(reply, [], 'front-row'), null);
+});
+
+test('a single step family gets no numeral in its label', () => {
+  const out = nextStep(
+    [{ ...row('raider', 'raider', 1), name: 'Raider' }],
+    [step('raider', 0, 1, false, 'twitch:raid')],
+    'raider'
+  );
+
+  assert.equal(out.label, 'Raider');
+});
+
+test('event names turn into nouns a reader would say', () => {
+  assert.equal(unitFor('site:comment'), 'reply');
+  assert.equal(unitFor('site:comment-thread'), 'thread');
+  assert.equal(unitFor('twitch:raid'), null, 'an unmapped counter gets no noun');
+  assert.equal(unitFor(null), null);
 });
 
 test('numerals come from family size, not from how many are shown', () => {

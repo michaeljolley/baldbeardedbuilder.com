@@ -13,6 +13,7 @@ import {
   order,
   initials,
   hasBody,
+  emptyLine,
   nameOwnHeld,
   withinEditWindow,
   AUTO_HIDE_REPORTS,
@@ -221,4 +222,31 @@ test('a visible comment keeps the byline the view gave it', () => {
   const row = { ...comment('v'), mine: true, authorHandle: 'from-the-view' };
   const [out] = nameOwnHeld([row], reader());
   assert.equal(out.authorHandle, 'from-the-view');
+});
+
+/* The empty thread line ------------------------------------------------------------- */
+
+test('an empty thread with no badge to offer just invites a first reply', () => {
+  assert.equal(emptyLine(null), 'No replies yet. Yours would be the first.');
+});
+
+test('one away names the badge without counting it out', () => {
+  assert.equal(
+    emptyLine({ label: 'First Reply I', unit: 'reply', remaining: 1 }),
+    'No replies yet. Yours would be the first, and it earns you First Reply I.'
+  );
+});
+
+test('further out quotes the number and the unit it counts', () => {
+  assert.equal(
+    emptyLine({ label: 'First Reply II', unit: 'thread', remaining: 21 }),
+    'No replies yet. Yours would be the first, and you are 21 threads off First Reply II.'
+  );
+});
+
+test('a counter with no noun still reads as a sentence', () => {
+  assert.equal(
+    emptyLine({ label: 'Raider', unit: null, remaining: 3 }),
+    'No replies yet. Yours would be the first, and you are 3 off Raider.'
+  );
 });
