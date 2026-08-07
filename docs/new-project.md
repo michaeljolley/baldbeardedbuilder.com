@@ -178,8 +178,10 @@ already a Twitch app you can add the new callback to it rather than registering 
 and paste each client id and secret.
 
 Then **Authentication**, **Advanced**, and turn on **manual linking**. `linkIdentity`
-refuses to run without it, and it fails quietly, so the **Link it** buttons on `/account/`
-just return `?link=failed` with nothing to say why.
+refuses to run without it, and it refuses quietly, so the **Link it** buttons on `/account/`
+come back with `?link=failed`. The reason Supabase gave is in the function log, prefixed
+`[auth/link]` or `[auth/callback]`, which is the first place to look when a link will not
+take.
 
 ---
 

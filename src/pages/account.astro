@@ -21,7 +21,7 @@ import {
   LINKS_MAX
 } from '../lib/account';
 import { clearSession } from '../lib/auth';
-import { PROVIDERS, PROVIDER_LABELS, PROVIDER_NOTES } from '../lib/providers';
+import { PROVIDERS, PROVIDER_LABELS, PROVIDER_NOTES, isProvider } from '../lib/providers';
 import SubmissionList from '../components/SubmissionList.astro';
 import { supabaseWritable } from '../lib/supabase';
 
@@ -67,20 +67,42 @@ const saved = Astro.url.searchParams.get('saved');
   and comes back through /auth/callback/, so there is no request left to carry a result in
   and it arrives as a query parameter instead.
 
-  "failed" is the one worth saying out loud. linkIdentity refuses to run when manual
-  linking is off in the Supabase project and it refuses quietly, so without a message here
-  the button looks like it does nothing at all.
+  Four outcomes rather than the two that were worth telling apart before. "cancelled" used
+  to be the answer for every handshake that came back without a code, which meant somebody
+  who pressed Approve on Discord and was refused by Supabase got told they had cancelled.
+  Being told you did something you did not do is worse than being told nothing.
+
+  "exists" is the one most people will actually meet, because a Discord account already
+  attached to another account here is the ordinary way a link gets refused. "failed" keeps
+  the rest, including manual linking being switched off in the Supabase project, which is a
+  configuration mistake the reader cannot fix and should not be blamed for. The reason
+  Supabase gave is in the server log in every case.
 */
-const LINK_MESSAGES: Record<string, { ok: boolean; text: string }> = {
-  ok: { ok: true, text: 'Account connected.' },
-  cancelled: { ok: false, text: 'Nothing was connected. You cancelled at the provider.' },
+const LINK_MESSAGES: Record<string, { ok: boolean; text: (who: string) => string }> = {
+  ok: { ok: true, text: (who) => `${who} connected.` },
+  cancelled: { ok: false, text: (who) => `Nothing was connected. You cancelled at ${who}.` },
+  exists: {
+    ok: false,
+    text: (who) => `That ${who} account is already connected to an account here.`
+  },
   failed: {
     ok: false,
-    text: 'That account could not be connected. It may already belong to another account here.'
+    text: (who) => `${who} could not be connected, and nothing about your account changed.`
   },
-  unknown: { ok: false, text: 'That is not a provider this site knows about.' }
+  unknown: { ok: false, text: () => 'That is not a provider this site knows about.' }
 };
-const linkResult = LINK_MESSAGES[Astro.url.searchParams.get('link') ?? ''] ?? null;
+
+const linkStatus = Astro.url.searchParams.get('link') ?? '';
+const linkProvider = Astro.url.searchParams.get('provider') ?? '';
+const linkMessage = LINK_MESSAGES[linkStatus] ?? null;
+const linkResult = linkMessage
+  ? {
+      ok: linkMessage.ok,
+      text: linkMessage.text(
+        isProvider(linkProvider) ? PROVIDER_LABELS[linkProvider] : 'That account'
+      )
+    }
+  : null;
 
 const linkRows = Array.from({ length: LINKS_MAX }, (_, i) => account?.links[i] ?? { label: '', url: '' });
 const linkLabelExamples = ['Website', 'GitHub', 'YouTube', 'Bluesky'];

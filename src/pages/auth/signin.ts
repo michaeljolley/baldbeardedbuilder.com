@@ -49,7 +49,8 @@ export const GET: APIRoute = async ({ url, cookies, request, redirect }) => {
   });
 
   if (error || !data?.url) {
-    return redirect('/?auth=failed', 302);
+    console.error(`[auth/signin] could not start the ${requested} handshake`, error);
+    return redirect(`/signin/?auth=failed&next=${encodeURIComponent(next)}`, 302);
   }
 
   return redirect(data.url, 302);
