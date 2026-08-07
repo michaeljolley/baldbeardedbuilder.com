@@ -99,28 +99,32 @@ const VIEWPORTS = [
 const THEMES = ['bbb-dark', 'bbb-light', 'hotdog-stand'];
 
 /*
-  One unexplained failure, 31 July, recorded here and closed rather than chased.
+  The 31 July unexplained failure, now explained.
 
-  A single run reported contrast violations on h4 elements. The offending markup was
-  located exactly by querying the DOM across every target: /videos/, the sixth .feed, the
-  seven external items, each of which draws a span wrapping an h4. Nothing else on any
-  target has that shape.
+  A run reported contrast violations on h4 elements and would not reproduce: four full
+  runs, plus 96 targeted audits on /csharp/ and 64 on /videos/ using an exact mirror of
+  this file's browser setup, all clean. The note left here at the time cleared the body
+  colour transition at app.css:34 on the grounds that every context is opened with
+  reducedMotion 'reduce' and app.css collapses transition-duration to .01ms under that.
 
-  It has not reproduced. Four full runs since, including one from a clean worktree built
-  from committed source, plus 96 targeted audits on /csharp/ and 64 on /videos/ using an
-  exact mirror of this file's browser setup. All clean.
+  That was the wrong conclusion, and it took the same failure coming back to show it. In
+  October the gate failed on the home page on .row > h3 under bbb-light, on the
+  pull_request run, while the push run for the identical commit passed. Reproduced
+  locally at last by throttling the CPU 8x: one run in eight, with axe reporting fgColor
+  #1b1a18 against bgColor #15171a, which is the foreground of the theme being left on the
+  background of the theme being arrived at.
 
-  Two things are known and neither explains it. The rule id is gone, because the failing
-  run was piped through `Select-Object -Last 2` and the id was above the cut, so never do
-  that to a gate that can fail. And the body colour transition at app.css:34 does not
-  reach this file: every context here is opened with reducedMotion 'reduce', and
-  app.css:1506 collapses transition-duration to .01ms under that. Measured both ways, and
-  a probe using a default context instead does report mid transition colours, which is
-  what made the transition look like the cause when it is not.
+  So the transition was the cause. .01ms is a duration, not an absence, and the swap still
+  has to wait for a frame before anything reads the new colour. On an unloaded machine
+  that frame is immediate and the old 50ms sleep covered it. On a loaded CI runner it is
+  not, and the sleep covered nothing. Both symptoms were the first few headings of a
+  block, which is simply what axe reaches first.
 
-  Left as is on purpose. Chasing an unreproducible failure with no error text is how an
-  afternoon goes. If it returns it will return with the rule id attached, and that is a
-  better starting point than anything guessed at now.
+  Two things came out of it, both below in applyTheme and record. The theme swap now waits
+  for the transitions it starts and then proves the page is wearing the theme before
+  auditing, and violations now print the data axe already had. The other half of the old
+  note stands and is worth repeating: the rule id was cut from that first run by
+  `Select-Object -Last 2`, so never do that to a gate that can fail.
 */
 
 const { server, base } = await serveDist();
@@ -220,11 +224,72 @@ for (const [vpName, viewport] of VIEWPORTS) {
       if (trigger) trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
     };
 
+    /*
+      Switch theme and wait for the page to actually be wearing it.
+
+      Setting data-theme is instant. The colours it implies are not: app.css transitions
+      background-color, color and border-color on body and on several block classes, so
+      the swap starts a transition and everything reads the old colour until that
+      transition's first frame lands. reducedMotion 'reduce' collapses the duration to
+      .01ms, which is not the same as collapsing it to nothing, and a frame on a loaded
+      CI runner can be a long way off.
+
+      That is what was failing this gate at random. Measured with the CPU throttled 8x,
+      one run in eight reported color-contrast on the home page with fgColor #1b1a18 and
+      bgColor #15171a: the foreground of the theme being left and the background of the
+      theme being arrived at, 1.03:1, on text nobody has ever seen rendered that way. The
+      earlier note in this file guessed at the transition and cleared it. The evidence
+      now says it was the transition, and that a 50ms sleep is the wrong instrument.
+
+      So this waits for the thing itself rather than for a number of milliseconds. Two
+      frames to get the change through style, layout and paint, then the transitions it
+      started, awaited by their own promises. Animations are left alone deliberately: a
+      looping one never finishes and would hang the gate.
+    */
+    const applyTheme = async (theme) => {
+      await page.evaluate(async (t) => {
+        document.documentElement.setAttribute('data-theme', t);
+
+        await new Promise((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(resolve))
+        );
+
+        await Promise.all(
+          document
+            .getAnimations()
+            .filter((a) => a instanceof CSSTransition)
+            /* A transition on an element that goes away rejects. That is settled too. */
+            .map((a) => a.finished.catch(() => {}))
+        );
+      }, theme);
+
+      /*
+        Then prove it, rather than assume it. body is color: var(--fg), so the computed
+        colour of body and the --fg of the theme now on the document have to agree. If
+        they ever do not, this reports which two disagree, which is a diagnosis. The
+        alternative is what CI got: a serious contrast violation on three headings and
+        no way to tell it was never real.
+      */
+      return page.evaluate((t) => {
+        const root = document.documentElement;
+        const applied = root.getAttribute('data-theme');
+        if (applied !== t) return `theme was set to ${t} but the document is wearing ${applied}`;
+
+        const hex = getComputedStyle(root).getPropertyValue('--fg').trim();
+        const n = parseInt(hex.slice(1), 16);
+        const want = `rgb(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255})`;
+        const got = getComputedStyle(document.body).color;
+
+        return got === want ? null : `body is ${got} but ${t} says --fg is ${want}`;
+      }, theme);
+    };
+
     for (const theme of THEMES) {
-      await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
-      /* The theme picker island writes on idle and would otherwise put the theme back. */
-      await page.waitForTimeout(50);
-      await page.evaluate((t) => document.documentElement.setAttribute('data-theme', t), theme);
+      const unsettled = await applyTheme(theme);
+      if (unsettled) {
+        failures.push(`${label} [${vpName}, ${theme}] never settled: ${unsettled}`);
+        continue;
+      }
 
       const audit = () =>
         new AxeBuilder({ page })
@@ -234,13 +299,27 @@ for (const [vpName, viewport] of VIEWPORTS) {
              that is actually ours. */
           .exclude('iframe[src*="youtube"]');
 
+      /*
+        Whatever axe measured, printed next to what it measured it on.
+
+        The contrast rule carries the two colours, the ratio it got and the one it wanted,
+        and without them a failure is a selector and a shrug. This gate has now twice
+        produced a finding nobody could act on, and both times the data that explains it
+        was sitting in the results object being thrown away.
+      */
       const record = (results, where) => {
         for (const v of results.violations) {
           failures.push(
             `${label}${where} [${vpName}, ${theme}] ${v.id} (${v.impact}): ${v.help}\n` +
               v.nodes
                 .slice(0, 3)
-                .map((n) => `      ${n.target.join(' ')}`)
+                .map((n) => {
+                  const why = [...n.any, ...n.all, ...n.none]
+                    .filter((c) => c.data && typeof c.data === 'object')
+                    .map((c) => JSON.stringify(c.data))
+                    .join(' ');
+                  return `      ${n.target.join(' ')}${why ? `\n        ${why}` : ''}`;
+                })
                 .join('\n')
           );
         }
