@@ -16,9 +16,11 @@ import { renderComment } from './markdown';
 import { isTargetKind, type TargetKind } from './reader';
 import {
   order,
+  nameOwnHeld,
   type CommentStatus,
   type CommentView,
-  type Thread
+  type Thread,
+  type ThreadViewer
 } from './thread';
 
 import {
@@ -44,7 +46,7 @@ export * from './comment-rules';
 export async function readThread(
   kind: TargetKind,
   key: string,
-  viewerId: string | null
+  viewer: ThreadViewer | null
 ): Promise<Thread> {
   if (!supabaseWritable) return { comments: [], total: 0 };
 
@@ -71,13 +73,13 @@ export async function readThread(
     ids: nothing else about a hidden comment leaves the server.
   */
   const mine = new Set<string>();
-  if (viewerId) {
+  if (viewer) {
     const { data } = await db
       .from('comments')
       .select('id')
       .eq('target_kind', kind)
       .eq('target_key', key)
-      .eq('author_id', viewerId);
+      .eq('author_id', viewer.id);
     for (const row of data ?? []) mine.add(row.id);
   }
 
@@ -105,6 +107,9 @@ export async function readThread(
     vanish, and write it again.
   */
   const readable = all.filter((c) => c.status !== 'held' || c.mine);
+
+  /* The view could not name the author of a held row, so put that one byline back. */
+  nameOwnHeld(readable, viewer);
 
   const bodies = await bodiesFor(readable.map((c) => c.id));
   for (const c of readable) {
