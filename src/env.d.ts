@@ -41,6 +41,8 @@ declare namespace App {
       is_private: boolean;
       /** When the GitHub account was made. Feeds the new account hold on comments. */
       github_created_at: string | null;
+      /** When the profile was made here. The hold's fallback for providers that do not say. */
+      created_at: string | null;
     } | null;
     userId: string | null;
   }

@@ -83,7 +83,7 @@ export const POST: APIRoute = async (context) => {
     for a look before anybody else sees it. The author sees it the whole time, with a note,
     because the alternative is watching your own words vanish and writing them again.
   */
-  const hold = isNewAccount(profile.github_created_at);
+  const hold = isNewAccount(profile.github_created_at, profile.created_at);
 
   const result = await postComment({
     kind,

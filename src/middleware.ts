@@ -53,7 +53,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       */
       const { data, error } = await serviceClient()
         .from('profiles')
-        .select('id, handle, display_name, avatar_url, is_private, github_created_at')
+        .select('id, handle, display_name, avatar_url, is_private, github_created_at, created_at')
         .eq('id', user.id)
         .maybeSingle();
 
