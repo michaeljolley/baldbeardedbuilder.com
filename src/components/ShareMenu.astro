@@ -1,0 +1,235 @@
+---
+import { OUTBOUND_PLATFORMS, SHARE_LABELS, shareIntentUrl, shareableUrl } from '../lib/share-links';
+import type { TargetKind } from '../lib/reader';
+import ShareMark from './ShareMark.astro';
+
+/*
+  Decision 121. The share menu.
+
+  Not an island, for the same reason the theme picker is not one: this is a disclosure
+  with five destinations and one clipboard write, and Preact would be paying framework
+  rent for a control that has no state worth managing. The five links are real HTML.
+
+  It is a details element rather than a button and a hidden div, which is the one place
+  this leaves the mockup. A details disclosure opens with no JavaScript at all, so four of
+  the five destinations work for a reader who has it turned off. The mockup could not have
+  known that, because it built its urls from location.href at click time and therefore had
+  nothing to put in an href.
+
+  Building them here instead of at click time also fixes something that would have been
+  found much later. location.href on the Netlify branch deploy is a preview address, so
+  every share taken from staging would have pointed at staging. These are built from
+  Astro.site, so a share always points at the real page.
+
+  Decision 128 reversed half of that. Brand marks go in, monochrome, inheriting the row
+  colour. The two halves of the original ruling were never two decisions, and only the
+  colour half had a reason under it: drawing a mark properly meant hardcoding X black and
+  Bluesky #0285FF into a codebase with zero literal colours, and those two values fight
+  fifteen of the sixteen themes. currentColor removes the objection exactly, and monochrome
+  is the alternate treatment all four brand guidelines already permit for a mark sitting on
+  a surface whose colour is not known in advance.
+*/
+
+interface Props {
+  /** Site relative path of the page being shared, like /csharp/some-post/. */
+  path: string;
+  /** What goes in the compose box on the platforms that take text. */
+  title: string;
+  kind: TargetKind;
+  targetKey: string;
+}
+
+const { path, title, kind, targetKey } = Astro.props;
+
+/*
+  Made absolute here rather than by the caller, so no page can pass a relative url into a
+  compose box and produce a share that points at nothing. Astro.site is configured, and
+  the fallback exists only so a misconfigured build fails as a wrong hostname rather than
+  as a crash during getStaticPaths.
+*/
+const url = shareableUrl(new URL(path, Astro.site ?? 'https://baldbeardedbuilder.com').href);
+---
+
+<details class="share" data-share data-kind={kind} data-key={targetKey} data-url={url}>
+  <summary class="share-btn">
+    <span>Share</span>
+    <span class="caret" aria-hidden="true">&#9662;</span>
+  </summary>
+
+  <div class="share-menu">
+    {/*
+      No label element above the list. The summary this menu hangs off already reads
+      "Share", so a heading here would name the list a second time and a reader using it
+      would hear the same word twice before reaching a destination.
+
+      Nothing points at a label either. An earlier version carried an aria-labelledby that
+      outlived the element it named, which shipped a reference to a missing id on all 50
+      article pages and which axe is right not to report: the host is a ul, role=list, and
+      a list does not need a name to be usable. scripts/check-aria.mjs exists because of it.
+    */}
+    <ul>
+      {
+        OUTBOUND_PLATFORMS.map((platform) => (
+          <li>
+            <a
+              href={shareIntentUrl(platform, url, title)}
+              data-share-platform={platform}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ShareMark platform={platform} />
+              {SHARE_LABELS[platform]}
+              <span class="vh"> (opens in a new tab)</span>
+            </a>
+          </li>
+        ))
+      }
+      <li class="sep" aria-hidden="true"></li>
+      {/*
+        Hidden until the script has confirmed there is a clipboard to write to. A copy
+        button in a page with no JavaScript, or on an insecure origin where the clipboard
+        API does not exist, is a control that cannot do its job, which is the same rule
+        the like button follows before it hydrates.
+
+        The words live in their own span, and this is load bearing rather than tidy. The
+        script swaps this label to "Copied" and back on a timer, and an element whose text
+        is replaced wholesale loses every child it had, so writing to the button would
+        delete the mark on first use and the timeout would restore the words without it.
+        Nothing would fail. The button would keep working and quietly stop having an icon,
+        once, for readers who used it. An element whose content is swapped on a timer
+        cannot also be the element that owns children.
+      */}
+      <li>
+        <button type="button" class="copy" data-share-platform="copy" hidden>
+          <ShareMark platform="copy" />
+          <span class="copy-label">{SHARE_LABELS.copy}</span>
+        </button>
+      </li>
+    </ul>
+  </div>
+</details>
+
+<script is:inline>
+  (() => {
+    /*
+      Astro emits an is:inline script once per component instance, not once per page, so a
+      page carrying two share menus runs this twice.
+
+      It used to open with document.querySelector('[data-share]'), singular. Both copies
+      would then wire the first menu: every share taken from it recorded twice, and the
+      second menu got no listeners at all and never unhid its copy button. Nothing on the
+      site has two menus today, so nothing was broken, and that is the reason to fix it
+      now rather than later. The failure has no symptom. No error, nothing wrong in the
+      markup, nothing a reader would notice. share_intents exists so Michael can read a
+      number and believe it, and a count that silently doubles is the one bug shape that
+      table must not have.
+
+      Each menu is claimed before it is wired, so a second copy of the script finds nothing
+      left to do and the count cannot depend on how many menus a page happens to carry.
+    */
+    const wire = (host) => {
+      const url = host.dataset.url;
+      const body = (platform) =>
+        JSON.stringify({ kind: host.dataset.kind, key: host.dataset.key, platform });
+
+      /*
+        Fire and forget, per decision 122. A share must never wait on our analytics and must
+        still work when the endpoint is down or the reader has blocked it. sendBeacon is the
+        only thing here that survives the page being replaced by the link the reader just
+        followed, which is exactly what happens on the four outbound ones.
+      */
+      const record = (platform) => {
+        if (!navigator.sendBeacon) return;
+        try {
+          navigator.sendBeacon('/api/share/', new Blob([body(platform)], { type: 'application/json' }));
+        } catch {
+          /* Blocked, offline, or a browser that dislikes the type. Nothing to tell anybody. */
+        }
+      };
+
+      /*
+        The anchors are left to navigate on their own rather than being intercepted into a
+        sized popup. A popup can be blocked, it breaks middle click and open in new window,
+        and it buys a window shape nobody asked for. The listener only records.
+      */
+      for (const link of host.querySelectorAll('a[data-share-platform]')) {
+        link.addEventListener('click', () => record(link.dataset.sharePlatform));
+      }
+
+      const copy = host.querySelector('.copy');
+      if (!copy || !navigator.clipboard) return;
+
+      /*
+        Written to rather than the button, because the button now owns a mark as well as
+        its words. textContent on the button would take the svg with it on the first copy
+        and the timeout would put the words back without it. The fallback is the button
+        itself so a missing span degrades to the old behaviour instead of throwing, which
+        would take the four outbound listeners down with it.
+      */
+      const label = copy.querySelector('.copy-label') || copy;
+
+      copy.hidden = false;
+      copy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(url);
+        } catch {
+          return;
+        }
+        record('copy');
+        /*
+          The label is the feedback. A toast is a notification about a thing the reader
+          just did on purpose, and it would arrive somewhere other than where they are
+          looking.
+        */
+        label.textContent = 'Copied';
+        copy.setAttribute('data-done', '1');
+        setTimeout(() => {
+          label.textContent = 'Copy link';
+          copy.removeAttribute('data-done');
+        }, 1600);
+      });
+    };
+
+    for (const host of document.querySelectorAll('[data-share]:not([data-share-ready])')) {
+      host.setAttribute('data-share-ready', '');
+      wire(host);
+    }
+
+    /*
+      Dismissal is a page level concern rather than a per menu one, so it is installed once
+      however many menus went through the loop above. Binding it per instance would be
+      harmless and invisible, which is how the bug above got in.
+    */
+    if (document.documentElement.hasAttribute('data-share-dismiss')) return;
+    document.documentElement.setAttribute('data-share-dismiss', '');
+
+    /* A menu that stays open after you have looked away is a menu covering the page. */
+    document.addEventListener(
+      'click',
+      (e) => {
+        for (const host of document.querySelectorAll('[data-share][open]')) {
+          if (!host.contains(e.target)) host.open = false;
+        }
+      },
+      true
+    );
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+
+      const open = document.querySelectorAll('[data-share][open]');
+      if (!open.length) return;
+
+      /*
+        Focus returns to the menu the reader was actually in, not to whichever comes first
+        in the document, so Escape out of the second menu does not throw them back up the
+        page to the first.
+      */
+      const inside = document.activeElement && document.activeElement.closest('[data-share][open]');
+      const returnTo = inside || open[0];
+
+      for (const host of open) host.open = false;
+      returnTo.querySelector('summary').focus();
+    });
+  })();
+</script>

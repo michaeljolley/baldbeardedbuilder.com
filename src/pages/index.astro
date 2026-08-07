@@ -1,219 +1,385 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Newsletter from '../components/Newsletter.astro';
-import VideoSection from '../components/VideoSection.astro';
-import BlogSection from '../components/BlogSection.astro';
+/*
+  The front page. Decision 118, layout A, the workbench.
+
+  The newest thing Michael made is the headline. Dev disasters keep their section and
+  their call to action, but they sit mid page as the Problems panel rather than owning
+  the H1. This is a hierarchy change only: every colour, size and radius below is a
+  token that was already in use.
+
+  Zero JavaScript, same as before. Nothing here rotates, animates or fetches.
+*/
+import Mark from '../components/Mark.astro';
 import { getCollection } from 'astro:content';
-import { isOnline } from '../scripts/twitch';
-import { isPostPublished } from '../scripts/publish';
+import Base from '../layouts/Base.astro';
+import Drip from '../components/Drip.astro';
+import { SITE, VISIBLE_TOPICS, sevClass, sevLabel } from '../config/site';
+import { allItems, isVideoKind, itemKindLabel, itemsInTopic } from '../lib/content';
+import { starterItems, fillSpans } from '../lib/starters';
+import { freshnessKicker, postedOn } from '../lib/freshness';
+import { leadSentences } from '../lib/excerpt';
+import { imageUrlAtWidth } from '../lib/images';
+import {
+  allDisasters,
+  sortDisasters,
+  countsBySeverity,
+  problemSummary,
+  disasterCode
+} from '../lib/disasters';
 
-const blogEntries = await getCollection('blog');
-const now = new Date();
-const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-const publishedEntries = blogEntries.filter(entry => isPostPublished(entry.data.pubDate));
-const sortedEntries = publishedEntries.sort((a, b) => 
-  b.data.pubDate.getTime() - a.data.pubDate.getTime()
+const items = await allItems();
+
+/*
+  The hero is the newest item that carries a summary, not simply the newest item.
+
+  Same rule as the Start here lead, and for the same measured reason: the layout gives
+  the excerpt a paragraph of height, so an item without one leaves a hole in the largest
+  element on the page. Skipping forward costs a few days of recency and never costs the
+  page its shape.
+*/
+const hero = items.find((i) => i.description);
+const alsoNew = items.filter((i) => i !== hero).slice(0, 3);
+
+const starters = await starterItems();
+const fill = fillSpans(starters.length);
+
+const disasters = allDisasters();
+const topProblems = sortDisasters(disasters, 'liked').slice(0, 4);
+const counts = countsBySeverity();
+
+const drips = await getCollection('drips');
+drips.sort((a, b) => (a.data.publishDate < b.data.publishDate ? 1 : -1));
+const latestDrip = drips[0];
+
+const dripDay = latestDrip
+  ? new Date(latestDrip.data.publishDate).toLocaleDateString('en-US', { weekday: 'short' })
+  : '';
+
+/*
+  Four rows across two columns, the drip taking the last slot when there is one. Split by
+  halves rather than by column index so an odd count leaves the shorter column second.
+*/
+const alsoRows: Array<{
+  href: string;
+  title: string;
+  kindLabel: string;
+  meta: string;
+  offsite: boolean;
+  opensYouTube: boolean;
+}> =
+  alsoNew.map((i) => ({
+    href: i.href,
+    title: i.title,
+    kindLabel: itemKindLabel(i.kind),
+    meta: i.length,
+    offsite: i.offsite,
+    opensYouTube: isVideoKind(i.kind) && i.offsite
+  }));
+
+if (latestDrip) {
+  alsoRows.push({
+    href: 'https://dotnetdrip.com',
+    title: 'The links that were worth reading this week',
+    kindLabel: 'Drip',
+    meta: dripDay,
+    offsite: true,
+    opensYouTube: false
+  });
+}
+
+const alsoSplit = Math.ceil(alsoRows.length / 2);
+const alsoColumns = [alsoRows.slice(0, alsoSplit), alsoRows.slice(alsoSplit)].filter(
+  (c) => c.length > 0
 );
-const latestPost = sortedEntries[0];
-const hasRecentPost = latestPost && latestPost.data.pubDate >= sevenDaysAgo;
 
-const { isLive } = await isOnline();
+const topicCounts = await Promise.all(
+  VISIBLE_TOPICS.map(async (t) => ({ topic: t, n: (await itemsInTopic(t.slug)).length }))
+);
+
+/*
+  Views print only when there are some. A video showing "0 views" on the front page reads
+  as work nobody wanted, which is a different claim from a number we have not fetched.
+*/
+const heroMeta = hero
+  ? [
+      hero.views && hero.views > 0 ? `${hero.views.toLocaleString('en-US')} views` : null,
+      hero.engagementLikes !== null
+        ? `${hero.engagementLikes.toLocaleString('en-US')} ${
+            hero.engagementLikes === 1 ? 'like' : 'likes'
+          }`
+        : null,
+      hero.kind === 'article' && hero.engagementComments !== null
+        ? `${hero.engagementComments.toLocaleString('en-US')} ${
+            hero.engagementComments === 1 ? 'comment' : 'comments'
+          }`
+        : null,
+      `posted ${postedOn(hero.date)}`,
+      hero.thumbnail ? null : hero.length,
+      hero.offsite ? 'on YouTube' : null
+    ].filter(Boolean)
+  : [];
+
+const heroThumbnail = hero?.thumbnail;
+const heroImage = heroThumbnail
+  ? (() => {
+      const src = imageUrlAtWidth(heroThumbnail, 640);
+      const responsive = src !== heroThumbnail;
+      return {
+        src,
+        srcset: responsive
+          ? [640, 1280]
+              .map((width) => `${imageUrlAtWidth(heroThumbnail, width)} ${width}w`)
+              .join(', ')
+          : undefined,
+        cloudinary: responsive
+      };
+    })()
+  : null;
 ---
 
-<Layout title="Bald Bearded Builder | Michael Jolley">
-  <section class="hero">
-    <div class="hero-content">
-      <div class="hero-text">
-        <h1>Michael Jolley</h1>
-        <p class="aka">aka The Bald Bearded Builder</p>
-        <p class="tagline">Bringing smiles to the syntax — because laughter is the best error handler.</p>
-        <div class="hero-cta">
-          {isLive ? (
-            <>
-              <a href={`/blog/${latestPost.id}/`} class="btn btn-muted">Read the Latest</a>
-              <a href="https://youtube.com/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
-              <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-live" target="_blank" rel="noopener noreferrer">Live on Twitch Now</a>
-            </>
-          ) : hasRecentPost ? (
-            <>
-              <a href={`/blog/${latestPost.id}/`} class="btn btn-highlight">Read the Latest</a>
-              <a href="https://youtube.com/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
-              <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on Twitch</a>
-            </>
-          ) : (
-            <>
-              <a href={`/blog/${latestPost.id}/`} class="btn btn-muted">Read the Latest</a>
-              <a href="https://youtube.com/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
-              <a href="https://twitch.tv/baldbeardedbuilder" class="btn btn-muted" target="_blank" rel="noopener noreferrer">Watch on Twitch</a>
-            </>
+<Base title={SITE.name} description={SITE.tagline}>
+  {
+    heroImage && (
+      <Fragment slot="head">
+        {heroImage.cloudinary && <link rel="preconnect" href="https://res.cloudinary.com" />}
+        <link
+          rel="preload"
+          as="image"
+          href={heroImage.src}
+          imagesrcset={heroImage.srcset}
+          imagesizes={heroImage.srcset ? '(max-width: 1080px) calc(100vw - 4rem), 592px' : undefined}
+          fetchpriority="high"
+        />
+      </Fragment>
+    )
+  }
+  <main id="main">
+    {
+      hero && (
+        <section class={`bench shell${hero.thumbnail ? '' : ' plain'}`}>
+          {
+            /*
+              No still, no column for one. `image` is optional in the blog schema, so a
+              post without one is a commit away, and a two column headline with nothing
+              in the left column is half a screen of nothing. The length moves to the
+              meta line in that case, since the duration badge lives on the still.
+            */
+          }
+          {heroImage && (
+            <a
+              class="shot"
+              href={hero.href}
+              target={isVideoKind(hero.kind) && hero.offsite ? '_blank' : undefined}
+              rel={hero.offsite ? 'noopener noreferrer' : undefined}
+              tabindex="-1"
+              aria-hidden="true"
+            >
+              <img
+                src={heroImage.src}
+                srcset={heroImage.srcset}
+                sizes={heroImage.srcset ? '(max-width: 1080px) calc(100vw - 4rem), 592px' : undefined}
+                alt=""
+                width="640"
+                height="360"
+                fetchpriority="high"
+                decoding="async"
+              />
+              {isVideoKind(hero.kind) && <span class="play" aria-hidden="true">&#9654;</span>}
+              <span class="dur">{hero.length}</span>
+            </a>
           )}
-        </div>
-      </div>
-      <div class="hero-image">
-        <img src="https://avatars.githubusercontent.com/u/1228996?v=4" alt="Michael Jolley - Bald Bearded Builder" />
+
+          <div>
+            <div class="eyebrow">
+              <span class="path">
+                {hero.topic}
+                <span class="sep">/</span>
+                <b>{hero.kind}</b>
+              </span>
+              <span class="spacer" />
+              <span class="kick">{freshnessKicker(hero.date)}</span>
+            </div>
+
+            <h1>{hero.title}</h1>
+
+            <p class="excerpt">{leadSentences(hero.description)}</p>
+
+            <div class="acts">
+              <a
+                class="btn primary"
+                href={hero.href}
+                target={isVideoKind(hero.kind) && hero.offsite ? '_blank' : undefined}
+                rel={hero.offsite ? 'noopener noreferrer' : undefined}
+              >
+                {isVideoKind(hero.kind) ? 'Watch it' : 'Read it'}
+              </a>
+              <a class="btn" href={`/${hero.topic}/`}>
+                Everything on {hero.topic}
+              </a>
+            </div>
+
+            <p class="meta">{heroMeta.join(' \u00b7 ')}</p>
+          </div>
+        </section>
+      )
+    }
+
+    {/* Whose site this is. Full bleed so it reads as the page speaking, not as a module. */}
+    <div class="ident">
+      <div class="shell">
+        <Mark class="mk" />
+        <p>
+          <b>I'm Michael.</b> Twenty years of C# and I still find new ways to embarrass
+          myself. I teach .NET and Windows development the way I learned it, out loud, on
+          camera, mistakes included.
+        </p>
+        <a class="more" href="/about/">More about me &rarr;</a>
       </div>
     </div>
-  </section>
 
-  <BlogSection />
+    <div class="below shell">
+      {
+        alsoColumns.length > 0 && (
+          <Fragment>
+            <div class="rule">
+              <h2>Also new</h2>
+              <a class="more" href="/all/">All &rarr;</a>
+            </div>
+            <div class="two">
+              {alsoColumns.map((column) => (
+                <div>
+                  {column.map((r) => (
+                    <a
+                      class="row"
+                      href={r.href}
+                      target={r.opensYouTube ? '_blank' : undefined}
+                      rel={r.offsite ? 'noopener noreferrer' : undefined}
+                    >
+                      <h3>{r.title}</h3>
+                      <span class="meta">
+                        <span class="k">{r.kindLabel}</span> {r.meta}
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </Fragment>
+        )
+      }
 
-  <VideoSection />
+      <div class="rule major">
+        <h2>Start here</h2>
+        <a class="more" href="/all/">Everything I've made &rarr;</a>
+      </div>
+      <p class="lead-in">
+        New around here? The things I would hand you first, in the order I would hand
+        them over.
+      </p>
+      <div class="grid" style={`--fill-3:${fill.three};--fill-2:${fill.two}`}>
+        {
+          starters.map((i, n) =>
+            n === 0 ? (
+              <a
+                class="card wide"
+                href={i.href}
+                target={isVideoKind(i.kind) && i.offsite ? '_blank' : undefined}
+                rel={i.offsite ? 'noopener noreferrer' : undefined}
+              >
+                <span class="thumb">
+                  {i.thumbnail ? (
+                    <img src={i.thumbnail} alt="" width="480" height="270" loading="lazy" />
+                  ) : (
+                    i.length
+                  )}
+                </span>
+                <span class="body">
+                  <h3>{i.title}</h3>
+                  {i.description && <p>{i.description}</p>}
+                  <span class="foot">
+                    <span class="k">{itemKindLabel(i.kind)}</span> {i.topic}{' '}
+                    &middot; {i.length}
+                    {i.offsite && <Fragment> &middot; YouTube</Fragment>}
+                  </span>
+                </span>
+              </a>
+            ) : (
+              <a
+                class="card"
+                href={i.href}
+                target={isVideoKind(i.kind) && i.offsite ? '_blank' : undefined}
+                rel={i.offsite ? 'noopener noreferrer' : undefined}
+              >
+                <h3>{i.title}</h3>
+                {i.description && <p>{i.description}</p>}
+                <span class="foot">
+                  <span class="k">{itemKindLabel(i.kind)}</span> {i.topic}{' '}
+                  &middot; {i.length}
+                  {i.offsite && <Fragment> &middot; YouTube</Fragment>}
+                </span>
+              </a>
+            )
+          )
+        }
+      </div>
 
-  <Newsletter />
-</Layout>
+      <div class="rule major"><h2>Learning paths</h2></div>
+      <p class="lead-in">
+        Pick a rabbit hole. Each one is everything I've made on that topic, in the order
+        that actually makes sense to read it.
+      </p>
+      <div class="chips">
+        {
+          topicCounts
+            .filter((t) => t.n > 0)
+            .map((t) => (
+              <a class="chip" href={`/${t.topic.slug}/`}>
+                {t.topic.label} <span class="n">{t.n}</span>
+              </a>
+            ))
+        }
+      </div>
 
-<style>
-  .hero {
-    padding: 4rem 2rem;
-  }
+      <div class="rule major">
+        <h2>Dev disasters</h2>
+        <a class="more" href="/dev-disasters/">{counts.all > 0 ? `All ${counts.all} ` : 'All '}&rarr;</a>
+      </div>
+      <p class="lead-in">Not mine. Yours. Other people's worst days, filed by how bad it got.</p>
+      <div class="panel">
+        <div class="panel-bar">
+          <span>Problems</span>
+          <span class="count">{problemSummary()}</span>
+        </div>
+        {
+          topProblems.map((d) => (
+            <a class="prow" href={d.url}>
+              <span class={`sev ${sevClass(d.severity)}`}>{sevLabel(d.severity)}</span>
+              <span class="msg">{d.line}</span>
+              <span class="loc">
+                #{disasterCode(d.id)}
+                {d.likes > 0 && <Fragment> &middot; &#9825; {d.likes.toLocaleString('en-US')}</Fragment>}
+              </span>
+            </a>
+          ))
+        }
+        {
+          topProblems.length === 0 && (
+            <a class="prow" href="/submit/">
+              <span class="sev sev-info">Info</span>
+              <span class="msg">No problems reported. Yours would be the first.</span>
+              <span class="loc">#000</span>
+            </a>
+          )
+        }
+      </div>
 
-  .hero-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: center;
-  }
+      <div class="story-cta">
+        <a class="btn primary" href="/submit/">Tell me yours</a>
+        <span class="fine">Post anonymously if you'd rather. No name is ever required.</span>
+      </div>
 
-  .hero-text h1 {
-    font-size: 3.5rem;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, #9333ea, #3b82f6, #ec4899);
-    background-size: 300% 300%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: gradient-shift 8s ease infinite;
-  }
-
-  .aka {
-    font-size: 1.25rem;
-    opacity: 0.7;
-    margin-bottom: 1rem;
-  }
-
-  .tagline {
-    font-size: 1.5rem;
-    line-height: 1.5;
-    margin-bottom: 2rem;
-  }
-
-  .hero-cta {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .btn-muted {
-    background: rgba(107, 114, 128, 0.25);
-    color: #1f2937;
-  }
-
-  .btn-muted:hover {
-    background: rgba(107, 114, 128, 0.35);
-  }
-
-  :global(html.dark) .btn-muted {
-    background: rgba(156, 163, 175, 0.2);
-    color: #e5e7eb;
-  }
-
-  :global(html.dark) .btn-muted:hover {
-    background: rgba(156, 163, 175, 0.3);
-  }
-
-  .btn-highlight {
-    background: linear-gradient(135deg, #9333ea, #3b82f6);
-    color: white;
-    box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4);
-    animation: wiggle 10s ease-in-out infinite;
-  }
-
-  .btn-highlight:hover {
-    box-shadow: 0 6px 30px rgba(147, 51, 234, 0.6);
-  }
-
-  .btn-live {
-    position: relative;
-    background: #1e1b4b;
-    color: white;
-    border: none;
-    border-radius: 9999px;
-    animation: wiggle 10s ease-in-out infinite;
-    z-index: 0;
-    overflow: hidden;
-    font-weight: 600;
-  }
-
-  .btn-live::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 150%;
-    height: 500%;
-    background: conic-gradient(from 0deg, #9333ea, #3b82f6, #ec4899, #9333ea);
-    animation: border-rotate 2s linear infinite;
-    z-index: -2;
-  }
-
-  .btn-live::after {
-    content: '';
-    position: absolute;
-    inset: 3px;
-    background: #1e1b4b;
-    border-radius: 9999px;
-    z-index: -1;
-  }
-
-  .btn-live:hover {
-    box-shadow: 0 0 25px rgba(147, 51, 234, 0.6), 0 0 50px rgba(147, 51, 234, 0.3);
-  }
-
-  .btn-live:hover::after {
-    background: #2e2a5e;
-  }
-
-  @keyframes border-rotate {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg); }
-  }
-
-  @keyframes wiggle {
-    0% { transform: rotate(0deg) translateY(0); }
-    1% { transform: rotate(-1.5deg) translateY(-2px); }
-    2% { transform: rotate(1.5deg) translateY(-2px); }
-    3% { transform: rotate(-1deg) translateY(-1px); }
-    4% { transform: rotate(1deg) translateY(-1px); }
-    5% { transform: rotate(-0.5deg) translateY(0); }
-    6%, 100% { transform: rotate(0deg) translateY(0); }
-  }
-
-  .hero-image img {
-    width: 100%;
-    max-width: 400px;
-    border-radius: 50%;
-    border: 4px solid rgba(147, 51, 234, 0.3);
-    box-shadow: 0 20px 60px rgba(147, 51, 234, 0.2);
-  }
-
-  @media (max-width: 900px) {
-    .hero-content {
-      grid-template-columns: 1fr;
-      text-align: center;
-    }
-
-    .hero-image {
-      order: -1;
-    }
-
-    .hero-image img {
-      max-width: 250px;
-    }
-
-    .hero-cta {
-      justify-content: center;
-    }
-  }
-</style>
+      <div class="rule major" id="drip"><h2>The .NET Drip</h2></div>
+      <Drip uid="home" />
+    </div>
+  </main>
+</Base>

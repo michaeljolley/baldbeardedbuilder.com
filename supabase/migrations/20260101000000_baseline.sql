@@ -1,0 +1,136 @@
+/*
+  Baseline. The legacy tables the v2 site genuinely reads, and nothing else.
+
+  This file used to be the full production schema of project bvyerlczpakdlfvybkev,
+  captured from the catalog. It is now trimmed, because v2 gets a brand new project and
+  reproducing the old one there would be actively harmful rather than merely wasteful.
+
+  WHY MOST OF IT IS GONE
+  ----------------------
+  An empty table in the new project is worse than no table. The clearest case is
+  shorturls. bbb.dev fronts it through a Supabase edge function and it carries 1,627
+  short links. If it existed here, empty, then the day anybody repoints that function at
+  the new ref every one of those links would 404 and nothing would raise, because the
+  table would exist and simply return no rows. A missing table fails loudly. An empty one
+  fails silently, in production, on a hostname nobody is watching.
+
+  So these stay behind in bvyerlczpakdlfvybkev, which keeps running and keeps serving
+  them. They are not dead, they are just not v2's:
+
+    shorturls            bbb.dev short links, fronted by the redirect edge function
+    analytics_events     first party analytics
+    analytics_sessions   first party analytics
+    blogs                the idea generation pipeline
+    videos               the idea generation pipeline, NOT the content collection
+    ideas                the idea generation pipeline
+    batches              the idea generation pipeline
+    dripEmails           the Drip newsletter sender
+    drips                the Drip archive. The site renders drips from the content
+                         submodule, not from Supabase. Verified by grep: every `drips`
+                         reference in src/ is getCollection('drips')
+    productions          the video production tracker
+    domains              link shortener config
+    replacements         link shortener config
+    announcements        stream overlay copy
+    social_contacts      nothing in v2 reads it
+    streams              per stream rollups. Nothing in v2 reads it either. See below
+
+  NAMING HAZARD. Several unrelated things are called some variation of video. Named
+  rather than counted, because a count is a fact that goes stale and a list is not. When
+  this was a count it said four, and a fifth was already in the repo at the time.
+
+    videos               legacy table in bvyerlczpakdlfvybkev, the idea generation
+                         pipeline. NOT in this project and not the catalogue
+    videos               the collection in the content submodule. This is the real
+                         catalogue. Read in src/lib/content.ts and nowhere else
+    video_transcripts    the machine half of a v2 video page. Written by
+                         scripts/gen-video-meta.mjs
+    video_pages          the authored half, and the only thing that decides whether a
+                         video has a page at all
+    src/lib/video-pages  reads video_pages only. It was called videos, which pointed
+                         anybody hunting for the catalogue at the page gate instead
+    src/pages/videos     the /videos/ route, which lists the collection
+    VideoEmbed           the player component
+
+  Of these only video_transcripts and video_pages exist in this project. If you add
+  another, add it to this list.
+
+  WHY streams IS NOT HERE, WHICH CORRECTS AN EARLIER READ
+  ------------------------------------------------------
+  It was assumed that badge_counts queries streams. It does not. Verified by grep across
+  every v2 migration and all of src/: badge_counts reads "streamEvents" and "streamUsers",
+  streams_watched reads "streamEvents", twitch_first_seen reads "streamEvents". The
+  `streams` table is referenced by exactly nothing in v2.
+
+  Dropping it takes three legacy things with it, all deliberately: the
+  ensure_stream_on_event trigger and its ensure_stream_exists function, which existed to
+  populate streams from events and would otherwise fire once per row during a 24,574 row
+  load, and compute_stream_stats plus its nightly cron job, which computes rollups nobody
+  here reads. If v2 ever needs stream rollups it can add a table it owns, rather than
+  inheriting one it half understands.
+
+  The admin functions go for the same reason: get_analytics_summary,
+  get_dashboard_counts, get_distinct_event_types and get_user_leaderboard all serve a
+  dashboard over tables that are not in this project. There is no admin UI in v1.
+
+  WHAT IS LEFT, AND WHY
+  ---------------------
+  Two tables. The badge engine queries both directly in SQL, which is why grepping src/
+  for them returns nothing and grepping the migrations returns plenty.
+
+  Both arrive empty and stay empty until Michael loads them. That is expected and the
+  badge shelf is built to look deliberate rather than broken in that state. The load
+  shape is specified in docs/backfill.md. Read it before loading, particularly the two
+  warnings at the top, because both describe loads that look correct and are not.
+
+  RLS is on and there is no public policy, so anon and authenticated read nothing. Every
+  v2 function that touches these tables is security definer for exactly that reason.
+*/
+
+-- Tables and constraints ------------------------------------------------------------
+
+create table public."streamEvents" (
+  id bigint generated by default as identity not null,
+  created_at timestamp with time zone default now() not null,
+  "eventType" text not null,
+  message text,
+  login text not null,
+  "streamDate" text not null,
+  quantity bigint,
+  platform text default 'twitch'::text not null
+);
+alter table public."streamEvents" add constraint streamevents_pkey PRIMARY KEY (id);
+
+create table public."streamUsers" (
+  login text not null,
+  avatar_url text not null,
+  display_name text,
+  "lastUpdated" timestamp without time zone,
+  platform text default 'twitch'::text not null
+);
+alter table public."streamUsers" add constraint streamusers_login_platform_unique UNIQUE (login, platform);
+
+-- Indexes ---------------------------------------------------------------------------
+
+/*
+  Carried over from the legacy schema. The lower(login) indexes the badge engine needs
+  are not here, they arrive with 20260710001100 where they belong.
+*/
+create index "streamEvents_created_at_idx" on public."streamEvents" using btree (created_at);
+create index "streamEvents_streamDate_idx" on public."streamEvents" using btree ("streamDate");
+
+-- Row level security ----------------------------------------------------------------
+
+alter table public."streamEvents" enable row level security;
+alter table public."streamUsers" enable row level security;
+
+/*
+  The legacy policies named a hard coded uuid, which was Michael's account in the old
+  project. That uuid does not exist here and never will, so copying it would create a
+  policy that can never match and looks like an access rule while being a no op.
+
+  Nothing is granted instead. RLS with no policy denies everybody, the service role
+  bypasses it, and the security definer functions in the v2 migrations are the only
+  read path. That is the actual intent, stated once rather than encoded as a uuid
+  nobody can trace.
+*/

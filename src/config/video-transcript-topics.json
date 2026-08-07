@@ -1,0 +1,13 @@
+{
+  "HAybBV-A1Gg": [
+    { "start": 0, "title": "Overview" },
+    { "start": 52, "title": "Reference and value semantics" },
+    { "start": 77, "title": "Structs and classes in code" },
+    { "start": 172, "title": "A real-world analogy" },
+    { "start": 275, "title": "Equality" },
+    { "start": 318, "title": "When to choose a struct" },
+    { "start": 346, "title": "Records" },
+    { "start": 408, "title": "When to choose a record" },
+    { "start": 427, "title": "Record structs" }
+  ]
+}

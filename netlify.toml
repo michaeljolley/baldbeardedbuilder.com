@@ -1,0 +1,66 @@
+# Netlify reads this file from the repository root or the configured base directory,
+# and it also reads it from the publish directory. It used to live in public/, which
+# is copied to dist/, so every rule in it was live in production. That was measured
+# against the running site before the file moved, not assumed:
+#
+#   /posts/totally-made-up-slug/  301 to /blog/totally-made-up-slug/
+#   /brain-dump/made-up/          301 to /
+#   https://bbb.dev/gh            301 to the redirect function
+#
+# Root is the correct final home. Nothing here was ever dead, so nothing here should
+# be pruned on the theory that it was. The bbb.dev rule below carries 1,627 short
+# links and is the highest risk line in this repository.
+#
+# THE MOVE IS NOT BEHAVIOUR PRESERVING, AND THE REDIRECTS ARE NOT THE REASON.
+#
+# The file on main was three [[redirects]] blocks and nothing else. The [build] and
+# [build.environment] blocks below are new. Redirects can be honoured from the publish
+# directory, which is why the old location worked, but build configuration cannot be:
+# the build has already finished by the time anything reads dist/. So those four
+# settings were inert in the old location and are live in this one.
+#
+# netlify.toml wins over the Netlify UI for every key it declares. Before this branch
+# merges, somebody with access has to read the UI build settings and confirm the four
+# values below are the ones production should get, because after the merge they are
+# the ones it does get. docs/deploy.md carries that checklist.
+#
+# Content redirects are not written here. They are generated into public/_redirects
+# by scripts/gen-redirects.mjs, because netlify.toml rules are evaluated before
+# _redirects rules, and a wildcard here would shadow the specific per item rules the
+# generator emits. Only rules that _redirects cannot express belong in this file.
+
+[build]
+  command = "pnpm build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"
+  PNPM_VERSION = "9"
+
+# A live assertion that this file is read, and it is permanent. Do not delete it.
+#
+# Everything below depends on the file being parsed at all, and the expensive rule is
+# host matched on a hostname no branch deploy ever receives, so it cannot be tested
+# anywhere except production. This rule can be tested anywhere, because it is an
+# ordinary path.
+#
+# The path appears nowhere in public/_redirects and nowhere in the built site, which
+# tests/redirects.test.mjs enforces, so a 301 here can only have come from this file.
+# If it 301s, this file was read and its redirect table was parsed, which means the
+# bbb.dev rule below is loaded too. If it 404s, none of the rules in this file are
+# running and the short links are the thing to check first.
+#
+# scripts/verify-deploy.mjs checks it on every run. It costs one request.
+[[redirects]]
+  from = "/_netlify-toml-is-read/"
+  to = "/"
+  status = 301
+  force = true
+
+# Short links. bbb.dev fronts the shorturls table through a Supabase edge function.
+# Host matching is not expressible in _redirects, so it stays here.
+[[redirects]]
+  from = "https://bbb.dev/*"
+  to = "https://bvyerlczpakdlfvybkev.supabase.co/functions/v1/redirect?path=:splat"
+  status = 301
+  force = true

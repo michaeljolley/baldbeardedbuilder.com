@@ -1,7 +1,12 @@
 # build output
 dist/
+.netlify/
 # generated types
 .astro/
+
+# Copied out of Fontsource by scripts/gen-fonts.mjs on every build. Fontsource is the
+# source of truth, so a committed copy could only ever drift away from it.
+public/fonts/
 
 # dependencies
 node_modules/
@@ -14,11 +19,41 @@ pnpm-debug.log*
 
 
 # environment variables
-.env
-.env.production
+#
+# Ignore every .env variant and name the exceptions, rather than naming the variants.
+# This rule used to be the two files that happened to exist the day it was written, which
+# meant .env.local, .env.audit-bak or anything else a debugging session leaves behind was
+# untracked AND unignored, so one git add -A stages real credentials into a public repo.
+# Now an unknown .env file is ignored by default and only an explicitly allowed one is
+# tracked. tests/secrets.test.mjs asserts nothing env shaped is ever left visible.
+.env*
+!.env-sample
+!.env.example
+
+# The same thing without the leading dot. env.local and env.backup get created by mistake
+# often enough to be worth a rule, and tests/secrets.test.mjs proved this case was still
+# open after the rule above was widened. Anchored to the root with a leading slash so it
+# cannot reach src/env.d.ts, which is tracked source and must stay visible.
+/env*
+
+# Screenshot output from the theme and state passes. Large, binary, and superseded on
+# every run, so it belongs in the session files rather than in history.
+#
+# The harnesses that produce them are deliberately NOT ignored. They have to sit in the
+# repo root to resolve their imports, and they are meant to be deleted once the pass is
+# done. Left visible in git status, a leftover harness nags until it is removed. Ignored,
+# it would quietly accumulate.
+shots-*/
 
 # macOS-specific files
 .DS_Store
 
 # jetbrains setting folder
 .idea/
+
+# Supabase CLI scratch, holds the linked project ref
+supabase/.temp/
+
+# Resumable transcript cache and Supabase import files. These are large backfill artifacts,
+# not application source, and can be regenerated from the video catalogue.
+/backfill/

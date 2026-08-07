@@ -1,0 +1,38 @@
+---
+/*
+  One share destination mark.
+
+  Its own component rather than markup repeated twice, because the outbound rows and the
+  copy row draw from the same table but not with the same attributes, and the difference
+  between them is a decision rather than an accident: the four platforms are solid brand
+  marks and copy link is a stroked UI icon. Keeping that in one place means the difference
+  is stated once instead of being something you notice by comparing two blocks of svg.
+
+  Nothing here carries a colour. Solid marks fill with currentColor, the stroked one draws
+  with it, and the row supplies it. See src/lib/share-marks.ts for why that matters.
+*/
+
+import type { SharePlatform } from '../lib/share-links';
+import { MARK_VIEWBOX, SHARE_MARKS } from '../lib/share-marks';
+
+interface Props {
+  platform: SharePlatform;
+}
+
+const { platform } = Astro.props;
+const mark = SHARE_MARKS[platform];
+const stroked = mark.kind === 'stroked';
+---
+
+<svg
+  class={`mk mk-${platform}`}
+  viewBox={MARK_VIEWBOX}
+  fill={stroked ? 'none' : 'currentColor'}
+  stroke={stroked ? 'currentColor' : undefined}
+  stroke-width={stroked ? 2 : undefined}
+  stroke-linecap={stroked ? 'round' : undefined}
+  stroke-linejoin={stroked ? 'round' : undefined}
+  aria-hidden="true"
+>
+  {mark.paths.map((d) => <path d={d} />)}
+</svg>

@@ -1,130 +1,88 @@
 # baldbeardedbuilder.com
 
-This is the source for my personal site. It's where the blog posts live, where the
-YouTube videos get indexed, and where folks sign up for The .NET Drip. If you're here
-to fix a typo in a post, poke at the layout, or just see how the sausage gets made,
-you're in the right place.
+The personal site of Michael Jolley, the Bald Bearded Builder. Articles, videos,
+dev disasters and the .NET Drip signup. Built with Astro, deployed on Netlify,
+with Supabase behind the parts that need an account.
 
-It's an [Astro](https://astro.build) site that builds to static files and deploys to
-Netlify. Nothing fancy. That's on purpose.
-
-## Get it running
-
-You'll need Node 18 or newer and git.
+## Running it
 
 ```sh
-git clone --recurse-submodules git@github.com:baldbeardedbuilder/website.git
-cd website
-npm install
-cp .env-sample .env
-npm run dev
+pnpm install
+pnpm dev
 ```
 
-That'll put the site on `http://localhost:4321`.
+That serves on `localhost:4321`. Use pnpm, not npm.
 
-If you already cloned without `--recurse-submodules`, you'll get a very empty site and
-some confusing errors. Fix it with:
+Versions are pinned in two places on purpose and they have to agree: `packageManager`
+in `package.json` (currently `pnpm@9.1.1`) and `PNPM_VERSION` in `netlify.toml`
+(currently `9`). Bumping one without the other means local and production build
+with different tooling, which is the kind of difference that shows up as a broken
+deploy and nothing else. `netlify.toml` also pins `NODE_VERSION = "24"`, while
+`engines` asks only for Node 22 or newer, so local can be older than production.
+
+## The content is a submodule
+
+`src/content` is a git submodule pointing at `michaeljolley/content`, which is a
+private repository. Without it every collection is empty, the site builds to
+almost nothing, and any check you run passes for the wrong reason.
 
 ```sh
 git submodule update --init --recursive
 ```
 
-### About that submodule
+Treat it as read only from here. Anything that would mean editing frontmatter
+across the submodule belongs in `src/config/` instead.
 
-The content isn't in this repo. Blog posts, video metadata, and the content collection
-schema all live in a separate private repo mounted at `src/content`. That means the
-site build needs it, but you can't pull it unless you have access.
+CI needs its own credential to read it, since the default `GITHUB_TOKEN` is scoped
+to this repository and cannot clone another one. That is the secret
+`CONTENT_DEPLOY_KEY`, and it holds the private half of a read only deploy key on
+`michaeljolley/content` rather than a personal access token. The CI step prints the
+four steps to create one when the secret is missing.
 
-If you don't have access to the content repo, the build won't complete. Sorry about
-that. It's a tradeoff I took on purpose so I can edit posts without touching the site
-code, but it does make outside contributions harder. If you want to help with something
-that needs content to render, open an issue and I'll figure out a way to unblock you.
+A key rather than a token on purpose. A fine grained token expires at twelve months
+at the most and dies with the account that issued it, so it brings this same failure
+back later and silently. Netlify solved the same problem on the same pair of
+repositories in 2024 with a deploy key, so the precedent was already live.
 
-## Environment variables
+## Generated files, and why the build fights you about them
 
-Copy `.env-sample` to `.env` and fill in what you need.
+`pnpm gen` runs automatically before every build and at the start of `pnpm dev`.
+It writes:
 
-| Variable | What it does |
-| :--- | :--- |
-| `TWITCH_CLIENT_ID` | App credentials for the Twitch API |
-| `TWITCH_CLIENT_SECRET` | App credentials for the Twitch API |
-| `TWITCH_CHANNEL_ID` | Reserved, not currently read by the site |
-| `TWITCH_ACCESS_TOKEN` | Reserved, the code fetches its own token at build time |
-| `SUPABASE_URL` | Reserved, not currently read by the site |
-| `SUPABASE_ANON_KEY` | Reserved, not currently read by the site |
-| `HOST` | Reserved, not currently read by the site |
+| Output | From |
+| :-- | :-- |
+| `src/styles/themes.css`, `src/lib/themes.generated.ts`, `src/lib/ec-themes.generated.mjs` | `scripts/gen-themes.mjs`, which resolves real VS Code themes through shiki |
+| `src/styles/fonts.generated.css` | `scripts/gen-fonts.mjs` |
+| `src/config/taxonomy.json` | `scripts/gen-taxonomy.mjs` |
+| `public/_redirects` | `scripts/gen-redirects.mjs` |
 
-The Twitch credentials are the only ones the build actually uses right now. They power
-the "Live on Twitch Now" state on the homepage. Without them, the homepage build will
-fail when it tries to call the Twitch API. The rest are leftovers from earlier versions
-that I've left in the sample so I remember what the deployed environment expects.
+**Never hand edit any of those.** Edit the generator. `pnpm gen:check` fails the
+build if a generated file differs from what its generator produces, which is
+what stops a hand edit surviving to production.
 
-## Commands
+## Checks
 
-| Command | What it does |
-| :--- | :--- |
-| `npm install` | Installs dependencies |
-| `npm run dev` | Dev server on `localhost:4321` |
-| `npm run build` | Builds the production site to `./dist/` |
-| `npm run preview` | Serves the built site so you can check it before deploy |
-| `npm run astro ...` | Runs Astro CLI commands like `astro check` |
-
-Both `package-lock.json` and `pnpm-lock.yaml` are checked in. npm is what CI uses, so
-that's the safe choice.
-
-## How it's laid out
-
-```text
-public/            static assets, redirects, netlify.toml
-src/
-  components/      the reusable pieces (cards, sections, header, footer)
-  content/         git submodule, all posts and video metadata
-  layouts/         Layout.astro wraps every page
-  pages/           file-based routing, each file is a route
-  scripts/         twitch.ts and publish.ts, the bits of real logic
-  styles/          global.css
+```sh
+pnpm test              # unit and redirect tests
+pnpm check             # astro check
+pnpm check:migrations  # the SQL chain is self contained
+pnpm check:dist        # parked routes, sitemap and Pagefind agree with the routes
+pnpm check:layout      # thumbnail crop and dead space, measured in a browser
+pnpm a11y              # axe, WCAG 2.2 AA
+pnpm perf              # Lighthouse budget
 ```
 
-A few things worth knowing before you go editing:
+`pnpm check:dist`, `check:layout`, `a11y` and `perf` all read `dist`, so run
+`pnpm build` first.
 
-**Posts publish themselves.** `src/scripts/publish.ts` decides whether a post is live
-based on its `pubDate` and an 8 AM Central publish time. It does its own daylight saving
-math instead of pulling in a date library. That's a small amount of code doing a job a
-dependency could do, and I'd rather own the fifty lines than the dependency tree.
+`pnpm verify:deploy` runs against a deployed URL rather than a local build. It is
+the only check that can catch a Netlify setting being wrong, because everything
+else passes happily on a machine where those settings do not apply.
 
-**Future posts get one preview page.** `src/pages/blog/[slug].astro` generates pages for
-every published post plus exactly one upcoming post, rendered as a teaser. Everything
-further out doesn't exist yet as far as the site is concerned.
+## Further reading
 
-**Twitch is checked at build time, not in the browser.** The homepage calls the Twitch
-API during the build. So the "live now" badge is only as fresh as the last deploy. Good
-enough for what it does, and it keeps the page static.
-
-**Old URLs are honored.** `public/_redirects` and `public/netlify.toml` map a decade of
-old blog paths to their current homes. If you rename a post slug, add the redirect.
-Somebody out there has that link bookmarked.
-
-## Contributing
-
-Found a typo in a post? The post itself lives in the content submodule, so open an issue
-here and I'll get to it. Found something broken in the site (layout, accessibility, a
-link that goes nowhere, a build that falls over)? Pull requests are welcome.
-
-Keep changes focused. One idea per PR is easier for both of us.
-
-## When this repo isn't what you want
-
-If you're looking for an Astro blog starter you can fork and make your own, this isn't
-it. The content is private, the styling is very much mine, and there's site-specific
-logic baked in all over. Start from `npm create astro@latest` instead. You'll have a
-better time.
-
-But if you want to read how a real site handles scheduled publishing, build-time API
-calls, or a decade of URL redirects, dig in. That's the useful part.
-
-## License
-
-MIT. See [LICENSE](./LICENSE).
-
-The code is MIT. The blog posts, videos, and branding are not. Please don't repost the
-writing as your own.
+- `docs/deploy.md` for Netlify build settings and the branch deploy.
+- `docs/new-project.md` for standing up the Supabase project, including the
+  GitHub OAuth callback trap that repoints production sign in if you get it
+  wrong.
+- `docs/backfill.md` for data imports and `docs/notifications.md` for email operations.

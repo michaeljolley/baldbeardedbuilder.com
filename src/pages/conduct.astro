@@ -1,0 +1,181 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../config/site';
+
+/*
+  The severity vocabulary earns its keep one more time here. The consequences really are
+  tiered, so the same four badges that classify a disaster classify what happens when
+  somebody breaks the rule. Note the class is sev-warn while the id is warning.
+*/
+const consequences = [
+  {
+    sev: 'hint',
+    label: 'Hint',
+    what: 'I edit or delete the comment',
+    detail:
+      'Usually a first offence, usually somebody having a bad day. You get a note explaining what I removed and why.'
+  },
+  {
+    sev: 'info',
+    label: 'Info',
+    what: 'I ask you to stop',
+    detail:
+      'A direct message, from me, not a bot. Nothing happens to your account. Most of these end here.'
+  },
+  {
+    sev: 'warn',
+    label: 'Warning',
+    what: 'You lose commenting for a while',
+    detail:
+      'Seven days, then thirty. You can still read everything and your stories stay up.'
+  },
+  {
+    sev: 'error',
+    label: 'Error',
+    what: 'You are done here',
+    detail:
+      'Account closed, comments removed. For harassment, threats, or doxxing, this is the first step and not the last one.'
+  }
+];
+
+const lastChanged = new Date(SITE.conductUpdated).toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric'
+});
+---
+
+<Base
+  title="Code of conduct"
+  description="One rule: somebody just told you about the worst day of their career. Respond like it cost them something."
+>
+  <main id="main">
+    <div class="shell read">
+      <aside class="rail">
+        <dl>
+          <div><dt>Applies to</dt><dd>Comments, dev disasters, profiles</dd></div>
+          <div><dt>Enforced by</dt><dd><a href="/about/">Michael Jolley</a></dd></div>
+          <div><dt>Last changed</dt><dd>{lastChanged}</dd></div>
+        </dl>
+      </aside>
+
+      <article data-pagefind-body data-pagefind-filter="kind:page">
+        <header class="storyhead">
+          <span class="path">conduct</span>
+          <h1>
+            Be the person you'd want
+            <span class="squiggle"><span>reading your worst commit.</span></span>
+          </h1>
+          <p class="lede">
+            This whole site runs on people admitting they broke something. That only works
+            if admitting it is safe. So there is exactly one rule, and then some detail
+            about what it means.
+          </p>
+        </header>
+
+        <div class="prose conduct-body">
+          <div class="callout">
+            <span class="tag">The rule</span>
+            <p>
+              Somebody just told you about the worst day of their career. Respond like that
+              cost them something, because it did.
+            </p>
+          </div>
+
+          <h2>What that looks like in practice</h2>
+          <p>
+            Ask what you'd ask a teammate. "What would have caught this?" is a great
+            comment. "How did you not know that?" is not, and the difference is not tone,
+            it's whether you're trying to learn something or trying to win something.
+          </p>
+          <p>
+            Add your version. The best threads here are four people going "oh, ours was
+            worse" and then a fifth person quietly posting the config flag that prevents
+            all of it.
+          </p>
+          <p>
+            Assume the person had less information than you have now. Every disaster on
+            this site looks obvious in hindsight. That's what makes it a disaster and not a
+            mystery.
+          </p>
+
+          <h2>What gets you removed</h2>
+          <p>
+            Harassment, slurs, sexual content, and threats. Nothing clever to say about
+            these, they're just out.
+          </p>
+          <p>
+            Identifying somebody. Don't name the company, the coworker, the customer, or
+            the intern. If you can work out who a story is about, keep it to yourself. If
+            you post it, you're gone.
+          </p>
+          <p>
+            Dunking. Telling somebody their outage was their own fault is both useless and
+            usually true, which is exactly why it isn't worth saying.
+          </p>
+          <p>
+            Selling things. Your product may genuinely have prevented that outage. Say so
+            once, disclose that it's yours, and move on. Do it in five threads and it's
+            spam.
+          </p>
+          <p>
+            Feeding threads to a language model and pasting the output. I can tell,
+            everybody can tell, and it wastes the one thing this place has, which is that a
+            real person was there.
+          </p>
+
+          <h2>What happens when somebody breaks it</h2>
+          <p>
+            There's no committee. It's me. Here's the ladder, and I'll tell you which rung
+            you're on rather than leaving you to guess.
+          </p>
+        </div>
+
+        <div class="crows">
+          {
+            consequences.map((c) => (
+              <div class="crow">
+                <span class={`sev sev-${c.sev}`}>{c.label}</span>
+                <div>
+                  <h3>{c.what}</h3>
+                  <p>{c.detail}</p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+
+        <div class="prose conduct-tail">
+          <h2>If I get it wrong</h2>
+          <p>
+            Reply to the email. I've reversed moderation calls before and I'll do it again.
+            What I won't do is relitigate a removal in public comments, because that turns
+            somebody's bad week into a thread.
+          </p>
+
+          <h2>If it's about me</h2>
+          <p>
+            I'm the one who runs this, which makes reporting me awkward. Do it anyway.
+            Email works, and if you'd rather not talk to me at all, say so in the report
+            and I'll have somebody I trust read it first.
+          </p>
+        </div>
+
+        <div class="hero-actions conduct-acts">
+          <a class="btn primary" href="/report/">Report a problem</a>
+          <a class="btn" href="/dev-disasters/">Read dev disasters</a>
+        </div>
+      </article>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .conduct-body {
+    margin-top: 2rem;
+  }
+  .conduct-tail,
+  .conduct-acts {
+    margin-top: 2.5rem;
+  }
+</style>

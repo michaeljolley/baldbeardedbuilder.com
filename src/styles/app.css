@@ -1,0 +1,1605 @@
+/* ==========================================================================
+   Bald Bearded Builder
+   Color lives entirely in themes.css and is user controlled.
+   Identity therefore lives here: type, structure, rhythm, and one squiggle.
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --display: "Fraunces", Georgia, serif;
+  --body: "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --mono: "Fira Code", ui-monospace, monospace;
+
+  --shell: 78rem;
+  --gutter: 11rem;
+  --measure: 40rem;
+
+  --r: 4px;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 1.0625rem;
+  line-height: 1.62;
+  font-synthesis-weight: none;
+}
+
+body, .card, .prow, .chip, .btn, .swatch i {
+  transition: background-color .18s ease, color .18s ease, border-color .18s ease;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: var(--accent); text-underline-offset: 3px; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+/* padding-inline, never the padding shorthand. Several blocks are both .shell and a
+   layout class (.front.shell, .below.shell), and a later shorthand here would silently
+   zero out their vertical padding. */
+.shell { max-width: var(--shell); margin: 0 auto; padding-inline: 2rem; }
+
+h1, h2, h3, h4 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-variation-settings: "SOFT" 28, "WONK" 1;
+  line-height: 1.06;
+  letter-spacing: -.018em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.skip {
+  position: absolute; left: -9999px;
+  background: var(--bg-raised); color: var(--fg);
+  padding: .75rem 1rem; border: 1px solid var(--line); border-radius: var(--r);
+}
+.skip:focus { left: 1rem; top: 1rem; z-index: 100; }
+
+/* ---------- shared bits ---------- */
+
+.path {
+  font-family: var(--mono);
+  font-size: .75rem;
+  color: var(--fg-dim);
+  letter-spacing: .02em;
+}
+.path b { color: var(--fg); font-weight: 500; }
+.path .sep { opacity: .45; padding: 0 .1rem; }
+
+.sev {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  font-family: var(--mono);
+  font-size: .75rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+.sev::before {
+  content: "";
+  width: .5rem; height: .5rem;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+.sev-error { color: var(--sev-error); }
+.sev-warn  { color: var(--sev-warn); }
+.sev-info  { color: var(--sev-info); }
+.sev-hint  { color: var(--sev-hint); }
+
+/* The signature. A real diagnostic squiggle, in the severity's own color. */
+.squiggle {
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 2px;
+  text-underline-offset: .16em;
+  text-decoration-skip-ink: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-family: var(--mono);
+  font-size: .8125rem;
+  padding: .6rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: transparent;
+  color: var(--fg);
+  text-decoration: none;
+  cursor: pointer;
+  line-height: 1;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.1); color: var(--bg); }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: .6875rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  margin: 0;
+}
+
+.lede { color: var(--fg-dim); font-size: 1.125rem; margin: 0; max-width: 38rem; }
+
+/* ---------- masthead ---------- */
+
+.masthead {
+  position: sticky; top: 0; z-index: 40;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.masthead .shell {
+  display: flex; align-items: center; gap: 1.75rem;
+  height: 3.75rem;
+}
+.wordmark {
+  display: inline-flex; align-items: center; gap: .55rem;
+  font-family: var(--display);
+  font-weight: 800;
+  font-variation-settings: "SOFT" 40, "WONK" 1;
+  font-size: 1.0625rem;
+  letter-spacing: -.02em;
+  text-decoration: none;
+  color: var(--fg);
+  white-space: nowrap;
+}
+.wordmark em { font-style: normal; color: var(--accent); }
+.mark { width: 1.9rem; height: 1.9rem; flex: none; color: var(--accent); display: block; }
+.wordmark:hover .mark { color: var(--fg); }
+.foot .wordmark { font-size: 1.25rem; gap: .7rem; }
+.foot .mark { width: 2.4rem; height: 2.4rem; }
+
+.nav { display: flex; gap: 1.15rem; list-style: none; margin: 0; padding: 0; margin-left: auto; }
+/* The mockup dropped the topic list straight into the masthead flex row. Wrapping it in
+   a <nav> so the topics are a real landmark adds a flex item the rules above were not
+   written for, and without min-width the wrapper refuses to shrink below its content and
+   pushes the whole page sideways on a phone. The list keeps its own auto margin, which
+   does nothing once the wrapper owns the spacing. */
+.masthead nav { margin-left: auto; min-width: 0; }
+.nav a {
+  font-family: var(--mono);
+  font-size: .8125rem;
+  color: var(--fg-dim);
+  text-decoration: none;
+  padding: .3rem 0;
+  border-bottom: 1.5px solid transparent;
+  /* WCAG 2.2 wants a 24px target. Padding alone gets there by about half a pixel, which
+     means the metrics of whichever font actually loaded decide whether the site passes.
+     A floor takes the font out of the argument and changes nothing visually. */
+  display: inline-block;
+  min-height: 24px;
+}
+.nav a:hover { color: var(--fg); }
+.nav a.on { color: var(--fg); border-bottom-color: var(--accent); }
+.nav a.dd { color: var(--sev-error); }
+
+/* ---------- theme picker ---------- */
+
+.themer { position: relative; }
+/* The picker cannot work without script, and a control that does nothing is worse than
+   no control at all. The no FOUC script sets html.js in the head, so this never flashes. */
+html:not(.js) .themer { display: none; }
+.themer-btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-family: var(--mono); font-size: .75rem;
+  padding: .45rem .7rem;
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--bg-raised); color: var(--fg-dim);
+  cursor: pointer;
+}
+.themer-btn:hover { color: var(--fg); border-color: var(--accent); }
+.themer-btn .caret { opacity: .6; font-size: .6rem; }
+
+.swatch { display: inline-flex; border-radius: 2px; overflow: hidden; border: 1px solid var(--line); flex: none; }
+.swatch i { display: block; width: .55rem; height: .9rem; }
+
+/* The only place in this file that is not a var(). A drop shadow needs a color that is
+   darker than every surface, and no token guarantees that, so it derives one from the
+   page background instead of hardcoding black. Under Hot Dog Stand that lands as a
+   yellow shadow, which is correct. */
+.themer-menu {  position: absolute; right: 0; top: calc(100% + .5rem);
+  width: 20rem; max-height: calc(100vh - 5.5rem); overflow-y: auto;
+  background: var(--bg-raised);
+  border: 1px solid var(--line); border-radius: var(--r);
+  padding: .4rem;
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--bg) 72%, transparent);
+}
+.themer-menu[hidden] { display: none; }
+/* Dark and Light are group labels, not document headings. Making them h4 put an h4
+   before the h1 on every page in the site, which is a worse outline than no label at
+   all. role="group" plus aria-labelledby says the same thing without lying about
+   structure. */
+.themer-menu .themer-group-label {
+  font-family: var(--mono); font-size: .625rem; font-weight: 500;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--fg-dim); padding: .6rem .6rem .35rem; margin: 0;
+}
+.themer-menu button {
+  display: flex; align-items: center; gap: .65rem; width: 100%;
+  background: none; border: 0; border-radius: 3px;
+  padding: .45rem .6rem; cursor: pointer;
+  font-family: var(--mono); font-size: .8125rem;
+  color: var(--fg-dim); text-align: left;
+}
+.themer-menu button:hover { background: var(--bg-inset); color: var(--fg); }
+.themer-menu button[aria-current="true"] { color: var(--fg); }
+.themer-menu button[aria-current="true"]::after { content: "\2713"; margin-left: auto; color: var(--accent); }
+
+/* ---------- hero: the lead dev disaster as a diagnostic ---------- */
+
+.hero { padding: 4.5rem 0 3rem; }
+.hero-top {
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  padding-bottom: 1.5rem;
+}
+.hero-top .spacer { flex: 1; }
+
+.hero h1 {
+  font-size: clamp(2.5rem, 6.4vw, 4.75rem);
+  max-width: 18ch;
+  margin-bottom: 1.5rem;
+}
+.hero h1 .squiggle { color: var(--sev-error); }
+.hero h1 .squiggle > span { color: var(--fg); }
+
+.hero-excerpt { font-size: 1.1875rem; color: var(--fg-dim); max-width: 46rem; margin: 0 0 2rem; }
+.hero-actions { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+.hero-actions .by { font-family: var(--mono); font-size: .75rem; color: var(--fg-dim); margin-left: auto; }
+
+/* ---------- intro strip ---------- */
+
+.intro {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 1.75rem 0;
+  display: flex; gap: 2rem; align-items: center; flex-wrap: wrap;
+}
+.intro p { margin: 0; max-width: 46rem; color: var(--fg-dim); }
+.intro p b { color: var(--fg); font-weight: 400; }
+.intro .btn { margin-left: auto; }
+
+/* ---------- section headers ---------- */
+
+.band { padding: 3.5rem 0; border-bottom: 1px solid var(--line); }
+.band-head {
+  display: flex; align-items: baseline; gap: 1.25rem; flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+.band-head h2 { font-size: 1.75rem; }
+.band-head .more { margin-left: auto; font-family: var(--mono); font-size: .8125rem; text-decoration: none; }
+.band-note { color: var(--fg-dim); margin: -.75rem 0 1.75rem; max-width: 44rem; }
+
+/* ---------- problems panel: the dev disasters list ---------- */
+
+.panel { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.panel-bar {
+  display: flex; align-items: center; gap: 1rem;
+  background: var(--bg-inset);
+  border-bottom: 1px solid var(--line);
+  padding: .55rem .9rem;
+  font-family: var(--mono); font-size: .6875rem;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--fg-dim);
+}
+.panel-bar .count { margin-left: auto; letter-spacing: .04em; text-transform: none; }
+
+.panel-empty {
+  margin: 0;
+  padding: 1.1rem .9rem 1.2rem;
+  background: var(--bg-raised);
+  color: var(--fg-dim);
+  font-family: var(--mono);
+  font-size: .8125rem;
+  line-height: 1.65;
+}
+
+.prow {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr auto;
+  gap: 1.5rem; align-items: center;
+  padding: .85rem .9rem;
+  text-decoration: none; color: inherit;
+  border-bottom: 1px solid var(--line);
+}
+.prow:last-child { border-bottom: 0; }
+.prow:hover { background: var(--bg-raised); }
+.prow .msg { font-size: 1rem; line-height: 1.35; }
+.prow:hover .msg { color: var(--accent); }
+.prow .loc { font-family: var(--mono); font-size: .75rem; color: var(--fg-dim); white-space: nowrap; }
+.prow .tag {
+  font-family: var(--mono); font-size: .625rem; letter-spacing: .1em; text-transform: uppercase;
+  border: 1px solid currentColor; border-radius: 2px; padding: .1rem .35rem;
+  color: var(--sev-warn); margin-left: .5rem; vertical-align: .1em;
+}
+
+/* ---------- latest grid ---------- */
+
+/*
+  Decision 108. THE SEAMS ARE BACKGROUND, NOT BORDERS.
+
+  The one pixel gaps are not drawn. The grid paints var(--line) across its whole area and
+  every card paints var(--bg) over its own cell, so what reads as a divider is the grid
+  showing through the gap. The consequence is the part worth remembering: anything that
+  does not cover its cell shows divider colour at full strength, in the shape of whatever
+  is missing. A card that stops short of its row draws a horizontal band. A cell with no
+  card in it at all draws a solid rectangle.
+
+  This has already happened twice. A lead card with align-content start left a 24px bar,
+  and a Start here rail with a count that does not tile left a whole empty cell on the front
+  page. Neither was visible to any gate that read data or markup.
+
+  So before setting align-self, a definite height, or any rule that lets a card be smaller
+  than its cell, and before changing how many columns this has: check-layout.mjs measures
+  both, at every breakpoint. It exists because of this rule.
+*/
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+
+/*
+  The last card takes whatever columns are left over, so a rail whose length does not tile
+  cannot leave a coloured hole. The two spans are computed where the cards are counted and
+  arrive as custom properties, because CSS cannot count its own children. Both default to 1,
+  which is the ordinary case of a grid that already tiles.
+*/
+.grid > .card:last-child { grid-column: span var(--fill-3, 1); }
+.card {
+  background: var(--bg);
+  padding: 1.5rem 1.35rem;
+  text-decoration: none; color: inherit;
+  display: flex; flex-direction: column; gap: .6rem;
+}
+.card:hover { background: var(--bg-raised); }
+.card h3 { font-size: 1.1875rem; line-height: 1.2; }
+.card:hover h3 { color: var(--accent); }
+/*
+  Summaries come from the content repo and run to whatever length somebody felt like.
+  Feed rows already clamp for the same reason. Left unclamped in a grid, one long summary
+  sets the height of every card beside it, and the cards with less to say turn into voids.
+*/
+.card p {
+  margin: 0; color: var(--fg-dim); font-size: .9375rem;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4;
+  line-clamp: 4; overflow: hidden;
+}
+/*
+  The border is deliberate and now explicit. It used to arrive by accident from the site
+  footer's .foot rule, so scoping that rule would have silently removed a line the design
+  actually draws between a card's prose and its metadata.
+*/
+.card .foot { margin-top: auto; padding-top: .9rem; border-top: 1px solid var(--line); font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim); display: flex; gap: .6rem; flex-wrap: wrap; }
+.card .foot .k { color: var(--accent); letter-spacing: .1em; text-transform: uppercase; }
+.card.wide { grid-column: span 2; display: grid; grid-template-columns: 15rem 1fr; gap: 1.25rem; align-content: stretch; }
+.card.wide .thumb { margin: 0; max-height: none; }
+/*
+  align-content is stretch, and the reason is worth keeping because the obvious reading of
+  it is wrong in both directions.
+
+  It does not stretch the thumbnail, and it never can. The thumb has a definite width from
+  the 15rem column and a specified aspect-ratio, which together give it a definite height,
+  and stretch does not apply to an item that already has one. So there is no crop risk here.
+  Measured at 0 percent loss, thumb unchanged at 238x134, and scripts/check-layout.mjs holds
+  that by forcing the neighbouring card to 2000px and re-measuring.
+
+  What it does stretch is .body, which has no definite height. That is the half that matters,
+  because .card .foot uses margin-top: auto and needs free space to push into. With start the
+  body stops at its content, the auto margin has nothing to absorb, and the foot floats 24.3px
+  above where every neighbouring card puts its foot. With stretch it lands on the shared
+  baseline. Measured both ways: 26.1px of dead space against 1.8px.
+
+  Both of the obvious alternatives have now been measured on the built page, because this
+  rule keeps being questioned and the answers should not have to be rediscovered each time.
+
+  Dropping aspect-ratio on .card.wide .thumb so the picture fills the card cuts 30.8 percent
+  of the image at 1200px, 21.0 at 860 and 6.7 at 390, and the stretch check reports the thumb
+  growing from 240x195 to 240x1952 beside a 2000px neighbour. check-layout.mjs fails on four
+  counts, because a 16:9 thumbnail in a tall narrow box gets its sides cut off by object-fit
+  cover.
+
+  It also buys nothing where the complaint points. The gap between the summary and the meta
+  line measures 34px against a four line neighbour, identical with the aspect ratio and
+  without it, because that gap is the foot's own padding plus the body's row gap and neither
+  responds to the thumb. What the change actually removes is 59px of space below the
+  thumbnail in the left column, which is a different gap in a different column, and the price
+  is every line of the title on the thumbnail losing its first character.
+
+  Setting align-content to start and stopping a neighbour driving the height, with
+  align-self: start on the card, passes check-layout.mjs and is still wrong. The card shrinks
+  to 219px beside a 243px sibling, and .grid draws its 1px gaps as background: var(--line),
+  so the missing 24px arrives as a band of divider colour across the full width of the lead.
+  The void does not go away. It changes colour and moves outside the card, where the gate
+  cannot see it. That blind spot is real and deserves a check of its own.
+
+  None of this was visible until two other things were fixed, which is why it read as a layout
+  bug for so long. The site footer's bare .foot rule was leaking 4rem of padding into every
+  card foot, and the lead had no summary because a video has no description field to supply
+  one. See the footer.foot note below, and START_HERE in src/config/site.ts.
+*/
+.card .thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; }
+.card.wide .body { display: flex; flex-direction: column; gap: .6rem; height: 100%; }
+.card .thumb {
+  aspect-ratio: 16/9; max-height: 10rem; border-radius: 2px;
+  background: var(--bg-inset); border: 1px solid var(--line);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim);
+}
+
+/* ---------- topics ---------- */
+
+.chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+.chip {
+  font-family: var(--mono); font-size: .8125rem;
+  padding: .45rem .75rem;
+  border: 1px solid var(--line); border-radius: var(--r);
+  text-decoration: none; color: var(--fg-dim);
+  display: inline-flex; gap: .5rem; align-items: baseline;
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+/* The mockup dimmed the count with opacity .6 on top of --fg-dim, which lands under
+   4.5:1 in every one of the sixteen themes. The generator's contrast guard cannot see
+   this because opacity is not a token. Tabular numerals and a slightly smaller size do
+   the same visual job of making the count secondary without dropping the contrast. */
+.chip .n { font-size: .6875rem; font-variant-numeric: tabular-nums; }
+
+/* ---------- drip ---------- */
+
+.drip {
+  display: grid; grid-template-columns: 1.3fr 1fr; gap: 3rem; align-items: center;
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--bg-raised);
+  padding: 2.25rem;
+}
+.drip h2 { font-size: 1.75rem; margin: .5rem 0 .75rem; max-width: 20ch; }
+.drip .promise {
+  font-family: var(--display); font-variation-settings: "SOFT" 28, "WONK" 1;
+  font-size: 1.75rem; line-height: 1.15; font-weight: 600;
+  color: var(--fg); margin: 0 0 .75rem; max-width: 24ch;
+}
+.drip p { color: var(--fg-dim); margin: 0; font-size: .9688rem; }
+.drip form { display: flex; gap: .5rem; }
+.drip input {
+  flex: 1; min-width: 0;
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--r);
+  color: var(--fg); font: inherit; font-size: .9375rem; padding: .65rem .8rem;
+}
+.drip input::placeholder { color: var(--fg-dim); }
+.drip .fine { font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim); margin-top: .7rem; }
+
+/* ---------- reading layout ---------- */
+
+.read {
+  display: grid;
+  grid-template-columns: var(--gutter) minmax(0, var(--measure)) 1fr;
+  gap: 3rem;
+  padding-block: 3rem 4rem;
+}
+.rail { position: sticky; top: 5.5rem; align-self: start; }
+.rail dl { margin: 0; display: grid; gap: 1.15rem; }
+.rail dt {
+  font-family: var(--mono); font-size: .625rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--fg-dim); margin-bottom: .3rem;
+}
+.rail dd { margin: 0; font-family: var(--mono); font-size: .8125rem; display: flex; gap: .6rem; flex-wrap: wrap; }
+/*
+  Text at .8125rem gives a link box around 17px tall, which is under the 24px WCAG 2.2
+  asks for. The rail is quiet by design so the type stays small and the target grows
+  instead. Caught by axe on the terms page, where two rail links first appeared together.
+*/
+.rail dd a { text-decoration: none; display: inline-flex; align-items: center; min-height: 24px; }
+
+.like {
+  margin-top: 1.75rem;
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-family: var(--mono); font-size: .8125rem;
+  background: var(--bg-raised); border: 1px solid var(--line); border-radius: var(--r);
+  color: var(--fg); padding: .5rem .8rem; cursor: pointer;
+}
+.like:hover { border-color: var(--sev-error); color: var(--sev-error); }
+/* The count is the content, so it carries the weight. The word is what makes 318 mean
+   something rather than being read as views or replies. */
+.like .lbl { color: var(--fg-dim); }
+.like b { font-weight: 600; }
+.like:hover .lbl { color: inherit; }
+/* Before the island wakes up, and forever for anybody with JavaScript off. The count is
+   content and stays on screen, but nothing about it should invite a press it cannot
+   answer. */
+.like-idle { cursor: default; color: var(--fg-dim); }
+.like-idle:hover { border-color: var(--line); color: var(--fg-dim); }
+/*
+  Decision 120. Wrap rather than stack.
+
+  This was display: grid, which stretched both children to the full width of whatever
+  held them. In the 11rem rail the buttons now sit at their content width and drop to
+  the next row when they run out; under the article on a phone the rail is full width
+  and they sit side by side. align-items is the entire fix, and one rule is correct at
+  both sizes.
+*/
+.rail-acts {
+  display: flex; flex-direction:column; flex-wrap: wrap; align-items: flex-start;
+  gap: .5rem; margin-top: 1.75rem;
+}
+.rail-acts .like { margin-top: 0; }
+/*
+  The reply count is navigation to a section further down this page, not a control, so
+  it wears no border, background or radius. // is how a C# reader already spells a
+  comment.
+*/
+.jump { text-decoration: none; }
+.jump .cmark { color: var(--tok-com); font-style: italic; }
+.jump:hover { border-color: var(--accent); color: var(--accent); }
+.rail .jump.replies {
+  display: inline-flex; align-items: center; gap: .45rem;
+  min-height: 24px;
+  margin-top: .9rem;
+  padding: 0; border: 0; background: none;
+  font-family: var(--mono); font-size: .8125rem;
+  color: var(--fg-dim);
+}
+.rail .jump.replies:hover { color: var(--accent); border-color: transparent; }
+
+/*
+  Decision 121. The share menu.
+
+  Same shape as .themer-menu on purpose. The site has already taught a reader what a
+  small mono menu hanging off a bordered button does, and a second vocabulary for the
+  same gesture would be a second thing to learn for no gain.
+*/
+.share { position: relative; }
+.share-btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-family: var(--mono); font-size: .8125rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--line); border-radius: var(--r);
+  color: var(--fg); padding: .5rem .8rem; cursor: pointer;
+  list-style: none;
+}
+/* The disclosure triangle a details element draws for free is not the caret this design
+   wants, and it cannot be styled. Both lines are needed, one per engine. */
+.share-btn::-webkit-details-marker { display: none; }
+.share-btn::marker { content: ''; }
+.share-btn:hover { border-color: var(--accent); color: var(--accent); }
+.share-btn .caret { opacity: .6; font-size: .6rem; }
+.share-menu {
+  position: absolute; left: 0; top: calc(100% + .5rem);
+  z-index: 30;
+  width: 13rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--line); border-radius: var(--r);
+  padding: .4rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .28);
+}
+.share-menu ul { list-style: none; margin: 0; padding: 0; }
+.share-menu a,
+.share-menu button {
+  display: flex; align-items: center; gap: .65rem; width: 100%;
+  background: none; border: 0; border-radius: 3px;
+  padding: .45rem .6rem; cursor: pointer;
+  font-family: var(--mono); font-size: .8125rem;
+  /* A button takes line-height: normal from the user agent while the anchors above it
+     inherit the page value, which made the copy row 31px against their 35. Invisible
+     while every row was words, obvious once all five carry a mark on the same baseline. */
+  line-height: inherit;
+  color: var(--fg-dim); text-align: left; text-decoration: none;
+}
+.share-menu a:hover,
+.share-menu button:hover { background: var(--bg-inset); color: var(--fg); }
+
+/*
+  Decision 128. The destination marks.
+
+  No colour anywhere in here, which is the whole point. The svg takes currentColor, so a
+  row is --fg-dim at rest and lifts to --fg with its label from the two rules above. That
+  is why brand marks are allowed at all: the objection to them was never the shape, it was
+  that drawing them in brand colour means the first literal colours in this codebase and
+  two of them fight fifteen of the sixteen themes.
+
+  A fixed box rather than intrinsic width, so five shapes of different proportions share
+  one left edge and five labels start in the same place.
+*/
+.share-menu .mk {
+  box-sizing: border-box;
+  width: 15px; height: 15px;
+  flex: none;
+}
+
+/*
+  Optical sizing. A solid rounded square and a solid disc carry far more ink than an X of
+  thin diagonals at the same box size, so at a flat 15px those two read as bold and the X
+  reads as faint. Padding insets the artwork without moving the layout box, so the weights
+  even out and the labels still start on one line. Judged by eye at 1280 and 390, which is
+  the only way this can be judged.
+*/
+.share-menu .mk-linkedin { padding: 1.5px; }
+.share-menu .mk-facebook { padding: 1px; }
+.share-menu .sep {
+  height: 1px; background: var(--line);
+  margin: .35rem .6rem;
+}
+/* Copy reports by changing its own label. The tick is generated rather than swapped into
+   the text, so the label a screen reader announces stays a word. */
+.share-menu .copy[data-done="1"] { color: var(--accent); }
+.share-menu .copy[data-done="1"]::after {
+  content: "\2713"; margin-left: auto; color: var(--accent);
+}
+
+.rail .fine { display: block; font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim); margin-top: .5rem; }
+
+.storyhead { margin-bottom: 2rem; }
+.storyhead h1 { font-size: clamp(2rem, 4vw, 3rem); margin: 1rem 0; }
+.storyhead h1 .squiggle { color: var(--sev-error); }
+.storyhead h1 .squiggle > span { color: var(--fg); }
+
+.prose > * { margin: 0; }
+.prose > * + * { margin-top: 1.35rem; }
+.prose h2 { font-size: 1.4rem; margin-top: 2.5rem; }
+
+/* Decision 130. A colour per heading level, resolved per theme by scripts/gen-themes.mjs
+   because CSS cannot ask whether two colours are far apart. Every value here is chosen
+   against that theme's prose colour, its link colour and its page background, so nothing
+   in this block is a constant and nothing needs to be.
+
+   h5 and h6 take the neutral rather than a hue. Michael scoped the request to 2 through
+   4, and they had no rule of their own at all before this, which left them in the body
+   font at browser default sizes: an h5 rendered smaller than the paragraph under it. */
+.prose h3 { font-size: 1.15rem; margin-top: 2rem; }
+.prose h4 { font-size: 1rem; margin-top: 1.75rem; }
+.prose h5, .prose h6 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-variation-settings: "SOFT" 28, "WONK" 1;
+  line-height: 1.06;
+  letter-spacing: -.018em;
+  font-size: .9375rem;
+  margin-top: 1.5rem;
+}
+.prose h2 { color: var(--h2-fg); }
+.prose h3 { color: var(--h3-fg); }
+.prose h4 { color: var(--h4-fg); }
+.prose h5, .prose h6 { color: var(--fg-strong); }
+.prose blockquote {
+  margin: 1.75rem 0; padding: .25rem 0 .25rem 1.25rem;
+  border-left: 2px solid var(--sev-error);
+  font-family: var(--display); font-size: 1.25rem; font-variation-settings: "SOFT" 40, "WONK" 1;
+  line-height: 1.35;
+}
+.prose code { font-family: var(--mono); font-size: .875em; background: var(--bg-inset); padding: .1em .35em; border-radius: 2px; }
+/* Expressive Code's later all: revert reset needs the second, stronger selector. */
+.prose pre, .prose .expressive-code pre { max-height: min(36rem, 70vh); overflow: auto; }
+
+.code {
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--bg-inset);
+  font-family: var(--mono); font-size: .8125rem; line-height: 1.7;
+  overflow: hidden;
+}
+.code-bar {
+  display: flex; gap: .75rem; padding: .45rem .85rem;
+  border-bottom: 1px solid var(--line);
+  font-size: .6875rem; color: var(--fg-dim);
+}
+.code-bar .lang { margin-left: auto; }
+.code pre { margin: 0; padding: .9rem 1rem; overflow-x: auto; }
+.k { color: var(--tok-key); }
+.s { color: var(--tok-str); }
+.f { color: var(--tok-fn); }
+.t { color: var(--tok-type); }
+.c { color: var(--tok-com); font-style: italic; }
+.n { color: var(--tok-num); }
+
+/* Tables here carry benchmark numbers more often than anything else, so numeric columns
+   are mono and tabular and digits line up in a column you can actually compare down.
+   The 2px header rule is the same device as .rule.major, so a table reads as structure. */
+.table-wrap { overflow-x: auto; min-width: 0; }
+.prose table { width: 100%; border-collapse: collapse; font-size: .9375rem; }
+.prose th {
+  font-family: var(--mono); font-size: .625rem; letter-spacing: .14em;
+  text-transform: uppercase; font-weight: 400; color: var(--fg-dim);
+  text-align: left; white-space: nowrap;
+  padding: 0 1.25rem .55rem 0; border-bottom: 2px solid var(--fg-dim);
+}
+.prose td {
+  padding: .75rem 1.25rem .75rem 0;
+  border-bottom: 1px solid var(--line); vertical-align: top;
+}
+.prose th:last-child, .prose td:last-child { padding-right: 0; }
+.prose tbody tr:last-child td { border-bottom: 0; }
+.prose th.num, .prose td.num {
+  font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right;
+}
+/* Inside a table the mono face already marks the cell as code, so the inline chip is
+   noise that breaks the row rhythm. */
+.prose table code { background: none; padding: 0; }
+
+.prose caption {
+  caption-side: bottom; text-align: left; margin-top: .8rem;
+  font-family: var(--mono); font-size: .6875rem; line-height: 1.6; color: var(--fg-dim);
+}
+
+.callout {
+  border: 1px solid var(--line); border-left: 2px solid var(--sev-info);
+  border-radius: var(--r);
+  background: var(--bg-raised);
+  padding: 1.1rem 1.25rem;
+}
+.callout .tag {
+  display: block; font-family: var(--mono); font-size: .625rem;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--sev-info); margin-bottom: .5rem;
+}
+.callout p { margin: 0; color: var(--fg-dim); }
+
+.videocard {
+  display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap;
+  border: 1px solid var(--line); border-left: 2px solid var(--accent);
+  border-radius: var(--r); background: var(--bg-raised);
+  padding: 1.1rem 1.25rem; text-decoration: none; color: inherit;
+}
+.videocard .tag { display: block; font-family: var(--mono); font-size: .625rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: .35rem; }
+.videocard strong { font-family: var(--display); font-size: 1.0625rem; font-variation-settings: "SOFT" 30, "WONK" 1; }
+.videocard .btn { margin-left: auto; }
+
+.notice {
+  font-family: var(--mono); font-size: .75rem; line-height: 1.65;
+  color: var(--fg-dim);
+  border: 1px dashed var(--line); border-radius: var(--r);
+  padding: .85rem 1rem;
+}
+
+/* ---------- comments ---------- */
+
+.comments { border-top: 1px solid var(--line); padding: 2.5rem 0 4rem; }
+.comments .shell { display: grid; grid-template-columns: var(--gutter) minmax(0, var(--measure)) 1fr; gap: 3rem; }
+
+.composer { border: 1px solid var(--line); border-radius: var(--r); background: var(--bg-raised); padding: 1rem 1.15rem; margin-bottom: .5rem; }
+.composer label { display: block; font-family: var(--mono); font-size: .75rem; color: var(--fg-dim); margin-bottom: .55rem; }
+.composer textarea {
+  width: 100%; min-height: 5.5rem; resize: vertical;
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--r);
+  color: var(--fg); font: inherit; font-size: .9375rem; padding: .75rem .85rem;
+}
+.composer textarea::placeholder { color: var(--fg-dim); }
+.composer-foot { display: flex; gap: .75rem; align-items: center; margin-top: .7rem; font-family: var(--mono); font-size: .75rem; color: var(--fg-dim); flex-wrap: wrap; }
+.composer-foot .btn { margin-left: auto; }
+
+/*
+  One divider token for the whole thread. Every rule between comments is var(--line),
+  including the one above a nested reply, and the only coloured borders inside a thread
+  are the host avatar and a primary button, both of which are meant to be seen.
+
+  The rule above a reply is inset because a reply is indented and the rule marks the top
+  edge of that reply's own box. It is the only thing showing where nesting starts once
+  the avatar column is too narrow to read as a step. In a calm palette the inset is
+  barely visible; in Hot Dog Stand it is obvious. Both are correct. Do not "fix" it by
+  giving replies a different colour, and do not straighten it to full width without
+  putting something else in its place.
+*/
+.comment { display: grid; grid-template-columns: 2rem 1fr; gap: .9rem; padding: 1.25rem 0; border-top: 1px solid var(--line); }
+.comment.reply { margin-left: 2.9rem; }
+.av {
+  width: 2rem; height: 2rem; border-radius: 3px;
+  background: var(--bg-inset); border: 1px solid var(--line);
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim);
+}
+.av.host { color: var(--accent); border-color: var(--accent); }
+.av .mark { width: 1.4rem; height: 1.4rem; color: inherit; }
+.av.xl .mark { width: 3.4rem; height: 3.4rem; }
+.chead { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; font-family: var(--mono); font-size: .75rem; color: var(--fg-dim); margin-bottom: .4rem; }
+.chead .who { color: var(--fg); }
+.chead .who a { color: inherit; text-decoration: none; }
+.chead .who a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.badge {
+  font-family: var(--mono); font-size: .625rem; letter-spacing: .06em;
+  border: 1px solid var(--line); border-radius: 2px; padding: .1rem .35rem;
+  color: var(--fg-dim);
+}
+.badge.hot { color: var(--accent); border-color: var(--accent); }
+.cbody { font-size: .9688rem; }
+.cbody p { margin: 0 0 .7rem; }
+.cbody p:last-child { margin-bottom: 0; }
+.cacts { display: flex; gap: 1rem; margin-top: .6rem; font-family: var(--mono); font-size: .75rem; }
+.cacts button { background: none; border: 0; padding: 0; cursor: pointer; color: var(--fg-dim); font: inherit; }
+.cacts button:hover { color: var(--accent); }
+.cacts .rep { color: var(--fg-dim); text-decoration: none; }
+.cacts .rep:hover { color: var(--sev-error); text-decoration: underline; text-underline-offset: 2px; }
+
+/* The like under a comment is the same control at conversation scale, so it loses the
+   detail page's top margin and its raised background rather than becoming a new thing. */
+.like-sm {
+  margin-top: 0; padding: 0; gap: .35rem;
+  background: none; border: 0; border-radius: 0;
+  font-size: .75rem; color: var(--fg-dim);
+}
+.like-sm:hover { border: 0; color: var(--sev-error); }
+.like-sm.like-idle:hover { color: var(--fg-dim); }
+
+/* Code inside a comment. Highlighted through the same theme as the rest of the site, so a
+   snippet somebody pastes reads like the ones in the article above it. */
+.c-code {
+  margin: .7rem 0; padding: .8rem 1rem; overflow-x: auto;
+  background: var(--bg-inset); border: 1px solid var(--line); border-radius: var(--r);
+  font-family: var(--mono); font-size: .8125rem; line-height: 1.6;
+}
+.c-code code { background: none; padding: 0; font: inherit; }
+.cbody code { background: var(--bg-inset); padding: .1rem .3rem; border-radius: 3px; font-size: .875em; }
+.cbody blockquote {
+  margin: .7rem 0; padding-left: .9rem;
+  border-left: 2px solid var(--line); color: var(--fg-dim);
+}
+.cbody ul, .cbody ol { margin: .7rem 0; padding-left: 1.2rem; }
+.cbody li { margin-bottom: .3rem; }
+.cbody hr { border: 0; border-top: 1px solid var(--line); margin: 1rem 0; }
+.cbody a { color: var(--accent); }
+
+/* Every state the mockup did not draw. Each one is a real thing a reader will hit, and
+   inventing them at the last minute is how a design language stops being one. */
+.c-signedout, .c-empty, .c-notice { margin-bottom: 1rem; }
+.c-tomb { color: var(--fg-dim); font-style: italic; }
+.c-edited { font-style: italic; }
+.composer-btns { margin-left: auto; display: flex; gap: .5rem; }
+.composer-foot .composer-btns .btn { margin-left: 0; }
+.linkish {
+  background: none; border: 0; padding: 0; font: inherit; cursor: pointer;
+  color: var(--accent); text-decoration: underline; text-underline-offset: 2px;
+}
+
+/* ---------- footer ---------- */
+
+/*
+  Every rule here is element qualified, and that is load bearing rather than tidiness.
+
+  The site footer and the metadata line at the bottom of a card were both called .foot.
+  The bare .foot rule below sets a padding shorthand, and .card .foot only ever overrode
+  padding-top, so 4rem of footer padding-bottom landed inside all five cards on the front
+  page. That is 64 pixels of nothing under the foot line of every card on the site, and it
+  read as a layout bug in the card rather than as a footer rule reaching somewhere it was
+  never meant to go. It also meant margin-top auto on the card foot resolved to zero,
+  because the padding had already consumed the free space it was supposed to absorb.
+
+  The collision is in the mockup too, so this is not a porting mistake, it is a defect
+  carried over faithfully with everything else. Qualifying with footer means the rule can
+  only ever match the real footer element, because the card foot is a span.
+*/
+footer.foot { border-top: 1px solid var(--line); padding: 3rem 0 4rem; }
+.foot-grid { display: grid; grid-template-columns: 1.5fr repeat(3, 1fr); gap: 2.5rem; }
+/* The mockup used h4 here purely because it wanted small text. A footer column heading is
+   a top level section of the footer, so it is an h2 that happens to be painted small.
+   Using h4 made every page jump from h1 or h2 straight to h4. */
+footer.foot h2 { font-family: var(--mono); font-size: .625rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-dim); margin: 0 0 .9rem; }
+footer.foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; font-size: .9375rem; }
+footer.foot ul a { color: var(--fg-dim); text-decoration: none; }
+footer.foot ul a:hover { color: var(--fg); }
+.signoff { font-family: var(--display); font-size: 1.25rem; font-variation-settings: "SOFT" 40, "WONK" 1; margin: .75rem 0 .5rem; }
+footer.foot .tagline { color: var(--fg-dim); font-size: .875rem; margin: 0; max-width: 22rem; }
+
+/* ---------- front page skeleton ---------- */
+
+/* Small print. The scoped variants further down only add spacing or position. */
+.fine { font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim); }
+
+.rule {
+  display: flex; align-items: center; gap: 1rem;
+  font-family: var(--mono); font-size: .6875rem;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--fg-dim);
+  padding: 0 0 .9rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 1.5rem;
+}
+.rule .more { margin-left: auto; text-transform: none; letter-spacing: .04em; text-decoration: none; }
+/* A quiet rail is still a section, and a section full of h3 cards needs its own heading
+   or the document outline jumps straight from the h1 to an h3. The heading is painted as
+   the mono eyebrow the mockup drew, so this costs nothing visually. */
+.rule h2, .rule h3 {
+  font: inherit; letter-spacing: inherit; text-transform: inherit;
+  color: inherit; margin: 0;
+}
+/* A year divider inside a feed needs air above it or it reads as part of the row it follows. */
+.feed + .rule { margin-top: 2.5rem; }
+.rule h3 + span { margin-left: auto; }
+/* The rows below carry their own top border, so a second one here just doubles the line. */
+.rule.year { border-bottom: 0; margin-bottom: .4rem; padding-bottom: .4rem; }
+
+/* Available to a screen reader, invisible on screen. Used where the mockup relies on
+   position and styling to say what a block is and a heading has to exist anyway. */
+.vh {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+/* Major section waypoints. Rails inside the fold stay as quiet mono eyebrows; the
+   sections a reader actually navigates between get the display face so they register
+   as places rather than captions. */
+.rule.major {
+  align-items: baseline;
+  padding-bottom: .6rem;
+  margin-bottom: 1.4rem;
+  border-bottom-width: 2px;
+  border-bottom-color: var(--fg-dim);
+}
+.rule.major h2 {
+  font-family: var(--display);
+  font-variation-settings: "SOFT" 28, "WONK" 1;
+  font-size: 2rem; line-height: 1.05; font-weight: 600;
+  letter-spacing: -.015em; text-transform: none;
+  color: var(--fg); margin: 0;
+}
+
+.row {
+  display: grid; grid-template-columns: 1fr auto; gap: .35rem 1.25rem;
+  align-items: baseline;
+  padding: .85rem 0; border-bottom: 1px solid var(--line);
+  text-decoration: none; color: inherit;
+}
+.row:last-child { border-bottom: 0; }
+.row h3 { font-size: 1.0625rem; line-height: 1.25; }
+.row:hover h3 { color: var(--accent); }
+.row .meta { font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim); white-space: nowrap; }
+.row .meta .k { color: var(--accent); letter-spacing: .1em; text-transform: uppercase; }
+.row p { grid-column: 1 / -1; margin: 0; color: var(--fg-dim); font-size: .9375rem; }
+
+/* padding-block only. .bench is also a .shell, and a padding shorthand here would
+   wipe out the shell's horizontal inset. */
+.bench {
+  display: grid; grid-template-columns: 1.05fr 1fr; gap: 0 3rem;
+  padding-block: 2.75rem 2.25rem; align-items: center;
+}
+.bench h1 { font-size: clamp(1.85rem, 3vw, 2.6rem); margin: .9rem 0 1rem; }
+/* No still to put in the left column, so there is no left column. Anything else leaves
+   half the widest element on the site empty. Measures cap the line length that the
+   picture used to cap. */
+.bench.plain { grid-template-columns: minmax(0, 1fr); }
+.bench.plain h1 { max-width: 22ch; }
+.bench.plain .excerpt { max-width: 60ch; }
+/* .eyebrow is a text style everywhere else on the site, so the layout is scoped here
+   rather than added to it. The spacer is what pushes the kicker to the far edge. */
+.bench .eyebrow { display: flex; align-items: center; gap: 1rem; }
+.bench .eyebrow .spacer { flex: 1; }
+.bench .excerpt { font-size: 1.0625rem; color: var(--fg-dim); margin: 0 0 1.5rem; }
+.bench .acts { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+.bench .meta {
+  font-family: var(--mono); font-size: .75rem; color: var(--fg-dim);
+  margin-top: 1.15rem; padding-top: 1.15rem; border-top: 1px solid var(--line);
+}
+
+/* An uppercase mono kicker in the accent. Used once per page, on the thing the layout is
+   arguing is most important, so it cannot become decoration. */
+.kick {
+  font-family: var(--mono); font-size: .6875rem; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--accent);
+}
+
+/* A 16:9 still. aspect-ratio is load bearing: without it the box stretches to its
+   neighbour and the duration badge floats away from the picture. */
+.shot {
+  aspect-ratio: 16/9; border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--bg-inset); display: grid; place-items: center; position: relative;
+  overflow: hidden;
+}
+.shot img { width: 100%; height: 100%; object-fit: cover; grid-area: 1 / 1; }
+.shot .play {
+  width: 3.25rem; height: 3.25rem; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--bg);
+  display: grid; place-items: center; color: var(--accent); font-size: .9rem;
+  padding-left: .2rem; grid-area: 1 / 1; z-index: 1;
+}
+.shot .dur {
+  position: absolute; right: .6rem; bottom: .6rem;
+  font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 2px;
+  padding: .15rem .4rem;
+}
+
+/* The identity strip. Full bleed rather than a card, so it reads as the page saying whose
+   site this is rather than as one more module competing with the others. */
+.ident { border-block: 1px solid var(--line); background: var(--bg-raised); }
+.ident .shell {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 1.35rem;
+  align-items: center; padding-block: 1.15rem;
+}
+.ident .mk { width: 2.5rem; height: 2.5rem; color: var(--accent); flex: none; }
+.ident p { margin: 0; color: var(--fg-dim); font-size: .9375rem; }
+.ident p b { font-family: var(--display); font-weight: 700; color: var(--fg); }
+.ident .more { font-family: var(--mono); font-size: .8125rem; white-space: nowrap; }
+
+/* Two independent columns of rows. No painted background, so an odd count cannot leave a
+   coloured block the way a seamed grid would. */
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 3rem; }
+
+.below { padding-block: 2.75rem 3rem; }
+.below .rule { margin-top: 3rem; }
+.below .rule:first-child { margin-top: 0; }
+.below .lead-in { color: var(--fg-dim); margin: -.5rem 0 1.5rem; max-width: 44rem; }
+.below .story-cta { display: flex; gap: .9rem; align-items: center; flex-wrap: wrap; margin-top: 1.25rem; }
+.below .story-cta .fine { font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim); }
+
+/* ---------- dev disasters archive ---------- */
+/* Two candidate treatments share one rule: every entry is the same size. Ranking the
+   severities against each other set the funniest stories smallest, which reads as "your
+   embarrassment matters less" on a page that promises nobody gets dunked on. */
+
+/* Version B, the wall. Same data, opposite editorial position: the sentence you remember
+   is the headline and the title drops to a label, because the line is the reason anybody
+   reads these. Severity survives as the rule down the left of each quote. */
+
+.wall { margin-top: 2.25rem; columns: 2; column-gap: 3.5rem; }
+
+.wq {
+  position: relative;
+  break-inside: avoid; -webkit-column-break-inside: avoid;
+  padding: 1.6rem 1.35rem 1.6rem 1.4rem;
+  border-left: 2px solid var(--wqc);
+  border-top: 1px solid var(--line);
+}
+.wall > .wq:first-child { border-top: 0; }
+.wq-error { --wqc: var(--sev-error); }
+.wq-warn  { --wqc: var(--sev-warn); }
+.wq-info  { --wqc: var(--sev-info); }
+.wq-hint  { --wqc: var(--sev-hint); }
+.wq:hover { background: var(--bg-raised); }
+
+.wq-lab { display: flex; align-items: center; gap: .75rem; }
+.wq-lab b {
+  font-family: var(--mono); font-size: .75rem; font-weight: 400;
+  font-variant-numeric: tabular-nums; color: var(--fg-dim);
+}
+.wq-lab .sev { font-size: .625rem; }
+
+/* Likes and replies read at full strength while their markers stay quiet, so the number
+   is what you scan and the glyph only tells you which number it is. */
+.wq-stats { margin-left: auto; display: flex; align-items: baseline; gap: 1.1rem; }
+.wq-stats .st {
+  display: inline-flex; align-items: baseline; gap: .35rem;
+  font-family: var(--mono); font-size: .875rem; font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+.wq-stats i { font-style: normal; font-size: .75rem; color: var(--fg-dim); }
+.wq-stats i.cm { font-style: italic; color: var(--tok-com); }
+
+.wq-line {
+  margin: .7rem 0 0;
+  font-family: var(--display); font-variation-settings: "SOFT" 40, "WONK" 1;
+  font-size: 1.375rem; line-height: 1.25; font-weight: 500;
+}
+.wq-line a { color: inherit; text-decoration: none; }
+.wq:hover .wq-line a { color: var(--accent); }
+.wq-line .stretch::after { content: ""; position: absolute; inset: 0; }
+.wq-line .stretch:focus-visible { outline: none; }
+.wq:has(.stretch:focus-visible) { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.wq-f {
+  display: block; margin-top: .9rem;
+  font-family: var(--mono); font-size: .6875rem; line-height: 1.7; color: var(--fg-dim);
+}
+.wq-f a { position: relative; z-index: 1; color: var(--fg-dim); text-underline-offset: 2px; }
+.wq-f a:hover { color: var(--accent); }
+
+/* ---------- page heads and filters ---------- */
+
+.pagehead { padding: 0rem 0 1.5rem; }
+.pagehead h1 { font-size: clamp(2rem, 4vw, 3rem); margin: .9rem 0; }
+.pagehead h1 .slash { color: var(--accent); font-weight: 400; }
+.pagehead h1 .squiggle { color: var(--sev-error); }
+.pagehead h1 .squiggle > span { color: var(--fg); }
+.pagehead .lede { max-width: 44rem; }
+
+.topichead { margin-top: 2.5rem; }
+
+.filters {
+  display: flex; gap: .5rem; flex-wrap: wrap; align-items: center;
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 1.75rem;
+}
+.filters .lbl {
+  font-family: var(--mono); font-size: .6875rem;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--fg-dim);
+  margin-right: .35rem;
+}
+.filters .lbl + .chip { margin-left: 0; }
+.filters .push { margin-left: auto; }
+.chip.on { border-color: var(--accent); color: var(--accent); background: var(--bg-raised); }
+
+/* ---------- mixed content feed ---------- */
+
+.feed { border-top: 1px solid var(--line); }
+.fitem {
+  display: grid; grid-template-columns: 9rem 1fr auto; gap: 1.75rem;
+  align-items: start;
+  padding: 1.5rem .75rem;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none; color: inherit;
+}
+.fitem:hover { background: var(--bg-raised); }
+.fitem h3, .fitem h4 { font-size: 1.125rem; line-height: 1.25; margin-bottom: .35rem; }
+.fitem:hover h3, .fitem:hover h4 { color: var(--accent); }
+.fitem p {
+  margin: 0; color: var(--fg-dim); font-size: .9375rem;
+  /* The mockup was drawn with hand written two line descriptions. Real summaries run to
+     four hundred characters, which turns a scannable list into a wall. Clamp to two
+     lines so every row is the same shape and the eye can move down the column. */
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.fitem .kind {
+  font-family: var(--mono); font-size: .6875rem;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
+  padding-top: .2rem; display: grid; gap: .5rem; justify-items: start;
+}
+.fitem .stat { text-align: right; font-family: var(--mono); font-size: .75rem; color: var(--fg-dim); display: grid; gap: .3rem; white-space: nowrap; }
+.fitem .thumb { width: 9rem; max-height: none; }
+
+/* ---------- video page ---------- */
+
+.embed {
+  aspect-ratio: 16/9; border-radius: var(--r);
+  border: 1px solid var(--line); background: var(--bg-inset);
+  display: grid; place-items: center; position: relative;
+  margin-bottom: 1.75rem;
+  overflow: hidden;
+}
+/* The mockup drew a play button placeholder rather than a real player, so there was
+   never a rule for the thing that actually goes in here. */
+.embed iframe {
+  width: 100%; height: 100%; border: 0; display: block;
+}
+.embed .play {
+  width: 4.25rem; height: 3rem; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--bg-raised);
+  display: grid; place-items: center; color: var(--fg); font-size: 1.15rem;
+}
+/* The still sits behind the play control rather than beside it, so both are children of
+   the same grid cell. Cover crops the letterbox bars that YouTube bakes into hqdefault. */
+.embed-still {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  /* Dimmed so the play control reads as the foreground on a busy frame. Nothing is
+     allowed to depend on this for contrast, because a contrast checker cannot measure
+     text over a photograph. */
+  filter: brightness(.5);
+}
+.embed .play { position: relative; text-decoration: none; }
+.embed .play:hover { border-color: var(--accent); color: var(--accent); }
+/* Deliberately outside .embed. Text over a photograph cannot be contrast checked, so no
+   text sits on the still except inside the play control's own opaque background. */
+.embed-note {
+  font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim);
+  margin: -1.25rem 0 1.75rem; text-align: center;
+}
+.embed .fine { position: absolute; bottom: 1rem; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: .6875rem; color: var(--fg); }
+
+.transcript { border: 1px solid var(--line); border-radius: var(--r); margin-top: 2rem; }
+.transcript summary {
+  padding: .9rem 1.15rem; cursor: pointer; list-style: none;
+  display: flex; align-items: center; gap: .75rem;
+  font-family: var(--mono); font-size: .75rem;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--fg-dim);
+}
+.transcript summary::-webkit-details-marker { display: none; }
+.transcript summary::before { content: "\25B8"; color: var(--accent); }
+.transcript[open] summary::before { content: "\25BE"; }
+.transcript summary:hover { color: var(--fg); }
+.transcript summary .hint { margin-left: auto; text-transform: none; letter-spacing: .02em; }
+.transcript .tbody { border-top: 1px solid var(--line); }
+.tchapter + .tchapter { border-top: 1px solid var(--line); }
+.tchapter-head {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: baseline;
+  padding: 1.2rem 1.15rem .6rem;
+}
+.tchapter-head h2 {
+  margin: 0; font-size: 1.05rem; color: var(--fg);
+  font-variation-settings: "SOFT" 35, "WONK" 1;
+}
+.tblocks { padding: .2rem 0 .7rem; }
+.tline { padding: .75rem 1.15rem; }
+.tmeta { margin-bottom: .35rem; }
+.tline .speaker {
+  font-family: var(--mono); font-size: .6875rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--fg);
+}
+.transcript .t {
+  width: fit-content; min-height: 24px; display: inline-flex; align-items: center;
+  font-family: var(--mono); font-size: .75rem; color: var(--accent);
+  font-variant-numeric: tabular-nums; text-decoration: none;
+}
+.transcript .t:hover { text-decoration: underline; }
+.tline p { margin: 0; color: var(--fg-dim); font-size: 1rem; line-height: 1.65; white-space: pre-line; }
+
+.chapters { display: grid; gap: .1rem; }
+.chapters a {
+  display: grid; grid-template-columns: 3.5rem 1fr; gap: 1rem;
+  padding: .4rem .5rem; border-radius: 3px;
+  text-decoration: none; color: var(--fg-dim); font-size: .9375rem;
+}
+.chapters a:hover { background: var(--bg-raised); color: var(--fg); }
+.chapters .t { font-family: var(--mono); font-size: .75rem; color: var(--accent); }
+
+/* ---------- profile ---------- */
+
+.profile-head {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 1.5rem;
+  align-items: center; padding: 3rem 0 1.75rem;
+}
+.av.xl { width: 5rem; height: 5rem; font-size: 1.5rem; border-radius: var(--r); }
+.profile-head h1 { font-size: 1.9rem; margin-bottom: .3rem; }
+.profile-head .handle { font-family: var(--mono); font-size: .8125rem; color: var(--fg-dim); margin: 0; }
+.profile-head .badges { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .8rem; }
+
+.stat-strip {
+  display: flex; flex-wrap: wrap; gap: 2rem;
+  padding: 1.15rem 0;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  font-family: var(--mono); font-size: .6875rem;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--fg-dim);
+}
+.stat-strip b { display: block; font-family: var(--display); font-size: 1.5rem; font-weight: 700; letter-spacing: -.01em; color: var(--fg); margin-bottom: .25rem; }
+
+.shelf { padding: 2.25rem 0; }
+.shelf-note { color: var(--fg-dim); font-size: .9375rem; max-width: 40rem; margin: -.5rem 0 1.5rem; }
+.plaques { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: .75rem; }
+.plaque {
+  position: relative; overflow: hidden;
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--bg-raised);
+  padding: .95rem 1rem .95rem 1.25rem;
+  display: grid; gap: .3rem;
+}
+.plaque::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--accent); }
+.plaque .name { font-family: var(--display); font-weight: 700; font-size: .9375rem; }
+.plaque .how { font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim); line-height: 1.5; }
+.plaque .tier { position: absolute; top: .7rem; right: .8rem; font-family: var(--mono); font-size: .6875rem; color: var(--accent); }
+/*
+  A locked plaque used to dim with opacity, which is fine until something inside it has to
+  be read. A progress figure at 45% opacity is a contrast failure that no automated check
+  can see, because opacity is applied after the ratio is computed. So the dimming is done
+  with real colours instead, which keeps the same look and keeps the number legible.
+*/
+.plaque.locked { background: var(--bg); border-style: dashed; }
+.plaque.locked::after { background: var(--line); }
+.plaque.locked .tier,
+.plaque.locked .name { color: var(--fg-dim); }
+.plaque.locked .name { font-weight: 400; }
+
+/*
+  Progress under the next badge in a family. The bar is decoration and the figure beside it
+  is the real answer, which is why the bar is aria-hidden and the text is not: a screen
+  reader gets "12 of 30" and skips the box.
+
+  The track is a surface colour rather than --line. Hot Dog Stand is the reason: its --line
+  is the same saturated red as its --accent, so a track drawn in --line was indistinguishable
+  from a full fill, and an empty bar read as a finished one. A background token can never
+  collide with the fill, because the contrast guard in the theme generator pushes every
+  accent away from all three surfaces by construction.
+*/
+.plaque .prog { display: flex; align-items: center; gap: .5rem; margin-top: .15rem; }
+.plaque .prog-bar {
+  flex: 1; height: 4px; border-radius: 2px;
+  background: var(--bg-inset); border: 1px solid var(--line);
+  overflow: hidden;
+}
+.plaque .prog-fill { display: block; height: 100%; background: var(--accent); }
+.plaque .prog-n { font-family: var(--mono); font-size: .625rem; color: var(--fg-dim); white-space: nowrap; }
+
+/*
+  The empty shelf. Sits under the plaques rather than replacing them, because the plaques
+  are the answer to "what is there to get" and this is the answer to "how".
+*/
+.shelf-empty {
+  font-family: var(--mono); font-size: .75rem; line-height: 1.7;
+  color: var(--fg-dim); margin: 1rem 0 0; max-width: 46rem;
+}
+
+.tabs {
+  display: flex; gap: 1.5rem; border-bottom: 1px solid var(--line);
+  font-family: var(--mono); font-size: .8125rem; margin-bottom: 1.5rem;
+}
+.tabs a { text-decoration: none; color: var(--fg-dim); padding: .7rem 0; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs a:hover { color: var(--fg); }
+.tabs a.on { color: var(--fg); border-bottom-color: var(--accent); }
+.tabs .n { font-variant-numeric: tabular-nums; }
+
+/* ---------- forms ---------- */
+
+.form { display: grid; gap: 1.75rem; }
+.field { display: grid; gap: .5rem; }
+.field label:not(.consent):not(.pick) {
+  font-family: var(--mono); font-size: .75rem;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--fg);
+}
+.field label:not(.consent):not(.pick) .opt { color: var(--fg-dim); text-transform: none; letter-spacing: .02em; }
+.field .help { color: var(--fg-dim); font-size: .9375rem; margin: 0; max-width: 40rem; }
+.field .help.count { font-family: var(--mono); font-size: .6875rem; }
+/* Deliberately excludes radios and checkboxes. They live inside .field too, and a 100%
+   wide radio button pushes its own label off the end of the row. */
+.field textarea,
+.field input:not([type="radio"]):not([type="checkbox"]) {
+  width: 100%; font: inherit; color: var(--fg);
+  background: var(--bg-inset); border: 1px solid var(--line); border-radius: var(--r);
+  padding: .85rem 1rem; resize: vertical;
+}
+.field textarea::placeholder, .field input::placeholder { color: var(--fg-dim); }
+/*
+  The same exclusion as the rule above, and for the same reason. A text input is a box, so
+  a ring around the box is a ring around the control. A radio is a 13px dot inside a
+  labelled chip, so a ring around the dot is a small square floating inside a larger
+  rounded one, which is exactly what it looked like.
+
+  It was also on :focus rather than :focus-visible, so it fired on a mouse click and told a
+  reader which option they had just clicked, which they know. The chip takes the ring
+  instead, below.
+
+  One rule of a pair was updated and its twin was not: the exclusion at :1294 has been
+  there all along.
+*/
+.field textarea:focus,
+.field input:not([type="radio"]):not([type="checkbox"]):focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.switch-row {
+  display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start;
+  border: 1px solid var(--line); border-radius: var(--r);
+  background: var(--bg-raised); padding: 1.1rem 1.25rem;
+}
+.switch {
+  width: 2.9rem; height: 1.6rem; flex: none;
+  border-radius: 999px; border: 1px solid var(--line); background: var(--bg-inset);
+  padding: 2px; cursor: pointer; display: flex;
+}
+.switch .knob { width: 1.2rem; height: 1.2rem; border-radius: 50%; background: var(--fg-dim); transition: transform .15s, background .15s; }
+.switch[aria-checked="true"] { border-color: var(--accent); }
+.switch[aria-checked="true"] .knob { transform: translateX(1.3rem); background: var(--accent); }
+.switch-label { font-family: var(--display); font-weight: 700; font-size: 1rem; display: block; }
+.switch-help { color: var(--fg-dim); font-size: .9375rem; display: block; margin-top: .3rem; max-width: 36rem; }
+
+/* The mockup drew the switch as a button with aria-checked, which needs script to move.
+   A real checkbox carries its own state, submits with the form, and is already what a
+   screen reader wants to hear, so the same paint is applied to input[type=checkbox]. */
+input.switch { appearance: none; align-items: center; }
+input.switch::after {
+  content: ""; width: 1.2rem; height: 1.2rem; border-radius: 50%;
+  background: var(--fg-dim); transition: transform .15s, background .15s;
+}
+input.switch:checked { border-color: var(--accent); }
+input.switch:checked::after { transform: translateX(1.3rem); background: var(--accent); }
+input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.consent { display: grid; grid-template-columns: auto 1fr; gap: .75rem; align-items: start; font-size: .9375rem; color: var(--fg-dim); }
+.consent input {
+  appearance: none; width: 1.15rem; height: 1.15rem; margin-top: .15rem;
+  border: 1px solid var(--line); border-radius: 3px; background: var(--bg-inset);
+  cursor: pointer; display: grid; place-items: center;
+}
+.consent input:checked { border-color: var(--accent); }
+.consent input:checked::after { content: "\2713"; color: var(--accent); font-size: .8rem; line-height: 1; }
+.consent input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.form-foot { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+
+/* ---------- conduct and report ---------- */
+
+.crows { display: flex; flex-direction: column; gap: .5rem; margin-top: 1.75rem; }
+.crow {
+  display: grid; grid-template-columns: 5.5rem 1fr; gap: 1.25rem;
+  align-items: start;
+  background: var(--bg-raised); border: 1px solid var(--line); border-radius: var(--r);
+  padding: 1rem 1.25rem;
+}
+.crow h3 { font-family: var(--body); font-size: 1rem; font-weight: 700; margin: 0; }
+.crow p { color: var(--fg-dim); font-size: .9375rem; margin: .3rem 0 0; }
+
+.picks { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
+.pick {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-family: var(--mono); font-size: .8125rem;
+  border: 1px solid var(--line); border-radius: var(--r);
+  padding: .45rem .75rem; cursor: pointer; color: var(--fg-dim);
+}
+.pick:hover { border-color: var(--accent); color: var(--fg); }
+.pick:has(input:checked) { border-color: var(--accent); color: var(--accent); }
+.pick input { accent-color: var(--accent); margin: 0; }
+
+/*
+  The ring goes on the chip rather than on the dot. A keyboard reaches these with arrow
+  keys inside the group, so the ring has to say which whole option is live, and the chip is
+  the thing with the name in it. :focus-visible, so a mouse click selects without drawing
+  anything.
+
+  Removing the ring outright was the literal request and would have been a 2.4.7 failure:
+  arrowing through a radio group with nothing on screen leaves a keyboard reader with no
+  way to tell where they are.
+
+  The reset on the first line is not optional. :focus-visible at :41 is global, so without
+  it both the dot and the chip draw a ring and the keyboard state ends up worse than the
+  mouse state it replaced. Same two line shape as .wq-line .stretch at :1067.
+*/
+.pick input:focus-visible { outline: none; }
+.pick:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- your own submissions ---------- */
+
+/*
+  The whole feedback loop for a submitted story, because v1 sends no email. Deliberately
+  a list rather than cards: a person with one story in the queue should not be looking at
+  a grid with one thing in it, and a person with nine should be able to scan the markers
+  down the left without reading a word.
+
+  The marker takes its colour from tokens that already exist and are already contrast
+  guarded in all sixteen themes. Nothing here invents one, and in particular there is no
+  success green, because the token contract has no --sev-ok and adding one would mean
+  regenerating every theme.
+
+  Published is FILLED rather than outlined, and that is load bearing rather than
+  decorative. Measured across all sixteen generated themes, --accent and --sev-warn are
+  only deltaE 6.9 apart in bbb-light and 10.0 in vitesse-dark, close enough that Published
+  and Not running would have read as the same marker in the site's own light theme. Colour
+  cannot separate those two, so fill does, and no palette can collapse a solid block into
+  an outline.
+
+  The two outlined markers are separated by colour alone, so that pair does have to hold
+  up: --fg-dim against --sev-warn never drops below deltaE 35 in any theme. There is a
+  test for both halves of this in contrast.test.mjs.
+
+  The label text is the real carrier in any case. Waiting, Published and Not running say
+  what they are, and the colour is reinforcement, which is what 1.4.1 asks for.
+
+  The first pass had Published and Waiting both resolving to --sev-info, which drew two
+  different states identically in every theme rather than in two.
+*/
+.submissions { list-style: none; margin: 1rem 0 0; padding: 0; }
+.submission { padding: .9rem 0; border-top: 1px solid var(--line); }
+.submission:first-child { border-top: 0; }
+.submission-head {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem;
+  margin: 0; font-weight: 700;
+}
+.submission .fine { margin: .3rem 0 0; }
+
+/*
+  The title keeps its link chrome, which is a deliberate departure from .wq-line a and
+  .chead .who a. Both of those strip colour and underline off a link, and both can afford
+  to: the wall card makes the entire card the click target, and a comment handle has no
+  identically drawn sibling to be confused with.
+
+  Neither holds here. A published story with a slug is a link and a published story
+  waiting on its slug is not, and they sit in the same list one row apart. Stripped, they
+  were drawn identically and the only way to tell which one you could open was to read the
+  fine print underneath. So the link looks like a link.
+*/
+.submission-head a { color: var(--accent); text-underline-offset: 3px; }
+.submission-head a:hover { text-decoration-thickness: 2px; }
+.marker {
+  font-family: var(--mono); font-size: .625rem; letter-spacing: .06em;
+  text-transform: uppercase; white-space: nowrap;
+  border: 1px solid currentColor; border-radius: 2px; padding: .1rem .35rem;
+  font-weight: 400;
+}
+.marker.waiting { color: var(--fg-dim); }
+.marker.closed  { color: var(--sev-warn); }
+.marker.live {
+  background: var(--accent); border-color: var(--accent); color: var(--bg);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1080px) {
+  /* The headline unit stacks with the still first, because a picture is a faster read
+     than a breadcrumb and the phone screen only has room for one of them at a time. */
+  .bench { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; }
+  .bench .shot { order: -1; }
+  .two { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .ident .shell { grid-template-columns: auto 1fr; row-gap: 1rem; }
+  .ident .more { grid-column: 2; }
+  /* minmax(0,1fr) not 1fr. An auto-sized track refuses to go below its content's
+     min-content width, which lets a wide table push the whole page sideways. */
+  .read, .comments .shell { grid-template-columns: minmax(0, 1fr); gap: 1.75rem; }
+  .rail { position: static; }
+  /* Stacked, the rail would put a pile of metadata between the reader and the headline.
+     Send it under the piece, where it reads as an appendix and the like button lands
+     right where somebody just finished. */
+  .read > article { order: 1; }
+  .read > .rail {
+    order: 2;
+    border-top: 1px solid var(--line);
+    padding-top: 1.5rem;
+  }
+  .rail dl { grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); }
+  .grid { grid-template-columns: 1fr 1fr; }
+  .grid > .card:last-child { grid-column: span var(--fill-2, 1); }
+  .card.wide { grid-column: span 2; }
+  .drip { grid-template-columns: 1fr; gap: 1.75rem; }
+  .masthead .shell { flex-wrap: wrap; height: auto; padding-top: .75rem; padding-bottom: .75rem; gap: .75rem 1.25rem; }
+  .masthead nav { order: 3; width: 100%; margin-left: 0; }
+  /*
+    Topics stay on one line and leave from the right as space tightens. Dev disasters is
+    the final item and is never part of that priority ladder, so it remains the last
+    visible destination at every width.
+  */
+  .nav {
+    order: 3; width: 100%; margin-left: 0;
+    flex-wrap: nowrap; overflow: visible;
+    gap: .55rem 1.15rem;
+  }
+  .nav li { flex: none; }
+  .nav a { white-space: nowrap; }
+  .themer { margin-left: auto; }
+  .foot-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+  .nav li:nth-last-child(2) { display: none; }
+}
+
+@media (max-width: 560px) {
+  .nav li:nth-last-child(3) { display: none; }
+}
+
+@media (max-width: 480px) {
+  .nav li:nth-last-child(4) { display: none; }
+}
+
+@media (max-width: 420px) {
+  .nav li:nth-last-child(5) { display: none; }
+}
+
+@media (max-width: 720px) {
+  .shell { padding-inline: 1.25rem; }
+  /*
+    The masthead already takes two rows on a phone. While somebody is reading, that
+    space is worth more as page than as sticky chrome, and the theme picker is a set
+    once control rather than something a reader reaches for mid article.
+  */
+  .masthead { position: static; }
+  .hero { padding: 2.5rem 0 2rem; }
+  .grid, .card.wide { grid-column: auto; }
+  .grid > .card:last-child { grid-column: auto; }
+  .grid { grid-template-columns: 1fr; }
+  .card.wide { grid-template-columns: 1fr; gap: .6rem; }
+  .card.wide .thumb { max-height: 10rem; }
+  .prow { grid-template-columns: 1fr; gap: .5rem; }
+  .prow .loc { text-align: left; }
+  .hero-actions .by { margin-left: 0; width: 100%; }
+  .themer-menu { position: fixed; left: 1rem; right: 1rem; width: auto; top: 4rem; }
+  /* The rail is full width under the article at this size, so the menu can be too rather
+     than sitting at 13rem in a 350px column. */
+  .share-menu { width: 100%; min-width: 12rem; }
+  .foot-grid { grid-template-columns: 1fr; gap: 1.75rem; }
+  .fitem { grid-template-columns: 1fr; gap: .75rem; padding: 1.25rem .25rem; }
+  .fitem .thumb { width: 100%; max-height: 11rem; }
+  .fitem .stat { text-align: left; grid-auto-flow: column; justify-content: start; gap: 1rem; }
+  .profile-head { grid-template-columns: auto 1fr; }
+  .profile-head > .btn { grid-column: 1 / -1; justify-self: start; }
+  .stat-strip { gap: 1.25rem 2rem; }
+  .filters .push { flex-basis: 100%; height: 0; margin: 0; }
+  .filters { gap: .5rem .5rem; }
+  /* The lede runs to four lines at phone width, so the default 1.5rem leaves it sitting
+     on the filter rule. Match the space above the breadcrumb instead. */
+  .pagehead { padding-bottom: 2.25rem; }
+  .rule.major h2 { font-size: 1.5rem; }
+  /* The wall drops to one column. Two columns of quotes at phone width is one column
+     of fragments. */
+  .wall { columns: 1; }
+  .wq { padding-left: 1rem; padding-right: 1rem; }
+  /* Let the header labels stack instead of forcing a horizontal scroll. A four column
+     benchmark table fits a phone if "Peak threads" is allowed to be two lines. */
+  .prose table { font-size: .875rem; }
+  .prose th { white-space: normal; padding-right: .6rem; }
+  .prose td { padding-right: .6rem; }
+  .crow { grid-template-columns: 1fr; gap: .6rem; }
+  .tchapter-head { padding-top: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

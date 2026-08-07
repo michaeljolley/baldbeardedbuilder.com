@@ -1,0 +1,45 @@
+---
+import Wordmark from './Wordmark.astro';
+import ThemePicker from './ThemePicker.astro';
+import { VISIBLE_TOPICS } from '../config/site';
+
+interface Props {
+  /** Topic slug, or "dd" for dev disasters. Drives the current nav marker. */
+  active?: string;
+}
+
+const { active } = Astro.props;
+---
+
+<header class="masthead">
+  <div class="shell">
+    <Wordmark />
+    <nav aria-label="Topics">
+      <ul class="nav">
+        {
+          VISIBLE_TOPICS.map((t) => (
+            <li>
+              <a
+                class={active === t.slug ? 'on' : undefined}
+                aria-current={active === t.slug ? 'page' : undefined}
+                href={`/${t.slug}/`}
+              >
+                {t.label}
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a
+            class={`dd${active === 'dd' ? ' on' : ''}`}
+            aria-current={active === 'dd' ? 'page' : undefined}
+            href="/dev-disasters/"
+          >
+            dev disasters
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <ThemePicker />
+  </div>
+</header>

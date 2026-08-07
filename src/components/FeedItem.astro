@@ -1,0 +1,60 @@
+---
+/*
+  One feed row. Used by the topic pages and by the front page rails.
+
+  The whole row is the link. The kind label, the title, the description and the stats all
+  sit inside a single anchor so there is exactly one tab stop per item, which is what
+  keyboard users want out of a list of fifty things.
+
+  A row goes wherever the item actually lives. Most videos have no page on this site, so
+  most video rows are links to YouTube, and the stat line says so rather than leaving
+  somebody to find out by arriving there.
+*/
+import { isVideoKind, itemKindLabel, type Item } from '../lib/content';
+
+interface Props {
+  item: Item;
+  /*
+    A feed sitting directly under a section heading uses h3. A feed broken into groups
+    with their own headings has to drop a level, or the group label and the rows inside
+    it end up as siblings and the outline stops describing the page.
+  */
+  level?: 3 | 4;
+}
+
+const { item, level = 3 } = Astro.props;
+const Title = `h${level}` as 'h3' | 'h4';
+const opensYouTube = isVideoKind(item.kind) && item.offsite;
+
+const stats: string[] = [item.length];
+if (item.views !== null) {
+  stats.push(`${item.views.toLocaleString('en-US')} views`);
+}
+if (item.engagementLikes !== null) {
+  const label = item.engagementLikes === 1 ? 'like' : 'likes';
+  stats.push(`${item.engagementLikes.toLocaleString('en-US')} ${label}`);
+}
+if (item.kind === 'article' && item.engagementComments !== null) {
+  const label = item.engagementComments === 1 ? 'comment' : 'comments';
+  stats.push(`${item.engagementComments.toLocaleString('en-US')} ${label}`);
+}
+if (item.offsite) {
+  stats.push('YouTube');
+}
+---
+
+<a
+  class="fitem"
+  href={item.href}
+  target={opensYouTube ? '_blank' : undefined}
+  rel={opensYouTube ? 'noopener noreferrer' : undefined}
+>
+  <span class="kind">{itemKindLabel(item.kind)}</span>
+  <span>
+    <Title>{item.title}</Title>
+    {item.description && <p>{item.description}</p>}
+  </span>
+  <span class="stat">
+    {stats.map((s) => <span>{s}</span>)}
+  </span>
+</a>

@@ -1,0 +1,119 @@
+# Supabase CLI config for baldbeardedbuilder.com.
+#
+# THE PROJECT REF IS NOT SET YET. v2 gets a brand new project and the ref has not been
+# handed over. Do not put the old one back. bvyerlczpakdlfvybkev serves the live site and
+# bbb.dev, it is not v2's, and the v2 schema is scheduled to be removed from it. See
+# supabase/reversal/ and the header of supabase/migrations/20260101000000_baseline.sql.
+#
+# Once the new ref exists:
+#   supabase link --project-ref <new-ref>
+#   supabase db push
+#
+# Push the whole chain, baseline included. The baseline is no longer a copy of a schema
+# that already exists somewhere. It is trimmed down to the two legacy tables v2 actually
+# reads and it has to run. Do NOT run `migration repair` against the new project: marking
+# the baseline applied without executing it leaves streamEvents and streamUsers missing
+# and the badge migrations fail on top of nothing.
+#
+# See supabase/README.md.
+
+project_id = "baldbeardedbuilder"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[studio]
+enabled = true
+port = 54323
+
+[inbucket]
+enabled = true
+port = 54324
+
+[auth]
+enabled = true
+site_url = "http://localhost:4321"
+# The sign in route builds redirectTo from the request origin, so every host that is
+# allowed to be returned to has to be listed. Anything missing here redirects to site_url
+# instead of failing, which reads as "signing in on the branch deploy sends me to
+# production" rather than as a configuration error. The hosted project needs the same list
+# under Authentication, URL Configuration. See docs/new-project.md step 6.
+#
+# One callback covers both flows. Linking from /account/ goes out through
+# /auth/link/<provider>/ and comes back to the same /auth/callback/ with a `linked`
+# parameter naming what was attached, so there is nothing per provider to allow.
+additional_redirect_urls = [
+  "http://localhost:4321/auth/callback",
+  "https://baldbeardedbuilder.com/auth/callback",
+]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+
+# linkIdentity does nothing without this, and it fails quietly rather than loudly. The
+# link flow at /auth/link/<provider>/ is what needs it, and it needs it to be true in the
+# hosted project too, under Authentication, Advanced.
+enable_manual_linking = true
+
+# Decision 4, revised. Nobody signs up with a password, so there is no password to leak,
+# reset or stuff. Email is off entirely rather than left on and unused. What changed is
+# the number of doors, not the rule about passwords.
+enable_signup = true
+[auth.email]
+enable_signup = false
+enable_confirmations = false
+
+# Decisions 4 and 13, revised.
+#
+# Decision 4 said GitHub was the only way in. Decision 13 said Twitch was a link only
+# identity and nothing signed in with it. Both are now wrong on purpose: GitHub, Discord
+# and Twitch can each create an account.
+#
+# The reason is plain enough. The people who read this site do not all live on GitHub, and
+# telling somebody their Discord account is not good enough to leave a comment is a strange
+# thing to say out loud.
+#
+# What it costs: three providers is three sets of credentials to rotate and three ways for
+# the same human to arrive. The second one is handled by Supabase, which folds a new
+# provider into an existing user when it hands back a verified email that already belongs
+# to one. All three of these do. Two accounts for one person is still possible if they use
+# a different email on each, and that is a support conversation, not a bug.
+[auth.external.github]
+enabled = true
+client_id = "env(SUPABASE_AUTH_GITHUB_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_GITHUB_SECRET)"
+redirect_uri = "http://127.0.0.1:54321/auth/v1/callback"
+
+[auth.external.discord]
+enabled = true
+client_id = "env(SUPABASE_AUTH_DISCORD_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_DISCORD_SECRET)"
+redirect_uri = "http://127.0.0.1:54321/auth/v1/callback"
+
+# Twitch does double duty. It signs people in, and it is still the identity somebody whose
+# way in was GitHub or Discord links from /account/ so the badge backfill in decision 13
+# has a Twitch user id to match on. All three are linkable from /account/ now, for the same
+# reason: whichever door somebody came in through, the other two still have something only
+# they can say.
+[auth.external.twitch]
+enabled = true
+client_id = "env(SUPABASE_AUTH_TWITCH_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_TWITCH_SECRET)"
+redirect_uri = "http://127.0.0.1:54321/auth/v1/callback"
+skip_nonce_check = false
+
+[storage]
+enabled = true
+file_size_limit = "5MiB"
+
+[analytics]
+enabled = false
