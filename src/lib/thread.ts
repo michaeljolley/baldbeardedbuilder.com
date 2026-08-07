@@ -64,6 +64,29 @@ export interface Thread {
   total: number;
 }
 
+/**
+ * The line an empty thread prints.
+ *
+ * "No replies yet" on its own is a dead end, so it carries an invitation. When the reader
+ * is signed in and there is a comment badge still in front of them, it carries the badge
+ * too, with the real number from the same counter that grants it. Nobody is told they are
+ * one reply off something they already have.
+ *
+ * Copy lives here rather than in the island so the arithmetic and the plural can be
+ * tested without a browser, which is the same reason the rest of this file exists.
+ */
+export function emptyLine(next: { label: string; unit: string | null; remaining: number } | null): string {
+  const first = 'No replies yet. Yours would be the first';
+
+  if (!next) return `${first}.`;
+
+  /* One away is worth saying plainly. Counting it out reads like a progress bar. */
+  if (next.remaining === 1) return `${first}, and it earns you ${next.label}.`;
+
+  const unit = next.unit ? ` ${next.unit}s` : '';
+  return `${first}, and you are ${next.remaining}${unit} off ${next.label}.`;
+}
+
 /** The signed in reader, as much of them as a byline needs. */
 export interface ThreadViewer {
   id: string;

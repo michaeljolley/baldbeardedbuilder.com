@@ -15,7 +15,7 @@
 
 import { useEffect, useRef, useState } from 'preact/hooks';
 import LikeButton from './LikeButton';
-import { hasBody, initials, type CommentView } from '../../lib/thread';
+import { hasBody, initials, emptyLine, type CommentView } from '../../lib/thread';
 
 interface Viewer {
   id: string;
@@ -24,12 +24,22 @@ interface Viewer {
   avatar: string | null;
 }
 
+/* The comment badge this reader is next in line for, or null once there is none left. */
+interface Nudge {
+  id: string;
+  label: string;
+  unit: string | null;
+  remaining: number;
+}
+
 interface Thread {
   comments: CommentView[];
   /** Visible rows as the server counts them. The rail uses hasBody instead, because the
       server cannot know that this reader has a held comment of their own on screen. */
   total: number;
   viewer: Viewer | null;
+  /** Only sent on an empty thread, and only to somebody signed in. */
+  nudge: Nudge | null;
   limits: { bodyMax: number; editWindowMinutes: number };
 }
 
@@ -258,7 +268,7 @@ export default function CommentThread({ kind, targetKey, initial, pageUrl }: Pro
         )}
 
         {thread && thread.comments.length === 0 && (
-          <p class="note c-empty">No replies yet. Yours would be the first.</p>
+          <p class="note c-empty">{emptyLine(thread.nudge ?? null)}</p>
         )}
 
         {thread?.comments.map((c) => {

@@ -18,6 +18,7 @@ import {
   EDIT_WINDOW_MINUTES
 } from '../../lib/comments';
 import { isTargetKey, isTargetKind } from '../../lib/reader';
+import { nextBadgeStep, FIRST_REPLY } from '../../lib/badges';
 import { isNewAccount } from '../../lib/auth';
 import { supabaseWritable } from '../../lib/supabase';
 
@@ -60,8 +61,19 @@ export const GET: APIRoute = async (context) => {
 
   const thread = await readThread(kind, key, viewer);
 
+  /*
+    The badge nudge on an empty thread. Only when there is nothing to read and somebody
+    signed in is looking at it: that is the one moment the answer changes what they do,
+    and it keeps two extra queries off every thread that already has replies in it.
+  */
+  const nudge =
+    viewer && thread.comments.length === 0
+      ? await nextBadgeStep(viewer.id, FIRST_REPLY)
+      : null;
+
   return json({
     ...thread,
+    nudge,
     /* The island needs to know what it is allowed to draw before it draws it. */
     viewer: viewer
       ? { id: viewer.id, handle: viewer.handle, name: viewer.name, avatar: viewer.avatar }
