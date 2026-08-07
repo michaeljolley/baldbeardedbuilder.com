@@ -76,7 +76,12 @@ const n = (v: number) => v.toLocaleString('en-GB');
         </div>
 
         {profile.githubLogin && (
-          <a class="btn" href={`https://github.com/${profile.githubLogin}`} rel="nofollow noopener">
+          <a
+            class="btn"
+            href={`https://github.com/${profile.githubLogin}`}
+            target="_blank"
+            rel="nofollow noopener"
+          >
             GitHub &rarr;
           </a>
         )}
@@ -89,7 +94,7 @@ const n = (v: number) => v.toLocaleString('en-GB');
           {profile.links.map((l, i) => (
             <>
               {i > 0 && ' \u00b7 '}
-              <a href={l.url} rel="nofollow noopener ugc">{l.label}</a>
+              <a href={l.url} target="_blank" rel="nofollow noopener ugc">{l.label}</a>
             </>
           ))}
         </p>
