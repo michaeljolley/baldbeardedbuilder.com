@@ -54,8 +54,15 @@ bodies and recipient addresses are never written to the queue or logs.
 It calls `POST /api/notifications/` with `NOTIFY_SECRET` as a bearer token. Netlify scheduled
 functions do not run on deploy previews or branch deploys.
 
+The request also carries an `Origin` matching the site and a JSON content type. Astro's
+`checkOrigin` guard is on by default and refuses an on demand POST with no matching origin
+with a 403 and `Cross-site POST form submissions are forbidden`, before the route runs.
+That is not the route's own refusal, which is a 404. Do not fix a 403 here by disabling the
+guard: it protects the form POSTs on the rest of the site.
+
 The scheduled run fails when a current send fails or an exhausted queue row exists. The
-error names queue row ids only. Use the stored sanitized `last_error` and the Resend
+error names queue row ids only, plus the first 200 characters of a non-OK response body so
+the refusing layer is named. Use the stored sanitized `last_error` and the Resend
 dashboard to diagnose delivery.
 
 ## Unsubscribe

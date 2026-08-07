@@ -40,14 +40,42 @@ export default async (): Promise<void> => {
   const secret = requiredEnvironment('NOTIFY_SECRET');
   const endpoint = new URL('/api/notifications/', baseUrl);
 
+  /*
+    Origin is not decoration. Astro's checkOrigin guard is on by default and rejects any
+    on demand POST whose origin does not match the site, before the route sees it, with a
+    403 and the body "Cross-site POST form submissions are forbidden". A server to server
+    fetch sends no origin at all, so every scheduled run failed at the edge and the queue
+    never drained. Setting it here rather than turning the guard off keeps the protection
+    on the forms that actually need it.
+
+    JSON is sent for the same reason from the other direction: the guard only inspects
+    form-like content types, so an explicit one puts this request outside the shape it
+    cares about even if the origin ever stops matching.
+  */
   const response = await fetch(endpoint, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${secret}` },
+    headers: {
+      Authorization: `Bearer ${secret}`,
+      Origin: endpoint.origin,
+      'Content-Type': 'application/json'
+    },
+    body: '{}',
     signal: AbortSignal.timeout(25_000)
   });
 
   if (!response.ok) {
-    throw new Error(`[email-drain] endpoint returned ${response.status}`);
+    /*
+      The status alone sent somebody reading the route's own auth branch, which returns
+      404 and never 403. The body says which layer refused: Astro's CSRF guard answers in
+      prose, the route answers "no". It is this site's own response, so it carries no
+      address and no provider text, and it is capped anyway.
+    */
+    const detail = await response.text().catch(() => '');
+    const reason = detail.trim().slice(0, 200);
+
+    throw new Error(
+      `[email-drain] endpoint returned ${response.status}${reason ? `: ${reason}` : ''}`
+    );
   }
 
   const result: unknown = await response.json();
