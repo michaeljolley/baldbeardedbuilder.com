@@ -16,11 +16,12 @@ import {
   saveAccount,
   saveNotificationPrefs,
   deleteAccount,
-  clearSession,
   readOwnSubmissions,
   BIO_MAX,
   LINKS_MAX
 } from '../lib/account';
+import { clearSession } from '../lib/auth';
+import { PROVIDERS, PROVIDER_LABELS, PROVIDER_NOTES } from '../lib/providers';
 import SubmissionList from '../components/SubmissionList.astro';
 import { supabaseWritable } from '../lib/supabase';
 
@@ -60,6 +61,27 @@ if (Astro.request.method === 'POST' && profile) {
 const account = profile ? await readAccount(profile.id) : null;
 const submissions = profile ? await readOwnSubmissions(profile.id) : [];
 const saved = Astro.url.searchParams.get('saved');
+
+/*
+  How the linking round trip reports back. It leaves this page, hands off to a provider
+  and comes back through /auth/callback/, so there is no request left to carry a result in
+  and it arrives as a query parameter instead.
+
+  "failed" is the one worth saying out loud. linkIdentity refuses to run when manual
+  linking is off in the Supabase project and it refuses quietly, so without a message here
+  the button looks like it does nothing at all.
+*/
+const LINK_MESSAGES: Record<string, { ok: boolean; text: string }> = {
+  ok: { ok: true, text: 'Account connected.' },
+  cancelled: { ok: false, text: 'Nothing was connected. You cancelled at the provider.' },
+  failed: {
+    ok: false,
+    text: 'That account could not be connected. It may already belong to another account here.'
+  },
+  unknown: { ok: false, text: 'That is not a provider this site knows about.' }
+};
+const linkResult = LINK_MESSAGES[Astro.url.searchParams.get('link') ?? ''] ?? null;
+
 const linkRows = Array.from({ length: LINKS_MAX }, (_, i) => account?.links[i] ?? { label: '', url: '' });
 const linkLabelExamples = ['Website', 'GitHub', 'YouTube', 'Bluesky'];
 const accountName = account ? account.displayName || account.handle : '';
@@ -90,12 +112,12 @@ const canEmail = Boolean(account?.email && account.preferences);
               badges you have already earned in one place.
             </p>
             <div class="gate-actions">
-              <a class="btn primary" href="/auth/signin/?next=/account/" rel="nofollow">
+              <a class="btn primary" href="/signin/?next=/account/" rel="nofollow">
                 Sign in <span aria-hidden="true">&rarr;</span>
               </a>
               <p class="fine">
-                We read the basic profile details shared by the provider you choose. Nothing
-                is written back.
+                Use GitHub, Discord, or Twitch. We read the basic profile details shared by
+                the provider you choose. Nothing is written back.
               </p>
             </div>
           </div>
@@ -137,6 +159,7 @@ const canEmail = Boolean(account?.email && account.preferences);
                 <a href="#email-notifications">Email notifications</a>
                 <a href="#stories">Your stories</a>
                 <a href="#connections">Connections</a>
+                <a href="#sign-out">Sign out</a>
                 <a class="danger-link" href="#delete-account">Delete account</a>
               </nav>
               <p class="fine">
@@ -403,24 +426,69 @@ const canEmail = Boolean(account?.email && account.preferences);
                     <span class="section-mark" aria-hidden="true">+</span>
                   </header>
 
+                  <p class="help connections-help">
+                    Connect as many as you like. They all lead to this one account, and
+                    each one brings whatever only it can tell us.
+                  </p>
+
+                  {linkResult && (
+                    <p class={`notice account-notice ${linkResult.ok ? 'ok' : 'bad'}`} role="status">
+                      {linkResult.text}
+                    </p>
+                  )}
+
                   <ul class="connection-list">
-                    <li>
-                      <span class="connection-name"><b>GitHub</b><span>Connected account</span></span>
-                      <span class={`connection-state ${account.githubLogin ? 'connected' : ''}`}>
-                        {account.githubLogin ? `@${account.githubLogin}` : 'Not connected'}
-                      </span>
-                    </li>
-                    <li>
-                      <span class="connection-name"><b>Twitch</b><span>Chat badges</span></span>
-                      {account.twitchLogin ? (
-                        <span class="connection-state connected">@{account.twitchLogin}</span>
-                      ) : (
-                        <span class="connection-state">
-                          Not connected <a href="/auth/link/twitch/" rel="nofollow">Link it</a>
+                    {PROVIDERS.map((provider) => (
+                      <li>
+                        <span class="connection-name">
+                          <b>{PROVIDER_LABELS[provider]}</b>
+                          <span>{PROVIDER_NOTES[provider]}</span>
                         </span>
-                      )}
-                    </li>
+                        {account.connections[provider] ? (
+                          <span class="connection-state connected">
+                            @{account.connections[provider]}
+                          </span>
+                        ) : (
+                          <span class="connection-state">
+                            Not connected{' '}
+                            <a href={`/auth/link/${provider}/`} rel="nofollow">
+                              Link it<span class="vh"> ({PROVIDER_LABELS[provider]})</span>
+                            </a>
+                          </span>
+                        )}
+                      </li>
+                    ))}
                   </ul>
+                </div>
+              </section>
+
+              <section class="setting-shell" id="sign-out" aria-labelledby="sign-out-title">
+                <div class="setting-card">
+                  <header class="setting-head">
+                    <div>
+                      <p class="eyebrow">This browser</p>
+                      <h2 id="sign-out-title">Sign out</h2>
+                    </div>
+                    <span class="section-mark" aria-hidden="true">&rarr;</span>
+                  </header>
+
+                  <div class="signout-row">
+                    {/*
+                      A POST, and a real form rather than a link. A GET sign out means any
+                      image tag on any page can sign a reader out, and a form works with
+                      JavaScript switched off, which the rest of the site promises anyway.
+                    */}
+                    <form method="post" action="/auth/signout/">
+                      <input type="hidden" name="next" value="/" />
+                      <button class="btn" type="submit">
+                        Sign out <span aria-hidden="true">&rarr;</span>
+                      </button>
+                    </form>
+                    <p class="fine">
+                      Ends the session in this browser only. Anywhere else you are signed
+                      in stays signed in, and nothing here is deleted.
+                    </p>
+                  </div>
                 </div>
               </section>
 
@@ -763,6 +831,34 @@ const canEmail = Boolean(account?.email && account.preferences);
     list-style: none;
   }
 
+  .connections-help {
+    max-width: 44rem;
+    margin: 0 0 1.25rem;
+    color: var(--fg-dim);
+    font-size: 0.9375rem;
+  }
+
+  .connections-help + .account-notice {
+    margin-bottom: 1.25rem;
+  }
+
+  .signout-row {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .signout-row form {
+    margin: 0;
+  }
+
+  .signout-row .fine {
+    max-width: 34rem;
+    margin: 0;
+    line-height: 1.65;
+  }
+
   .connection-list li {
     display: flex;
     gap: 1.5rem;
@@ -945,14 +1041,20 @@ const canEmail = Boolean(account?.email && account.preferences);
 
     .save-bar,
     .gate-actions,
+    .signout-row,
     .connection-list li {
       align-items: stretch;
       flex-direction: column;
     }
 
     .save-bar .btn,
-    .gate-actions .btn {
+    .gate-actions .btn,
+    .signout-row .btn {
       justify-content: center;
+      width: 100%;
+    }
+
+    .signout-row form {
       width: 100%;
     }
 

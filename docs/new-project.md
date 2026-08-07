@@ -127,21 +127,39 @@ paste both. `supabase/config.toml` names these `SUPABASE_AUTH_GITHUB_CLIENT_ID` 
 locally. On a hosted project they are dashboard fields, not environment variables.
 
 Nothing else needs enabling. Email sign up is off on purpose, per decision 4. Nobody signs
-up with a password, so there is no password to leak, reset or stuff.
+up with a password, so there is no password to leak, reset or stuff. Decision 4 used to
+mean GitHub was the only way in. That part is revised, and Discord and Twitch are step 5,
+but the no passwords rule stands.
 
 ---
 
-## Step 5. The Twitch app, at the same time and not later
+## Step 5. Discord and Twitch, at the same time and not later
 
-Twitch is not a way to sign in. Nothing on the site offers it. It exists so a signed in
-person can link their Twitch account, and the only reason that matters on day one is that
-**linking captures `profiles.twitch_user_id`**.
+GitHub, Discord and Twitch can all sign somebody in. Set all three up now. Adding a
+provider later is easy, but the people who signed up before you added it are already
+sitting on a profile keyed to a different provider, and merging those is a support
+conversation rather than a migration.
 
-That capture has to be working from the first sign in. `streamEvents.login` is a Twitch
-login, and logins change. If ids are only captured once the badge job exists, then
-everybody who linked before that and later changed their name is unmatchable, and it shows
-up as an empty badge shelf rather than as an error. This is why it goes in now, with no
-stream data loaded and no badges to grant yet.
+Twitch does double duty. It signs people in, and it is still what somebody whose way in
+was GitHub or Discord links from `/account/` so the badge shelf has something to match on.
+That matters more than it sounds: **linking captures `profiles.twitch_user_id`**, and it
+has to be working from the first sign in. `streamEvents.login` is a Twitch login, and
+logins change. If ids are only captured once the badge job exists, then everybody who
+linked before that and later changed their name is unmatchable, and it shows up as an
+empty badge shelf rather than as an error.
+
+### Discord
+
+Discord developer portal, **Applications**, **New Application**. Then **OAuth2**.
+
+| Field | Value |
+|---|---|
+| Name | `Bald Bearded Builder` |
+| Redirects | `https://<ref>.supabase.co/auth/v1/callback` |
+
+Copy the **Client ID** and generate a **Client Secret** from the same page.
+
+### Twitch
 
 Twitch developer console, **Register Your Application**.
 
@@ -154,9 +172,14 @@ Twitch developer console, **Register Your Application**.
 Unlike GitHub, **Twitch allows several redirect URLs on one application**, so if there is
 already a Twitch app you can add the new callback to it rather than registering another.
 
-Then in Supabase, **Authentication**, **Sign In / Providers**, **Twitch**: enable it and
-paste the client id and secret. It has to be enabled at the provider level even though
-nothing signs in with it, because `linkIdentity` refuses to link a provider that is off.
+### In Supabase
+
+**Authentication**, **Sign In / Providers**. Enable **GitHub**, **Discord** and **Twitch**,
+and paste each client id and secret.
+
+Then **Authentication**, **Advanced**, and turn on **manual linking**. `linkIdentity`
+refuses to run without it, and it fails quietly, so the **Link it** buttons on `/account/`
+just return `?link=failed` with nothing to say why.
 
 ---
 
@@ -167,22 +190,28 @@ Supabase, **Authentication**, **URL Configuration**.
 The sign in route builds its `redirectTo` from `url.origin`, so it always returns to
 whatever host the request arrived on. That is what makes staging work at all, and it means
 Supabase has to be told every host that is allowed to be returned to. Anything not on this
-list silently redirects to the Site URL instead, which looks like "signing in on the
-branch deploy sends me to production".
+list silently redirects to the Site URL instead.
+
+Leave this step out and a brand new project ships with Site URL set to Supabase's default
+of `http://localhost:3000` and an empty allow list, so every sign in on the live site ends
+at `localhost:3000/?code=...`. It reads like a code bug and it is not one.
 
 | Setting | Value |
 |---|---|
 | Site URL | `https://baldbeardedbuilder.com` |
 | Redirect URLs | `https://baldbeardedbuilder.com/**` |
-| | `https://**--baldbeardedbuilder.netlify.app/**` |
+| | `https://**--sprightly-pavlova-e87859.netlify.app/**` |
 | | `http://localhost:4321/**` |
+| | `http://localhost:8888/**` |
 
-The middle one is a wildcard covering every Netlify branch and deploy preview URL. Replace
-`baldbeardedbuilder` with the actual Netlify site name if it differs; it is the subdomain
-on the `.netlify.app` URL of the current site.
+The wildcard one covers every Netlify branch and deploy preview URL. Replace
+`sprightly-pavlova-e87859` with the actual Netlify site name if it differs; it is the
+subdomain on the `.netlify.app` URL of the current site, which is not the same as the
+custom domain.
 
-Both callback paths are covered by the `/**` suffix: `/auth/callback` for sign in and
-`/auth/link/twitch/callback/` for the Twitch link.
+One callback covers both flows and is already under the `/**` suffix: `/auth/callback` takes
+the sign in handshake, and a link started at `/auth/link/<provider>/` comes back to the same
+place carrying a `linked` parameter. There is nothing per provider to allow.
 
 ---
 
@@ -260,7 +289,7 @@ there would describe the old production schema rather than v2.
 2. **Push the schema.** Needs the ref.
 3. **Collect the three API values.** Can be done any time after step 1.
 4. **GitHub OAuth app**, then paste into Supabase. Needs the ref for the callback URL.
-5. **Twitch app**, then paste into Supabase. Same.
+5. **Discord and Twitch apps**, then paste into Supabase, then turn on manual linking. Same.
 6. **Redirect URLs.** Needs the Netlify site name. Do it before anybody tries to sign in
    on a branch deploy, or the failure looks like a bug in the site.
 7. **Netlify variables.** Needs steps 3, and a redeploy to take effect.

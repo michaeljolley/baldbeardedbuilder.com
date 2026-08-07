@@ -109,7 +109,8 @@ The build and the routes need these. Never commit them.
 | `MAIL_FROM` / `MAIL_REPLY_TO` | Netlify production only | Notification sender and reply inbox |
 | `NOTIFY_SECRET` | Netlify production only | Scheduled drain bearer secret |
 | `SUPABASE_AUTH_GITHUB_CLIENT_ID` / `_SECRET` | Supabase dashboard | Sign in |
-| `SUPABASE_AUTH_TWITCH_CLIENT_ID` / `_SECRET` | Supabase dashboard | Link only identity |
+| `SUPABASE_AUTH_DISCORD_CLIENT_ID` / `_SECRET` | Supabase dashboard | Sign in |
+| `SUPABASE_AUTH_TWITCH_CLIENT_ID` / `_SECRET` | Supabase dashboard | Sign in, and the badge shelf link |
 
 `LIKE_IP_SECRET` is rotatable. Rotating it does not lose any likes, it just means the
 people who already liked something could like it once more. That is the intended

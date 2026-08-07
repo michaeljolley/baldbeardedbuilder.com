@@ -3,10 +3,342 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 
+import { isNewAccount, clearSession, NEW_ACCOUNT_HOLD_DAYS } from '../src/lib/auth.ts';
+import { PROVIDER_LABELS, PROVIDER_NOTES, PROVIDER_SCOPES } from '../src/lib/providers.ts';
+
 const ROOT = process.cwd();
-const signin = fs.readFileSync(path.join(ROOT, 'src', 'pages', 'auth', 'signin.ts'), 'utf8');
+const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), 'utf8');
+
+const signin = read('src', 'pages', 'auth', 'signin.ts');
+const chooser = read('src', 'pages', 'signin.astro');
+const providers = read('src', 'lib', 'providers.ts');
+const callback = read('src', 'pages', 'auth', 'callback.ts');
+const signout = read('src', 'pages', 'auth', 'signout.ts');
+const linkRoute = read('src', 'pages', 'auth', 'link', '[provider].ts');
+const accountPage = read('src', 'pages', 'account.astro');
+const accountLib = read('src', 'lib', 'account.ts');
 
 test('GitHub OAuth returns to the canonical trailing-slash callback URL', () => {
   assert.match(signin, /`\/auth\/callback\/\?next=\$\{encodeURIComponent\(next\)\}`/);
   assert.doesNotMatch(signin, /`\/auth\/callback\?next=/);
+});
+
+const PROVIDERS = ['github', 'discord', 'twitch'];
+
+test('all three providers are offered, and the scopes list is what decides that', () => {
+  for (const provider of PROVIDERS) {
+    assert.match(
+      providers,
+      new RegExp(`^\\s*${provider}:\\s*'`, 'm'),
+      `${provider} has no scopes, so it cannot be signed in with`
+    );
+  }
+});
+
+/*
+  signInWithOAuth will happily start a handshake with any provider name it is handed, and
+  the failure shows up as a confusing error from Supabase rather than as a bad request
+  here. The allowlist is the guard, so this checks the guard is the thing being consulted
+  rather than the query string.
+*/
+test('the sign in route refuses a provider it does not know', () => {
+  assert.match(signin, /isProvider\(requested\)/);
+  assert.match(signin, /provider:\s*requested/);
+  assert.doesNotMatch(signin, /provider:\s*'(github|discord|twitch)'/);
+});
+
+/*
+  Decision 4 used to make GitHub the default. Falling back to it now would mean somebody
+  who clicked Discord and hit a malformed link gets signed in as GitHub instead, which is
+  a worse outcome than being asked again.
+*/
+test('a missing provider goes back to the chooser rather than picking one', () => {
+  assert.match(signin, /redirect\(`\/signin\/\?next=/);
+});
+
+test('the chooser offers every configured provider and nothing it invented', () => {
+  assert.match(chooser, /PROVIDERS\.map/);
+  assert.match(chooser, /\/auth\/signin\/\?provider=\$\{provider\}/);
+});
+
+/*
+  A page that renders an unchecked `next` into three hrefs is a page that writes phishing
+  links on request. safeReturnPath is what stops that, and it has to run here as well as
+  in the route the links point at.
+*/
+test('the chooser checks next before rendering it into a link', () => {
+  assert.match(chooser, /safeReturnPath\(Astro\.url\.searchParams\.get\('next'\)\)/);
+});
+
+/*
+  GitHub is the only one of the three that says when the account was made, and the columns
+  are named for it. Writing a Discord id into github_id would break the unique constraint
+  the moment two people arrive from different providers.
+*/
+test('the callback only writes the columns belonging to the provider just used', () => {
+  assert.match(callback, /provider === 'github'/);
+  assert.match(callback, /patch\.discord_id/);
+  assert.match(callback, /patch\.twitch_user_id/);
+  assert.doesNotMatch(callback, /identities\?\.find\(\(i\) => i\.provider === 'github'\)/);
+});
+
+/*
+  Signing in with Twitch proves the same thing the link flow proves, so the badge backfill
+  should not make that person walk through /auth/link/twitch/ to claim history they have
+  already demonstrated they own.
+*/
+test('signing in with Twitch counts as linking Twitch', () => {
+  assert.match(callback, /patch\.twitch_linked_at/);
+});
+
+/*
+  There was no way to sign out. The route was written, correctly, as a POST, and then
+  nothing on the site ever called it, so the only way to end a session was to clear
+  cookies by hand or wait for the token to expire.
+*/
+test('sign out is reachable from the account page', () => {
+  assert.match(accountPage, /action="\/auth\/signout\/"/);
+});
+
+/*
+  A GET sign out means any image tag on any page, anywhere, signs a reader out. It is a
+  small piece of griefing and it costs one word to prevent, so this checks the word is
+  still there.
+*/
+test('sign out refuses to happen on a GET', () => {
+  assert.match(signout, /export const POST/);
+  assert.doesNotMatch(signout, /export const (GET|ALL)/);
+});
+
+/*
+  signOut is a network call to the auth server, and network calls fail. A browser still
+  holding an sb- cookie after pressing sign out renders as signed in until the token
+  expires, which is the single outcome the button exists to prevent, so the cookies get
+  cleared outside the try rather than inside it.
+*/
+test('sign out clears the cookies even when the auth server does not answer', () => {
+  const afterTheCatch = signout.slice(signout.lastIndexOf('} catch'));
+  assert.match(afterTheCatch, /clearSession\(context\)/);
+});
+
+test('clearing the session drops the Supabase cookies and leaves the rest alone', () => {
+  const deleted = [];
+  clearSession({
+    cookies: {
+      headers: () => [
+        'sb-access-token=one; Path=/',
+        'sb-refresh-token=two; Path=/',
+        'bbb-theme=ember; Path=/'
+      ],
+      delete: (name) => deleted.push(name)
+    }
+  });
+
+  assert.deepEqual(deleted, ['sb-access-token', 'sb-refresh-token']);
+});
+
+/*
+  Every "Link it" on /account/ pointed at /auth/link/<provider>/ and no such route had
+  ever been written, so every one of them was a 404. The href and the route are two places
+  saying the same thing, and this is the second place.
+*/
+test('the link route exists', () => {
+  assert.ok(
+    fs.existsSync(path.join(ROOT, 'src', 'pages', 'auth', 'link', '[provider].ts')),
+    'the Link it buttons on /account/ point at a route that does not exist'
+  );
+});
+
+test('every /auth/link/ href in the source is one the route can answer', () => {
+  const offenders = [];
+
+  for (const file of sourceFiles(path.join(ROOT, 'src'))) {
+    const relative = path.relative(ROOT, file).split(path.sep).join('/');
+    if (relative === 'src/pages/auth/link/[provider].ts') continue;
+
+    /* Quoted, so the prose in a comment that merely names the path is not a link. */
+    for (const [match, target] of fs
+      .readFileSync(file, 'utf8')
+      .matchAll(/["'`]\/auth\/link\/([^'"`\s)/]+)\//g)) {
+      /* The template literal the connections list builds, which covers all of them. */
+      if (target === '${provider}' || target === '${requested}') continue;
+      if (!PROVIDERS.includes(target)) offenders.push(`${relative} links to ${match}`);
+    }
+  }
+
+  assert.deepEqual(offenders, [], `These link to a provider that cannot be linked:\n${offenders.join('\n')}`);
+});
+
+/*
+  linkIdentity, not signInWithOAuth. signInWithOAuth on a browser that already holds a
+  session replaces it, so pressing "Link it" would sign somebody in as a second, empty
+  account rather than attaching an identity to the one they were looking at.
+*/
+test('linking attaches an identity rather than starting a new session', () => {
+  assert.match(linkRoute, /auth\.linkIdentity\(/);
+  assert.doesNotMatch(linkRoute, /auth\.signInWithOAuth\(/);
+});
+
+test('the link route refuses a provider it does not know', () => {
+  assert.match(linkRoute, /isProvider\(requested\)/);
+  assert.match(linkRoute, /provider:\s*requested/);
+});
+
+/*
+  Linking is something done to an account, so there has to be one. Sending somebody
+  through the handshake with no session produces a link that silently attaches to nobody.
+*/
+test('linking without a session goes to the chooser first', () => {
+  assert.match(linkRoute, /locals\.profile/);
+  assert.match(linkRoute, /\/signin\/\?next=/);
+});
+
+/*
+  app_metadata.provider keeps naming whoever this person originally signed up as. Reading
+  it on the way back from a link means a Twitch link on a GitHub account refreshes
+  github_login and leaves twitch_user_id null, which reads as the link doing nothing.
+*/
+test('the callback tells a link apart from a sign in and writes the right columns', () => {
+  assert.match(linkRoute, /linked=\$\{requested\}/);
+  assert.match(callback, /searchParams\.get\('linked'\)/);
+  assert.match(callback, /isLink \? linked :/);
+});
+
+/*
+  user_metadata still describes whoever this person signed up as. Falling back to it on a
+  link copies a GitHub username into twitch_login and calls the account linked when it is
+  not, which is worse than leaving the column empty.
+*/
+test('a link does not fall back to the metadata of the provider already signed in', () => {
+  assert.match(callback, /isLink \? undefined : \(meta\.provider_id/);
+  assert.match(callback, /isLink \? undefined : \(meta\.user_name/);
+});
+
+/*
+  The connections list showed GitHub and Twitch and quietly omitted Discord, which had
+  been a way in for as long as there had been three of them. Two hand written rows for
+  three providers is how that happens, so the list renders from the provider list now.
+*/
+test('the connections list is drawn from the provider list, not written out by hand', () => {
+  assert.match(accountPage, /PROVIDERS\.map/);
+  assert.match(accountPage, /account\.connections\[provider\]/);
+});
+
+test('every provider has a label and a note, so the list has something to draw', () => {
+  for (const provider of PROVIDERS) {
+    assert.ok(PROVIDER_LABELS[provider], `${provider} has no label`);
+    assert.ok(PROVIDER_NOTES[provider], `${provider} has no note saying what it is for`);
+    assert.ok(PROVIDER_SCOPES[provider], `${provider} has no scopes`);
+  }
+});
+
+/*
+  The account read is a literal select, so a provider added to providers.ts without its
+  column added there would compile but come back permanently "not connected".
+*/
+test('the account read asks for every provider login column', () => {
+  for (const column of ['github_login', 'discord_login', 'twitch_login']) {
+    assert.match(accountLib, new RegExp(column), `readAccount never selects ${column}`);
+  }
+});
+
+/*
+  Decision 16's hold reads github_created_at, and Discord and Twitch never fill it. Held on
+  a null forever is not a hold, it is a ban nobody decided to hand out, so the profile's
+  own creation date is the fallback.
+*/
+const NOW = new Date('2026-08-09T00:00:00Z');
+const daysAgo = (n) => new Date(NOW.getTime() - n * 86_400_000).toISOString();
+
+test('an established GitHub account is not held', () => {
+  assert.equal(isNewAccount(daysAgo(400), daysAgo(1), NOW), false);
+});
+
+test('a fresh GitHub account is held even if the profile here is older', () => {
+  assert.equal(isNewAccount(daysAgo(1), daysAgo(400), NOW), true);
+});
+
+test('a Discord or Twitch account falls back to when it joined this site', () => {
+  assert.equal(isNewAccount(null, daysAgo(NEW_ACCOUNT_HOLD_DAYS + 1), NOW), false);
+  assert.equal(isNewAccount(null, daysAgo(1), NOW), true);
+});
+
+test('knowing neither date still holds, because guessing the other way invites spam', () => {
+  assert.equal(isNewAccount(null, null, NOW), true);
+  assert.equal(isNewAccount(undefined, undefined, NOW), true);
+  assert.equal(isNewAccount('not a date', null, NOW), true);
+});
+
+test('the hold lifts exactly on the boundary rather than a day late', () => {
+  assert.equal(isNewAccount(daysAgo(NEW_ACCOUNT_HOLD_DAYS), null, NOW), false);
+});
+
+test('every sign in link points at the chooser, not at the bare redirect', () => {
+  const offenders = [];
+
+  for (const file of sourceFiles(path.join(ROOT, 'src'))) {
+    const relative = path.relative(ROOT, file).split(path.sep).join('/');
+    /* The route itself and the chooser that feeds it both name it on purpose. */
+    if (relative === 'src/pages/auth/signin.ts' || relative === 'src/pages/signin.astro') continue;
+
+    const source = fs.readFileSync(file, 'utf8');
+    for (const [match] of source.matchAll(/\/auth\/signin\/[^'"`\s)]*/g)) {
+      if (!match.includes('provider=')) offenders.push(`${relative} links to ${match}`);
+    }
+  }
+
+  assert.deepEqual(
+    offenders,
+    [],
+    `These send people to the redirect with no provider, which just bounces:\n${offenders.join('\n')}`
+  );
+});
+
+/*
+  20260805000000_base_table_grants.sql revokes every table privilege in public from anon
+  and authenticated, and the argument for doing that is a claim about this source tree:
+  serverClient is only ever used for the auth handshake, so nothing reads public as the
+  visitor. When the claim was written it was already false. Middleware was selecting from
+  profiles that way, so it returned permission denied, and because only data was
+  destructured, a signed in reader silently rendered as a signed out one.
+
+  The grant is the right call and the claim is the thing that rotted, so this checks the
+  claim. If a serverClient ever needs a .from again, the grant has to be revisited in the
+  same change, not discovered later from a page that looks logged out.
+*/
+function sourceFiles(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) return sourceFiles(full);
+    return /\.(ts|tsx|astro|mjs)$/.test(entry.name) ? [full] : [];
+  });
+}
+
+test('no serverClient reads the public schema, which is what the grants migration assumes', () => {
+  const offenders = [];
+
+  for (const file of sourceFiles(path.join(ROOT, 'src'))) {
+    const source = fs.readFileSync(file, 'utf8');
+    if (!source.includes('serverClient(')) continue;
+
+    const relative = path.relative(ROOT, file).split(path.sep).join('/');
+
+    /* serverClient(...).from(...) with no variable in between. */
+    if (/serverClient\([^)]*\)\s*\.\s*(from|rpc)\s*\(/.test(source)) {
+      offenders.push(`${relative} chains .from or .rpc straight off serverClient()`);
+    }
+
+    /* And the usual shape, where the client is held in a variable first. */
+    for (const [, name] of source.matchAll(/(?:const|let|var)\s+(\w+)\s*=\s*(?:await\s+)?serverClient\(/g)) {
+      if (new RegExp(`\\b${name}\\s*\\.\\s*(from|rpc)\\s*\\(`).test(source)) {
+        offenders.push(`${relative} calls ${name}.from or ${name}.rpc`);
+      }
+    }
+  }
+
+  assert.deepEqual(
+    offenders,
+    [],
+    `These read public as anon or authenticated, which the base table grants revoked:\n${offenders.join('\n')}`
+  );
 });

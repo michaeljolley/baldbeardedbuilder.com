@@ -81,7 +81,7 @@ test('the reserved slug list is derived from the severities and sorts, not retyp
 test('the submit API refuses to hand out a slug the archive already uses', () => {
   assert.match(
     submitApi,
-    /import \{ RESERVED_DISASTER_SLUGS \} from '\.\.\/\.\.\/config\/site'/,
+    /import \{[^}]*\bRESERVED_DISASTER_SLUGS\b[^}]*\} from '\.\.\/\.\.\/config\/site'/,
     'src/pages/api/disasters.ts does not import RESERVED_DISASTER_SLUGS'
   );
 

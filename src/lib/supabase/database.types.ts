@@ -444,6 +444,8 @@ export type Database = {
           created_at: string
           deleted_at: string | null
           display_name: string | null
+          discord_id: string | null
+          discord_login: string | null
           github_created_at: string | null
           github_id: number | null
           github_login: string | null
@@ -462,6 +464,8 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           display_name?: string | null
+          discord_id?: string | null
+          discord_login?: string | null
           github_created_at?: string | null
           github_id?: number | null
           github_login?: string | null
@@ -480,6 +484,8 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           display_name?: string | null
+          discord_id?: string | null
+          discord_login?: string | null
           github_created_at?: string | null
           github_id?: number | null
           github_login?: string | null

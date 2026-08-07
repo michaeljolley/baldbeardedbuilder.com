@@ -17,7 +17,7 @@
 
 import type { APIRoute } from 'astro';
 import { serviceClient, supabaseWritable } from '../../lib/supabase';
-import { RESERVED_DISASTER_SLUGS } from '../../config/site';
+import { RESERVED_DISASTER_SLUGS, SITE } from '../../config/site';
 import { draftDisaster, uniqueSlug } from '../../lib/draft';
 
 export const prerender = false;
@@ -31,7 +31,8 @@ const BODY_MAX = 40_000;
 const BODY_MIN = 120;
 
 /* Pre moderation means each one costs me a read. Three a day is generous for a person and
-   useless to a script. */
+   useless to a script. The host is exempt: the limit is there to keep the moderation queue
+   from being filled by somebody else, and I am the one emptying it. */
 const SUBMISSIONS_PER_DAY = 3;
 
 const back = (query: string) => new Response(null, { status: 303, headers: { location: `/submit/${query}` } });
@@ -59,22 +60,51 @@ export const POST: APIRoute = async (context) => {
 
   const db = serviceClient();
 
-  const { data: banned } = await db
+  /*
+    Every read below checks its own error, which the three of them did not used to do.
+
+    A failed Supabase call returns { data: null, error }, so destructuring only data
+    turns "I could not ask" into "the answer was no". That is harmless on a read whose
+    absence means nothing, and it is not harmless here, because all three are gates and
+    all three fail open. An unreachable database would wave a banned person through,
+    reset the daily count to zero, and hand uniqueSlug an empty set of taken slugs, and
+    none of it would show up anywhere. A read that cannot answer is a refusal now.
+  */
+
+  const { data: banned, error: bansError } = await db
     .from('bans')
     .select('reason')
     .eq('profile_id', profile.id)
     .maybeSingle();
 
+  if (bansError) {
+    console.error(`Could not check bans for ${profile.id}: ${bansError.message}`);
+    return back('?sent=failed');
+  }
+
   /* Same as comments: told it did not send, not told why. */
   if (banned) return back('?sent=failed');
 
-  const { count } = await db
-    .from('disasters')
-    .select('id', { count: 'exact', head: true })
-    .eq('author_id', profile.id)
-    .gte('submitted_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+  /*
+    Decision 7 makes every submission cost me a read in Studio, and the limit is what keeps
+    that queue from being filled by one person. I am the one emptying it, so the gate does
+    not apply to me and the count is skipped outright rather than counted and ignored:
+    there is no reason to ask the database a question whose answer cannot change anything.
+  */
+  if (profile.id !== SITE.hostProfileId) {
+    const { count, error: countError } = await db
+      .from('disasters')
+      .select('id', { count: 'exact', head: true })
+      .eq('author_id', profile.id)
+      .gte('submitted_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
-  if ((count ?? 0) >= SUBMISSIONS_PER_DAY) return back('?sent=slow');
+    if (countError) {
+      console.error(`Could not count today's submissions for ${profile.id}: ${countError.message}`);
+      return back('?sent=failed');
+    }
+
+    if ((count ?? 0) >= SUBMISSIONS_PER_DAY) return back('?sent=slow');
+  }
 
   /*
     Decision 25. The draft is written before the insert so that a story arrives in Studio
@@ -83,7 +113,15 @@ export const POST: APIRoute = async (context) => {
   */
   const draft = await draftDisaster(body);
 
-  const { data: existing } = await db.from('disasters').select('slug').not('slug', 'is', null);
+  const { data: existing, error: slugsError } = await db
+    .from('disasters')
+    .select('slug')
+    .not('slug', 'is', null);
+
+  if (slugsError) {
+    console.error(`Could not read taken disaster slugs: ${slugsError.message}`);
+    return back('?sent=failed');
+  }
 
   /*
     The reserved words go in with the taken slugs rather than being checked separately.
@@ -120,6 +158,10 @@ export const POST: APIRoute = async (context) => {
     moderation_note: draft.fromModel ? 'Title drafted by the model.' : 'Model unavailable, title drafted from the opening line.'
   });
 
-  if (error) return back('?sent=failed');
+  if (error) {
+    console.error(`Could not insert a dev disaster for ${profile.id}: ${error.message}`);
+    return back('?sent=failed');
+  }
+
   return back('?sent=1');
 };
