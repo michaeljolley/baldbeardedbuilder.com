@@ -50,6 +50,26 @@ test('the queue uses claims and the scheduled function runs every five minutes',
   assert.ok(schedule.includes('NOTIFY_SECRET'));
 });
 
+/*
+  Astro's checkOrigin guard is on by default and answers an on demand POST with no
+  matching origin with a 403 before the route runs. A plain server to server fetch sends
+  no origin, so the drain was refused at the edge on every scheduled run while the route
+  itself was correct. The route cannot assert this for itself: its own failure mode is
+  404, so nothing downstream notices the guard.
+*/
+test('the scheduled drain satisfies the CSRF origin guard it POSTs through', () => {
+  const schedule = read('netlify', 'functions', 'drain-notifications.mts');
+  const config = read('astro.config.mjs');
+
+  assert.match(schedule, /Origin: endpoint\.origin/);
+  assert.match(schedule, /'Content-Type': 'application\/json'/);
+  assert.equal(
+    /checkOrigin\s*:\s*false/.test(config),
+    false,
+    'the origin guard was turned off site wide instead of the drain being fixed'
+  );
+});
+
 test('the email trigger does not duplicate the Featured badge grant', () => {
   const featured = read('supabase', 'migrations', '20260801000000_featured.sql');
   const notifications = read('supabase', 'migrations', '20260806000000_notifications.sql');
