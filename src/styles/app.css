@@ -792,7 +792,12 @@ html:not(.js) .themer { display: none; }
   background: var(--bg-inset); border: 1px solid var(--line);
   display: grid; place-items: center;
   font-family: var(--mono); font-size: .6875rem; color: var(--fg-dim);
+  overflow: hidden;
 }
+/* A profile picture is whatever size the provider hands back, so it is pinned to the box
+   it sits in and cropped to fill rather than allowed to set its own size. */
+.av > img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; }
+img.av { object-fit: cover; }
 .av.host { color: var(--accent); border-color: var(--accent); }
 .av .mark { width: 1.4rem; height: 1.4rem; color: inherit; }
 .av.xl .mark { width: 3.4rem; height: 3.4rem; }
