@@ -89,9 +89,7 @@ const filed = d.date.toLocaleDateString('en-GB', {
           <p class="lede">{d.line}</p>
         </header>
 
-        <div class="prose dd-body">
-          {d.body.map((p) => <p>{p}</p>)}
-        </div>
+        <div class="prose dd-body" set:html={d.body} />
 
         <p class="notice dd-notice">
           Names and the company have been scrubbed. Stories are lightly edited for length

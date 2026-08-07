@@ -15,13 +15,16 @@
   function of the network. What is still unexecuted after this is the query itself and the
   shape Supabase returns, which genuinely does need the project ref.
 
-  Nothing is imported here but types, deliberately. disasters.ts has top level await and
-  imports ./supabase, which is a directory, so importing it from a test fails before any
-  assertion runs. Severity ids arrive as an argument rather than from ../config/site for
-  the same reason, and it makes the drift they guard against directly testable.
+  Nothing is imported here but types and ./markdown, deliberately. disasters.ts has top
+  level await and imports ./supabase, which is a directory, so importing it from a test
+  fails before any assertion runs. Severity ids arrive as an argument rather than from
+  ../config/site for the same reason, and it makes the drift they guard against directly
+  testable. ./markdown imports shiki and marked, neither of which touches a database, so
+  it is safe to pull into a test the way ./supabase is not.
 */
 
 import type { SeverityId } from '../config/site';
+import { renderComment } from './markdown.ts';
 
 /**
  * Who told a story, and what the byline is allowed to say about them.
@@ -58,8 +61,8 @@ export interface Disaster {
   date: Date;
   /** When Michael put this on the front page, or null. A real act, not a side effect. */
   featuredAt: Date | null;
-  /** Story paragraphs. Plain prose, no markup. */
-  body: string[];
+  /** The story body, rendered from markdown through the same allow list comments use. */
+  body: string;
 }
 
 export interface DisasterRow {
@@ -83,17 +86,17 @@ export interface ProfileRow {
 }
 
 /**
- * Prose as typed, split into paragraphs.
+ * A story body, rendered from markdown the same way a comment is.
  *
- * The column is one text field because that is what somebody typed into one textarea.
- * Blank lines are where they chose to break it. A story with no blank lines is one
- * paragraph, which is a real way to write a short one and not a defect to repair.
+ * The column is one text field because that is what somebody typed into one textarea, and
+ * renderComment already turns blank lines into paragraphs on its own, so nothing here has
+ * to split anything first. Routing it through the comment renderer rather than a second
+ * one means a disaster body gets the same allow list, the same highlighted code fences,
+ * and the same demoted headings a comment gets, instead of a second surface that has to be
+ * kept in step with the first by hand.
  */
-export function paragraphs(body: string): string[] {
-  return body
-    .split(/\n\s*\n/)
-    .map((p) => p.trim())
-    .filter(Boolean);
+export async function renderBody(body: string): Promise<string> {
+  return renderComment(body);
 }
 
 /**
@@ -158,7 +161,7 @@ export interface ShapeOptions {
 }
 
 /** Rows to stories, newest first, with anything undrawable left out and reported. */
-export function shapeDisasters(rows: readonly DisasterRow[], tellers: Map<string, Teller>, opts: ShapeOptions): Disaster[] {
+export async function shapeDisasters(rows: readonly DisasterRow[], tellers: Map<string, Teller>, opts: ShapeOptions): Promise<Disaster[]> {
   const warn = opts.warn ?? console.warn;
   const out: Disaster[] = [];
 
@@ -207,7 +210,7 @@ export function shapeDisasters(rows: readonly DisasterRow[], tellers: Map<string
       replies: opts.repliesById.get(String(r.id)) ?? 0,
       date: new Date(r.published_at),
       featuredAt: r.featured_at ? new Date(r.featured_at) : null,
-      body: paragraphs(r.body)
+      body: await renderBody(r.body)
     });
   }
 

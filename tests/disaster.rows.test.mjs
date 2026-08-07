@@ -21,7 +21,6 @@ import assert from 'node:assert/strict';
 
 import {
   authorIdsToResolve,
-  paragraphs,
   shapeDisasters,
   tellerFor,
   tellersFromProfiles
@@ -43,9 +42,9 @@ const row = (over = {}) => ({
   ...over
 });
 
-const shape = (rows, tellers = new Map(), over = {}) => {
+const shape = async (rows, tellers = new Map(), over = {}) => {
   const warnings = [];
-  const out = shapeDisasters(rows, tellers, {
+  const out = await shapeDisasters(rows, tellers, {
     severityIds: SEVERITY_IDS,
     likesById: new Map(),
     repliesById: new Map(),
@@ -119,8 +118,8 @@ test('an anonymous story asks for no profile at all', () => {
   assert.deepEqual(ids, ['u2'], 'anonymous rows must not send their author id to the profiles query');
 });
 
-test('an unknown severity is left off the site and reported with its id', () => {
-  const { out, warnings } = shape([row({ id: 7, severity: 'catastrophe' })]);
+test('an unknown severity is left off the site and reported with its id', async () => {
+  const { out, warnings } = await shape([row({ id: 7, severity: 'catastrophe' })]);
 
   assert.equal(out.length, 0);
   assert.equal(warnings.length, 1);
@@ -128,16 +127,16 @@ test('an unknown severity is left off the site and reported with its id', () => 
   assert.match(warnings[0], /catastrophe/);
 });
 
-test('an incomplete published row is left off rather than half drawn', () => {
+test('an incomplete published row is left off rather than half drawn', async () => {
   for (const missing of ['slug', 'title', 'line', 'body', 'published_at']) {
-    const { out, warnings } = shape([row({ [missing]: null })]);
+    const { out, warnings } = await shape([row({ [missing]: null })]);
     assert.equal(out.length, 0, `a row with no ${missing} was drawn anyway`);
     assert.match(warnings[0], /published but incomplete/);
   }
 });
 
-test('one bad row does not take the rest of the wall with it', () => {
-  const { out } = shape([
+test('one bad row does not take the rest of the wall with it', async () => {
+  const { out } = await shape([
     row({ id: 1, slug: 'good', published_at: '2026-07-01T00:00:00Z' }),
     row({ id: 2, severity: 'nonsense' }),
     row({ id: 3, slug: 'also-good', published_at: '2026-07-02T00:00:00Z' })
@@ -150,8 +149,8 @@ test('one bad row does not take the rest of the wall with it', () => {
   );
 });
 
-test('stories come back newest first whatever order the rows arrived in', () => {
-  const { out } = shape([
+test('stories come back newest first whatever order the rows arrived in', async () => {
+  const { out } = await shape([
     row({ id: 1, published_at: '2026-01-01T00:00:00Z' }),
     row({ id: 2, published_at: '2026-07-01T00:00:00Z' }),
     row({ id: 3, published_at: '2026-03-01T00:00:00Z' })
@@ -159,23 +158,18 @@ test('stories come back newest first whatever order the rows arrived in', () => 
   assert.deepEqual(out.map((d) => d.id), [2, 3, 1]);
 });
 
-test('a story with no blank lines is one paragraph, not a defect', () => {
-  assert.deepEqual(paragraphs('Just the one.'), ['Just the one.']);
-  assert.deepEqual(paragraphs('First.\n\nSecond.'), ['First.', 'Second.']);
-  assert.deepEqual(paragraphs('First.\n\n\n   \n\nSecond.'), ['First.', 'Second.']);
-  assert.deepEqual(paragraphs('  Padded.  '), ['Padded.']);
-  assert.deepEqual(paragraphs(''), [], 'an empty body should be no paragraphs rather than one empty one');
+test('a story body is rendered from markdown rather than left as plain paragraphs', async () => {
+  const { out } = await shape([row({ body: 'One **bold** paragraph.\n\nAnd a second one.' })]);
+  assert.equal(out[0].body, '<p>One <strong>bold</strong> paragraph.</p><p>And a second one.</p>');
 });
 
-test('a single newline is a line break inside a paragraph, not a new one', () => {
-  assert.deepEqual(
-    paragraphs('One line.\nStill the same paragraph.'),
-    ['One line.\nStill the same paragraph.']
-  );
+test('a heading in a story body is demoted the same way a heading in a comment is', async () => {
+  const { out } = await shape([row({ body: '# Not a page title' })]);
+  assert.equal(out[0].body, '<p><strong>Not a page title</strong></p>');
 });
 
-test('counts default to zero rather than undefined', () => {
-  const { out } = shape([row({ id: 42 })], new Map(), {
+test('counts default to zero rather than undefined', async () => {
+  const { out } = await shape([row({ id: 42 })], new Map(), {
     likesById: new Map([['42', 11]]),
     repliesById: new Map()
   });
@@ -184,17 +178,17 @@ test('counts default to zero rather than undefined', () => {
   assert.equal(out[0].replies, 0, 'a story nobody has replied to must read zero, not undefined');
 });
 
-test('the url is built from the slug and stays under dev-disasters', () => {
+test('the url is built from the slug and stays under dev-disasters', async () => {
   /*
     A disaster never belongs to a topic. If this ever starts reading a topic field, the
     whole URL scheme decision has been undone somewhere upstream.
   */
-  const { out } = shape([row({ slug: 'the-time-i-dropped-prod' })]);
+  const { out } = await shape([row({ slug: 'the-time-i-dropped-prod' })]);
   assert.equal(out[0].url, '/dev-disasters/the-time-i-dropped-prod/');
 });
 
-test('featured_at becomes a date or null, never an invalid date', () => {
-  const { out } = shape([
+test('featured_at becomes a date or null, never an invalid date', async () => {
+  const { out } = await shape([
     row({ id: 1, featured_at: '2026-07-15T00:00:00Z' }),
     row({ id: 2, featured_at: null, published_at: '2026-06-01T00:00:00Z' })
   ]);
@@ -203,8 +197,8 @@ test('featured_at becomes a date or null, never an invalid date', () => {
   assert.equal(out.find((d) => d.id === 2).featuredAt, null);
 });
 
-test('an empty read produces an empty wall and no warnings', () => {
-  const { out, warnings } = shape([]);
+test('an empty read produces an empty wall and no warnings', async () => {
+  const { out, warnings } = await shape([]);
   assert.deepEqual(out, []);
   assert.deepEqual(warnings, []);
 });
