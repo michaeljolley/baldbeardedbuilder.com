@@ -33,11 +33,12 @@ export const mailDeliveryEnabled = Boolean(KEY && DELIVERY_REQUESTED && PRODUCTI
 
 // TEMPORARY: diagnosing why delivery reports disabled in production. Remove after use.
 console.log(
-  '[mail-debug] hasKey=%s deliveryRequested=%s production=%s context=%s',
+  '[mail-debug] hasKey=%s deliveryRequested=%s production=%s rawDelivery=%s rawContext=%s',
   Boolean(KEY),
   DELIVERY_REQUESTED,
   PRODUCTION,
-  import.meta.env.CONTEXT
+  JSON.stringify(import.meta.env.MAIL_DELIVERY_ENABLED),
+  JSON.stringify(import.meta.env.CONTEXT)
 );
 
 function retryAfterSeconds(value: string | null): number | undefined {
