@@ -131,8 +131,8 @@ The Netlify scheduled function calls it every five minutes on published deploys.
 are claimed atomically with `FOR UPDATE SKIP LOCKED`, and every settle checks the claim
 token. Resend receives the queue dedupe key as an idempotency key.
 
-Delivery also requires `MAIL_DELIVERY_ENABLED=true`, `RESEND_API_KEY`, and Netlify's
-production context. Without all three, the drain does not claim anything. See
+Delivery also requires `MAIL_DELIVERY_ENABLED=true` and `RESEND_API_KEY`, both scoped to
+Netlify's Production context. Without both, the drain does not claim anything. See
 `docs/notifications.md` for retry, expiry, unsubscribe, and rollout details.
 
 ## Things worth knowing

@@ -1,9 +1,17 @@
 /*
   Sending notification email through Resend.
 
-  Delivery has three locks: a production deploy context, an explicit enable flag and an
-  API key. A key accidentally exposed to a preview is therefore not enough to mail real
-  users. Disabled environments leave the queue untouched in notifications.ts.
+  Delivery has two locks: an explicit enable flag and an API key. A key accidentally
+  exposed to a preview is therefore not enough to mail real users, as long as
+  MAIL_DELIVERY_ENABLED is scoped to the Production context only in Netlify (never set it
+  for deploy previews or branch deploys). Disabled environments leave the queue untouched
+  in notifications.ts.
+
+  There used to be a third lock, CONTEXT === 'production'. Netlify only sets CONTEXT
+  during the build step; it is not passed to deployed Functions at request time, so an
+  SSR route reading import.meta.env.CONTEXT always saw undefined and delivery silently
+  reported disabled in production. Netlify's own context-scoping of environment variables
+  is what actually enforces "production only" now.
 */
 
 export interface Mail {
@@ -26,20 +34,14 @@ export interface MailResult {
 const KEY = import.meta.env.RESEND_API_KEY;
 const FROM = import.meta.env.MAIL_FROM ?? 'Bald Bearded Builder <hello@baldbeardedbuilder.com>';
 const REPLY_TO = import.meta.env.MAIL_REPLY_TO ?? 'hello@baldbeardedbuilder.com';
-const DELIVERY_REQUESTED = import.meta.env.MAIL_DELIVERY_ENABLED === 'true';
-const PRODUCTION = import.meta.env.CONTEXT === 'production';
+/*
+  Netlify's dashboard stores env vars as strings, but some deployment paths (Functions
+  bundling in particular) hand this one back as an actual boolean rather than the string
+  "true". String() normalizes both shapes before the comparison.
+*/
+const DELIVERY_REQUESTED = String(import.meta.env.MAIL_DELIVERY_ENABLED) === 'true';
 
-export const mailDeliveryEnabled = Boolean(KEY && DELIVERY_REQUESTED && PRODUCTION);
-
-// TEMPORARY: diagnosing why delivery reports disabled in production. Remove after use.
-console.log(
-  '[mail-debug] hasKey=%s deliveryRequested=%s production=%s rawDelivery=%s rawContext=%s',
-  Boolean(KEY),
-  DELIVERY_REQUESTED,
-  PRODUCTION,
-  JSON.stringify(import.meta.env.MAIL_DELIVERY_ENABLED),
-  JSON.stringify(import.meta.env.CONTEXT)
-);
+export const mailDeliveryEnabled = Boolean(KEY && DELIVERY_REQUESTED);
 
 function retryAfterSeconds(value: string | null): number | undefined {
   if (!value) return undefined;

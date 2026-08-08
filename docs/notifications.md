@@ -17,11 +17,16 @@ settings never change it.
 
 ## Delivery locks
 
-Real delivery requires all of the following in the Netlify production context:
+Real delivery requires both of the following, scoped to the **Production** context in Netlify:
 
 - `MAIL_DELIVERY_ENABLED=true`
 - `RESEND_API_KEY`
-- `CONTEXT=production`, supplied by Netlify
+
+There used to be a third lock, `CONTEXT === 'production'`. Netlify only sets `CONTEXT`
+during the build step, not for deployed Functions at request time, so an SSR route
+checking it always saw `undefined` and delivery silently reported disabled. Scoping
+`MAIL_DELIVERY_ENABLED` to Production in the Netlify UI is what now keeps deploy
+previews and branch deploys from sending real mail.
 
 `MAIL_FROM` defaults to `Bald Bearded Builder <hello@baldbeardedbuilder.com>`.
 `MAIL_REPLY_TO` defaults to `hello@baldbeardedbuilder.com`.

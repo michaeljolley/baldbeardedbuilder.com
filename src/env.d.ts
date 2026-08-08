@@ -15,10 +15,12 @@ interface ImportMetaEnv {
   readonly RESEND_API_KEY?: string;
   readonly MAIL_FROM?: string;
   readonly MAIL_REPLY_TO?: string;
-  /** Delivery remains closed unless this is exactly "true" in production. */
+  /**
+   * Delivery remains closed unless this is "true". Scope this to the Production context
+   * only in Netlify - Functions never receive CONTEXT at request time, so that can't be
+   * checked here and this variable's scoping is what keeps previews from sending mail.
+   */
   readonly MAIL_DELIVERY_ENABLED?: string;
-  /** Netlify deploy context. Real delivery requires "production". */
-  readonly CONTEXT?: string;
   /** Bearer secret shared by the scheduled function and the drain endpoint. */
   readonly NOTIFY_SECRET?: string;
 }

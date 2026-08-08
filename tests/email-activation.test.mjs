@@ -31,10 +31,9 @@ test('account settings expose and persist all three notification types', () => {
   assert.ok(page.includes('account.email'), 'the destination address is not shown');
 });
 
-test('delivery requires the production context, explicit flag and API key', () => {
+test('delivery requires the explicit flag and API key', () => {
   const mail = read('src', 'lib', 'mail.ts');
-  assert.ok(mail.includes("MAIL_DELIVERY_ENABLED === 'true'"));
-  assert.ok(mail.includes("CONTEXT === 'production'"));
+  assert.ok(mail.includes("MAIL_DELIVERY_ENABLED) === 'true'"));
   assert.ok(mail.includes('RESEND_API_KEY'));
   assert.ok(mail.includes('Idempotency-Key'));
 });
